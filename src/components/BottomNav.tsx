@@ -51,7 +51,7 @@ interface IconProps {
   alt: string;
 }
 
-const BottomNav: React.FC = () => {
+const BottomNav = () => {
   const location: Location = useLocation();
 
   return (

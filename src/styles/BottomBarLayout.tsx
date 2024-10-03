@@ -18,9 +18,9 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+const Layout = ({ children } : LayoutProps) => {
   const location: Location = useLocation();
-  const hideBottomNavPaths: string[] = ['/signin', '/signup'];
+  const hideBottomNavPaths: string[] = ['/signin', '/signup', '/newway'];
   const showBottomNav: boolean = !hideBottomNavPaths.includes(location.pathname);
 
   return (
