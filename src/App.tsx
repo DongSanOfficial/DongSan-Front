@@ -1,5 +1,6 @@
 import React, { Suspense } from 'react';
-import RoutesSetting from './routes';
+import CustomNavigator from './navigator/CustomNavigator';
+import routes from './navigator/routes';
 import GlobalStyles from "./styles/GlobalStyles";
 import Layout from './styles/BottomBarLayout';
 
@@ -9,7 +10,7 @@ function App() {
       <GlobalStyles />
       <Layout>
         <Suspense fallback={<div />}>
-          <RoutesSetting />
+          <CustomNavigator routes={routes} initialRouteName="/" />
         </Suspense>
       </Layout>
     </>
