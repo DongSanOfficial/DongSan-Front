@@ -1,11 +1,13 @@
-import React from 'react';
+import Layout from '../../styles/BottomBarLayout'
+import { KakaoMap } from '../../components/Map'
+import React from 'react'
 
-function Main() {
+function index() {
   return (
-    <div>
-      산책로 추천 페이지
-    </div>
-  );
+    <Layout>
+      <KakaoMap />
+    </Layout>     
+  )
 }
 
-export default Main;
+export default index
