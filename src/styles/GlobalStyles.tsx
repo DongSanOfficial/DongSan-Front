@@ -1,7 +1,40 @@
 import { createGlobalStyle } from 'styled-components';
 
 const GlobalStyles = createGlobalStyle`
-  @font-face {
+
+  a{
+      text-decoration: none;
+      color: inherit;
+  }
+  
+  *{
+      box-sizing: border-box;
+      -webkit-tap-highlight-color:rgba(255,255,255,0);
+      user-select: none;
+      -webkit-touch-callout: none;   
+  }
+  
+  html, body, div, span, h1, h2, h3, h4, h5, h6, p, 
+  a, dl, dt, dd, ol, ul, li, form, label, table, figure{
+      margin: 0;
+      padding: 0;
+      border: 0;
+      vertical-align: baseline; 
+      font-family: 'Pretendard';
+  }
+
+  body, html {
+      height: 100dvh; 
+      max-width: 430px;
+      margin: 0 auto;
+  }
+
+  input, ::placeholder, textarea {
+      font-family: 'Pretendard';
+  }
+
+
+    @font-face {
     font-family: 'Pretendard';
     font-weight: 900;
     font-display: swap;
@@ -71,21 +104,6 @@ const GlobalStyles = createGlobalStyle`
   src: local('Lalezar Regular'), url('/font/Lalezar-Regular.ttf') format('truetype');
   }
 
-  body, html, #root {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    font-family: 'Pretendard', sans-serif;
-    overflow: hidden;
-  }
-
-  // font-family: 'Lalezar', Arial, sans-serif;
-
-
-  #root {
-    max-width: 430px;
-    margin: 0 auto;
-  }
 `;
 
 export default GlobalStyles;

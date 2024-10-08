@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import styled from 'styled-components';
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import styled from "styled-components";
 
 interface BottomSheetProps {
   isOpen: boolean;
@@ -10,24 +10,32 @@ interface BottomSheetProps {
   children: React.ReactNode;
 }
 
-const SheetContainer = styled.div<{ isOpen: boolean; translateY: number; height?: string; initialHeight?: string; }>`
+const SheetContainer = styled.div<{
+  isOpen: boolean;
+  translateY: number;
+  height?: string;
+  initialHeight?: string;
+}>`
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
-  height: ${props => props.height};  
+  height: ${(props) => props.height};
+  initialHeight: ${(props) => props.initialHeight};
+  max-width: 430px;
+  margin: 0 auto;
   background-color: white;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
-  box-shadow: 0px -2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px -5px 10px 0px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease-out;
-  transform: translateY(${props => 
-    props.isOpen
-      ? `${props.translateY}px`
-      : `calc(100% - ${props.initialHeight} - ${props.translateY}px)`
-  });
+  transform: translateY(
+    ${(props) =>
+      props.isOpen
+        ? `${props.translateY}px`
+        : `calc(100% - ${props.initialHeight} - ${props.translateY}px)`}
+  );
   z-index: 1000;
-  overflow-y: auto;
 `;
 
 const DraggableArea = styled.div`
@@ -48,16 +56,17 @@ const Handle = styled.div`
 
 const Content = styled.div`
   padding: 0 20px 20px;
+  background-color: white;
 `;
 
-export const BottomSheet: React.FC<BottomSheetProps> = ({ 
-  isOpen, 
-  onClose, 
+export const BottomSheet = ({
+  isOpen,
+  onClose,
   onOpen,
-  children, 
-  height = '80vh',  
-  initialHeight = '30vh'
-}) => {
+  children,
+  height = "80vh",
+  initialHeight = "30vh",
+}: BottomSheetProps) => {
   const [translateY, setTranslateY] = useState(0);
   const [startY, setStartY] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -68,27 +77,30 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
     setIsDragging(true);
   }, []);
 
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (!isDragging) return;
-    const currentY = e.touches[0].clientY;
-    const diff = startY - currentY;
-    const maxTranslateY = parseInt(height) - parseInt(initialHeight);
-    
-    if (isOpen) {
-      if (diff >= -maxTranslateY && diff <= 0) {
-        setTranslateY(maxTranslateY + diff);
+  const handleTouchMove = useCallback(
+    (e: React.TouchEvent) => {
+      if (!isDragging) return;
+      const currentY = e.touches[0].clientY;
+      const diff = startY - currentY;
+      const maxTranslateY = parseInt(height) - parseInt(initialHeight);
+
+      if (isOpen) {
+        if (diff >= -maxTranslateY && diff <= 0) {
+          setTranslateY(maxTranslateY + diff);
+        }
+      } else {
+        if (diff >= 0 && diff <= maxTranslateY) {
+          setTranslateY(diff);
+        }
       }
-    } else {
-      if (diff >= 0 && diff <= maxTranslateY) {
-        setTranslateY(diff);
-      }
-    }
-  }, [height, initialHeight, isDragging, startY, isOpen]);
+    },
+    [height, initialHeight, isDragging, startY, isOpen]
+  );
 
   const handleTouchEnd = useCallback(() => {
     setIsDragging(false);
     const maxTranslateY = parseInt(height) - parseInt(initialHeight);
-    
+
     if (isOpen) {
       if (translateY < maxTranslateY / 2) {
         onClose();
@@ -115,14 +127,17 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
   useEffect(() => {
     const draggableArea = draggableAreaRef.current;
     if (draggableArea) {
-      draggableArea.addEventListener('touchstart', handleTouchStart as any);
-      draggableArea.addEventListener('touchmove', handleTouchMove as any);
-      draggableArea.addEventListener('touchend', handleTouchEnd as any);
+      draggableArea.addEventListener("touchstart", handleTouchStart as any);
+      draggableArea.addEventListener("touchmove", handleTouchMove as any);
+      draggableArea.addEventListener("touchend", handleTouchEnd as any);
 
       return () => {
-        draggableArea.removeEventListener('touchstart', handleTouchStart as any);
-        draggableArea.removeEventListener('touchmove', handleTouchMove as any);
-        draggableArea.removeEventListener('touchend', handleTouchEnd as any);
+        draggableArea.removeEventListener(
+          "touchstart",
+          handleTouchStart as any
+        );
+        draggableArea.removeEventListener("touchmove", handleTouchMove as any);
+        draggableArea.removeEventListener("touchend", handleTouchEnd as any);
       };
     }
   }, [handleTouchStart, handleTouchMove, handleTouchEnd]);

@@ -4,9 +4,15 @@ import styled from 'styled-components';
 import BottomNav from '../components/BottomNav';
 
 const LayoutWrapper = styled.div`
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+`;
+
+const ContentWrapper = styled.div`
+  flex: 1;
+  overflow-y: auto;
 `;
 
 interface LayoutProps {
@@ -20,7 +26,9 @@ const Layout = ({ children } : LayoutProps) => {
 
   return (
     <LayoutWrapper>
-      {children}
+      <ContentWrapper>
+        {children}
+      </ContentWrapper>
       {showBottomNav && <BottomNav />}
     </LayoutWrapper>
   );
