@@ -10,43 +10,43 @@ const MapContainer = styled.div`
     left: 0;
 `;
 
+interface Location {
+    lat: number;
+    lng: number;
+}
+
 export const KakaoMap = () => {
-    const [userLocation, setUserLocation] = useState({ lat: 37.5665, lng: 126.9780 }); // 서울 시청 좌표로 초기화
-    const [isLoading, setIsLoading] = useState(true);
+    const [mapCenter, setMapCenter] = useState<Location>({ lat: 37.5665, lng: 126.9780 }); // 서울 시청 좌표로 초기화
+    const [userLocation, setUserLocation] = useState<Location | null>(null);
 
     useEffect(() => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
-                    setUserLocation({
+                    const newLocation: Location = {
                         lat: position.coords.latitude,
                         lng: position.coords.longitude
-                    });
-                    setIsLoading(false);
+                    };
+                    setUserLocation(newLocation);
+                    setMapCenter(newLocation);
                 },
                 (error) => {
                     console.error("Error getting user location:", error);
-                    setIsLoading(false);
                 }
             );
         } else {
             console.error("Geolocation is not supported by this browser.");
-            setIsLoading(false);
         }
     }, []);
-
-    if (isLoading) {
-        return <div>로딩왤케느려</div>;
-    }
 
     return (
         <MapContainer>
             <Map
-                center={userLocation}
+                center={mapCenter}
                 style={{ width: "100%", height: "100%" }}
-                level={3}
+                level={2}
             >
-                <MapMarker position={userLocation} />
+                {userLocation && <MapMarker position={userLocation} />}
             </Map>
         </MapContainer>
     );
