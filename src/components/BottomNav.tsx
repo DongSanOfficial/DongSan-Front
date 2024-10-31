@@ -14,7 +14,10 @@ const NavBar = styled.nav`
   left: 0;
   right: 0;
   background-color: white;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 -1px 10px rgba(0, 0, 0, 0.05);
+  z-index: 1000; 
+  max-width: 430px;
+  margin: 0 auto;
 `;
 
 const NavContent = styled.div`
@@ -32,7 +35,6 @@ const NavLink = styled(Link)`
   flex-direction: column;
   align-items: center;
   text-decoration: none;
-  -webkit-tap-highlight-color: transparent;
   outline: none;
 
   &:focus {

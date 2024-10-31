@@ -4,14 +4,15 @@ import styled from 'styled-components';
 import BottomNav from '../components/BottomNav';
 
 const LayoutWrapper = styled.div`
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  min-height: 100%;
 `;
 
-const Main = styled.main`
-  flex-grow: 1;
-  padding-bottom: 60px; 
+const ContentWrapper = styled.div`
+  flex: 1;
+  overflow-y: auto;
 `;
 
 interface LayoutProps {
@@ -25,7 +26,9 @@ const Layout = ({ children } : LayoutProps) => {
 
   return (
     <LayoutWrapper>
-      <Main>{children}</Main>
+      <ContentWrapper>
+        {children}
+      </ContentWrapper>
       {showBottomNav && <BottomNav />}
     </LayoutWrapper>
   );
