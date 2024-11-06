@@ -2,6 +2,7 @@ import Layout from '../../styles/BottomBarLayout'
 import { KakaoMap } from '../../components/Map'
 import React, { useState } from 'react'
 import { BottomSheet } from '../../components/bottomsheet/BottomSheet'
+import BottomSheetHeader from './header/BottomSheetHeader';
 
 function Main() {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,11 +13,11 @@ function Main() {
       <BottomSheet 
         isOpen={isOpen} 
         height="85vh" 
-        initialHeight="25vh" 
+        initialHeight="30vh" 
         onClose={() => setIsOpen(false)}
         onOpen={() => setIsOpen(true)}
       >
-        <h3>바텀 시트 기본 골격</h3>
+        <BottomSheetHeader />
       </BottomSheet>
     </Layout>     
   )

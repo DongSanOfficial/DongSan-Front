@@ -1,6 +1,4 @@
-export interface colorType extends Record<string, string> {}
-
-export const Colors = {
+export const theme = {
     White: '#FFFFFF',
     Black: '#000000',
     
@@ -19,7 +17,7 @@ export const Colors = {
     Green800: '#0c4031',
     Green700: '#105642',
     Green600: '#146b53',
-    Green500: '#167258',
+    Green500: '#167258',  //main-color
     Green400: '#188163',
     Green300: '#1b8f6e',
     Green200: '#b8dcd2',
