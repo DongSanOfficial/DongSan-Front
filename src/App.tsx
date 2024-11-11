@@ -1,9 +1,13 @@
+
 import React, { Suspense, useEffect, useState } from "react";
+
 import CustomNavigator from "./navigator/CustomNavigator";
 import routes from "./navigator/routes";
 import GlobalStyles from "./styles/GlobalStyles";
 import Layout from "./styles/BottomBarLayout";
 import Splash from "./pages/splash";
+import { ThemeProvider } from "styled-components";
+import { theme } from "./styles/colors/theme";
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -18,8 +22,9 @@ function App() {
 
   return (
     <>
-      <GlobalStyles />
-      <Layout>
+      <ThemeProvider theme={theme}>
+        <GlobalStyles />
+        <Layout>
         {showSplash ? (
           <Splash />
         ) : (
@@ -28,6 +33,7 @@ function App() {
           </Suspense>
         )}
       </Layout>
+      </ThemeProvider>
     </>
   );
 }
