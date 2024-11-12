@@ -1,9 +1,9 @@
 import { BiCalendarCheck, BiMapPin } from "react-icons/bi";
 import styled from "styled-components";
-import { Colors } from "src/styles/colors/colors";
+import { theme } from "src/styles/colors/theme";
 
 const Date = styled.div`
-  color: ${Colors.Green500};
+  color: ${theme.Green500};
   font-weight: 600;
   display: flex;
   align-items: center;
