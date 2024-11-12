@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Colors } from "src/styles/colors/colors";
+import { theme } from "src/styles/colors/theme";
 import { ChangeEvent, useEffect, useState } from "react";
 
 const InPutField = styled.div`
@@ -19,7 +19,7 @@ const Input = styled.input`
   outline: none;
 `;
 const CharCounter = styled.span<{ isMax: boolean }>`
-  color: ${(props) => (props.isMax ? "red" : Colors.Green500)};
+  color: ${(props) => (props.isMax ? "red" : theme.Green500)};
   font-size: 12px;
   padding: 10px 0;
 `;
