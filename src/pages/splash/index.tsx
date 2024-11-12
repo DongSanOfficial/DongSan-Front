@@ -10,7 +10,7 @@ const Wrapper = styled.div`
 export default function Splash() {
   return (
     <Wrapper>
-      <b>스플래시 화면입니다.</b>
+      <b>동산과 동네산책해요.</b>
     </Wrapper>
   );
 }
