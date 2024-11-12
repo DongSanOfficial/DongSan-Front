@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { Colors } from "src/styles/colors/colors";
+import { theme } from "src/styles/colors/theme";
 
 const Content = styled.div`
   display: flex;
@@ -28,7 +28,7 @@ const Switch = styled.div<{ isOn: boolean }>`
   width: 34px;
   height: 16px;
   border-radius: 15px;
-  background-color: ${(props) => (props.isOn ? "#1b8f6e" : Colors.Gray300)};
+  background-color: ${(props) => (props.isOn ? "#1b8f6e" : theme.Gray300)};
   position: relative;
   transition: background-color 0.3s ease;
 `;

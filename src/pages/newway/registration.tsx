@@ -1,6 +1,6 @@
 import { ChangeEvent, KeyboardEvent, useEffect, useState } from "react";
 import styled from "styled-components";
-import { Colors } from "src/styles/colors/colors";
+import { theme } from "src/styles/colors/theme";
 import trail from "src/assets/images/trail.png";
 import DateDisplay from "src/components/newway_register/DateDisplay";
 import TrailInfo from "src/components/newway_register/TrailInfo";
@@ -37,7 +37,7 @@ const Img = styled.img`
 `;
 
 const Button = styled.button<{ isActive: boolean }>`
-  background-color: ${(props) => (props.isActive ? Colors.Green500 : "#888")};
+  background-color: ${(props) => (props.isActive ? theme.Green500 : "#888")};
   color: #ffffff;
   width: 356px;
   height: 52px;
