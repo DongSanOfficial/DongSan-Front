@@ -1,7 +1,7 @@
 import styled from "styled-components";
-import { ReactComponent as HeartIcon } from "../../../../assets/svg/Heart.svg";
-import { ReactComponent as StarIcon } from "../../../../assets/svg/Star.svg";
-import { ReactComponent as RightArrowIcon } from "../../../../assets/svg/RightArrow.svg";
+import { ReactComponent as HeartIcon } from "../../../assets/svg/Heart.svg";
+import { ReactComponent as StarIcon } from "../../../assets/svg/Star.svg";
+import { ReactComponent as RightArrowIcon } from "../../../assets/svg/RightArrow.svg";
 import { theme } from "../../../styles/colors/theme";
 
 const Layout = styled.div`
