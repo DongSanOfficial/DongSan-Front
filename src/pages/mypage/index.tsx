@@ -6,6 +6,7 @@ import bookmarkIcon from "src/assets/images/bookmark.png";
 import { MdMoreHoriz } from "react-icons/md";
 import TrailCard from "src/components/TrailCard_mp";
 import ReviewCard from "src/components/ReviewCard_mp";
+import { Link } from "react-router-dom";
 
 interface Trail {
   id: number;
@@ -138,7 +139,9 @@ function MyPage() {
       <div>
         <SeeAll>
           <Title>내가 등록한 산책로 보기</Title>
-          <Button>전체보기</Button>
+          <Link to="/mypage/TrailList">
+            <Button>전체보기</Button>
+          </Link>
         </SeeAll>
         <Items>
           {trails.map((trail) => (
