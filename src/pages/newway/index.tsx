@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { KakaoMap } from "../../components/Map";
 import TrailInfo from "../../components/newway_register/TrailInfo";
 import SmallButton from '../../components/button/SmallButton';
-
+import ConfirmationModal from '../../components/modal/ConfirmationModal';
 
 const PageContainer = styled.div`
   position: relative;
@@ -43,8 +43,22 @@ const BottomOverlay = styled.div`
   pointer-events: auto;
   border-radius: 10px;
 `;
-
 function NewWay() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isWalking, setIsWalking] = useState(false);  
+
+  const handleButtonClick = () => {
+    if (!isWalking) {
+      setIsWalking(true);
+    } else {
+      setIsModalOpen(true);
+    }
+  };
+
+  const handleStopWalk = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <PageContainer>
       <MapContainer>
@@ -53,13 +67,25 @@ function NewWay() {
       
       <OverlayContainer>
         <TopOverlay>
-        <TrailInfo duration="00:20" distance="4.8km"/>
+          <TrailInfo duration="00:20" distance="4.8km"/>
         </TopOverlay>
         
         <BottomOverlay>
-          <SmallButton primaryText="산책 시작" secondaryText="산책 중단"/>
+          <SmallButton 
+            primaryText="산책 시작" 
+            secondaryText="산책 중단"
+            isWalking={isWalking}
+            onClick={handleButtonClick}
+          />
         </BottomOverlay>
       </OverlayContainer>
+
+      <ConfirmationModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={handleStopWalk}
+        message="산책을 중단하시겠습니까?"
+      />
     </PageContainer>
   );
 }

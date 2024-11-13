@@ -25,8 +25,8 @@ const ModalOverlay = styled.div<{ isOpen: boolean }>`
 const ModalContainer = styled.div<{ width?: string; height?: string }>`
     background-color: white;
     border-radius: 12px;
-    padding: 20px;
-    width: ${({ width }) => width || '90%'};
+    padding: 30px;
+    width: ${({ width }) => width || '85%'};
     max-width: ${({ width }) => width || '400px'};
     height: ${({ height }) => height || 'auto'};
     max-height: 90vh;
