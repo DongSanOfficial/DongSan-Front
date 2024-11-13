@@ -71,7 +71,7 @@ function NewWay() {
       
       <OverlayContainer>
         <TopOverlay>
-          <TrailInfo duration="00:20" distance="4.8km"/>
+          <TrailInfo duration="00:20" distance={4.8}/>
         </TopOverlay>
         
         <BottomOverlay>

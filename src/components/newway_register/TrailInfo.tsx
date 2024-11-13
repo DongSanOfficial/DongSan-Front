@@ -4,8 +4,7 @@ import styled from "styled-components";
 
 interface TrailInfoProps {
   duration: string;
-  //서버에서 단위붙여서 줄 것 같아요! 피그마엔 단위 디자인 다르게 돼 있긴 한데, 따로 받기엔 번거로울 것 같아서 수정할게요!
-  distance: string; 
+  distance: number; 
 
 }
 const TrailInfoContainer = styled.div`
@@ -42,8 +41,17 @@ export default function TrailInfo({duration, distance}: TrailInfoProps) {
         style={{ width: "1px", height: "30px", background: "black" }}
       ></span>
       <DistanceItems>
-        <BiMapPin style={{ width: "24px", height: "24px" }} />
+      <BiMapPin style={{ width: "24px", height: "24px" }} />
         {distance}
+        <span
+          style={{
+            fontSize: "18px",
+            fontFamily: "Pretendard",
+            margin: "4px",
+          }}
+        >
+          km
+        </span>
       </DistanceItems>
     </TrailInfoContainer>
   );

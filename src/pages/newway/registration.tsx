@@ -110,7 +110,7 @@ export default function Registration() {
             <DateDisplay />
             <ToggleSwitch />
           </Content>
-          <TrailInfo duration="00:20" distance="4.8km"/>
+          <TrailInfo duration="00:20" distance={4.8}/>
         </ContentWrapper>
         <Img src={trail} alt="Trail" />
         <InputField
