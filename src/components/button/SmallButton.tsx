@@ -16,8 +16,8 @@ const StyledButton = styled.button<{ isWalking: boolean }>`
     border: none;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
-    background-color: ${({ isWalking }) => isWalking ? theme.White : theme.Green500};
-    color: ${({ isWalking }) => isWalking ? theme.Green500 : theme.White};
+    background-color: ${({ isWalking }) => !isWalking ? theme.White : theme.Green500};
+    color: ${({ isWalking }) => !isWalking ? theme.Green500 : theme.White};
 `;
 
 export default function SmallButton({ 

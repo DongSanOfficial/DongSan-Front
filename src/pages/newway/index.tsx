@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 import { KakaoMap } from "../../components/Map";
 import TrailInfo from "../../components/newway_register/TrailInfo";
 import SmallButton from '../../components/button/SmallButton';
@@ -44,6 +45,8 @@ const BottomOverlay = styled.div`
   border-radius: 10px;
 `;
 function NewWay() {
+  const navigate = useNavigate();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isWalking, setIsWalking] = useState(false);  
 
@@ -57,6 +60,7 @@ function NewWay() {
 
   const handleStopWalk = () => {
     setIsModalOpen(false);
+    navigate('/newway/registration');
   };
 
   return (
