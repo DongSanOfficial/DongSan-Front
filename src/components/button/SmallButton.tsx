@@ -1,36 +1,37 @@
 import styled from 'styled-components';
-import { useState } from 'react';
 import { theme } from '../../styles/colors/theme';
 
 interface SmallButtonProps {
     primaryText: string;
     secondaryText: string;
+    isWalking: boolean; 
     onClick?: () => void;
 }
 
-const StyledButton = styled.button<{ isActive: boolean }>`
+const StyledButton = styled.button<{ isWalking: boolean }>`
     padding: 13px 20px;
     border-radius: 10px;
     font-weight: bold;
     font-size: 18px;
-    border:none;
+    border: none;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
-    background-color: ${({ isActive }) => isActive ? theme.Green500 : 'white'};
-    color: ${({ isActive }) => isActive ? 'white' : theme.Green500};
+    background-color: ${({ isWalking }) => isWalking ? theme.White : theme.Green500};
+    color: ${({ isWalking }) => isWalking ? theme.Green500 : theme.White};
 `;
 
-export default function SmallButton({ primaryText, secondaryText, onClick }: SmallButtonProps) {
-    const [isActive, setIsActive] = useState(false);
-
-    const handleClick = () => {
-        setIsActive(!isActive);
-        onClick?.();
-    };
-
+export default function SmallButton({ 
+    primaryText, 
+    secondaryText, 
+    isWalking,
+    onClick 
+}: SmallButtonProps) {
     return (
-        <StyledButton isActive={isActive} onClick={handleClick}>
-        {isActive ? secondaryText : primaryText}
+        <StyledButton 
+            isWalking={isWalking} 
+            onClick={onClick}
+        >
+            {isWalking ? secondaryText : primaryText}
         </StyledButton>
     );
 }
