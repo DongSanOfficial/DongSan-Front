@@ -1,158 +1,154 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
-import styled from "styled-components";
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import styled from 'styled-components';
 
 interface BottomSheetProps {
-  isOpen: boolean;
-  height?: string;
-  initialHeight?: string;
-  onClose: () => void;
-  onOpen: () => void;
-  children: React.ReactNode;
+    isOpen: boolean;
+    onClose: () => void;
+    onOpen: () => void;
+    children: React.ReactNode;
+    height?: string;
+    initialHeight?: string;
 }
 
 const SheetContainer = styled.div<{
-  isOpen: boolean;
-  translateY: number;
-  height?: string;
-  initialHeight?: string;
+    $isOpen: boolean;
+    $height: string;
+    $initialHeight: string;
+    $translateY: number;
 }>`
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: ${(props) => props.height};
-  initialHeight: ${(props) => props.initialHeight};
-  max-width: 430px;
-  margin: 0 auto;
-  background-color: white;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-  box-shadow: 0px -5px 10px 0px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease-out;
-  transform: translateY(
-    ${(props) =>
-      props.isOpen
-        ? `${props.translateY}px`
-        : `calc(100% - ${props.initialHeight} - ${props.translateY}px)`}
-  );
-  z-index: 1000;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: ${props => props.$height};
+    max-width: 430px;
+    margin: 0 auto;
+    background-color: white;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    box-shadow: 0px -5px 10px 0px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-out;
+    transform: translateY(${props => 
+        props.$isOpen 
+            ? `${props.$translateY}px`
+            : `calc(100% - ${props.$initialHeight} - ${props.$translateY}px)`
+    });
+    z-index: 10;
+    touch-action: none;
 `;
 
 const DraggableArea = styled.div`
-  height: 30px;
-  width: 100%;
-  cursor: grab;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    height: 32px;
+    width: 100%;
+    cursor: grab;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
 `;
 
 const Handle = styled.div`
-  width: 40px;
-  height: 4px;
-  border-radius: 2px;
-  background-color: #d0d0d0;
+    width: 40px;
+    height: 4px;
+    border-radius: 2px;
+    background-color: #d0d0d0;
 `;
 
 const Content = styled.div`
-  padding: 0 20px 20px;
-  background-color: white;
+    padding: 0 20px 20px;
+    overflow-y: auto;
+    background-color: white;
+    height: calc(100% - 32px);
 `;
 
-export const BottomSheet = ({
-  isOpen,
-  onClose,
-  onOpen,
-  children,
-  height = "80vh",
-  initialHeight = "30vh",
-}: BottomSheetProps) => {
-  const [translateY, setTranslateY] = useState(0);
-  const [startY, setStartY] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const draggableAreaRef = useRef<HTMLDivElement>(null);
+export const BottomSheet: React.FC<BottomSheetProps> = ({ 
+    isOpen, 
+    onClose, 
+    onOpen, 
+    children, 
+    height = "85vh",
+    initialHeight = "30vh"
+}) => {
+    const [translateY, setTranslateY] = useState(0);
+    const [startY, setStartY] = useState(0);
+    const [isDragging, setIsDragging] = useState(false);
+    const sheetRef = useRef<HTMLDivElement>(null);
 
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    setStartY(e.touches[0].clientY);
-    setIsDragging(true);
-  }, []);
+    const getHeight = (vh: string) => {
+        return (window.innerHeight * parseInt(vh)) / 100;
+    };
 
-  const handleTouchMove = useCallback(
-    (e: React.TouchEvent) => {
-      if (!isDragging) return;
-      const currentY = e.touches[0].clientY;
-      const diff = startY - currentY;
-      const maxTranslateY = parseInt(height) - parseInt(initialHeight);
+    const handleTouchStart = useCallback((e: React.TouchEvent) => {
+        setStartY(e.touches[0].clientY);
+        setIsDragging(true);
+    }, []);
 
-      if (isOpen) {
-        if (diff >= -maxTranslateY && diff <= 0) {
-          setTranslateY(maxTranslateY + diff);
+    const handleTouchMove = useCallback((e: React.TouchEvent) => {
+        if (!isDragging) return;
+
+        const currentY = e.touches[0].clientY;
+        const diff = currentY - startY;
+        const maxHeight = getHeight(height.replace('vh', ''));
+        const minHeight = getHeight(initialHeight.replace('vh', ''));
+        const maxTranslate = maxHeight - minHeight;
+
+        if (isOpen) {
+            if (diff >= 0 && diff <= maxTranslate) {
+                setTranslateY(diff);
+            }
+        } else {
+            if (diff <= 0 && Math.abs(diff) <= maxTranslate) {
+                setTranslateY(Math.abs(diff));
+            }
         }
-      } else {
-        if (diff >= 0 && diff <= maxTranslateY) {
-          setTranslateY(diff);
+    }, [height, initialHeight, isDragging, startY, isOpen]);
+
+    const handleTouchEnd = useCallback(() => {
+        setIsDragging(false);
+        const maxHeight = getHeight(height.replace('vh', ''));
+        const minHeight = getHeight(initialHeight.replace('vh', ''));
+        const maxTranslate = maxHeight - minHeight;
+        const threshold = maxTranslate / 2;
+
+        if (isOpen) {
+            if (translateY > threshold) {
+                onClose();
+            } else {
+                setTranslateY(0);
+            }
+        } else {
+            if (translateY > threshold) {
+                onOpen();
+            } else {
+                setTranslateY(0);
+            }
         }
-      }
-    },
-    [height, initialHeight, isDragging, startY, isOpen]
-  );
+    }, [translateY, height, initialHeight, isOpen, onClose, onOpen]);
 
-  const handleTouchEnd = useCallback(() => {
-    setIsDragging(false);
-    const maxTranslateY = parseInt(height) - parseInt(initialHeight);
-
-    if (isOpen) {
-      if (translateY < maxTranslateY / 2) {
-        onClose();
-      } else {
+    useEffect(() => {
         setTranslateY(0);
-      }
-    } else {
-      if (translateY > maxTranslateY / 2) {
-        onOpen();
-      } else {
-        setTranslateY(0);
-      }
-    }
-  }, [translateY, height, initialHeight, isOpen, onClose, onOpen]);
+    }, [isOpen]);
 
-  useEffect(() => {
-    if (isOpen) {
-      setTranslateY(0);
-    } else {
-      setTranslateY(0);
-    }
-  }, [isOpen]);
-
-  useEffect(() => {
-    const draggableArea = draggableAreaRef.current;
-    if (draggableArea) {
-      draggableArea.addEventListener("touchstart", handleTouchStart as any);
-      draggableArea.addEventListener("touchmove", handleTouchMove as any);
-      draggableArea.addEventListener("touchend", handleTouchEnd as any);
-
-      return () => {
-        draggableArea.removeEventListener(
-          "touchstart",
-          handleTouchStart as any
-        );
-        draggableArea.removeEventListener("touchmove", handleTouchMove as any);
-        draggableArea.removeEventListener("touchend", handleTouchEnd as any);
-      };
-    }
-  }, [handleTouchStart, handleTouchMove, handleTouchEnd]);
-
-  return (
-    <SheetContainer
-      isOpen={isOpen}
-      height={height}
-      initialHeight={initialHeight}
-      translateY={translateY}
-    >
-      <DraggableArea ref={draggableAreaRef}>
-        <Handle />
-      </DraggableArea>
-      <Content>{children}</Content>
-    </SheetContainer>
-  );
+    return (
+        <SheetContainer
+            ref={sheetRef}
+            $isOpen={isOpen}
+            $height={height}
+            $initialHeight={initialHeight}
+            $translateY={translateY}
+        >
+            <DraggableArea
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+            >
+                <Handle />
+            </DraggableArea>
+            <Content>
+                {children}
+            </Content>
+        </SheetContainer>
+    );
 };
