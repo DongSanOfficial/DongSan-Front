@@ -6,6 +6,8 @@ import NewWay from "../pages/newway/index";
 import SignIn from "../pages/signin/index";
 import SignUp from "../pages/signup/index";
 import Registration from "../pages/newway/registration";
+import MyRegister from "../components/myregister";
+import path from "path";
 
 export const routes = [
   {
@@ -42,6 +44,11 @@ export const routes = [
     path: "/signup",
     component: SignUp,
     headerOptions: { headerShown: false },
+  },
+  {
+    path: "/mypage/myregister",
+    component: MyRegister,
+    headerOptions: { title: "내 산책로", showBackButton: true },
   },
 ];
 

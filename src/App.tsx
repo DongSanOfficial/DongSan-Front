@@ -1,4 +1,3 @@
-
 import React, { Suspense, useEffect, useState } from "react";
 
 import CustomNavigator from "./navigator/CustomNavigator";
@@ -25,14 +24,14 @@ function App() {
       <ThemeProvider theme={theme}>
         <GlobalStyles />
         <Layout>
-        {showSplash ? (
-          <Splash />
-        ) : (
-          <Suspense fallback={<div />}>
-            <CustomNavigator routes={routes} initialRouteName="/" />
-          </Suspense>
-        )}
-      </Layout>
+          {showSplash ? (
+            <Splash />
+          ) : (
+            <Suspense fallback={<div />}>
+              <CustomNavigator routes={routes} initialRouteName="/" />
+            </Suspense>
+          )}
+        </Layout>
       </ThemeProvider>
     </>
   );
