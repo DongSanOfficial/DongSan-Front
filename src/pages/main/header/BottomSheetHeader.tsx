@@ -5,6 +5,7 @@ import { MdMap } from "react-icons/md";
 import SearchBar from "./components/SearchInput";
 import CommonDropdown from "../../../components/CommonDropdown";
 import SortDropdown from "./components/SortDropdown";
+import Divider from "../../../components/Divider";
 
 interface Option {
   value: string;
@@ -55,13 +56,6 @@ const OptionsContainer = styled.div<{ isOpen: boolean }>`
   margin-top: 4px;
   z-index: 1000;
   display: ${({ isOpen }) => (isOpen ? "block" : "none")};
-`;
-
-const Divider = styled.div`
-  width: 100%;
-  height: 0.8px;
-  background-color: ${({ theme }) => theme.Gray300};
-  margin: 1rem 0;
 `;
 
 const StyledMapIcon = styled(MdMap)`
