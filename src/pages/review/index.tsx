@@ -10,7 +10,7 @@ const CenterWrapper = styled.div`
     justify-content: space-between;
     align-items: center;
     height: 70vh;
-    padding-top: 40px;
+    padding-top: 80px;
 `;
 
 const ContentWrapper = styled.div`
