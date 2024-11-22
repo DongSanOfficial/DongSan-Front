@@ -1,13 +1,15 @@
 export const theme = {
     White: '#FFFFFF',
     Black: '#000000',
+    Red: '#FF4646',
+    Yellow: '#FACC15',
     
     Gray900: '#191F28',
     Gray800: '#333D4B',
     Gray700: '#4E5968',
     Gray600: '#6B7684',
     Gray500: '#8B95A1',
-    Gray400: '#B0B8C1',
+    Gray400: '#C6C6C8',
     Gray300: '#D1D6DB',
     Gray200: '#E5E8EB',
     Gray100: '#F2F4F6',
@@ -22,5 +24,5 @@ export const theme = {
     Green300: '#1b8f6e',
     Green200: '#b8dcd2',
     Green100: '#ddeee9',
-    Green50: '#e8f4f1'
+    Green50: '#e8f4f1',
 };

@@ -37,7 +37,7 @@ const Img = styled.img`
 `;
 
 const Button = styled.button<{ isActive: boolean }>`
-  background-color: ${(props) => (props.isActive ? theme.Green500 : "#888")};
+  background-color: ${(props) => (props.isActive ? theme.Green500 : theme.Gray400)};
   color: #ffffff;
   width: 356px;
   height: 52px;
