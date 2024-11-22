@@ -1,13 +1,10 @@
-import React, { Children, Component } from "react";
 import Main from "../pages/main/index";
 import MyPage from "../pages/mypage/index";
 import TrailListPage from "../pages/mypage/TrailListPage";
 import NewWay from "../pages/newway/index";
 import SignIn from "../pages/signin/index";
-import SignUp from "../pages/signup/index";
 import Registration from "../pages/newway/registration";
 import MyRegister from "../components/myregister";
-import path from "path";
 
 export const routes = [
   {
@@ -38,11 +35,6 @@ export const routes = [
   {
     path: "/signin",
     component: SignIn,
-    headerOptions: { headerShown: false },
-  },
-  {
-    path: "/signup",
-    component: SignUp,
     headerOptions: { headerShown: false },
   },
   {
