@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 import thumnail from "src/assets/images/TrailThumbnail.png";
-import favoriteIcon from "src/assets/images/Favorite.png";
-import bookmarkIcon from "src/assets/images/bookmark.png";
+import { ReactComponent as Favorite } from "../../assets/svg/Favorite.svg";
+import { ReactComponent as BookMark } from "../../assets/svg/BookMark.svg";
 import { MdMoreHoriz } from "react-icons/md";
 import TrailCard from "src/components/TrailCard_mp";
 import ReviewCard from "src/components/ReviewCard_mp";
@@ -22,22 +22,26 @@ interface Review {
   content: string;
   rating: number;
 }
+
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   padding: 15px;
 `;
+
 const Profile = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
 `;
+
 const Name = styled.div`
   font-size: 20px;
   font-weight: bold;
   color: #054630;
   margin: 5px;
 `;
+
 const Img = styled.div`
   width: 95px;
   height: 95px;
@@ -45,6 +49,7 @@ const Img = styled.div`
   border: black 0.5px solid;
   margin: 15px;
 `;
+
 const Line = styled.div`
   align-items: center;
   width: 95%;
@@ -52,6 +57,7 @@ const Line = styled.div`
   background-color: #cdcdcd;
   margin: 12px;
 `;
+
 const Items = styled.div`
   display: flex;
   overflow-x: auto;
@@ -70,15 +76,26 @@ const SeeAll = styled.div`
   flex-direction: row;
   justify-content: space-between;
 `;
+
 const Title = styled.div`
   font-size: 15px;
   font-weight: 700;
   margin: 10px 25px;
 `;
+
 const Button = styled.span`
   font-size: 10px;
   margin: 10px 25px;
 `;
+
+const IconWrapper = styled.div`
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
 const List = styled.div`
   display: flex;
   align-items: center;
@@ -87,6 +104,7 @@ const List = styled.div`
   padding: 10px 25px;
   font-size: 15px;
 `;
+
 const ListItem = styled.div`
   display: flex;
   align-items: center;
@@ -155,14 +173,18 @@ function MyPage() {
         <Title>내가 "찜"한 산책로 조회</Title>
         <List>
           <ListItem>
-            <img src={favoriteIcon} />
+            <IconWrapper>
+              <Favorite />
+            </IconWrapper>
             <div>내가 좋아하는 산책로</div>
           </ListItem>
           <MdMoreHoriz />
         </List>
         <List>
           <ListItem>
-            <img src={bookmarkIcon} style={{ width: "15px", margin: "5px" }} />
+            <IconWrapper>
+              <BookMark />
+            </IconWrapper>
             <div>{`북마크 이름`}</div>
           </ListItem>
           <MdMoreHoriz />

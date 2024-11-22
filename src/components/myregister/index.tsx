@@ -132,7 +132,7 @@ export default function MyRegister() {
           <ToggleSwitch />
         </Content>
         <Title>가을에 걷기 좋은 산책로</Title>
-        <TrailInfo />
+        <TrailInfo duration={""} distance={0} />
       </ContentWrapper>
       <ShowField>
         <Img src={trail} alt="Trail" />

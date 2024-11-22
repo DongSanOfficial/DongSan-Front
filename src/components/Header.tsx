@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
-import ArrowLeftIcon from '../assets/images/leftarrow.png'
+import { ReactComponent as ArrowLeftIcon } from "../assets/svg/ArrowLeftIcon.svg";
+
+
 
 interface HeaderProps {
   title?: string;
@@ -29,10 +31,6 @@ const BackButton = styled.button`
   justify-content: center;
 `;
 
-const ArrowLeftImage = styled.img`
-  width: 10px;
-  height: 15px;
-`;
 
 const Title = styled.h1`
   font-size: 1.1rem;
@@ -46,7 +44,7 @@ const Header = ({ title, showBackButton, onBack }: HeaderProps) => {
     <HeaderContainer>
       {showBackButton && (
         <BackButton onClick={onBack}>
-          <ArrowLeftImage src={ArrowLeftIcon} alt="Back" />
+          <ArrowLeftIcon />
         </BackButton>
       )}
       <Title>{title}</Title>
