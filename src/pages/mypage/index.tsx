@@ -26,6 +26,10 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   padding: 15px;
+  padding-bottom: 70px;
+  height: 100vh;
+  overflow-y: auto;
+  box-sizing: border-box;
 `;
 const Profile = styled.div`
   display: flex;
@@ -154,17 +158,24 @@ function MyPage() {
       <div>
         <Title>내가 "찜"한 산책로 조회</Title>
         <List>
-          <ListItem>
-            <img src={favoriteIcon} />
-            <div>내가 좋아하는 산책로</div>
-          </ListItem>
+          <Link to="/mypage/TrailLikeList">
+            <ListItem>
+              <img src={favoriteIcon} />
+              <div>내가 좋아하는 산책로</div>
+            </ListItem>
+          </Link>
           <MdMoreHoriz />
         </List>
         <List>
-          <ListItem>
-            <img src={bookmarkIcon} style={{ width: "15px", margin: "5px" }} />
-            <div>{`북마크 이름`}</div>
-          </ListItem>
+          <Link to="/mypage/TrailLikeList">
+            <ListItem>
+              <img
+                src={bookmarkIcon}
+                style={{ width: "15px", margin: "5px" }}
+              />
+              <div>{`북마크 이름`}</div>
+            </ListItem>
+          </Link>
           <MdMoreHoriz />
         </List>
       </div>
