@@ -12,6 +12,7 @@ const GlobalStyles = createGlobalStyle`
       -webkit-tap-highlight-color:rgba(255,255,255,0);
       user-select: none;
       -webkit-touch-callout: none;   
+      overflow: hidden;
   }
   
   html, body, div, span, h1, h2, h3, h4, h5, h6, p, 
@@ -20,16 +21,19 @@ const GlobalStyles = createGlobalStyle`
       padding: 0;
       border: 0;
       font-family: 'Pretendard';
+      overflow: hidden;
   }
 
   body, html {
       height: 100dvh; 
       max-width: 430px;
       margin: 0 auto;
+      overflow: hidden;
   }
 
   input, ::placeholder, textarea {
       font-family: 'Pretendard';
+      overflow: hidden;
   }
 
 
