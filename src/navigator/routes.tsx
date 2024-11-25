@@ -8,7 +8,7 @@ import SignIn from "../pages/signin/index";
 import SignUp from "../pages/signup/index";
 import Registration from "../pages/newway/registration";
 import MyRegister from "../components/myregister";
-import path from "path";
+import ReviewPage from "../pages/review/index";
 
 export const routes = [
   {
@@ -55,6 +55,11 @@ export const routes = [
     path: "/mypage/myregister",
     component: MyRegister,
     headerOptions: { title: "내 산책로", showBackButton: true },
+  },
+  {
+    path: "/review",
+    component: ReviewPage,
+    headerOptions: { title: "리뷰 작성하기", showBackButton: true },
   },
 ];
 
