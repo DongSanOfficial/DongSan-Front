@@ -21,12 +21,14 @@ interface NavigatorProps {
 const PageContainer = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 100vh;
 `;
 
 const Content = styled.div`
   flex: 1;
   overflow-y: auto;
+  padding-bottom: 70px;
+  padding-top: 56px;    
 `;
 
 const CustomNavigator = ({ routes, initialRouteName }: NavigatorProps) => {
