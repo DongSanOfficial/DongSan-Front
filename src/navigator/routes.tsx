@@ -1,10 +1,12 @@
 import Main from "../pages/main/index";
 import MyPage from "../pages/mypage/index";
 import TrailListPage from "../pages/mypage/TrailListPage";
+import TrailLikeListPage from "../pages/mypage/TrailListLikePage";
 import NewWay from "../pages/newway/index";
 import SignIn from "../pages/signin/index";
 import Registration from "../pages/newway/registration";
 import MyRegister from "../components/myregister";
+import ReviewPage from "../pages/review/index";
 
 export const routes = [
   {
@@ -21,6 +23,11 @@ export const routes = [
     path: "/mypage/TrailList",
     component: TrailListPage,
     headerOptions: { title: "전체보기", showBackButton: true },
+  },
+  {
+    path: "/mypage/TrailLikeList",
+    component: TrailLikeListPage,
+    headerOptions: { title: `내가 좋아하는 산책로`, showBackButton: true },
   },
   {
     path: "/newway",
@@ -41,6 +48,11 @@ export const routes = [
     path: "/mypage/myregister",
     component: MyRegister,
     headerOptions: { title: "내 산책로", showBackButton: true },
+  },
+  {
+    path: "/review",
+    component: ReviewPage,
+    headerOptions: { title: "리뷰 작성하기", showBackButton: true },
   },
 ];
 

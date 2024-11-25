@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import TrailCard from "src/components/TrailCard_mp";
+import TrailCardAll from "../../components/TrailCardAll_View";
 
 interface Trail {
   id: number;
@@ -13,7 +13,7 @@ interface Trail {
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center; /* 중앙 정렬 */
+  align-items: center;
   padding: 15px;
 `;
 
@@ -46,7 +46,7 @@ function TrailListPage() {
     <Wrapper>
       <List>
         {trails.map((trail) => (
-          <TrailCard key={trail.id} trail={trail} />
+          <TrailCardAll key={trail.id} trail={trail} />
         ))}
       </List>
     </Wrapper>

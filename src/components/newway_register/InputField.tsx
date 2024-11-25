@@ -56,7 +56,7 @@ export default function InputField({
           required
         ></Input>
         <CharCounter isMax={name.length === 10}>{name.length}/10</CharCounter>
-        <span style={{ color: "#FF4646" }}>*</span>
+        <span style={{color: theme.Red}}>*</span>
       </InPutField>
 
       <InPutField>
