@@ -8,6 +8,11 @@ interface Trail {
   date: string;
   length: number;
   image: string;
+  tag: string;
+}
+
+interface TrailCardProps {
+  trail: Trail;
 }
 
 const Wrapper = styled.div`
@@ -21,6 +26,7 @@ const List = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
+  padding: 15px;
 `;
 
 function TrailListPage() {
@@ -31,15 +37,40 @@ function TrailListPage() {
       date: "2024.09.26",
       length: 4.8,
       image: "src/assets/images/TrailThumbnail.png",
+      tag: "#한국외대 #자취생_산책로",
     },
     {
-      id: 2,
+      id: 3,
       name: "다른 산책로",
       date: "2024.10.01",
       length: 3.2,
       image: "src/assets/images/TrailThumbnail.png",
+      tag: "#한국외대 #자취생_산책로",
     },
-    // 필요한 만큼 더 추가
+    {
+      id: 4,
+      name: "다른 산책로",
+      date: "2024.10.01",
+      length: 3.2,
+      image: "src/assets/images/TrailThumbnail.png",
+      tag: "#한국외대 #자취생_산책로",
+    },
+    {
+      id: 5,
+      name: "다른 산책로",
+      date: "2024.10.01",
+      length: 3.2,
+      image: "src/assets/images/TrailThumbnail.png",
+      tag: "#한국외대 #자취생_산책로",
+    },
+    {
+      id: 6,
+      name: "다른 산책로",
+      date: "2024.10.01",
+      length: 3.2,
+      image: "src/assets/images/TrailThumbnail.png",
+      tag: "#한국외대 #자취생_산책로",
+    },
   ];
 
   return (

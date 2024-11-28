@@ -7,6 +7,7 @@ interface Trail {
   date: string;
   length: number;
   image: string;
+  tag: string;
 }
 
 interface TrailCardProps {
@@ -20,18 +21,16 @@ const TrailContents = styled.div`
   background: #ffffff;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
   border-radius: 10px;
-  //   margin-left: 7px;
   display: flex;
   align-items: center;
-  //   padding-left: 16px;
-  //   gap: 16px;
+  text-align: center;
 `;
 const MytrailInfo = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 8px;
-  width: 70%;
+  width: 60%;
   padding-right: 10px;
 `;
 const MytrailHeader = styled.div`
@@ -53,14 +52,15 @@ const Mytrail = styled.div`
   font-weight: 600;
 `;
 const MytrailLength = styled.div`
-  font-size: 40px;
+  font-size: 35px;
   font-family: "Lalezar";
 `;
 const Course = styled.div`
-  width: 70px;
-  height: 70px;
+  width: 100px;
+  height: 100px;
   margin: 20px;
   background: #f3f3f3;
+  border-radius: 10px;
 `;
 
 const TrailCardAll: React.FC<TrailCardProps> = ({ trail }) => (
@@ -72,11 +72,12 @@ const TrailCardAll: React.FC<TrailCardProps> = ({ trail }) => (
         <Mytrail>{trail.date}</Mytrail>
       </MytrailHeader>
       <MytrailContent>
-        <div>코스 길이</div>
-        <MytrailLength>
-          {trail.length}
-          <span style={{ fontSize: "12px", fontFamily: "Pretendard" }}>km</span>
-        </MytrailLength>
+        <div>{trail.tag}</div>
+        <div>산책로 길이</div>
+      </MytrailContent>
+      <MytrailContent>
+        <div></div>
+        <MytrailLength>{trail.length}km</MytrailLength>
       </MytrailContent>
     </MytrailInfo>
   </TrailContents>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import thumnail from "src/assets/images/TrailThumbnail.png";
 import { ReactComponent as Favorite } from "../../assets/svg/Favorite.svg";
@@ -7,6 +7,7 @@ import { MdMoreHoriz } from "react-icons/md";
 import TrailCard from "src/components/TrailCard_mp";
 import ReviewCard from "src/components/ReviewCard_mp";
 import { Link } from "react-router-dom";
+import profileImg from "../../assets/images/profile.png";
 
 interface Trail {
   id: number;
@@ -28,6 +29,9 @@ const Wrapper = styled.div`
   flex-direction: column;
   padding: 15px;
   min-height: 100%;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const Profile = styled.div`
@@ -43,7 +47,7 @@ const Name = styled.div`
   margin: 5px;
 `;
 
-const Img = styled.div`
+const Img = styled.img`
   width: 95px;
   height: 95px;
   border-radius: 50px;
@@ -95,6 +99,7 @@ const IconWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 `;
 
 const List = styled.div`
@@ -112,7 +117,49 @@ const ListItem = styled.div`
   gap: 8px;
 `;
 
+const IconWrapperBtn = styled.button`
+  border: none;
+  background-color: white;
+  cursor: pointer;
+  position: relative;
+`;
+
+const OptionsMenu = styled.div<{ isVisible: boolean }>`
+  position: absolute;
+  top: 30px;
+  right: 0;
+  background-color: #fff;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 10px;
+  display: ${({ isVisible }) => (isVisible ? "block" : "none")};
+  z-index: 100;
+`;
+
+const OptionItem = styled.div`
+  padding: 8px 12px;
+  cursor: pointer;
+  &:hover {
+    background-color: #f5f5f5;
+  }
+`;
+
 function MyPage() {
+  const [isOptionsVisible, setIsOptionsVisible] = useState(false);
+
+  const toggleOptionsMenu = () => {
+    setIsOptionsVisible((prev) => !prev);
+  };
+
+  const handleEditName = () => {
+    alert("이름 수정");
+    setIsOptionsVisible(false);
+  };
+
+  const handleDelete = () => {
+    alert("삭제");
+    setIsOptionsVisible(false);
+  };
   const trails: Trail[] = [
     {
       id: 1,
@@ -148,7 +195,7 @@ function MyPage() {
   return (
     <Wrapper>
       <Profile>
-        <Img></Img>
+        <Img src={profileImg} alt="프로필 이미지" />
         <div>
           <Name>이름</Name>
           <div>123456789@gmail.com</div>
@@ -173,22 +220,38 @@ function MyPage() {
       <div>
         <Title>내가 "찜"한 산책로 조회</Title>
         <List>
-          <ListItem>
-            <IconWrapper>
-              <Favorite />
-            </IconWrapper>
-            <div>내가 좋아하는 산책로</div>
-          </ListItem>
-          <MdMoreHoriz />
+          <Link to="/mypage/TrailLikeList?type=favorites">
+            <ListItem>
+              <IconWrapper>
+                <Favorite />
+              </IconWrapper>
+              <div>내가 좋아하는 산책로</div>
+            </ListItem>
+          </Link>
+          <IconWrapperBtn onClick={toggleOptionsMenu}>
+            <MdMoreHoriz size={24} />
+            <OptionsMenu isVisible={isOptionsVisible}>
+              <OptionItem onClick={handleEditName}>이름 수정</OptionItem>
+              <OptionItem onClick={handleDelete}>삭제</OptionItem>
+            </OptionsMenu>
+          </IconWrapperBtn>
         </List>
         <List>
-          <ListItem>
-            <IconWrapper>
-              <BookMark />
-            </IconWrapper>
-            <div>{`북마크 이름`}</div>
-          </ListItem>
-          <MdMoreHoriz />
+          <Link to="/mypage/TrailLikeList?type=bookmarks">
+            <ListItem>
+              <IconWrapper>
+                <BookMark />
+              </IconWrapper>
+              <div>{`북마크 이름`}</div>
+            </ListItem>
+          </Link>
+          <IconWrapperBtn onClick={toggleOptionsMenu}>
+            <MdMoreHoriz size={24} />
+            <OptionsMenu isVisible={isOptionsVisible}>
+              <OptionItem onClick={handleEditName}>이름 수정</OptionItem>
+              <OptionItem onClick={handleDelete}>삭제</OptionItem>
+            </OptionsMenu>
+          </IconWrapperBtn>
         </List>
       </div>
 
