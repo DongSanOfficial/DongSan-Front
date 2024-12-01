@@ -27,8 +27,9 @@ export const routes = [
   {
     path: "/mypage/TrailLikeList",
     component: TrailLikeListPage,
-    headerOptions: { title: `내가 좋아하는 산책로`, showBackButton: true },
+    headerOptions: { showBackButton: true },
   },
+
   {
     path: "/newway",
     component: NewWay,

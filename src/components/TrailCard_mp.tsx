@@ -31,16 +31,20 @@ const MytrailInfo = styled.div`
   flex-direction: column;
   justify-content: space-between;
   gap: 8px;
-  width: 100%;
+  width: 60%;
   padding-right: 10px;
+`;
+
+const TrailImg = styled.img`
+  width: 100px;
+  height: 100px;
 `;
 const MytrailHeader = styled.div`
   display: flex;
   justify-content: space-between;
   gap: 10px;
   font-size: 12px;
-  color: #054630;
-  font-weight: 600;
+  font-weight: 900;
 `;
 const MytrailContent = styled.div`
   display: flex;
@@ -59,7 +63,7 @@ const MytrailLength = styled.div`
 
 const TrailCard: React.FC<TrailCardProps> = ({ trail }) => (
   <TrailContents key={trail.id}>
-    <img src={trail.image} alt={`${trail.name} 이미지`} />
+    <TrailImg src={trail.image} alt={`${trail.name} 이미지`} />
     <MytrailInfo>
       <MytrailHeader>
         <Mytrail>{trail.name}</Mytrail>
