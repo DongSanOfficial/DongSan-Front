@@ -20,11 +20,9 @@ const TrailContents = styled.div`
   background: #ffffff;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
   border-radius: 10px;
-  //   margin-left: 7px;
   display: flex;
   align-items: center;
-  //   padding-left: 16px;
-  //   gap: 16px;
+  padding: 16px;
 `;
 const MytrailInfo = styled.div`
   display: flex;
