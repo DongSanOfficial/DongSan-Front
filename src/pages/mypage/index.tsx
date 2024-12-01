@@ -7,7 +7,7 @@ import { MdMoreHoriz } from "react-icons/md";
 import TrailCard from "src/components/TrailCard_mp";
 import ReviewCard from "src/components/ReviewCard_mp";
 import { Link } from "react-router-dom";
-import profileImg from "../../assets/images/profile.png";
+import profileImg from "../../assets/svg/profile.svg";
 
 interface Trail {
   id: number;
