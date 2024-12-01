@@ -1,6 +1,8 @@
 import styled from "styled-components";
-import { ReactComponent as MainLogo } from "../../assets/svg/MainLogo.svg";
 import { Link } from "react-router-dom";
+import { ReactComponent as MainLogo } from "../../assets/svg/MainLogo.svg";
+import { ReactComponent as KakaoLogo } from "../../assets/svg/loginKakao.svg";
+import { ReactComponent as GoogleLogo } from "../../assets/svg/loginGoogle.svg";
 
 const Container = styled.div`
   display: flex;
@@ -29,17 +31,27 @@ interface LoginButtonProps {
 const LoginButton = styled(Link)<LoginButtonProps>`
   cursor: pointer;
   display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   width: 340px;
   height: 60px;
-  text-align: center;
-  justify-content: center;
-  align-items: center;
   background-color: ${(props) => (props.isKakao ? "#FCE51E" : "#FFFFFF")};
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   font-weight: bold;
   border-radius: 20px;
-  text-decoration: none; /* 링크 밑줄 제거 */
-  color: #000; /* 텍스트 색상 */
+  text-decoration: none;
+  color: ${(props) => (props.isKakao ? "#000000" : "#4285F4")};
+`;
+
+const StyledKakaoIcon = styled(KakaoLogo)`
+  width: 24px;
+  height: 24px;
+`;
+
+const StyledGoogleIcon = styled(GoogleLogo)`
+  width: 24px;
+  height: 24px;
 `;
 
 export default function SignIn() {
@@ -49,9 +61,11 @@ export default function SignIn() {
         <MainLogo />
         <ButtonContainer>
           <LoginButton isKakao={true} to="/mypage">
+            <StyledKakaoIcon />
             카카오 로그인
           </LoginButton>
           <LoginButton isKakao={false} to="/mypage">
+            <StyledGoogleIcon />
             구글 로그인
           </LoginButton>
         </ButtonContainer>
