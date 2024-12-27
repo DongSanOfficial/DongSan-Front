@@ -51,7 +51,7 @@ export const routes = [
     headerOptions: { title: "내 산책로", showBackButton: true },
   },
   {
-    path: "/review",
+    path: "/review/:walkwayId",
     component: ReviewPage,
     headerOptions: { title: "리뷰 작성하기", showBackButton: true },
   },
