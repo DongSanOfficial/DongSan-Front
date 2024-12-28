@@ -31,7 +31,6 @@ const OverlayContainer = styled.div`
 const TopOverlay = styled.div`
   background-color: rgba(255, 255, 255, 0.8);
   margin: 1rem;
-  padding: 1rem;
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 `;
@@ -69,17 +68,16 @@ function NewWay() {
     const [distance, setDistance] = useState(0);
 
     // 타이머 관련 상태와 ref
-    const [duration, setDuration] = useState("00:00:00");
+    const [duration, setDuration] = useState("00:00");
     const startTimeRef = useRef<number | null>(null);
     const timerIdRef = useRef<NodeJS.Timeout | null>(null);
 
     // 시간을 포맷하는 함수
     const formatTime = (ms: number) => {
-        const hours = Math.floor(ms / 3600000);
         const minutes = Math.floor((ms % 3600000) / 60000);
         const seconds = Math.floor((ms % 60000) / 1000);
         
-        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     };
 
     // 타이머 업데이트 함수
