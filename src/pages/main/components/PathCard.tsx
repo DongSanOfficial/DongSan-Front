@@ -6,10 +6,10 @@ import { theme } from "../../../styles/colors/theme";
  
 const Layout = styled.div`
   width: calc(100% - 10px);
-  padding: 17px 19px 12px 19px ;
+  padding: 17px 19px 12px 19px;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.25);
   border-radius: 10px;
-
+  cursor: pointer;
 `;
 
 const PathCardContainer = styled.div`
@@ -29,9 +29,8 @@ const PathDescription = styled.div`
   gap: 8px;
   flex: 1;
 
-  span{
-      font-size: 13px;
-
+  span {
+    font-size: 13px;
   }
 `;
 
@@ -40,7 +39,7 @@ const TextWrapper = styled.div`
   justify-content: space-between;
   width: 100%;
 
-    span:first-child {  
+  span:first-child {  
     font-size: 13px;
     font-weight: bold;
     color: ${props => props.theme.Green500};
@@ -49,15 +48,13 @@ const TextWrapper = styled.div`
   span:last-child {   
     font-size: 12px;
     font-weight: 500;
-
   }
-
 `;
 
 const UserReactionsWrapper = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items:center;
+  align-items: center;
 `;
 
 const ReactionContainer = styled.div`
@@ -75,10 +72,10 @@ const StyledHeart = styled(HeartIcon)<{ $isActive: boolean }>`
   transition: fill 0.2s ease;
 `;
 
-const StyledStar = styled(StarIcon)<{ $isActive: boolean }>`
+const StyledStar = styled(StarIcon)`
   width: 22px;
   height: 22px;
-  fill: ${props => props.$isActive ? props.theme.Green500 : props.theme.Gray200};
+  fill: ${props => props.theme.Green500};
   cursor: pointer;
   transition: fill 0.2s ease;
 `;
@@ -117,10 +114,10 @@ interface PathCardProps {
   starCount: number;
   reviewCount: number;
   isLiked: boolean;
-  isStarred: boolean;
   onLikeClick: () => void;
-  onStarClick: () => void;
+  onClick?: () => void;
 }
+
 function PathCard({
   pathimage, 
   pathname, 
@@ -131,15 +128,22 @@ function PathCard({
   starCount, 
   reviewCount,
   isLiked,
-  isStarred,
   onLikeClick,
-  onStarClick }: PathCardProps) {
+  onClick 
+}: PathCardProps) {
+
+  const handleLikeClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onLikeClick();
+  };
+
+
   return (
-    <Layout>
+    <Layout onClick={onClick}>
       <PathCardContainer>
         <PathInfoWrapper>
           <img
-          src={pathimage}
+            src={pathimage}
             alt="산책로 이미지"
             style={{
               backgroundColor: "grey",
@@ -163,23 +167,21 @@ function PathCard({
             <ReactionItem>
               <StyledHeart 
                 $isActive={isLiked} 
-                onClick={onLikeClick}
+                onClick={handleLikeClick}
               />
               <span>{likeCount}</span>
             </ReactionItem>
 
             <ReactionItem>
               <StyledStar 
-                $isActive={isStarred} 
-                onClick={onStarClick}
               />
               <span>{starCount}</span>
             </ReactionItem>
 
-              <ReactionItem>
-                <span>리뷰 {reviewCount}개</span>
-                <StyledArrow />
-              </ReactionItem>
+            <ReactionItem>
+              <span>리뷰 {reviewCount}개</span>
+              <StyledArrow />
+            </ReactionItem>
           </ReactionContainer>
 
           <Distance>{distance}</Distance>
