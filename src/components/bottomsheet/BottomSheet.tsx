@@ -63,14 +63,14 @@ const Content = styled.div`
     height: calc(100% - 32px);
 `;
 
-export const BottomSheet: React.FC<BottomSheetProps> = ({ 
+export const BottomSheet = ({ 
     isOpen, 
     onClose, 
     onOpen, 
     children, 
     height = "85vh",
     initialHeight = "30vh"
-}) => {
+}: BottomSheetProps ) => {
     const [translateY, setTranslateY] = useState(0);
     const [startY, setStartY] = useState(0);
     const [isDragging, setIsDragging] = useState(false);
