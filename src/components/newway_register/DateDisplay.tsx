@@ -8,6 +8,9 @@ const Date = styled.div`
   display: flex;
   align-items: center;
   gap: 4px;
+  @media (max-width: 375px) {
+    width: 300px;
+  }
 `;
 export default function DateDisplay() {
   return (

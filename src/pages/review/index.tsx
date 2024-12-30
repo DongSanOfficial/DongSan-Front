@@ -5,8 +5,6 @@ import { ReactComponent as StarIcon } from "../../assets/svg/ReviewStar.svg";
 import Divider from "../../components/Divider";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { Cookies } from "react-cookie";
-import { getCookie } from "../../utils/cookieUtils";
 
 const CenterWrapper = styled.div`
   display: flex;

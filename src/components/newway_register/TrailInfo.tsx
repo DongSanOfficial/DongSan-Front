@@ -4,15 +4,22 @@ import styled from "styled-components";
 
 interface TrailInfoProps {
   duration: string;
-  distance: number; 
-
+  distance: number;
 }
 const TrailInfoContainer = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  gap: 10px;
+  width: 90vw;
+  max-width: 430px;
+  gap: 20px;
+
+  @media (max-width: 375px) {
+    width: 85vw;
+    max-width: 360px;
+    height: 10vh;
+  }
 `;
 const ClockItems = styled.div`
   display: flex;
@@ -30,7 +37,7 @@ const DistanceItems = styled.div`
   font-size: 50px;
   font-family: "Lalezar";
 `;
-export default function TrailInfo({duration, distance}: TrailInfoProps) {
+export default function TrailInfo({ duration, distance }: TrailInfoProps) {
   return (
     <TrailInfoContainer>
       <ClockItems>
@@ -41,7 +48,7 @@ export default function TrailInfo({duration, distance}: TrailInfoProps) {
         style={{ width: "1px", height: "30px", background: "black" }}
       ></span>
       <DistanceItems>
-      <BiMapPin style={{ width: "24px", height: "24px" }} />
+        <BiMapPin style={{ width: "24px", height: "24px" }} />
         {distance}
         <span
           style={{

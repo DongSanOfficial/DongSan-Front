@@ -11,6 +11,9 @@ const Content = styled.div`
 const IsPublic = styled.div`
   font-size: 12px;
   font-weight: 600;
+  @media (max-width: 375px) {
+    width: 50px;
+  }
 `;
 const SwitchContainer = styled.div`
   display: flex;

@@ -8,6 +8,7 @@ import Registration from "../pages/newway/registration";
 import MyRegister from "../components/myregister";
 import ReviewPage from "../pages/review/index";
 import Usingtrail from "../pages/usingtrail";
+import DetailUsing from "../pages/usingtrail/detail_using";
 
 export const routes = [
   {
@@ -60,6 +61,11 @@ export const routes = [
     path: "/usingtrail",
     component: Usingtrail,
     headerOptions: { title: "산책로 이용하기", showBackButton: true },
+  },
+  {
+    path: "/usingtrail/detail",
+    component: DetailUsing,
+    headerOptions: { title: "산책로", showBackButton: true },
   },
 ];
 
