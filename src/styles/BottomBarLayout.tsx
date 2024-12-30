@@ -21,7 +21,12 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   const location: Location = useLocation();
-  const hideBottomNavPaths: string[] = ["/signin", "/signup", "/newway"];
+  const hideBottomNavPaths: string[] = [
+    "/signin",
+    "/signup",
+    "/newway",
+    "/usingtrail",
+  ];
   const showBottomNav: boolean = !hideBottomNavPaths.includes(
     location.pathname
   );
