@@ -7,6 +7,7 @@ import SignIn from "../pages/signin/index";
 import Registration from "../pages/newway/registration";
 import MyRegister from "../components/myregister";
 import ReviewPage from "../pages/review/index";
+import Usingtrail from "../pages/usingtrail";
 
 export const routes = [
   {
@@ -54,6 +55,11 @@ export const routes = [
     path: "/review/:walkwayId",
     component: ReviewPage,
     headerOptions: { title: "리뷰 작성하기", showBackButton: true },
+  },
+  {
+    path: "/usingtrail",
+    component: Usingtrail,
+    headerOptions: { title: "산책로 이용하기", showBackButton: true },
   },
 ];
 
