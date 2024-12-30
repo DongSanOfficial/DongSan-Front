@@ -19,7 +19,11 @@ const Wrapper = styled.div`
   justify-content: space-between;
   padding: 20px;
   align-items: center;
+  height: 85vh;
   max-height: 100vh;
+  @media (max-width: 375px) {
+    padding: 20px 5px;
+  }
 `;
 const ContentWrapper = styled.div`
   display: flex;
@@ -27,38 +31,51 @@ const ContentWrapper = styled.div`
   width: 100%;
   height: 15vh;
   max-height: 20vh;
+  @media (max-width: 375px) {
+    width: 85vw;
+    max-width: 360px;
+    height: 5vh;
+  }
 `;
 const Content = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
 `;
 const Title = styled.div`
   font-size: 18px;
   font-weight: 600;
   margin: 10px;
+  @media (max-width: 375px) {
+    margin: 2px;
+  }
 `;
 const ShowField = styled.div`
-  border: 2px solid red;
   width: 80vw;
-  height: 50vh; /* 상단과 하단 여백을 계산 */
+  height: 45vh;
   max-width: 322px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 10px auto;
+  margin: 3vh 10px;
+  @media (max-width: 375px) {
+    width: 250px;
+    height: auto;
+    max-height: 250px;
+    margin: 0 10px;
+  }
 `;
 
 const Img = styled.img`
   background: #c7c7c7;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
   border-radius: 20px 20px 0px 0px;
-  width: 80vw;
-  //max-height: 276px;
+  width: 100%;
+  height: 322px;
 `;
 const FieldContent = styled.div`
-  width: 80vw;
+  width: 100%;
   max-width: 322px;
   height: 15vh;
   background: #ffffff;
@@ -107,7 +124,7 @@ const ButtonContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
-  height: 15vh;
+  height: 13vh;
 `;
 const Button = styled.button`
   color: #ffffff;
@@ -154,7 +171,6 @@ export default function DetailUsing() {
       <ContentWrapper>
         <Content>
           <DateDisplay />
-          <ToggleSwitch />
         </Content>
         <Title>가을에 걷기 좋은 산책로</Title>
         <TrailInfo duration={"12:00"} distance={53} />
