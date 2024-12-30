@@ -131,6 +131,7 @@ const Button = styled.button`
   width: 90vw;
   height: 6vh;
   border: none;
+  border-radius: 2px;
   font-size: 16px;
   font-weight: 500;
 
@@ -211,7 +212,7 @@ export default function DetailUsing() {
       </ShowField>
       <ButtonContainer>
         <Button>이용하기</Button>
-        <Button onClick={writeReview}>리뷰작성하기</Button>
+        <Button onClick={writeReview}>리뷰 작성하기</Button>
       </ButtonContainer>
     </Wrapper>
   );
