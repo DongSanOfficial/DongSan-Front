@@ -17,24 +17,23 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 20px;
+  padding: 1.25rem;
   align-items: center;
   height: 85vh;
   max-height: 100vh;
-  @media (max-width: 375px) {
-    padding: 20px 5px;
-  }
 `;
 const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 15vh;
+  height: auto;
   max-height: 20vh;
+
   @media (max-width: 375px) {
     width: 85vw;
-    max-width: 360px;
-    height: 5vh;
+    max-width: 36rem;
+    height: auto;
+    min-height: 10vh;
   }
 `;
 const Content = styled.div`
@@ -44,50 +43,54 @@ const Content = styled.div`
   align-items: center;
 `;
 const Title = styled.div`
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 600;
-  margin: 10px;
+  margin: 0.625rem;
   @media (max-width: 375px) {
-    margin: 2px;
+    margin: 0.125rem;
+    font-size: 1rem;
   }
 `;
 const ShowField = styled.div`
-  width: 80vw;
-  height: 45vh;
-  max-width: 322px;
+  width: 90%;
+  max-width: 20rem;
+  height: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 3vh 10px;
+  margin: 1.875rem auto;
   @media (max-width: 375px) {
-    width: 250px;
+    width: 80%;
     height: auto;
-    max-height: 250px;
-    margin: 0 10px;
+    max-height: 18.75rem;
+    margin: 0 0.625rem;
   }
 `;
 
 const Img = styled.img`
   background: #c7c7c7;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
-  border-radius: 20px 20px 0px 0px;
+  border-radius: 1.25rem 1.25rem 0px 0px;
   width: 100%;
-  height: 322px;
+  height: 17rem;
+  @media (max-width: 375px) {
+    max-height: 13rem;
+  }
 `;
 const FieldContent = styled.div`
   width: 100%;
-  max-width: 322px;
-  height: 15vh;
+  max-width: 20rem;
+  height: auto;
   background: #ffffff;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
-  border-radius: 0px 0px 10px 10px;
+  border-radius: 0px 0px 0.625rem 0.625rem;
 `;
 const IconWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-around;
-  width: 150px;
-  margin: 10px;
+  width: 9.375rem;
+  margin: 0.375rem;
 `;
 interface IconButtonProps {
   active?: boolean;
@@ -95,44 +98,53 @@ interface IconButtonProps {
 const IconButton = styled.div<IconButtonProps>`
   display: flex;
   align-items: center;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: ${(props) => (props.active ? "red" : "black")};
 `;
 const ReviewCount = styled.div`
-  font-size: 12px;
+  font-size: 0.75rem;
 `;
 const Explanation = styled.div`
-  font-size: 12px;
-  margin: 10px;
+  font-size: 0.75rem;
+  margin: 0.625rem;
+  @media (max-width: 375px) {
+    margin: 0 0.625rem;
+  }
 `;
 const HashtagContainer = styled.div`
   display: flex;
   flex-wrap: nowrap;
   overflow-x: auto;
-  gap: 5px;
-  margin: 10px;
+  gap: 0.3125rem;
+  margin: 0.625rem;
+  @media (max-width: 375px) {
+    margin: 0.3125rem 0.625rem;
+  }
 `;
 
 const Hashtag = styled.div`
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
-  margin: 2px;
+  margin: 0.125rem;
   flex-shrink: 0;
 `;
 
 const ButtonContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  height: 13vh;
+  gap: 0.625rem;
+  height: auto;
+  max-height: 12vh;
+  margin: 0.3rem 0;
 `;
 const Button = styled.button`
   color: #ffffff;
   width: 90vw;
-  height: 6vh;
+  height: 3.5rem;
+  padding: 0.2rem;
   border: none;
   border-radius: 2px;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 500;
 
   &:nth-child(1) {
@@ -141,6 +153,9 @@ const Button = styled.button`
 
   &:nth-child(2) {
     background-color: ${theme.Green500};
+  }
+  @media (max-width: 375px) {
+    height: 2.5rem;
   }
 `;
 

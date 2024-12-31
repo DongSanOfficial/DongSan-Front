@@ -16,9 +16,9 @@ const TrailInfoContainer = styled.div`
   gap: 20px;
 
   @media (max-width: 375px) {
-    width: 85vw;
+    width: 80vw;
     max-width: 360px;
-    height: 10vh;
+    height: 8vh;
   }
 `;
 const ClockItems = styled.div`
@@ -28,6 +28,9 @@ const ClockItems = styled.div`
   gap: 10px;
   font-size: 48px;
   font-family: "Lalezar";
+  @media (max-width: 375px) {
+    font-size: 40px;
+  }
 `;
 const DistanceItems = styled.div`
   display: flex;
@@ -36,6 +39,9 @@ const DistanceItems = styled.div`
   gap: 10px;
   font-size: 50px;
   font-family: "Lalezar";
+  @media (max-width: 375px) {
+    font-size: 40px;
+  }
 `;
 export default function TrailInfo({ duration, distance }: TrailInfoProps) {
   return (
