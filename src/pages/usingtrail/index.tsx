@@ -32,6 +32,9 @@ const TopOverlay = styled.div`
   margin: 1rem;
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const BottomOverlay = styled.div`
