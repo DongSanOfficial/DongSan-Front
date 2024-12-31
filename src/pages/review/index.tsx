@@ -5,6 +5,7 @@ import { ReactComponent as StarIcon } from "../../assets/svg/ReviewStar.svg";
 import Divider from "../../components/Divider";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import { getCookie } from "src/utils/cookieUtils";
 
 const CenterWrapper = styled.div`
   display: flex;
@@ -107,7 +108,7 @@ const ReviewPage = () => {
       rating: rating.toString(),
       content: review,
     });
-    const token = localStorage.getItem("accessToken");
+    const token = getCookie("access_token");
 
     if (!token) {
       console.error("Access token not found in local storage");
