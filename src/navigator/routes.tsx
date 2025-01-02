@@ -9,6 +9,7 @@ import MyRegister from "../components/myregister";
 import ReviewPage from "../pages/review/index";
 import Usingtrail from "../pages/usingtrail";
 import DetailUsing from "../pages/usingtrail/detail_using";
+import TrailReviewPage from "../pages/mypage/TrailReviewPage";
 
 export const routes = [
   {
@@ -28,8 +29,13 @@ export const routes = [
   },
   {
     path: "/mypage/TrailLikeList",
-    component: TrailLikeListPage,
+    component: TrailReviewPage,
     headerOptions: { showBackButton: true },
+  },
+  {
+    path: "/mypage/ReviewList",
+    component: TrailReviewPage,
+    headerOptions: { title: "리뷰보기", showBackButton: true },
   },
 
   {
