@@ -3,21 +3,47 @@ import styled from "styled-components";
 import thumnail from "src/assets/images/TrailThumbnail.png";
 import { ReactComponent as Favorite } from "../../assets/svg/Favorite.svg";
 import { ReactComponent as BookMark } from "../../assets/svg/BookMark.svg";
-import { MdMoreHoriz } from "react-icons/md";
 import TrailCard from "src/components/TrailCard_mp";
 import ReviewCard from "src/components/ReviewCard_mp";
 import { Link } from "react-router-dom";
 import profileImg from "../../assets/svg/profile.svg";
 import TrailBookmark from "../mypage/TrailBookmark";
+import { getUserProfile } from "../../apis/auth";
+import { UserProfileType } from "../../apis/auth.type";
 
 function MyPage() {
+  const [userProfile, setUserProfile] = useState<UserProfileType | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const profile = await getUserProfile();
+        setUserProfile(profile);
+      } catch (err) {
+        setError("프로필 정보를 불러오는데 실패했습니다.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
+
+  if (isLoading) return <div>로딩중...</div>;
+  if (error) return <div>{error}</div>;
+
   return (
     <Wrapper>
       <Profile>
-        <Img src={profileImg} alt="프로필 이미지" />
+        <Img 
+          src={userProfile?.profileImageUrl || profileImg} 
+          alt="프로필 이미지" 
+        />
         <div>
-          <Name>이름</Name>
-          <div>123456789@gmail.com</div>
+          <Name>{userProfile?.nickname || "이름"}</Name>
+          <div>{userProfile?.email || "이메일 정보 없음"}</div>
         </div>
       </Profile>
       <Line />
@@ -106,6 +132,7 @@ const Img = styled.img`
   border-radius: 50px;
   border: black 0.5px solid;
   margin: 15px;
+  object-fit: cover;
 `;
 
 //내가 등록한 산책로
