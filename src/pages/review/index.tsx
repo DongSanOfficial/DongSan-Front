@@ -111,7 +111,7 @@ const ReviewPage = () => {
     const token = getCookie("access_token");
 
     if (!token) {
-      console.error("Access token not found in local storage");
+      console.error("Access token not found in cookie");
       alert("로그인 후 이용해주세요.");
       return; // Handle missing token gracefully
     }
@@ -127,6 +127,7 @@ const ReviewPage = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
+          withCredentials: true,
         }
       );
       console.log("Response Data:", response.data);
