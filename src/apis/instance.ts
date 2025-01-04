@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { removeCookie } from 'src/utils/cookieUtils';
+import { getCookie, removeCookie } from 'src/utils/cookieUtils';
 
 const baseURL = process.env.REACT_APP_BASE_URL;
 
@@ -7,22 +7,31 @@ export const instance = axios.create({
   baseURL,
   timeout: 5000,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
   withCredentials: true,
 });
-// 서버가 Set-Cookie 헤더를 통해 accessToken과 refreshToken을 전달하고 있으므로 withCredentials: true 방식을 사용
-// 브라우저가 자동으로 Set-Cookie 헤더를 받아서 쿠키를 저장, 모든 요청에 이 쿠키들을 자동으로 포함
-
 
 // 로그아웃 처리 함수
 const handleLogout = () => {
-  removeCookie('accessToken');
-  removeCookie('refreshToken');
+  removeCookie('access_token');
+  removeCookie('refresh_token');
   window.location.href = '/signin';
 };
 
-// 쿠키는 자동으로 요청에 포함되므로, request 인터셉터에서 별도의 Authorization 헤더 설정이 필요 없음
+// 요청 인터셉터
+instance.interceptors.request.use(
+  (config) => {
+    const accessToken = getCookie('access_token');    
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
+    } 
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 // 응답 인터셉터
 instance.interceptors.response.use(
@@ -43,8 +52,8 @@ instance.interceptors.response.use(
       config._retry = true;
       
       try {
-        await instance.post('/auth/token/reissue');
-        // 서버가 Set-Cookie 헤더로 새 토큰을 보내면 브라우저가 자동으로 쿠키를 저장
+        // await instance.post('/auth/token/reissue');
+        // reissue api 배포 전(주석 제거하면 에러남)
         return instance(originalRequest);
       } catch (refreshError) {
         console.error('토큰 리프레시 실패', refreshError);
@@ -57,5 +66,3 @@ instance.interceptors.response.use(
 );
 
 export default instance;
-
-
