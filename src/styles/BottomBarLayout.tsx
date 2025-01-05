@@ -26,6 +26,7 @@ const Layout = ({ children }: LayoutProps) => {
     "/signup",
     "/newway",
     "/usingtrail",
+    "/"
   ];
   const showBottomNav: boolean = !hideBottomNavPaths.includes(
     location.pathname
