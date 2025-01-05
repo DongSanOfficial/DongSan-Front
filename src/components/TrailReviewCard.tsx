@@ -43,26 +43,30 @@ const TrailReviewCard: React.FC<ReviewCardProps> = ({
   date,
   content,
   rating,
-}) => (
-  <ReviewItems>
-    <ReviewTitle>
-      <TrailName>| {trailName}</TrailName>
-      <div
-        style={{
-          fontSize: "12px",
-          fontFamily: "Pretendard",
-          fontWeight: "600",
-        }}
-      >
-        {date}
-      </div>
-    </ReviewTitle>
-    <ReviewStars>
-      {Array.from({ length: rating }).map((_, index) => (
-        <FaStar key={index} />
-      ))}
-    </ReviewStars>
-    <ReviewContents>{content}</ReviewContents>
-  </ReviewItems>
-);
+}) => {
+  const formattedDate = new Date(date).toLocaleDateString("ko-KR");
+
+  return (
+    <ReviewItems>
+      <ReviewTitle>
+        <TrailName>| {trailName}</TrailName>
+        <div
+          style={{
+            fontSize: "12px",
+            fontFamily: "Pretendard",
+            fontWeight: "600",
+          }}
+        >
+          {formattedDate}
+        </div>
+      </ReviewTitle>
+      <ReviewStars>
+        {Array.from({ length: rating }).map((_, index) => (
+          <FaStar key={index} />
+        ))}
+      </ReviewStars>
+      <ReviewContents>{content}</ReviewContents>
+    </ReviewItems>
+  );
+};
 export default TrailReviewCard;
