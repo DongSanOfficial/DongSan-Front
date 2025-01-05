@@ -10,10 +10,16 @@ import ReviewPage from "../pages/review/index";
 import Usingtrail from "../pages/usingtrail";
 import DetailUsing from "../pages/usingtrail/detail_using";
 import TrailReviewPage from "../pages/mypage/TrailReviewPage";
+import NavigationPage from "../pages";
 
 export const routes = [
   {
     path: "/",
+    component: NavigationPage,
+    headerOptions: { headerShown: false },
+  },
+  {
+    path: "/main",
     component: Main,
     headerOptions: { headerShown: false },
   },
