@@ -1,31 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import TrailReviewCard from "../../components/TrailReviewCard";
-
-interface Review {
-  id: number;
-  trailName: string;
-  date: string;
-  content: string;
-  rating: number;
-}
-
-const reviews: Review[] = [
-  {
-    id: 1,
-    trailName: "산책로1",
-    date: "2024.09.25",
-    content: "산책로가 이뻐요 8시쯤 가세요 근데 벌레 개많음 ㅜ",
-    rating: 3,
-  },
-  {
-    id: 2,
-    trailName: "산책로2",
-    date: "2024.09.26",
-    content: "경치 좋고 산책하기 좋아요, 하지만 조심하세요.",
-    rating: 4,
-  },
-];
+import { UserReviewsType } from "src/apis/review.type";
+import { getUserReviews } from "src/apis/review";
 
 const Wrapper = styled.div`
   display: flex;
@@ -40,15 +17,42 @@ const List = styled.div`
   gap: 16px;
   padding: 15px;
 `;
-
+const Message = styled.div`
+  font-size: 16px;
+  color: #888;
+`;
 function TrailReviewPage() {
+  const [reviews, setReviews] = useState<UserReviewsType[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUserReviews = async () => {
+      try {
+        setLoading(true);
+        const response = await getUserReviews();
+        console.log(response);
+        setReviews(response.reviews);
+        setError(null);
+      } catch (error) {
+        setError("리뷰를 가져오는 중 문제가 발생했습니다.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUserReviews();
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
+
   return (
     <Wrapper>
       <List>
         {reviews.map((review) => (
           <TrailReviewCard
-            key={review.id}
-            trailName={review.trailName}
+            key={review.reviewId}
+            trailName={review.walkwayName}
             date={review.date}
             content={review.content}
             rating={review.rating}
