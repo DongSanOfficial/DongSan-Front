@@ -12,7 +12,7 @@ import { IoMdHeartEmpty, IoMdHeart } from "react-icons/io";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { theme } from "src/styles/colors/theme";
-import { clickLiked } from "src/apis/likedWalkway";
+import { toggleLike } from "src/apis/likedWalkway";
 
 const Wrapper = styled.div`
   display: flex;
@@ -173,7 +173,7 @@ export default function DetailUsing() {
   const toggleHeart = async (): Promise<void> => {
     if (!walkwayId) return;
     try {
-      const result = await clickLiked({ walkwayId });
+      const result = await toggleLike({ walkwayId, isLiked: isHeartActive });
       console.log("Like toggled successfully:", result);
       setIsHeartActive(!isHeartActive);
       setHeartCount((prev) => (isHeartActive ? prev - 1 : prev + 1));
@@ -189,7 +189,7 @@ export default function DetailUsing() {
     navigate("/reviews");
   };
   const writeReview = (): void => {
-    navigate("/review");
+    navigate(`/review/${walkwayId}`);
   };
   return (
     <Wrapper>

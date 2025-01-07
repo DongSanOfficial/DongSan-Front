@@ -2,15 +2,23 @@ import { ApiResponseFormat } from "./api.type";
 import instance from "./instance";
 import { likedWalkwayType } from "./likedWalkway.type";
 
-export const clickLiked = async ({
+export const toggleLike = async ({
   walkwayId,
-}: likedWalkwayType): Promise<{}> => {
+  isLiked,
+}: likedWalkwayType & {
+  isLiked: boolean;
+}): Promise<{}> => {
   try {
-    const response = await instance.post<ApiResponseFormat<{}>>(
-      `/walkways/${walkwayId}/likes`
-    );
+    const response = isLiked //하트에 따라 처리
+      ? await instance.delete<ApiResponseFormat<{}>>( //산책로 좋아요 취소 api
+          `/walkways/${walkwayId}/likes`
+        )
+      : await instance.post<ApiResponseFormat<{}>>( //산책로 좋아요 선택 api
+          `/walkways/${walkwayId}/likes`
+        );
     return response;
   } catch (error) {
+    console.error("Failed to toggle like:", error);
     throw error;
   }
 };
