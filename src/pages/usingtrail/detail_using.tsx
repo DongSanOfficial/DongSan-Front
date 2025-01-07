@@ -10,8 +10,9 @@ import {
 } from "react-icons/md";
 import { IoMdHeartEmpty, IoMdHeart } from "react-icons/io";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { theme } from "src/styles/colors/theme";
+import { clickLiked } from "src/apis/likedWalkway";
 
 const Wrapper = styled.div`
   display: flex;
@@ -161,16 +162,24 @@ const Button = styled.button`
 
 export default function DetailUsing() {
   const navigate = useNavigate();
+  const { walkwayId } = useParams();
   const [heartCount, setHeartCount] = useState<number>(0);
   const [starCount, setStarCount] = useState<number>(0);
   const [reviewCount, setReviewCount] = useState<number>(0);
   const [isHeartActive, setIsHeartActive] = useState<boolean>(false);
   const [isStarActive, setIsStarActive] = useState<boolean>(false);
-  const [hashtags, setHashtgs] = useState<String[]>(["청계천", "호수"]);
+  const [hashtags, setHashtags] = useState<String[]>(["청계천", "호수"]);
 
-  const toggleHeart = (): void => {
-    setIsHeartActive(!isHeartActive);
-    setHeartCount((prev) => (isHeartActive ? prev - 1 : prev + 1));
+  const toggleHeart = async (): Promise<void> => {
+    if (!walkwayId) return;
+    try {
+      const result = await clickLiked({ walkwayId });
+      console.log("Like toggled successfully:", result);
+      setIsHeartActive(!isHeartActive);
+      setHeartCount((prev) => (isHeartActive ? prev - 1 : prev + 1));
+    } catch (error) {
+      console.log("Failed to update likes: ", error);
+    }
   };
   const toggleStar = (): void => {
     setIsStarActive(!isStarActive);

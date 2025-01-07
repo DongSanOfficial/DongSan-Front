@@ -75,7 +75,7 @@ export const routes = [
     headerOptions: { title: "산책로 이용하기", showBackButton: true },
   },
   {
-    path: "/usingtrail/detail",
+    path: "/usingtrail/detail/:walkwayId",
     component: DetailUsing,
     headerOptions: { title: "산책로", showBackButton: true },
   },
