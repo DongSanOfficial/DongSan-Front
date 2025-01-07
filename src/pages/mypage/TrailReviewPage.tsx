@@ -17,10 +17,6 @@ const List = styled.div`
   gap: 16px;
   padding: 15px;
 `;
-const Message = styled.div`
-  font-size: 16px;
-  color: #888;
-`;
 function TrailReviewPage() {
   const [reviews, setReviews] = useState<UserReviewsType[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
