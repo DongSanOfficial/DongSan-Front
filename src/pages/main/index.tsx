@@ -5,7 +5,6 @@ import BottomSheetHeader from "./header/BottomSheetHeader";
 import PathCard from "./components/PathCard";
 import styled from "styled-components";
 
-
 interface PathData {
   walkwayId: number;
   courseImageUrl: string;
@@ -100,7 +99,8 @@ const mockPathData: PathData[] = [
 ];
 
 function Main() {
-  const [isOpen, setIsOpen] = useState(false);
+  //바텀시트가 초기부터 열려있는 상태
+  const [isOpen, setIsOpen] = useState(true);
   const [likedPaths, setLikedPaths] = useState<{ [key: number]: boolean }>(
     Object.fromEntries(
       mockPathData.map((path) => [path.walkwayId, path.isLike])
@@ -127,6 +127,7 @@ function Main() {
   };
 
   const handlePathClick = (location: [number, number]) => {
+    setIsOpen(false); // PathCard를 터치하면 위치 이동 전에 바텀시트가 내려가도록
     setSelectedLocation(location);
   };
 
@@ -141,8 +142,8 @@ function Main() {
       />
       <BottomSheet
         isOpen={isOpen}
-        height="85vh"
-        initialHeight="30vh"
+        maxHeight="85vh"
+        minHeight="30vh"
         onClose={() => setIsOpen(false)}
         onOpen={() => setIsOpen(true)}
       >
