@@ -11,6 +11,7 @@ import Usingtrail from "../pages/usingtrail";
 import DetailUsing from "../pages/usingtrail/detail_using";
 import TrailReviewPage from "../pages/mypage/TrailReviewPage";
 import NavigationPage from "../pages";
+import ReviewCheck from "../pages/review/ReviewCheck";
 
 export const routes = [
   {
@@ -35,7 +36,7 @@ export const routes = [
   },
   {
     path: "/mypage/TrailLikeList",
-    component: TrailReviewPage,
+    component: TrailLikeListPage,
     headerOptions: { showBackButton: true },
   },
   {
@@ -63,6 +64,11 @@ export const routes = [
     path: "/mypage/myregister",
     component: MyRegister,
     headerOptions: { title: "내 산책로", showBackButton: true },
+  },
+  {
+    path: "/review/:walkwayId/content",
+    component: ReviewCheck,
+    headerOptions: { title: "산책로 리뷰", showBackButton: true },
   },
   {
     path: "/review/:walkwayId",
