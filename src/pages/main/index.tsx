@@ -1,23 +1,9 @@
+import React, { useState } from 'react';
 import { MainMap } from "../../components/map/MainMap";
-import { useState } from "react";
 import { BottomSheet } from "../../components/bottomsheet/BottomSheet";
 import BottomSheetHeader from "./header/BottomSheetHeader";
 import PathCard from "./components/PathCard";
 import styled from "styled-components";
-
-interface PathData {
-  walkwayId: number;
-  courseImageUrl: string;
-  name: string;
-  registerDate: string;
-  hashtags: string[];
-  distance: number;
-  likeCount: number;
-  isLike: boolean;
-  rating: number;
-  reviewCount: number;
-  location: [number, number];
-}
 
 const BottomSheetContainer = styled.div`
   position: relative;
@@ -42,6 +28,20 @@ const PathCardList = styled.div`
   overflow-y: auto;
   flex: 1;
 `;
+
+interface PathData {
+  walkwayId: number;
+  courseImageUrl: string;
+  name: string;
+  registerDate: string;
+  hashtags: string[];
+  distance: number;
+  likeCount: number;
+  isLike: boolean;
+  rating: number;
+  reviewCount: number;
+  location: [number, number];
+}
 
 const mockPathData: PathData[] = [
   {
@@ -101,6 +101,10 @@ const mockPathData: PathData[] = [
 function Main() {
   //바텀시트가 초기부터 열려있는 상태
   const [isOpen, setIsOpen] = useState(true);
+  const [selectedPath, setSelectedPath] = useState<{
+    location: [number, number];
+    name: string;
+  } | null>(null);
   const [likedPaths, setLikedPaths] = useState<{ [key: number]: boolean }>(
     Object.fromEntries(
       mockPathData.map((path) => [path.walkwayId, path.isLike])
@@ -111,9 +115,6 @@ function Main() {
       mockPathData.map((path) => [path.walkwayId, path.likeCount])
     )
   );
-  const [selectedLocation, setSelectedLocation] = useState<
-    [number, number] | undefined
-  >(undefined);
 
   const handleLikeClick = (id: number) => {
     setLikedPaths((prev) => ({
@@ -126,19 +127,20 @@ function Main() {
     }));
   };
 
-  const handlePathClick = (location: [number, number]) => {
+  const handlePathClick = (location: [number, number], name: string) => {
+    setSelectedPath({ location, name });
     setIsOpen(false); // PathCard를 터치하면 위치 이동 전에 바텀시트가 내려가도록
-    setSelectedLocation(location);
   };
 
   return (
     <>
       <MainMap
         center={
-          selectedLocation
-            ? { lat: selectedLocation[1], lng: selectedLocation[0] }
+          selectedPath
+            ? { lat: selectedPath.location[1], lng: selectedPath.location[0] }
             : undefined
         }
+        pathName={selectedPath?.name}
       />
       <BottomSheet
         isOpen={isOpen}
@@ -165,7 +167,7 @@ function Main() {
                 reviewCount={path.reviewCount}
                 isLiked={likedPaths[path.walkwayId]}
                 onLikeClick={() => handleLikeClick(path.walkwayId)}
-                onClick={() => handlePathClick(path.location)}
+                onClick={() => handlePathClick(path.location, path.name)}
               />
             ))}
           </PathCardList>

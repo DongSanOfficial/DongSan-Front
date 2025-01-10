@@ -1,4 +1,4 @@
-import { Map, MapMarker } from "react-kakao-maps-sdk";
+import { Map, MapMarker, CustomOverlayMap } from "react-kakao-maps-sdk";
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
@@ -6,7 +6,6 @@ import { theme } from "../../styles/colors/theme";
 import { ReactComponent as LocationIcon } from "../../assets/svg/LocationIcon.svg";
 import CurrentLocationMarker from "../../assets/svg/RegisteredLocation.svg";
 import SelectedLocationMarker from "../../assets/svg/UserLocation.svg";
-
 const MapContainer = styled.div`
     width: 100%;
     height: 100vh;
@@ -62,14 +61,19 @@ const StyledLocationIcon = styled(LocationIcon)`
     height: 24px;
     fill: ${props => props.theme.Gray700};
 `;
-
-
-const MarkerWrapper = styled.div<{ $isClickable?: boolean }>`
-    cursor: ${props => props.$isClickable ? 'pointer' : 'default'};
-
-    svg {
-        transform: translate(-50%, -100%);
-    }
+const MarkerTitle = styled.div`
+    background: ${props => props.theme.White};
+    padding: 5px 10px;
+    border-radius: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 8px;
+    font-size: 10px;
+    font-weight: 300;
+    cursor: pointer;
+    white-space: nowrap;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 `;
 
 interface Location {
@@ -80,11 +84,13 @@ interface Location {
 interface BasicMapProps {
     center?: Location;
     onCenterChange?: (location: Location) => void;
+    pathName?: string;
 }
 
 export const MainMap = ({ 
     center,
-    onCenterChange 
+    onCenterChange,
+    pathName
 }: BasicMapProps) => {
     const navigate = useNavigate();
     const [mapCenter, setMapCenter] = useState<Location>(
@@ -140,7 +146,6 @@ export const MainMap = ({
     const handleMarkerClick = () => {
         navigate("/mypage/myregister");
     };
-
     return (
         <MapContainer>
             <MapWrapper>
@@ -164,25 +169,43 @@ export const MainMap = ({
                             image={{
                                 src: CurrentLocationMarker,
                                 size: {
-                                    width: 40,
-                                    height: 40
+                                    width: 30,
+                                    height: 30
+                                },
+                                options: {
+                                    offset: {
+                                        x: 20,
+                                        y: 40
+                                    }
                                 }
                             }}
                         />
                     )}
                     
                     {center && (
-                        <MapMarker 
-                            position={center}
-                            onClick={handleMarkerClick}
-                            image={{
-                                src: SelectedLocationMarker,
-                                size: {
-                                    width: 40,
-                                    height: 40
-                                }
-                            }}
-                        />
+                        <>
+                            <MapMarker 
+                                position={center}
+                                onClick={handleMarkerClick}
+                                image={{
+                                    src: SelectedLocationMarker,
+                                    size: {
+                                        width: 30,
+                                        height: 30
+                                    }
+                                }}
+                            />
+                            {pathName && (
+                                <CustomOverlayMap
+                                    position={center}
+                                    yAnchor={2}
+                                >
+                                    <MarkerTitle onClick={handleMarkerClick}>
+                                        {pathName}
+                                    </MarkerTitle>
+                                </CustomOverlayMap>
+                            )}
+                        </>
                     )}
                 </Map>
             </MapWrapper>
