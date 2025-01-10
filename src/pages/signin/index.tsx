@@ -8,6 +8,43 @@ import { ReactComponent as GoogleLogo } from "../../assets/svg/loginGoogle.svg";
 
 const API_BASE_URL = process.env.REACT_APP_BASE_URL;
 
+export default function SignIn() {
+  const location = useLocation();
+
+  useEffect(() => {
+    const query = new URLSearchParams(location.search);
+    const accessToken = query.get("access_token");
+
+    if (accessToken) {
+      localStorage.setItem("accessToken", accessToken);
+    }
+  }, [location]);
+
+  return (
+    <Container>
+      <Content>
+        <MainLogo />
+        <ButtonContainer>
+          <LoginButton
+            isKakao={true}
+            to={`${API_BASE_URL}/oauth2/authorization/kakao`}
+          >
+            <StyledKakaoIcon />
+            카카오 로그인
+          </LoginButton>
+          <LoginButton
+            isKakao={false}
+            to={`${API_BASE_URL}/oauth2/authorization/google`}
+          >
+            <StyledGoogleIcon />
+            구글 로그인
+          </LoginButton>
+        </ButtonContainer>
+      </Content>
+    </Container>
+  );
+}
+
 const Container = styled.div`
   display: flex;
   height: 80vh;
@@ -58,40 +95,3 @@ const StyledGoogleIcon = styled(GoogleLogo)`
   width: 20px;
   height: 20px;
 `;
-
-export default function SignIn() {
-  const location = useLocation();
-
-  useEffect(() => {
-    const query = new URLSearchParams(location.search);
-    const accessToken = query.get("access_token");
-
-    if (accessToken) {
-      localStorage.setItem("accessToken", accessToken);
-    }
-  }, [location]);
-
-  return (
-    <Container>
-      <Content>
-        <MainLogo />
-        <ButtonContainer>
-          <LoginButton
-            isKakao={true}
-            to={`${API_BASE_URL}/oauth2/authorization/kakao`}
-          >
-            <StyledKakaoIcon />
-            카카오 로그인
-          </LoginButton>
-          <LoginButton
-            isKakao={false}
-            to={`${API_BASE_URL}/oauth2/authorization/google`}
-          >
-            <StyledGoogleIcon />
-            구글 로그인
-          </LoginButton>
-        </ButtonContainer>
-      </Content>
-    </Container>
-  );
-}

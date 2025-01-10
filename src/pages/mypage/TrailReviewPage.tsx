@@ -46,13 +46,16 @@ function TrailReviewPage() {
     <Wrapper>
       <List>
         {reviews.map((review) => (
-          <TrailReviewCard
-            key={review.reviewId}
-            trailName={review.walkwayName}
-            date={review.date}
-            content={review.content}
-            rating={review.rating}
-          />
+          <div>
+            <TrailReviewCard
+              key={review.reviewId}
+              trailName={review.walkwayName}
+              date={review.date}
+              content={review.content}
+              rating={review.rating}
+            />
+            <hr />
+          </div>
         ))}
       </List>
     </Wrapper>

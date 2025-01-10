@@ -186,7 +186,7 @@ export default function DetailUsing() {
     setStarCount((prev) => (isStarActive ? prev - 1 : prev + 1));
   };
   const goToReviews = (): void => {
-    navigate("/reviews");
+    navigate(`/review/${walkwayId}/content`);
   };
   const writeReview = (): void => {
     navigate(`/review/${walkwayId}`);

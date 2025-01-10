@@ -12,7 +12,7 @@ const ReviewItems = styled.div`
   width: 350px;
   height: 142px;
   background: #ffffff;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+  // box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
   border-radius: 20px;
   margin-left: 7px;
   color: #054630;
