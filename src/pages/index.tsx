@@ -38,7 +38,10 @@ const NavigationPage = () => {
     },
     {
       title: "리뷰",
-      routes: [{ route: "/review/:walkwayId", name: "리뷰 작성하기" }],
+      routes: [
+        { route: "/review/:walkwayId", name: "리뷰 작성하기" },
+        { route: "/review/:walkwayId/content", name: "산책로 리뷰보기" },
+      ],
     },
     {
       title: "산책로 이용",

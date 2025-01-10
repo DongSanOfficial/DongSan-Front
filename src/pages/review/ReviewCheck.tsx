@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import TrailReviewCard from "../../components/TrailReviewCard";
-import { getUserReviews } from "src/apis/review";
-import { UserReviewsType } from "@/apis/review.type";
+import { getUserReviews, showReviewRating } from "src/apis/review";
+import { ReviewRatingType, UserReviewsType } from "src/apis/review.type";
+import { useParams } from "react-router-dom";
 
 // Styled components
 const Wrapper = styled.div`
@@ -94,28 +95,29 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ percent }) => (
   </BarContainer>
 );
 
-interface ReviewCheckProps {
-  rating?: number;
-  totalReviews?: number;
-  ratingsBreakdown?: number[];
-}
-
 // Main component
-const ReviewCheck: React.FC<ReviewCheckProps> = ({
-  rating = 4.8,
-  totalReviews = 135,
-  ratingsBreakdown = [90, 5, 3, 1, 1],
-}) => {
+const ReviewCheck: React.FC = () => {
+  const { walkwayId } = useParams<{ walkwayId: string }>();
   const [reviews, setReviews] = useState<UserReviewsType[]>([]);
+  const [reviewStats, setReviewStats] = useState<ReviewRatingType | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchReviews = async () => {
+      if (!walkwayId) {
+        setError("산책로 ID가 없습니다.");
+        setLoading(false);
+        return;
+      }
       try {
         setLoading(true);
-        const response = await getUserReviews();
-        setReviews(response.reviews);
+        const [reviewResponse, reviewStatsResponse] = await Promise.all([
+          getUserReviews(),
+          showReviewRating(walkwayId),
+        ]);
+        setReviews(reviewResponse.reviews);
+        setReviewStats(reviewStatsResponse);
         setError(null);
       } catch (err) {
         console.error(err);
@@ -126,26 +128,32 @@ const ReviewCheck: React.FC<ReviewCheckProps> = ({
     };
 
     fetchReviews();
-  }, []);
+  }, [walkwayId]);
 
   const stars = Array.from({ length: 5 }, (_, index) => (
-    <Star key={index} filled={index < Math.floor(rating)} />
+    <Star key={index} filled={index < Math.floor(reviewStats?.rating ?? 0)} />
   ));
-
+  const ratingData = [
+    { label: 5, percent: reviewStats?.five ?? 0 },
+    { label: 4, percent: reviewStats?.four ?? 0 },
+    { label: 3, percent: reviewStats?.three ?? 0 },
+    { label: 2, percent: reviewStats?.two ?? 0 },
+    { label: 1, percent: reviewStats?.one ?? 0 },
+  ];
   return (
     <Wrapper>
       <RatingsContainer>
         <RatingLeft>
-          <StarLength>{rating.toFixed(1)}</StarLength>
+          <StarLength>{reviewStats?.rating.toFixed(1)}</StarLength>
           <StarContainer>{stars}</StarContainer>
-          <span>{`후기 ${totalReviews}개`}</span>
+          <span>{`후기 ${reviewStats?.reviewCount}개`}</span>
         </RatingLeft>
         <RatingRight>
-          {ratingsBreakdown.map((percent, index) => (
-            <RatingBreakdown key={index}>
-              <Label>{5 - index}</Label>
-              <ProgressBar percent={percent} />
-              <Label>{`${percent}%`}</Label>
+          {ratingData.map((data) => (
+            <RatingBreakdown key={data.label}>
+              <Label>{data.label}</Label>
+              <ProgressBar percent={data.percent} />
+              <Label>{`${data.percent}%`}</Label>
             </RatingBreakdown>
           ))}
         </RatingRight>

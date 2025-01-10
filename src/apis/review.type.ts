@@ -7,3 +7,14 @@ export interface UserReviewsType {
   rating: number;
   content: string;
 }
+
+export interface ReviewRatingType {
+  //산책로 리뷰 별점보기
+  rating: number;
+  reviewCount: number;
+  five: number;
+  four: number;
+  three: number;
+  two: number;
+  one: number;
+}
