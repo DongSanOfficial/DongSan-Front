@@ -77,7 +77,7 @@ const StyledHeart = styled(HeartIcon)<{ $isActive: boolean }>`
 const StyledStar = styled(StarIcon)`
   width: 22px;
   height: 22px;
-  fill: ${(props) => props.theme.Green500};
+  fill: ${theme.Green500};
   cursor: pointer;
   transition: fill 0.2s ease;
 `;

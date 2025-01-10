@@ -1,6 +1,11 @@
 import { Map, MapMarker } from "react-kakao-maps-sdk";
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
+import { theme } from "../../styles/colors/theme";
+import { ReactComponent as LocationIcon } from "../../assets/svg/LocationIcon.svg";
+import CurrentLocationMarker from "../../assets/svg/RegisteredLocation.svg";
+import SelectedLocationMarker from "../../assets/svg/UserLocation.svg";
 
 const MapContainer = styled.div`
     width: 100%;
@@ -27,6 +32,46 @@ const MapWrapper = styled.div`
     left: 0;
 `;
 
+const LocationButton = styled.button`
+    position: absolute;
+    bottom: 32vh;
+    left: 16px;
+    width: 40px;
+    height: 40px;
+    background-color: ${theme.White};
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1;
+
+    &:hover {
+        background-color: #f8f8f8;
+    }
+
+    &:active {
+        background-color: #f0f0f0;
+    }
+`;
+
+const StyledLocationIcon = styled(LocationIcon)`
+    width: 24px;
+    height: 24px;
+    fill: ${props => props.theme.Gray700};
+`;
+
+
+const MarkerWrapper = styled.div<{ $isClickable?: boolean }>`
+    cursor: ${props => props.$isClickable ? 'pointer' : 'default'};
+
+    svg {
+        transform: translate(-50%, -100%);
+    }
+`;
+
 interface Location {
     lat: number;
     lng: number;
@@ -41,13 +86,17 @@ export const MainMap = ({
     center,
     onCenterChange 
 }: BasicMapProps) => {
+    const navigate = useNavigate();
     const [mapCenter, setMapCenter] = useState<Location>(
         center || { lat: 37.5665, lng: 126.9780 }
     );
     const [userLocation, setUserLocation] = useState<Location | null>(null);
 
-    useEffect(() => {
-        if (!navigator.geolocation) return;
+    const updateUserLocation = () => {
+        if (!navigator.geolocation) {
+            alert("위치 정보가 지원되지 않는 브라우저입니다.");
+            return;
+        }
 
         navigator.geolocation.getCurrentPosition(
             (position) => {
@@ -56,16 +105,19 @@ export const MainMap = ({
                     lng: position.coords.longitude
                 };
                 setUserLocation(newLocation);
-                if (!center) {
-                    setMapCenter(newLocation);
-                    onCenterChange?.(newLocation);
-                }
+                setMapCenter(newLocation);
+                onCenterChange?.(newLocation);
             },
             (error) => {
                 console.error("Error getting user location:", error);
+                alert("위치 정보를 가져올 수 없습니다.");
             }
         );
-    }, [center, onCenterChange]);
+    };
+
+    useEffect(() => {
+        updateUserLocation();
+    }, []);
 
     useEffect(() => {
         const setVh = () => {
@@ -79,12 +131,15 @@ export const MainMap = ({
         return () => window.removeEventListener('resize', setVh);
     }, []);
 
-    // center prop이 변경되면 지도 중심 업데이트
     useEffect(() => {
         if (center) {
             setMapCenter(center);
         }
     }, [center]);
+
+    const handleMarkerClick = () => {
+        navigate("/mypage/myregister");
+    };
 
     return (
         <MapContainer>
@@ -103,9 +158,37 @@ export const MainMap = ({
                         onCenterChange?.(newCenter);
                     }}
                 >
-                    {userLocation && <MapMarker position={userLocation} />}
+                    {userLocation && (
+                        <MapMarker 
+                            position={userLocation}
+                            image={{
+                                src: CurrentLocationMarker,
+                                size: {
+                                    width: 40,
+                                    height: 40
+                                }
+                            }}
+                        />
+                    )}
+                    
+                    {center && (
+                        <MapMarker 
+                            position={center}
+                            onClick={handleMarkerClick}
+                            image={{
+                                src: SelectedLocationMarker,
+                                size: {
+                                    width: 40,
+                                    height: 40
+                                }
+                            }}
+                        />
+                    )}
                 </Map>
             </MapWrapper>
+            <LocationButton onClick={updateUserLocation} aria-label="현재 위치로 이동">
+                <StyledLocationIcon />
+            </LocationButton>
         </MapContainer>
     );
 };
