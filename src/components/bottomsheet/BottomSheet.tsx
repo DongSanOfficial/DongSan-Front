@@ -6,21 +6,34 @@ interface BottomSheetProps {
     onClose: () => void;
     onOpen: () => void;
     children: React.ReactNode;
-    height?: string;
-    initialHeight?: string;
+    maxHeight?: string;
+    minHeight?: string;
 }
+
+const Overlay = styled.div<{ $isOpen: boolean }>`
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+    opacity: ${props => props.$isOpen ? 1 : 0};
+    visibility: ${props => props.$isOpen ? 'visible' : 'hidden'};
+    transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
+    z-index: 9;
+`;
 
 const SheetContainer = styled.div<{
     $isOpen: boolean;
-    $height: string;
-    $initialHeight: string;
+    $maxHeight: string;
+    $minHeight: string;
     $translateY: number;
 }>`
     position: fixed;
     left: 0;
     right: 0;
     bottom: 0;
-    height: ${props => props.$height};
+    height: ${props => props.$maxHeight};
     max-width: 430px;
     margin: 0 auto;
     background-color: white;
@@ -31,7 +44,7 @@ const SheetContainer = styled.div<{
     transform: translateY(${props => 
         props.$isOpen 
             ? `${props.$translateY}px`
-            : `calc(100% - ${props.$initialHeight} - ${props.$translateY}px)`
+            : `calc(100% - ${props.$minHeight})`
     });
     z-index: 10;
     touch-action: none;
@@ -68,8 +81,8 @@ export const BottomSheet = ({
     onClose, 
     onOpen, 
     children, 
-    height = "85vh",
-    initialHeight = "30vh"
+    maxHeight = "85vh",
+    minHeight = "0vh"
 }: BottomSheetProps ) => {
     const [translateY, setTranslateY] = useState(0);
     const [startY, setStartY] = useState(0);
@@ -90,9 +103,9 @@ export const BottomSheet = ({
 
         const currentY = e.touches[0].clientY;
         const diff = currentY - startY;
-        const maxHeight = getHeight(height.replace('vh', ''));
-        const minHeight = getHeight(initialHeight.replace('vh', ''));
-        const maxTranslate = maxHeight - minHeight;
+        const maxSheetHeight = getHeight(maxHeight.replace('vh', ''));
+        const minSheetHeight = getHeight(minHeight.replace('vh', ''));
+        const maxTranslate = maxSheetHeight - minSheetHeight;
 
         if (isOpen) {
             if (diff >= 0 && diff <= maxTranslate) {
@@ -103,13 +116,13 @@ export const BottomSheet = ({
                 setTranslateY(Math.abs(diff));
             }
         }
-    }, [height, initialHeight, isDragging, startY, isOpen]);
+    }, [maxHeight, minHeight, isDragging, startY, isOpen]);
 
     const handleTouchEnd = useCallback(() => {
         setIsDragging(false);
-        const maxHeight = getHeight(height.replace('vh', ''));
-        const minHeight = getHeight(initialHeight.replace('vh', ''));
-        const maxTranslate = maxHeight - minHeight;
+        const maxSheetHeight = getHeight(maxHeight.replace('vh', ''));
+        const minSheetHeight = getHeight(minHeight.replace('vh', ''));
+        const maxTranslate = maxSheetHeight - minSheetHeight;
         const threshold = maxTranslate / 2;
 
         if (isOpen) {
@@ -125,30 +138,39 @@ export const BottomSheet = ({
                 setTranslateY(0);
             }
         }
-    }, [translateY, height, initialHeight, isOpen, onClose, onOpen]);
+    }, [translateY, maxHeight, minHeight, isOpen, onClose, onOpen]);
+
+    const handleOverlayClick = useCallback((e: React.MouseEvent) => {
+        if (e.target === e.currentTarget) {
+            onClose();
+        }
+    }, [onClose]);
 
     useEffect(() => {
         setTranslateY(0);
     }, [isOpen]);
 
     return (
-        <SheetContainer
-            ref={sheetRef}
-            $isOpen={isOpen}
-            $height={height}
-            $initialHeight={initialHeight}
-            $translateY={translateY}
-        >
-            <DraggableArea
-                onTouchStart={handleTouchStart}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleTouchEnd}
+        <>
+            <Overlay $isOpen={isOpen} onClick={handleOverlayClick} />
+            <SheetContainer
+                ref={sheetRef}
+                $isOpen={isOpen}
+                $maxHeight={maxHeight}
+                $minHeight={minHeight}
+                $translateY={translateY}
             >
-                <Handle />
-            </DraggableArea>
-            <Content>
-                {children}
-            </Content>
-        </SheetContainer>
+                <DraggableArea
+                    onTouchStart={handleTouchStart}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
+                >
+                    <Handle />
+                </DraggableArea>
+                <Content>
+                    {children}
+                </Content>
+            </SheetContainer>
+        </>
     );
 };

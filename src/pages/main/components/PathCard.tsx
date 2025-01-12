@@ -3,7 +3,8 @@ import { ReactComponent as HeartIcon } from "../../../assets/svg/Heart.svg";
 import { ReactComponent as StarIcon } from "../../../assets/svg/Star.svg";
 import { ReactComponent as RightArrowIcon } from "../../../assets/svg/RightArrow.svg";
 import { theme } from "../../../styles/colors/theme";
- 
+import { useNavigate } from "react-router-dom";
+
 const Layout = styled.div`
   width: calc(100% - 10px);
   padding: 17px 19px 12px 19px;
@@ -39,13 +40,13 @@ const TextWrapper = styled.div`
   justify-content: space-between;
   width: 100%;
 
-  span:first-child {  
+  span:first-child {
     font-size: 13px;
     font-weight: bold;
-    color: ${props => props.theme.Green500};
+    color: ${(props) => props.theme.Green500};
   }
 
-  span:last-child {   
+  span:last-child {
     font-size: 12px;
     font-weight: 500;
   }
@@ -67,7 +68,8 @@ const ReactionContainer = styled.div`
 const StyledHeart = styled(HeartIcon)<{ $isActive: boolean }>`
   width: 18px;
   height: 18px;
-  fill: ${props => props.$isActive ? props.theme.Green500 : props.theme.Gray200};
+  fill: ${(props) =>
+    props.$isActive ? props.theme.Green500 : props.theme.Gray200};
   cursor: pointer;
   transition: fill 0.2s ease;
 `;
@@ -75,7 +77,7 @@ const StyledHeart = styled(HeartIcon)<{ $isActive: boolean }>`
 const StyledStar = styled(StarIcon)`
   width: 22px;
   height: 22px;
-  fill: ${props => props.theme.Green500};
+  fill: ${theme.Green500};
   cursor: pointer;
   transition: fill 0.2s ease;
 `;
@@ -89,10 +91,10 @@ const StyledArrow = styled(RightArrowIcon)`
 const ReactionItem = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center; 
+  justify-content: center;
   gap: 3px;
   height: 24px;
-  line-height: 1; 
+  line-height: 1;
   font-size: 12px;
 `;
 
@@ -100,8 +102,22 @@ const Distance = styled.span`
   font-size: 40px;
   font-family: "Lalezar";
   display: flex;
-  line-height: 1; 
+  line-height: 1;
   letter-spacing: -0.05em;
+`;
+
+const Detail = styled.div`
+  width: 40px;
+  height: 20px;
+  color: ${theme.White};
+  background-color: ${theme.Green300};
+  border-radius: 30px;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 interface PathCardProps {
@@ -109,7 +125,7 @@ interface PathCardProps {
   pathname: string;
   registeredDate: string;
   hashtag: string;
-  distance: string;  
+  distance: string;
   likeCount: number;
   starCount: number;
   reviewCount: number;
@@ -119,24 +135,30 @@ interface PathCardProps {
 }
 
 function PathCard({
-  pathimage, 
-  pathname, 
-  registeredDate, 
-  hashtag, 
-  distance, 
-  likeCount, 
-  starCount, 
+  pathimage,
+  pathname,
+  registeredDate,
+  hashtag,
+  distance,
+  likeCount,
+  starCount,
   reviewCount,
   isLiked,
   onLikeClick,
-  onClick 
+  onClick,
 }: PathCardProps) {
+  const navigate = useNavigate();
 
+  
   const handleLikeClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onLikeClick();
   };
 
+  const goDetailPage =()=>{
+    //임시 네비게이션
+    navigate("/mypage/myregister");
+  }
 
   return (
     <Layout onClick={onClick}>
@@ -156,7 +178,7 @@ function PathCard({
           <PathDescription>
             <TextWrapper>
               <span>{pathname}</span>
-              <span>{registeredDate}</span>
+              <Detail onClick={goDetailPage}>자세히</Detail>
             </TextWrapper>
             <span>{hashtag}</span>
           </PathDescription>
@@ -165,16 +187,12 @@ function PathCard({
         <UserReactionsWrapper>
           <ReactionContainer>
             <ReactionItem>
-              <StyledHeart 
-                $isActive={isLiked} 
-                onClick={handleLikeClick}
-              />
+              <StyledHeart $isActive={isLiked} onClick={handleLikeClick} />
               <span>{likeCount}</span>
             </ReactionItem>
 
             <ReactionItem>
-              <StyledStar 
-              />
+              <StyledStar />
               <span>{starCount}</span>
             </ReactionItem>
 
