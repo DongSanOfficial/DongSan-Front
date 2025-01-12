@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import DateDisplay from "src/components/newway_register/DateDisplay";
-import ToggleSwitch from "src/components/newway_register/ToggleSwitch";
 import TrailInfo from "src/components/newway_register/TrailInfo";
 import trail from "src/assets/images/trail.png";
 import {
@@ -11,6 +10,8 @@ import {
 import { IoMdHeartEmpty, IoMdHeart } from "react-icons/io";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { theme } from "src/styles/colors/theme";
+import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
 
 const Wrapper = styled.div`
   display: flex;
@@ -60,9 +61,14 @@ const FieldContent = styled.div`
 const IconWrapper = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-around;
-  width: 150px;
+  justify-content: space-between;
   margin: 10px;
+`;
+const LeftIcon = styled.div`
+  display: flex;
+  align-items: center;
+  width: 150px;
+  gap: 10px;
 `;
 interface IconButtonProps {
   active?: boolean;
@@ -72,6 +78,9 @@ const IconButton = styled.div<IconButtonProps>`
   align-items: center;
   font-size: 12px;
   color: ${(props) => (props.active ? "red" : "black")};
+`;
+const BookmarkButton = styled.div<IconButtonProps>`
+  display: flex;
 `;
 const ReviewCount = styled.div`
   font-size: 12px;
@@ -95,7 +104,7 @@ const Hashtag = styled.div`
   flex-shrink: 0;
 `;
 const Button = styled.button`
-  background-color: #888;
+  background-color: ${theme.Green500};
   color: #ffffff;
   width: 356px;
   height: 52px;
@@ -111,6 +120,7 @@ export default function TrailLiked() {
   const [reviewCount, setReviewCount] = useState<number>(0);
   const [isHeartActive, setIsHeartActive] = useState<boolean>(false);
   const [isStarActive, setIsStarActive] = useState<boolean>(false);
+  const [isBookmarkActive, setIsBookmarkActive] = useState<boolean>(false);
   const [hashtags, setHashtgs] = useState<String[]>(["청계천", "호수"]);
 
   const toggleHeart = (): void => {
@@ -121,6 +131,9 @@ export default function TrailLiked() {
     setIsStarActive(!isStarActive);
     setStarCount((prev) => (isStarActive ? prev - 1 : prev + 1));
   };
+  const toggleBookmark = (): void => {
+    setIsBookmarkActive(!isBookmarkActive);
+  };
   const goToReviews = (): void => {
     navigate("/reviews");
   };
@@ -129,7 +142,6 @@ export default function TrailLiked() {
       <ContentWrapper>
         <Content>
           <DateDisplay />
-          <ToggleSwitch />
         </Content>
         <Title>가을에 걷기 좋은 산책로</Title>
         <TrailInfo duration={"12:00"} distance={53} />
@@ -138,26 +150,31 @@ export default function TrailLiked() {
         <Img src={trail} alt="Trail" />
         <FieldContent>
           <IconWrapper>
-            <IconButton active={isHeartActive} onClick={toggleHeart}>
-              {isHeartActive ? (
-                <IoMdHeart size={20} />
-              ) : (
-                <IoMdHeartEmpty size={20} />
-              )}{" "}
-              {heartCount}
-            </IconButton>
-            <IconButton active={isStarActive} onClick={toggleStar}>
-              {isStarActive ? (
-                <MdOutlineStar size={20} />
-              ) : (
-                <MdOutlineStarBorder size={20} />
-              )}{" "}
-              {starCount}
-            </IconButton>
-            <ReviewCount>리뷰 {reviewCount}개</ReviewCount>
-            <IconButton onClick={goToReviews}>
-              <MdArrowForwardIos />
-            </IconButton>
+            <LeftIcon>
+              <IconButton active={isHeartActive} onClick={toggleHeart}>
+                {isHeartActive ? (
+                  <IoMdHeart size={20} />
+                ) : (
+                  <IoMdHeartEmpty size={20} />
+                )}{" "}
+                {heartCount}
+              </IconButton>
+              <IconButton active={isStarActive} onClick={toggleStar}>
+                {isStarActive ? (
+                  <MdOutlineStar size={20} />
+                ) : (
+                  <MdOutlineStarBorder size={20} />
+                )}{" "}
+                {starCount}
+              </IconButton>
+              <ReviewCount>리뷰 {reviewCount}개</ReviewCount>
+              <IconButton onClick={goToReviews}>
+                <MdArrowForwardIos />
+              </IconButton>
+            </LeftIcon>
+            <BookmarkButton active={isBookmarkActive} onClick={toggleBookmark}>
+              {isBookmarkActive ? <BsBookmark /> : <BsBookmarkFill />}
+            </BookmarkButton>
           </IconWrapper>
 
           <Explanation>풍경 좋은 청계천 근처 산책로! 걸어보세용</Explanation>
@@ -168,7 +185,7 @@ export default function TrailLiked() {
           </HashtagContainer>
         </FieldContent>
       </ShowField>
-      <Button>수정하기</Button>
+      <Button>이용하기</Button>
     </Wrapper>
   );
 }

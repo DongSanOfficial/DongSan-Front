@@ -13,6 +13,7 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { theme } from "src/styles/colors/theme";
 import { toggleLike } from "src/apis/likedWalkway";
+import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
 
 const Wrapper = styled.div`
   display: flex;
@@ -89,9 +90,14 @@ const FieldContent = styled.div`
 const IconWrapper = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-around;
-  width: 9.375rem;
-  margin: 0.375rem;
+  justify-content: space-between;
+  margin: 10px;
+`;
+const LeftIcon = styled.div`
+  display: flex;
+  align-items: center;
+  width: 150px;
+  gap: 10px;
 `;
 interface IconButtonProps {
   active?: boolean;
@@ -99,8 +105,11 @@ interface IconButtonProps {
 const IconButton = styled.div<IconButtonProps>`
   display: flex;
   align-items: center;
-  font-size: 0.75rem;
+  font-size: 12px;
   color: ${(props) => (props.active ? "red" : "black")};
+`;
+const BookmarkButton = styled.div<IconButtonProps>`
+  display: flex;
 `;
 const ReviewCount = styled.div`
   font-size: 0.75rem;
@@ -168,6 +177,7 @@ export default function DetailUsing() {
   const [reviewCount, setReviewCount] = useState<number>(0);
   const [isHeartActive, setIsHeartActive] = useState<boolean>(false);
   const [isStarActive, setIsStarActive] = useState<boolean>(false);
+  const [isBookmarkActive, setIsBookmarkActive] = useState<boolean>(false);
   const [hashtags, setHashtags] = useState<String[]>(["청계천", "호수"]);
 
   const toggleHeart = async (): Promise<void> => {
@@ -184,6 +194,9 @@ export default function DetailUsing() {
   const toggleStar = (): void => {
     setIsStarActive(!isStarActive);
     setStarCount((prev) => (isStarActive ? prev - 1 : prev + 1));
+  };
+  const toggleBookmark = (): void => {
+    setIsBookmarkActive(!isBookmarkActive);
   };
   const goToReviews = (): void => {
     navigate(`/review/${walkwayId}/content`);
@@ -204,26 +217,31 @@ export default function DetailUsing() {
         <Img src={trail} alt="Trail" />
         <FieldContent>
           <IconWrapper>
-            <IconButton active={isHeartActive} onClick={toggleHeart}>
-              {isHeartActive ? (
-                <IoMdHeart size={20} />
-              ) : (
-                <IoMdHeartEmpty size={20} />
-              )}{" "}
-              {heartCount}
-            </IconButton>
-            <IconButton active={isStarActive} onClick={toggleStar}>
-              {isStarActive ? (
-                <MdOutlineStar size={20} />
-              ) : (
-                <MdOutlineStarBorder size={20} />
-              )}{" "}
-              {starCount}
-            </IconButton>
-            <ReviewCount>리뷰 {reviewCount}개</ReviewCount>
-            <IconButton onClick={goToReviews}>
-              <MdArrowForwardIos />
-            </IconButton>
+            <LeftIcon>
+              <IconButton active={isHeartActive} onClick={toggleHeart}>
+                {isHeartActive ? (
+                  <IoMdHeart size={20} />
+                ) : (
+                  <IoMdHeartEmpty size={20} />
+                )}{" "}
+                {heartCount}
+              </IconButton>
+              <IconButton active={isStarActive} onClick={toggleStar}>
+                {isStarActive ? (
+                  <MdOutlineStar size={20} />
+                ) : (
+                  <MdOutlineStarBorder size={20} />
+                )}{" "}
+                {starCount}
+              </IconButton>
+              <ReviewCount>리뷰 {reviewCount}개</ReviewCount>
+              <IconButton onClick={goToReviews}>
+                <MdArrowForwardIos />
+              </IconButton>
+            </LeftIcon>
+            <BookmarkButton active={isBookmarkActive} onClick={toggleBookmark}>
+              {isBookmarkActive ? <BsBookmarkFill /> : <BsBookmark />}
+            </BookmarkButton>
           </IconWrapper>
 
           <Explanation>풍경 좋은 청계천 근처 산책로! 걸어보세용</Explanation>
