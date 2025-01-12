@@ -144,7 +144,7 @@ export const MainMap = ({
   }, [center]);
 
   const handleMarkerClick = () => {
-    navigate("/mypage/myregister/:walkwayId");
+    navigate("/recommend/detail/:walkwayId");
   };
   return (
     <MapContainer>
