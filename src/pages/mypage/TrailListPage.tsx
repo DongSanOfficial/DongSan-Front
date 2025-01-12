@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import TrailCardAll from "../../components/TrailCardAll_View";
+import { useNavigate } from "react-router-dom";
 
 interface Trail {
   id: number;
@@ -30,6 +31,7 @@ const List = styled.div`
 `;
 
 function TrailListPage() {
+  const navigate = useNavigate();
   const trails: Trail[] = [
     {
       id: 1,
@@ -73,11 +75,18 @@ function TrailListPage() {
     },
   ];
 
+  const handleCardClick = () => {
+    navigate("/mypage/myregister/:walkwayId"); //api 연동시 id 연결되도록 수정
+  };
   return (
     <Wrapper>
       <List>
         {trails.map((trail) => (
-          <TrailCardAll key={trail.id} trail={trail} />
+          <TrailCardAll
+            key={trail.id}
+            trail={trail}
+            onClick={handleCardClick}
+          />
         ))}
       </List>
     </Wrapper>
