@@ -31,8 +31,12 @@ const NavigationPage = () => {
         },
         { route: "/mypage/ReviewList", name: "내가 등록한 리뷰 리스트 보기" },
         {
-          route: "/mypage/myregister",
+          route: "/mypage/myregister/:walkwayId",
           name: "내 산책로 상세 페이지 단건 조회",
+        },
+        {
+          route: "/mypage/TrailLikeList/detail/:walkwayId",
+          name: "내가 찜한 상세 페이지 단건 조회",
         },
       ],
     },
@@ -48,8 +52,12 @@ const NavigationPage = () => {
       routes: [
         { route: "/usingtrail", name: "다른 유저가 등록한 산책로 이용하기" },
         {
-          route: "/usingtrail/detail/:walkwayId",
+          route: "/usedtrail/detail/:walkwayId",
           name: "다른 유저가 등록한 산책로 상세 페이지",
+        },
+        {
+          route: "/recommend/detail/:walkwayId",
+          name: "산책로 추천에서 조회된 상세 페이지",
         },
       ],
     },

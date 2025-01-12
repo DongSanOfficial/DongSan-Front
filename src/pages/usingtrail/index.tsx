@@ -139,7 +139,7 @@ function Usingtrail() {
     setIsWalking(false);
 
     // 상세페이지로 이동
-    navigate("/usingtrail/detail", {
+    navigate("/usedtrail/detail/:walkwayId", {
       state: pathData,
     });
   };
