@@ -16,9 +16,13 @@ import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   padding: 20px;
   align-items: center;
-  max-height: 100vh;
+  min-height: 100%;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 const ContentWrapper = styled.div`
   display: flex;
@@ -31,8 +35,12 @@ const Content = styled.div`
   justify-content: space-between;
   align-items: center;
 `;
+const TrailInfoContainer = styled.div`
+  display: flex;
+  justify-content: center;
+`;
 const Title = styled.div`
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 600;
   margin: 10px;
 `;
@@ -49,11 +57,12 @@ const Img = styled.img`
   background: #c7c7c7;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
   border-radius: 20px 20px 0px 0px;
-  max-height: 276px;
+  height: 35vh;
+  width: 100%;
 `;
 const FieldContent = styled.div`
-  width: 322px;
-  height: 109px;
+  width: 100%;
+  height: 15vh;
   background: #ffffff;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
   border-radius: 0px 0px 10px 10px;
@@ -111,6 +120,7 @@ const Button = styled.button`
   border: none;
   font-size: 16px;
   font-weight: 500;
+  margin-top: 0.6rem;
 `;
 
 export default function TrailLiked() {
@@ -144,7 +154,9 @@ export default function TrailLiked() {
           <DateDisplay />
         </Content>
         <Title>가을에 걷기 좋은 산책로</Title>
-        <TrailInfo duration={"12:00"} distance={53} />
+        <TrailInfoContainer>
+          <TrailInfo duration={"12:00"} distance={53} />
+        </TrailInfoContainer>
       </ContentWrapper>
       <ShowField>
         <Img src={trail} alt="Trail" />

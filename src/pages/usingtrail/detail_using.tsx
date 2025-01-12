@@ -56,35 +56,24 @@ const Title = styled.div`
   }
 `;
 const ShowField = styled.div`
-  width: 90%;
-  max-width: 20rem;
-  height: auto;
+  width: 80vw;
+  height: 45vh;
+  max-width: 322px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 1.875rem auto;
-  @media (max-width: 375px) {
-    width: 80%;
-    height: auto;
-    max-height: 18.75rem;
-    margin: 0 0.625rem;
-  }
+  margin: 10px auto;
 `;
-
 const Img = styled.img`
   background: #c7c7c7;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
-  border-radius: 1.25rem 1.25rem 0px 0px;
+  border-radius: 20px 20px 0px 0px;
+  height: 30vh;
   width: 100%;
-  height: 17rem;
-  @media (max-width: 375px) {
-    max-height: 13rem;
-  }
 `;
 const FieldContent = styled.div`
   width: 100%;
-  max-width: 20rem;
-  height: auto;
+  height: 15vh;
   background: #ffffff;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
   border-radius: 0px 0px 0.625rem 0.625rem;

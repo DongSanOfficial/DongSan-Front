@@ -110,6 +110,7 @@ const Button = styled.button`
   border: none;
   font-size: 16px;
   font-weight: 500;
+  margin-top: 0.6rem;
 `;
 
 export default function MyRegister() {
