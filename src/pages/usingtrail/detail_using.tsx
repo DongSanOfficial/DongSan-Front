@@ -21,8 +21,10 @@ const Wrapper = styled.div`
   justify-content: space-between;
   padding: 1.25rem;
   align-items: center;
-  height: 85vh;
-  max-height: 100vh;
+  min-height: 100%;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 const ContentWrapper = styled.div`
   display: flex;
