@@ -55,14 +55,20 @@ function TrailLikeListPage() {
       tag: "#한국외대 #자취생_산책로",
     },
   ];
-
+  const handleCardClick = () => {
+    navigate("/mypage/TrailLikeList/detail/:walkwayId"); //api연동 시 id 연결되도록 수정
+  };
   return (
     <>
       <Header title={title} showBackButton={true} onBack={() => navigate(-1)} />
       <Wrapper>
         <List>
           {trails.map((trail) => (
-            <TrailCardAll key={trail.id} trail={trail} />
+            <TrailCardAll
+              key={trail.id}
+              trail={trail}
+              onClick={handleCardClick}
+            />
           ))}
         </List>
       </Wrapper>

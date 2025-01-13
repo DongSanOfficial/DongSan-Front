@@ -12,6 +12,7 @@ interface Trail {
 
 interface TrailCardProps {
   trail: Trail;
+  onClick?: () => void;
 }
 
 const TrailContents = styled.div`
@@ -63,8 +64,8 @@ const Course = styled.div`
   border-radius: 10px;
 `;
 
-const TrailCardAll: React.FC<TrailCardProps> = ({ trail }) => (
-  <TrailContents key={trail.id}>
+const TrailCardAll: React.FC<TrailCardProps> = ({ trail, onClick }) => (
+  <TrailContents key={trail.id} onClick={onClick}>
     <Course />
     <MytrailInfo>
       <MytrailHeader>

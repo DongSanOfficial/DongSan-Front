@@ -12,6 +12,8 @@ import DetailUsing from "../pages/usingtrail/detail_using";
 import TrailReviewPage from "../pages/mypage/TrailReviewPage";
 import NavigationPage from "../pages";
 import ReviewCheck from "../pages/review/ReviewCheck";
+import RecommendTrail from "../pages/detailpage/recommend_trail";
+import TrailLiked from "../pages/detailpage/TrailLiked";
 
 export const routes = [
   {
@@ -25,6 +27,11 @@ export const routes = [
     headerOptions: { headerShown: false },
   },
   {
+    path: "/recommend/detail/:walkwayId",
+    component: RecommendTrail,
+    headerOptions: { title: "산책로", showBackButton: true },
+  },
+  {
     path: "/mypage",
     component: MyPage,
     headerOptions: { title: "마이 페이지", showBackButton: true },
@@ -33,6 +40,11 @@ export const routes = [
     path: "/mypage/TrailList",
     component: TrailListPage,
     headerOptions: { title: "전체보기", showBackButton: true },
+  },
+  {
+    path: "/mypage/myregister/:walkwayId",
+    component: MyRegister,
+    headerOptions: { title: "내 산책로", showBackButton: true },
   },
   {
     path: "/mypage/TrailLikeList",
@@ -44,7 +56,11 @@ export const routes = [
     component: TrailReviewPage,
     headerOptions: { title: "리뷰보기", showBackButton: true },
   },
-
+  {
+    path: "/mypage/TrailLikeList/detail/:walkwayId",
+    component: TrailLiked,
+    headerOptions: { title: "찜한 산책로", showBackButton: true },
+  },
   {
     path: "/newway",
     component: NewWay,
@@ -59,11 +75,6 @@ export const routes = [
     path: "/signin",
     component: SignIn,
     headerOptions: { headerShown: false },
-  },
-  {
-    path: "/mypage/myregister",
-    component: MyRegister,
-    headerOptions: { title: "내 산책로", showBackButton: true },
   },
   {
     path: "/review/:walkwayId/content",
@@ -81,7 +92,7 @@ export const routes = [
     headerOptions: { title: "산책로 이용하기", showBackButton: true },
   },
   {
-    path: "/usingtrail/detail/:walkwayId",
+    path: "/usedtrail/detail/:walkwayId",
     component: DetailUsing,
     headerOptions: { title: "산책로", showBackButton: true },
   },
