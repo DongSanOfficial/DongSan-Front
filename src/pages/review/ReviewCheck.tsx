@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import TrailReviewCard from "../../components/TrailReviewCard";
-import { getUserReviews, showReviewRating } from "src/apis/review";
-import { ReviewRatingType, UserReviewsType } from "src/apis/review.type";
-import { useParams } from "react-router-dom";
+import { showReviewContent, showReviewRating } from "src/apis/review";
+import { ReviewContentType, ReviewRatingType } from "src/apis/review.type";
+import { useNavigate, useParams } from "react-router-dom";
+import { MdKeyboardArrowDown } from "react-icons/md";
 
 // Styled components
 const Wrapper = styled.div`
@@ -22,6 +23,42 @@ const RatingsContainer = styled.div`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: row;
+`;
+const SortContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  margin: 0.5rem;
+`;
+const SortType = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 6.0625rem;
+  height: 1.875rem;
+  border-radius: 3.125rem;
+  border: 1px solid #828485;
+  background: #fff;
+`;
+const DropdownMenu = styled.div`
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  width: 120px;
+`;
+
+const DropdownItem = styled.div`
+  padding: 10px;
+  cursor: pointer;
+  &:hover {
+    background-color: #f0f0f0;
+  }
 `;
 
 const RatingLeft = styled.div`
@@ -117,11 +154,18 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ percent }) => (
 
 // Main component
 const ReviewCheck: React.FC = () => {
-  const { walkwayId } = useParams<{ walkwayId: string }>();
-  const [reviews, setReviews] = useState<UserReviewsType[]>([]);
+  const { walkwayId = "", type = "rating" } = useParams<{
+    walkwayId: string;
+    type: string;
+  }>();
+  const navigate = useNavigate();
+
+  const [reviews, setReviews] = useState<ReviewContentType[]>([]);
   const [reviewStats, setReviewStats] = useState<ReviewRatingType | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [sortType, setSortType] = useState<string>("rating");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -133,7 +177,7 @@ const ReviewCheck: React.FC = () => {
       try {
         setLoading(true);
         const [reviewResponse, reviewStatsResponse] = await Promise.all([
-          getUserReviews(),
+          showReviewContent(walkwayId, sortType),
           showReviewRating(walkwayId),
         ]);
         setReviews(reviewResponse.reviews);
@@ -148,7 +192,7 @@ const ReviewCheck: React.FC = () => {
     };
 
     fetchReviews();
-  }, [walkwayId]);
+  }, [walkwayId, sortType]);
 
   const StarRating: React.FC<{ rating: number }> = ({ rating }) => {
     const fullStars = Math.floor(rating);
@@ -163,6 +207,10 @@ const ReviewCheck: React.FC = () => {
     return <div style={{ display: "flex" }}>{stars}</div>;
   };
 
+  const handleSortChange = (newType: string) => {
+    setSortType(newType);
+    navigate(`/review/${walkwayId}/content?type=${newType}`); // URL 업데이트
+  };
   const ratingData = [
     { label: 5, percent: reviewStats?.five ?? 0 },
     { label: 4, percent: reviewStats?.four ?? 0 },
@@ -190,6 +238,27 @@ const ReviewCheck: React.FC = () => {
           ))}
         </RatingRight>
       </RatingsContainer>
+      <SortContainer>
+        <SortType
+          onClick={() => {
+            setIsDropdownOpen((prev) => !prev);
+            console.log("Dropdown 상태:", !isDropdownOpen);
+          }}
+        >
+          {sortType === "rating" ? "별점순" : "최근순"}
+          <MdKeyboardArrowDown />
+        </SortType>
+        {isDropdownOpen && (
+          <DropdownMenu>
+            <DropdownItem onClick={() => handleSortChange("rating")}>
+              별점순
+            </DropdownItem>
+            <DropdownItem onClick={() => handleSortChange("latest")}>
+              최근순
+            </DropdownItem>
+          </DropdownMenu>
+        )}
+      </SortContainer>
       {loading && <div>Loading...</div>}
       {error && <div>{error}</div>}
       {!loading &&
@@ -197,7 +266,7 @@ const ReviewCheck: React.FC = () => {
         reviews.map((review) => (
           <div key={review.reviewId}>
             <TrailReviewCard
-              trailName={review.walkwayName}
+              trailName={review.nickname}
               date={review.date}
               content={review.content}
               rating={review.rating}

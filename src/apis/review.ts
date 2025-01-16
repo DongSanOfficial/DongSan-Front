@@ -1,4 +1,8 @@
-import { ReviewRatingType, UserReviewsType } from "./review.type";
+import {
+  ReviewContentType,
+  ReviewRatingType,
+  UserReviewsType,
+} from "./review.type";
 import { ApiResponseFormat } from "./api.type";
 import instance from "./instance";
 
@@ -24,6 +28,23 @@ export const showReviewRating = async (
     const response = await instance.get<ApiResponseFormat<ReviewRatingType>>(
       `/walkways/${walkwayId}/review/rating`
     );
+    return response.data.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// 산책로 리뷰 내용보기 api
+export const showReviewContent = async (
+  walkwayId: string,
+  type: string
+): Promise<{
+  reviews: ReviewContentType[];
+}> => {
+  try {
+    const response = await instance.get<
+      ApiResponseFormat<{ reviews: ReviewContentType[] }>
+    >(`/walkways/${walkwayId}/review/content?type=${type}`);
     return response.data.data;
   } catch (error) {
     throw error;
