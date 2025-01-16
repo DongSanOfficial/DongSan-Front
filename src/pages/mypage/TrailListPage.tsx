@@ -1,49 +1,20 @@
-// src/pages/TrailListPage.tsx
-import React, { useEffect, useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import TrailCardAll from "../../components/TrailCardAll_View";
-import { Trail, getTrails } from "../../apis/trail";
+import { useNavigate } from "react-router-dom";
 
-function TrailListPage() {
-  const [trails, setTrails] = useState<Trail[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [lastWalkwayId, setLastWalkwayId] = useState<number | undefined>(
-    undefined
-  );
-
-  useEffect(() => {
-    const fetchTrails = async () => {
-      try {
-        const fetchedTrails = await getTrails(lastWalkwayId);
-        setTrails((prevTrails) => [...prevTrails, ...fetchedTrails]);
-        setLoading(false);
-        setLastWalkwayId(fetchedTrails[fetchedTrails.length - 1]?.walkwayId);
-      } catch (err) {
-        setError("Failed to fetch trails");
-        setLoading(false);
-      }
-    };
-
-    fetchTrails();
-  }, [lastWalkwayId]);
-
-  return (
-    <Wrapper>
-      {loading && <div>Loading...</div>}
-      {error && <div>{error}</div>}
-      {!loading && !error && (
-        <List>
-          {trails.map((trail) => (
-            <TrailCardAll key={trail.walkwayId} trail={trail} />
-          ))}
-        </List>
-      )}
-    </Wrapper>
-  );
+interface Trail {
+  id: number;
+  name: string;
+  date: string;
+  length: number;
+  image: string;
+  tag: string;
 }
 
-export default TrailListPage;
+interface TrailCardProps {
+  trail: Trail;
+}
 
 const Wrapper = styled.div`
   display: flex;
@@ -58,3 +29,68 @@ const List = styled.div`
   gap: 16px;
   padding: 15px;
 `;
+
+function TrailListPage() {
+  const navigate = useNavigate();
+  const trails: Trail[] = [
+    {
+      id: 1,
+      name: "한국외대 근처 산책 스팟",
+      date: "2024.09.26",
+      length: 4.8,
+      image: "src/assets/images/TrailThumbnail.png",
+      tag: "#한국외대 #자취생_산책로",
+    },
+    {
+      id: 3,
+      name: "다른 산책로",
+      date: "2024.10.01",
+      length: 3.2,
+      image: "src/assets/images/TrailThumbnail.png",
+      tag: "#한국외대 #자취생_산책로",
+    },
+    {
+      id: 4,
+      name: "다른 산책로",
+      date: "2024.10.01",
+      length: 3.2,
+      image: "src/assets/images/TrailThumbnail.png",
+      tag: "#한국외대 #자취생_산책로",
+    },
+    {
+      id: 5,
+      name: "다른 산책로",
+      date: "2024.10.01",
+      length: 3.2,
+      image: "src/assets/images/TrailThumbnail.png",
+      tag: "#한국외대 #자취생_산책로",
+    },
+    {
+      id: 6,
+      name: "다른 산책로",
+      date: "2024.10.01",
+      length: 3.2,
+      image: "src/assets/images/TrailThumbnail.png",
+      tag: "#한국외대 #자취생_산책로",
+    },
+  ];
+
+  const handleCardClick = () => {
+    navigate("/mypage/myregister/:walkwayId"); //api 연동시 id 연결되도록 수정
+  };
+  return (
+    <Wrapper>
+      <List>
+        {trails.map((trail) => (
+          <TrailCardAll
+            key={trail.id}
+            trail={trail}
+            onClick={handleCardClick}
+          />
+        ))}
+      </List>
+    </Wrapper>
+  );
+}
+
+export default TrailListPage;

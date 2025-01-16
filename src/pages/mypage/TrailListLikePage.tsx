@@ -1,15 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Header from "src/components/Header";
 import TrailCardAll from "src/components/TrailCardAll_View";
-import { Trail, getTrails } from "../../apis/trail";
+
+interface Trail {
+  id: number;
+  name: string;
+  date: string;
+  length: number;
+  image: string;
+  tag: string;
+}
 
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 15px;
+  padding: 56px 15px 15px;
 `;
 
 const List = styled.div`
@@ -22,9 +30,6 @@ const List = styled.div`
 function TrailLikeListPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [trails, setTrails] = useState<Trail[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
 
   const searchParams = new URLSearchParams(location.search);
   const type = searchParams.get("type");
@@ -32,42 +37,40 @@ function TrailLikeListPage() {
   const title =
     type === "favorites" ? "내가 좋아하는 산책로" : "북마크 이름 산책로";
 
-  useEffect(() => {
-    const fetchTrails = async () => {
-      try {
-        const fetchedTrails = await getTrails(); // 실제 구현에 따라 API 변경이 필요할 수 있습니다.
-        if (type === "favorites") {
-          setTrails(
-            fetchedTrails.filter((trail) =>
-              trail.hashtags.includes("favorites")
-            )
-          );
-        } else {
-          setTrails(fetchedTrails);
-        }
-        setLoading(false);
-      } catch (err) {
-        setError("Failed to fetch trails");
-        setLoading(false);
-      }
-    };
-
-    fetchTrails();
-  }, [type]); // type이 변경되면 API 다시 호출
-
+  const trails: Trail[] = [
+    {
+      id: 1,
+      name: "한국외대 근처 산책 스팟",
+      date: "2024.09.26",
+      length: 4.8,
+      image: "src/assets/images/TrailThumbnail.png",
+      tag: "#한국외대 #자취생_산책로",
+    },
+    {
+      id: 2,
+      name: "다른 산책로",
+      date: "2024.10.01",
+      length: 3.2,
+      image: "src/assets/images/TrailThumbnail.png",
+      tag: "#한국외대 #자취생_산책로",
+    },
+  ];
+  const handleCardClick = () => {
+    navigate("/mypage/TrailLikeList/detail/:walkwayId"); //api연동 시 id 연결되도록 수정
+  };
   return (
     <>
       <Header title={title} showBackButton={true} onBack={() => navigate(-1)} />
       <Wrapper>
-        {loading && <div>Loading...</div>}
-        {error && <div>{error}</div>}
-        {!loading && !error && (
-          <List>
-            {trails.map((trail) => (
-              <TrailCardAll key={trail.walkwayId} trail={trail} />
-            ))}
-          </List>
-        )}
+        <List>
+          {trails.map((trail) => (
+            <TrailCardAll
+              key={trail.id}
+              trail={trail}
+              onClick={handleCardClick}
+            />
+          ))}
+        </List>
       </Wrapper>
     </>
   );
