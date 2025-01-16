@@ -18,3 +18,12 @@ export interface ReviewRatingType {
   two: number;
   one: number;
 }
+export interface ReviewContentType {
+  //산책로 리뷰 내용보기
+  reviewId: number;
+  nickname: string;
+  date: string;
+  period: string;
+  rating: number; //?
+  content: string;
+}
