@@ -25,6 +25,7 @@ const RatingsContainer = styled.div`
   flex-direction: row;
 `;
 const SortContainer = styled.div`
+  position: relative;
   display: flex;
   justify-content: flex-end;
   width: 100%;
@@ -44,21 +45,22 @@ const SortType = styled.div`
 const DropdownMenu = styled.div`
   position: absolute;
   top: 100%;
-  left: 0;
+  right: 0;
   background: white;
   border: 1px solid #ddd;
   border-radius: 4px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 10;
-  width: 120px;
+  margin-top: 0.5rem;
+  width: 6.5rem;
 `;
 
 const DropdownItem = styled.div`
-  padding: 10px;
+  padding: 0.625rem;
   cursor: pointer;
-  &:hover {
-    background-color: #f0f0f0;
-  }
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const RatingLeft = styled.div`
@@ -242,7 +244,6 @@ const ReviewCheck: React.FC = () => {
         <SortType
           onClick={() => {
             setIsDropdownOpen((prev) => !prev);
-            console.log("Dropdown 상태:", !isDropdownOpen);
           }}
         >
           {sortType === "rating" ? "별점순" : "최근순"}
