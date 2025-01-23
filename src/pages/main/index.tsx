@@ -1,9 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, ChangeEvent } from 'react';
 import { MainMap } from "../../components/map/MainMap";
 import { BottomSheet } from "../../components/bottomsheet/BottomSheet";
 import BottomSheetHeader from "./header/BottomSheetHeader";
 import PathCard from "./components/PathCard";
+import SearchBar from "./header/components/SearchInput";
 import styled from "styled-components";
+
+const MainContainer = styled.div`
+  position: relative;
+  height: 100dvh;
+  width: 100%;
+`;
+
+const SearchBarContainer = styled.div`
+  position: absolute;
+  left: 50%;
+  top: 20px;
+  transform: translateX(-50%);
+  width: 90%;
+  z-index: 10;
+`;
 
 const BottomSheetContainer = styled.div`
   position: relative;
@@ -28,6 +44,7 @@ const PathCardList = styled.div`
   overflow-y: auto;
   flex: 1;
 `;
+
 
 interface PathData {
   walkwayId: number;
@@ -99,8 +116,8 @@ const mockPathData: PathData[] = [
 ];
 
 function Main() {
-  //바텀시트가 초기부터 열려있는 상태
   const [isOpen, setIsOpen] = useState(true);
+  const [searchValue, setSearchValue] = useState<string>("");
   const [selectedPath, setSelectedPath] = useState<{
     location: [number, number];
     name: string;
@@ -116,6 +133,10 @@ function Main() {
     )
   );
 
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(e.target.value);
+  };
+
   const handleLikeClick = (id: number) => {
     setLikedPaths((prev) => ({
       ...prev,
@@ -129,11 +150,15 @@ function Main() {
 
   const handlePathClick = (location: [number, number], name: string) => {
     setSelectedPath({ location, name });
-    setIsOpen(false); // PathCard를 터치하면 위치 이동 전에 바텀시트가 내려가도록
+    setIsOpen(false);
   };
 
   return (
-    <>
+    <MainContainer>
+      <SearchBarContainer>
+        <SearchBar value={searchValue} onChange={handleSearchChange} />
+      </SearchBarContainer>
+      
       <MainMap
         center={
           selectedPath
@@ -145,7 +170,7 @@ function Main() {
       <BottomSheet
         isOpen={isOpen}
         maxHeight="85vh"
-        minHeight="30vh"
+        minHeight="20vh"
         onClose={() => setIsOpen(false)}
         onOpen={() => setIsOpen(true)}
       >
@@ -171,7 +196,7 @@ function Main() {
           </PathCardList>
         </BottomSheetContainer>
       </BottomSheet>
-    </>
+    </MainContainer>
   );
 }
 

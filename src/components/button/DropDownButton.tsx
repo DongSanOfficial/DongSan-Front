@@ -101,7 +101,7 @@ const getIconForValue = (value: string) => {
   }
 };
 
-const CommonDropdown = ({
+const DropDownButton = ({
   options,
   value,
   onChange,
@@ -210,4 +210,4 @@ const CommonDropdown = ({
   );
 };
 
-export default CommonDropdown;
+export default DropDownButton;
