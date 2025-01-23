@@ -33,13 +33,13 @@ const MapWrapper = styled.div`
 
 const LocationButton = styled.button`
   position: absolute;
-  bottom: 32vh;
-  left: 16px;
+  bottom: 40vh;
+  right: 16px;
   width: 40px;
   height: 40px;
   background-color: ${theme.White};
   border: none;
-  border-radius: 8px;
+  border-radius: 30px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   display: flex;
   align-items: center;

@@ -8,8 +8,9 @@ import styled from "styled-components";
 
 const MainContainer = styled.div`
   position: relative;
-  height: 100dvh;
+  height: 100vh;
   width: 100%;
+  top: -56px;
 `;
 
 const SearchBarContainer = styled.div`
@@ -116,7 +117,7 @@ const mockPathData: PathData[] = [
 ];
 
 function Main() {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const [searchValue, setSearchValue] = useState<string>("");
   const [selectedPath, setSelectedPath] = useState<{
     location: [number, number];
@@ -170,7 +171,7 @@ function Main() {
       <BottomSheet
         isOpen={isOpen}
         maxHeight="85vh"
-        minHeight="20vh"
+        minHeight="23vh"
         onClose={() => setIsOpen(false)}
         onOpen={() => setIsOpen(true)}
       >

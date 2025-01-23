@@ -28,6 +28,7 @@ const Content = styled.div`
   flex: 1;
   overflow-y: auto;
   padding-bottom: 70px;
+  padding-top: 56px;    
 `;
 
 const CustomNavigator = ({ routes, initialRouteName }: NavigatorProps) => {
