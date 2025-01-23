@@ -161,8 +161,7 @@ function Main() {
 
   const handleSearchComplete = (location: Location) => {
     setSearching(false);
-    // Here you can send the coordinates to your server
-    console.log("Search completed. Coordinates:", location);
+    console.log("좌표 확인: ", location);
   };
 
   const handleLikeClick = (id: number) => {
@@ -212,7 +211,7 @@ function Main() {
       />
       <BottomSheet
         isOpen={isOpen}
-        maxHeight="85vh"
+        maxHeight="60vh"
         minHeight={bottomSheetHeight}
         onClose={() => {
           setIsOpen(false);

@@ -13,7 +13,6 @@ const DropdownContainer = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  padding: 1rem 0;
 `;
 
 const DropdownWrapper = styled.div`
