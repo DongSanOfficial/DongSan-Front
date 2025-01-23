@@ -6,6 +6,8 @@ import { theme } from "../../styles/colors/theme";
 import { ReactComponent as LocationIcon } from "../../assets/svg/LocationIcon.svg";
 import CurrentLocationMarker from "../../assets/svg/RegisteredLocation.svg";
 import SelectedLocationMarker from "../../assets/svg/UserLocation.svg";
+import { SearchResult } from '../../pages/main/components/SearchResult';
+
 const MapContainer = styled.div`
   width: 100%;
   height: 100vh;
@@ -61,6 +63,7 @@ const StyledLocationIcon = styled(LocationIcon)`
   height: 24px;
   fill: ${(props) => props.theme.Gray700};
 `;
+
 const MarkerTitle = styled.div`
   background: ${(props) => props.theme.White};
   padding: 5px 10px;
@@ -81,17 +84,21 @@ interface Location {
   lng: number;
 }
 
-interface BasicMapProps {
+interface MainMapProps {
   center?: Location;
   onCenterChange?: (location: Location) => void;
   pathName?: string;
+  searchKeyword?: string;
+  onSearchResults?: (results: SearchResult[]) => void;
 }
 
 export const MainMap = ({
   center,
   onCenterChange,
   pathName,
-}: BasicMapProps) => {
+  searchKeyword,
+  onSearchResults,
+}: MainMapProps) => {
   const navigate = useNavigate();
   const [mapCenter, setMapCenter] = useState<Location>(
     center || { lat: 37.5665, lng: 126.978 }
@@ -143,9 +150,32 @@ export const MainMap = ({
     }
   }, [center]);
 
+  useEffect(() => {
+    if (searchKeyword && window.kakao) {
+      const ps = new window.kakao.maps.services.Places();
+      
+      ps.keywordSearch(searchKeyword, (data, status) => {
+        if (status === window.kakao.maps.services.Status.OK && data.length > 0) {
+          const searchResults: SearchResult[] = data.map(place => ({
+            placeName: place.place_name,
+            address: place.address_name,
+            location: {
+              lat: parseFloat(place.y),
+              lng: parseFloat(place.x)
+            }
+          }));
+          onSearchResults?.(searchResults);
+        } else {
+          alert("검색 결과를 찾을 수 없습니다.");
+        }
+      });
+    }
+  }, [searchKeyword]);
+
   const handleMarkerClick = () => {
     navigate("/recommend/detail/:walkwayId");
   };
+
   return (
     <MapContainer>
       <MapWrapper>
@@ -186,7 +216,6 @@ export const MainMap = ({
             <>
               <MapMarker
                 position={center}
-                onClick={handleMarkerClick}
                 image={{
                   src: SelectedLocationMarker,
                   size: {

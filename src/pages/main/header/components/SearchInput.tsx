@@ -1,3 +1,4 @@
+// SearchBar.tsx
 import React, { ChangeEvent } from 'react';
 import styled from 'styled-components';
 import { theme } from '../../../../styles/colors/theme';
@@ -8,6 +9,8 @@ const SearchBarContainer = styled.div`
   position: relative;
   display: flex;
   align-items: center;
+  max-width: 400px;
+  margin: 0 auto;
 `;
 
 const SearchInput = styled.input`
@@ -30,15 +33,17 @@ const IconWrapper = styled.div<{ position: 'left' | 'right' }>`
   ${props => props.position}: 1rem;
   top: 50%;
   transform: translateY(-50%);
-  pointer-events: none;
+  pointer-events: ${props => props.position === 'right' ? 'auto' : 'none'};
   display: flex;
   align-items: center;
+  cursor: ${props => props.position === 'right' ? 'pointer' : 'default'};
 `;
 
 interface SearchBarProps {
   placeholder?: string;
   value: string;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onSearch: () => void;
   className?: string;
 }
 
@@ -46,8 +51,15 @@ const SearchBar = ({
   placeholder = "산책장소를 검색하세요.",
   onChange,
   value,
+  onSearch,
   className
 }: SearchBarProps) => {
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      onSearch();
+    }
+  };
+
   return (
     <SearchBarContainer className={className}>
       <IconWrapper position="left">
@@ -57,8 +69,9 @@ const SearchBar = ({
         placeholder={placeholder}
         onChange={onChange}
         value={value}
+        onKeyPress={handleKeyPress}
       />
-      <IconWrapper position="right">
+      <IconWrapper position="right" onClick={onSearch}>
         <BsSearch size={20} />
       </IconWrapper>
     </SearchBarContainer>

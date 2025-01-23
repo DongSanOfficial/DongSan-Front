@@ -5,6 +5,7 @@ import BottomSheetHeader from "./header/BottomSheetHeader";
 import PathCard from "./components/PathCard";
 import SearchBar from "./header/components/SearchInput";
 import styled from "styled-components";
+import SearchResults, { SearchResult } from './components/SearchResult';
 
 const MainContainer = styled.div`
   position: relative;
@@ -14,7 +15,7 @@ const MainContainer = styled.div`
 `;
 
 const SearchBarContainer = styled.div`
-  position: absolute;
+  position: fixed;
   left: 50%;
   top: 20px;
   transform: translateX(-50%);
@@ -46,7 +47,6 @@ const PathCardList = styled.div`
   flex: 1;
 `;
 
-
 interface PathData {
   walkwayId: number;
   courseImageUrl: string;
@@ -59,6 +59,11 @@ interface PathData {
   rating: number;
   reviewCount: number;
   location: [number, number];
+}
+
+interface Location {
+  lat: number;
+  lng: number;
 }
 
 const mockPathData: PathData[] = [
@@ -115,27 +120,49 @@ const mockPathData: PathData[] = [
     location: [126.9818, 37.5926],
   },
 ];
-
 function Main() {
   const [isOpen, setIsOpen] = useState(false);
+  const [bottomSheetHeight, setBottomSheetHeight] = useState("23vh");
   const [searchValue, setSearchValue] = useState<string>("");
+  const [searching, setSearching] = useState(false);
   const [selectedPath, setSelectedPath] = useState<{
     location: [number, number];
     name: string;
   } | null>(null);
   const [likedPaths, setLikedPaths] = useState<{ [key: number]: boolean }>(
-    Object.fromEntries(
-      mockPathData.map((path) => [path.walkwayId, path.isLike])
-    )
+    Object.fromEntries(mockPathData.map((path) => [path.walkwayId, path.isLike]))
   );
   const [likeCounts, setLikeCounts] = useState<{ [key: number]: number }>(
-    Object.fromEntries(
-      mockPathData.map((path) => [path.walkwayId, path.likeCount])
-    )
+    Object.fromEntries(mockPathData.map((path) => [path.walkwayId, path.likeCount]))
   );
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [pathData, setPathData] = useState(mockPathData);
+
+  const handleResultSelect = (result: SearchResult) => {
+    setSelectedPath({
+      location: [result.location.lng, result.location.lat],
+      name: result.placeName
+    });
+    setSearchResults([]);
+    setSearchValue(result.placeName);
+    setBottomSheetHeight("60vh");
+    setIsOpen(true);
+  };
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
+  };
+
+  const handleSearch = () => {
+    if (searchValue.trim()) {
+      setSearching(true);
+    }
+  };
+
+  const handleSearchComplete = (location: Location) => {
+    setSearching(false);
+    // Here you can send the coordinates to your server
+    console.log("Search completed. Coordinates:", location);
   };
 
   const handleLikeClick = (id: number) => {
@@ -154,10 +181,23 @@ function Main() {
     setIsOpen(false);
   };
 
+  const handleSearchResults = (results: SearchResult[]) => {
+    setSearchResults(results);
+    setSearching(false);
+  };
+
   return (
     <MainContainer>
       <SearchBarContainer>
-        <SearchBar value={searchValue} onChange={handleSearchChange} />
+        <SearchBar 
+          value={searchValue} 
+          onChange={handleSearchChange}
+          onSearch={handleSearch}
+        />
+        <SearchResults 
+          results={searchResults}
+          onSelect={handleResultSelect}
+        />
       </SearchBarContainer>
       
       <MainMap
@@ -167,12 +207,17 @@ function Main() {
             : undefined
         }
         pathName={selectedPath?.name}
+        searchKeyword={searching ? searchValue : undefined}
+        onSearchResults={handleSearchResults}
       />
       <BottomSheet
         isOpen={isOpen}
         maxHeight="85vh"
-        minHeight="23vh"
-        onClose={() => setIsOpen(false)}
+        minHeight={bottomSheetHeight}
+        onClose={() => {
+          setIsOpen(false);
+          setBottomSheetHeight("23vh");
+        }}
         onOpen={() => setIsOpen(true)}
       >
         <BottomSheetContainer>
@@ -180,7 +225,7 @@ function Main() {
             <BottomSheetHeader />
           </FixedHeader>
           <PathCardList>
-            {mockPathData.map((path) => (
+            {pathData.map((path) => (
               <PathCard
                 key={path.walkwayId}
                 pathimage={path.courseImageUrl}
