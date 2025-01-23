@@ -1,6 +1,6 @@
 export const theme = {
     White: '#FFFFFF',
-    Black: '#000000',
+    Black: '#121212',
     Red: '#FF4646',
     Yellow: '#FACC15',
     

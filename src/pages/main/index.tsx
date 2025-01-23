@@ -159,10 +159,8 @@ function Main() {
                 key={path.walkwayId}
                 pathimage={path.courseImageUrl}
                 pathname={path.name}
-                registeredDate={path.registerDate}
                 hashtag={path.hashtags.join(" ")}
                 distance={`${path.distance} km`}
-                likeCount={likeCounts[path.walkwayId]}
                 starCount={path.rating}
                 reviewCount={path.reviewCount}
                 isLiked={likedPaths[path.walkwayId]}
