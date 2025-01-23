@@ -1,6 +1,6 @@
-import React from 'react';
-import styled from 'styled-components';
-import { theme } from '../../../styles/colors/theme';
+import React from "react";
+import styled from "styled-components";
+import { theme } from "../../../styles/colors/theme";
 
 const ResultsContainer = styled.div`
   position: absolute;
@@ -41,6 +41,7 @@ const Address = styled.div`
   color: ${theme.Gray500};
 `;
 
+/** SearchResult 아이템 인터페이스 */
 export interface SearchResult {
   placeName: string;
   address: string;
@@ -50,11 +51,19 @@ export interface SearchResult {
   };
 }
 
+/** SearchResults 컴포넌트 props */
 interface SearchResultsProps {
+  /** 검색 결과 배열 */
   results: SearchResult[];
+  /** 결과 선택 핸들러 */
   onSelect: (result: SearchResult) => void;
 }
 
+/**
+ * 검색 결과 목록 컴포넌트
+ * @param props - SearchResultsProps
+ * @returns 검색 결과 목록 또는 null
+ */
 const SearchResults = ({ results, onSelect }: SearchResultsProps) => {
   if (results.length === 0) return null;
 

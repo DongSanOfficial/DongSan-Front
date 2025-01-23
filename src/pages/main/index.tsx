@@ -1,11 +1,11 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState, ChangeEvent } from "react";
 import { MainMap } from "../../components/map/MainMap";
 import { BottomSheet } from "../../components/bottomsheet/BottomSheet";
 import BottomSheetHeader from "./header/BottomSheetHeader";
 import PathCard from "./components/PathCard";
 import SearchBar from "./header/components/SearchInput";
 import styled from "styled-components";
-import SearchResults, { SearchResult } from './components/SearchResult';
+import SearchResults, { SearchResult } from "./components/SearchResult";
 
 const MainContainer = styled.div`
   position: relative;
@@ -130,18 +130,35 @@ function Main() {
     name: string;
   } | null>(null);
   const [likedPaths, setLikedPaths] = useState<{ [key: number]: boolean }>(
-    Object.fromEntries(mockPathData.map((path) => [path.walkwayId, path.isLike]))
+    Object.fromEntries(
+      mockPathData.map((path) => [path.walkwayId, path.isLike])
+    )
   );
   const [likeCounts, setLikeCounts] = useState<{ [key: number]: number }>(
-    Object.fromEntries(mockPathData.map((path) => [path.walkwayId, path.likeCount]))
+    Object.fromEntries(
+      mockPathData.map((path) => [path.walkwayId, path.likeCount])
+    )
   );
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [pathData, setPathData] = useState(mockPathData);
+  
+  /**
+   * 검색 결과 처리
+   * @param results - 검색 결과 배열
+   */
+  const handleSearchResults = (results: SearchResult[]) => {
+    setSearchResults(results);
+    setSearching(false);
+  };
 
+  /**
+   * 검색 결과 선택 처리
+   * @param result - 선택된 검색 결과
+   */
   const handleResultSelect = (result: SearchResult) => {
     setSelectedPath({
       location: [result.location.lng, result.location.lat],
-      name: result.placeName
+      name: result.placeName,
     });
     setSearchResults([]);
     setSearchValue(result.placeName);
@@ -153,12 +170,17 @@ function Main() {
     setSearchValue(e.target.value);
   };
 
+  /** 검색 수행 */
   const handleSearch = () => {
     if (searchValue.trim()) {
       setSearching(true);
     }
   };
 
+  /**
+   * 검색 완료 처리
+   * @param location - 검색된 위치 좌표
+   */
   const handleSearchComplete = (location: Location) => {
     setSearching(false);
     console.log("좌표 확인: ", location);
@@ -180,25 +202,17 @@ function Main() {
     setIsOpen(false);
   };
 
-  const handleSearchResults = (results: SearchResult[]) => {
-    setSearchResults(results);
-    setSearching(false);
-  };
-
   return (
     <MainContainer>
       <SearchBarContainer>
-        <SearchBar 
-          value={searchValue} 
+        <SearchBar
+          value={searchValue}
           onChange={handleSearchChange}
           onSearch={handleSearch}
         />
-        <SearchResults 
-          results={searchResults}
-          onSelect={handleResultSelect}
-        />
+        <SearchResults results={searchResults} onSelect={handleResultSelect} />
       </SearchBarContainer>
-      
+
       <MainMap
         center={
           selectedPath

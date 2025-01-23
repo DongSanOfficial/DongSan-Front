@@ -1,4 +1,3 @@
-// SearchBar.tsx
 import React, { ChangeEvent } from 'react';
 import styled from 'styled-components';
 import { theme } from '../../../../styles/colors/theme';
