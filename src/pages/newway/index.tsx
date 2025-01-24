@@ -126,6 +126,13 @@ function NewWay() {
     if (timerIdRef.current) {
       clearInterval(timerIdRef.current);
     }
+    // 소주점 다섯째자리에서 끊기
+    const formattedCoords = pathCoordsRef.current.map((coord) => [
+      Number(coord.lng.toFixed(5)),
+      Number(coord.lat.toFixed(5)),
+    ]);
+
+    console.log("Path Coordinates:", formattedCoords);
 
     const pathData: PathData = {
       coordinates: pathCoordsRef.current,

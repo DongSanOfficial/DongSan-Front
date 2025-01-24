@@ -42,15 +42,14 @@ export const TrackingMap = ({
     isTracking,
     onLocationUpdate,
     onDistanceUpdate
-}: TrackingMapProps) => {
+    }: TrackingMapProps) => {
     const [mapCenter, setMapCenter] = useState<Location>({ lat: 37.5665, lng: 126.9780 });
     const [userLocation, setUserLocation] = useState<Location | null>(null);
-    const [pathCoords, setPathCoords] = useState<Location[]>([]);
+    const [pathCoords, setPathCoords] = useState<number[][]>([]);
     const watchIdRef = useRef<number | null>(null);
 
-    // 거리 계산 (라이브러리 알아보깅ㄴ)
     const calculateDistance = (coord1: Location, coord2: Location): number => {
-        const R = 6371; // 지구의 반지름 (km)
+        const R = 6371;
         const dLat = (coord2.lat - coord1.lat) * Math.PI / 180;
         const dLon = (coord2.lng - coord1.lng) * Math.PI / 180;
         const a = 
@@ -69,18 +68,20 @@ export const TrackingMap = ({
                 lat: position.coords.latitude,
                 lng: position.coords.longitude
             };
+            const newCoord = [newLocation.lng, newLocation.lat];
 
             setUserLocation(newLocation);
             setMapCenter(newLocation);
             
             if (isTracking) {
                 setPathCoords(prev => {
-                    const newCoords = [...prev, newLocation];
-                    
-                    // 새로운 위치가 추가될 때마다 거리 계산
+                    const newCoords = [...prev, newCoord];
                     if (prev.length > 0) {
                         const lastCoord = prev[prev.length - 1];
-                        const newDistance = calculateDistance(lastCoord, newLocation);
+                        const newDistance = calculateDistance(
+                            {lat: lastCoord[1], lng: lastCoord[0]},
+                            newLocation
+                        );
                         onDistanceUpdate?.(newDistance);
                     }
                     
@@ -94,14 +95,12 @@ export const TrackingMap = ({
             console.error("사용자 위치 가져오기 에러:", error);
         };
 
-        // 초기 위치 가져오기
         navigator.geolocation.getCurrentPosition(successCallback, errorCallback, {
             enableHighAccuracy: true,
             maximumAge: 0,
             timeout: 5000
         });
 
-        // 트래킹 중일 때만 위치 감시 시작
         if (isTracking) {
             watchIdRef.current = navigator.geolocation.watchPosition(
                 successCallback,
@@ -144,7 +143,7 @@ export const TrackingMap = ({
                     {userLocation && <MapMarker position={userLocation} />}
                     {pathCoords.length > 1 && (
                         <Polyline
-                            path={pathCoords}
+                            path={pathCoords.map(coord => ({lat: coord[1], lng: coord[0]}))}
                             strokeWeight={5}
                             strokeColor="#FF7575"
                             strokeOpacity={0.7}
