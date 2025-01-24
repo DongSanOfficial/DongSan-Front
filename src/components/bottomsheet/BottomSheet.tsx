@@ -12,15 +12,17 @@ interface BottomSheetProps {
 
 const Overlay = styled.div<{ $isOpen: boolean }>`
     position: fixed;
+    margin: 0 auto;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgba(0, 0, 0, 0.1);
     opacity: ${props => props.$isOpen ? 1 : 0};
     visibility: ${props => props.$isOpen ? 'visible' : 'hidden'};
     transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
     z-index: 9;
+    max-width: 430px;
 `;
 
 const SheetContainer = styled.div<{

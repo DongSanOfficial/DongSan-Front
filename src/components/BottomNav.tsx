@@ -62,8 +62,8 @@ const BottomNav = () => {
           </StyledSVG>
         </NavLink>
 
-        <NavLink to="/">
-          <StyledSVG isActive={location.pathname === '/'}>
+        <NavLink to="/main">
+          <StyledSVG isActive={location.pathname === '/main'}>
             <Home />
           </StyledSVG>
         </NavLink>

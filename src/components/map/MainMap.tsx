@@ -6,6 +6,8 @@ import { theme } from "../../styles/colors/theme";
 import { ReactComponent as LocationIcon } from "../../assets/svg/LocationIcon.svg";
 import CurrentLocationMarker from "../../assets/svg/RegisteredLocation.svg";
 import SelectedLocationMarker from "../../assets/svg/UserLocation.svg";
+import { SearchResult } from "../../pages/main/components/SearchResult";
+
 const MapContainer = styled.div`
   width: 100%;
   height: 100vh;
@@ -33,13 +35,13 @@ const MapWrapper = styled.div`
 
 const LocationButton = styled.button`
   position: absolute;
-  bottom: 32vh;
-  left: 16px;
+  bottom: 40vh;
+  right: 16px;
   width: 40px;
   height: 40px;
   background-color: ${theme.White};
   border: none;
-  border-radius: 8px;
+  border-radius: 30px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   display: flex;
   align-items: center;
@@ -61,6 +63,7 @@ const StyledLocationIcon = styled(LocationIcon)`
   height: 24px;
   fill: ${(props) => props.theme.Gray700};
 `;
+
 const MarkerTitle = styled.div`
   background: ${(props) => props.theme.White};
   padding: 5px 10px;
@@ -76,28 +79,53 @@ const MarkerTitle = styled.div`
   text-overflow: ellipsis;
 `;
 
+/**
+ * 위치 정보 인터페이스
+ */
 interface Location {
   lat: number;
   lng: number;
 }
 
-interface BasicMapProps {
+/**
+ * MainMap 컴포넌트 props
+ */
+interface MainMapProps {
+  /** 지도 중심 좌표 */
   center?: Location;
+  /** 지도 중심 좌표 변경 시 호출되는 함수 */
   onCenterChange?: (location: Location) => void;
+  /** 선택된 산책로 이름 */
   pathName?: string;
+  /** 검색 키워드 */
+  searchKeyword?: string;
+  /** 검색 결과 처리 함수 */
+  onSearchResults?: (results: SearchResult[]) => void;
 }
 
+/**
+ * 카카오맵 기반 지도 컴포넌트
+ * @param props - MainMapProps
+ * @returns 지도 컴포넌트
+ */
 export const MainMap = ({
   center,
   onCenterChange,
   pathName,
-}: BasicMapProps) => {
+  searchKeyword,
+  onSearchResults,
+}: MainMapProps) => {
   const navigate = useNavigate();
+  /** 지도 중심 좌표 */
   const [mapCenter, setMapCenter] = useState<Location>(
     center || { lat: 37.5665, lng: 126.978 }
   );
+  /** 사용자 현재 위치 */
   const [userLocation, setUserLocation] = useState<Location | null>(null);
 
+  /**
+   * 사용자의 현재 위치를 가져와 지도에 표시
+   */
   const updateUserLocation = () => {
     if (!navigator.geolocation) {
       alert("위치 정보가 지원되지 않는 브라우저입니다.");
@@ -121,10 +149,12 @@ export const MainMap = ({
     );
   };
 
+  /** 컴포넌트 마운트 시 현재 위치 가져오기 */
   useEffect(() => {
     updateUserLocation();
   }, []);
 
+  /** 모바일 뷰포트 높이 설정 */
   useEffect(() => {
     const setVh = () => {
       const vh = window.innerHeight * 0.01;
@@ -137,15 +167,46 @@ export const MainMap = ({
     return () => window.removeEventListener("resize", setVh);
   }, []);
 
+  /** 중심 좌표 변경 시 지도 업데이트 */
   useEffect(() => {
     if (center) {
       setMapCenter(center);
     }
   }, [center]);
 
+  /** 검색어 변경 시 카카오맵 장소 검색 */
+  useEffect(() => {
+    if (searchKeyword && window.kakao) {
+      const ps = new window.kakao.maps.services.Places();
+
+      ps.keywordSearch(searchKeyword, (data, status) => {
+        if (
+          status === window.kakao.maps.services.Status.OK &&
+          data.length > 0
+        ) {
+          const searchResults: SearchResult[] = data.map((place) => ({
+            placeName: place.place_name,
+            address: place.address_name,
+            location: {
+              lat: parseFloat(place.y),
+              lng: parseFloat(place.x),
+            },
+          }));
+          onSearchResults?.(searchResults);
+        } else {
+          alert("검색 결과를 찾을 수 없습니다.");
+        }
+      });
+    }
+  }, [searchKeyword]);
+
+  /**
+   * 마커 클릭 시 상세 페이지로 이동
+   */
   const handleMarkerClick = () => {
     navigate("/recommend/detail/:walkwayId");
   };
+
   return (
     <MapContainer>
       <MapWrapper>
@@ -186,7 +247,6 @@ export const MainMap = ({
             <>
               <MapMarker
                 position={center}
-                onClick={handleMarkerClick}
                 image={{
                   src: SelectedLocationMarker,
                   size: {

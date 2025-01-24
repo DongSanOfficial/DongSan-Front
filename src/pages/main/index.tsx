@@ -1,9 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, ChangeEvent } from "react";
 import { MainMap } from "../../components/map/MainMap";
 import { BottomSheet } from "../../components/bottomsheet/BottomSheet";
 import BottomSheetHeader from "./header/BottomSheetHeader";
 import PathCard from "./components/PathCard";
+import SearchBar from "./header/components/SearchInput";
 import styled from "styled-components";
+import SearchResults, { SearchResult } from "./components/SearchResult";
+
+const MainContainer = styled.div`
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  top: -56px;
+`;
+
+const SearchBarContainer = styled.div`
+  position: fixed;
+  left: 50%;
+  top: 20px;
+  transform: translateX(-50%);
+  width: 90%;
+  z-index: 10;
+`;
 
 const BottomSheetContainer = styled.div`
   position: relative;
@@ -41,6 +59,11 @@ interface PathData {
   rating: number;
   reviewCount: number;
   location: [number, number];
+}
+
+interface Location {
+  lat: number;
+  lng: number;
 }
 
 const mockPathData: PathData[] = [
@@ -97,10 +120,11 @@ const mockPathData: PathData[] = [
     location: [126.9818, 37.5926],
   },
 ];
-
 function Main() {
-  //바텀시트가 초기부터 열려있는 상태
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
+  const [bottomSheetHeight, setBottomSheetHeight] = useState("23vh");
+  const [searchValue, setSearchValue] = useState<string>("");
+  const [searching, setSearching] = useState(false);
   const [selectedPath, setSelectedPath] = useState<{
     location: [number, number];
     name: string;
@@ -115,6 +139,52 @@ function Main() {
       mockPathData.map((path) => [path.walkwayId, path.likeCount])
     )
   );
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [pathData, setPathData] = useState(mockPathData);
+  
+  /**
+   * 검색 결과 처리
+   * @param results - 검색 결과 배열
+   */
+  const handleSearchResults = (results: SearchResult[]) => {
+    setSearchResults(results);
+    setSearching(false);
+  };
+
+  /**
+   * 검색 결과 선택 처리
+   * @param result - 선택된 검색 결과
+   */
+  const handleResultSelect = (result: SearchResult) => {
+    setSelectedPath({
+      location: [result.location.lng, result.location.lat],
+      name: result.placeName,
+    });
+    setSearchResults([]);
+    setSearchValue(result.placeName);
+    setBottomSheetHeight("60vh");
+    setIsOpen(true);
+  };
+
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(e.target.value);
+  };
+
+  /** 검색 수행 */
+  const handleSearch = () => {
+    if (searchValue.trim()) {
+      setSearching(true);
+    }
+  };
+
+  /**
+   * 검색 완료 처리
+   * @param location - 검색된 위치 좌표
+   */
+  const handleSearchComplete = (location: Location) => {
+    setSearching(false);
+    console.log("좌표 확인: ", location);
+  };
 
   const handleLikeClick = (id: number) => {
     setLikedPaths((prev) => ({
@@ -129,11 +199,20 @@ function Main() {
 
   const handlePathClick = (location: [number, number], name: string) => {
     setSelectedPath({ location, name });
-    setIsOpen(false); // PathCard를 터치하면 위치 이동 전에 바텀시트가 내려가도록
+    setIsOpen(false);
   };
 
   return (
-    <>
+    <MainContainer>
+      <SearchBarContainer>
+        <SearchBar
+          value={searchValue}
+          onChange={handleSearchChange}
+          onSearch={handleSearch}
+        />
+        <SearchResults results={searchResults} onSelect={handleResultSelect} />
+      </SearchBarContainer>
+
       <MainMap
         center={
           selectedPath
@@ -141,12 +220,17 @@ function Main() {
             : undefined
         }
         pathName={selectedPath?.name}
+        searchKeyword={searching ? searchValue : undefined}
+        onSearchResults={handleSearchResults}
       />
       <BottomSheet
         isOpen={isOpen}
-        maxHeight="85vh"
-        minHeight="30vh"
-        onClose={() => setIsOpen(false)}
+        maxHeight="60vh"
+        minHeight={bottomSheetHeight}
+        onClose={() => {
+          setIsOpen(false);
+          setBottomSheetHeight("23vh");
+        }}
         onOpen={() => setIsOpen(true)}
       >
         <BottomSheetContainer>
@@ -154,15 +238,13 @@ function Main() {
             <BottomSheetHeader />
           </FixedHeader>
           <PathCardList>
-            {mockPathData.map((path) => (
+            {pathData.map((path) => (
               <PathCard
                 key={path.walkwayId}
                 pathimage={path.courseImageUrl}
                 pathname={path.name}
-                registeredDate={path.registerDate}
                 hashtag={path.hashtags.join(" ")}
                 distance={`${path.distance} km`}
-                likeCount={likeCounts[path.walkwayId]}
                 starCount={path.rating}
                 reviewCount={path.reviewCount}
                 isLiked={likedPaths[path.walkwayId]}
@@ -173,7 +255,7 @@ function Main() {
           </PathCardList>
         </BottomSheetContainer>
       </BottomSheet>
-    </>
+    </MainContainer>
   );
 }
 
