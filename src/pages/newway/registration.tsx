@@ -1,18 +1,19 @@
 import { ChangeEvent, KeyboardEvent, useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { theme } from "src/styles/colors/theme";
-import trail from "src/assets/images/trail.png";
 import DateDisplay from "src/components/newway_register/DateDisplay";
 import TrailInfo from "src/components/newway_register/TrailInfo";
 import ToggleSwitch from "src/components/newway_register/ToggleSwitch";
 import InputField from "src/components/newway_register/InputField";
+import PathMap from "../../components/map/PathMap";
+import { drawPath } from "../../utils/drawPathUtils";
 
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   padding: 20px;
   align-items: center;
-  max-height: 100vh;
 `;
 const ContentWrapper = styled.div`
   display: flex;
@@ -26,14 +27,6 @@ const Content = styled.div`
   justify-content: space-between;
   align-items: center;
   gap: 10px;
-`;
-
-const Img = styled.img`
-  width: 80vw;
-  max-width: 322px;
-  height: 30vh;
-  max-height: 276px;
-  margin-bottom: 20px;
 `;
 
 const Button = styled.button<{ isActive: boolean }>`
@@ -70,12 +63,60 @@ const Tag = styled.span`
   color: #b4b4b4;
 `;
 
+const PathImagePreview = styled.img`
+  width: 80vw;
+  max-width: 322px;
+  height: 30vh;
+  max-height: 276px;
+  margin-top: 20px;
+  object-fit: contain;
+`;
+
+const samplePathCoords: [number, number][] = [
+  [37.5665, 126.9780],
+  [37.5668, 126.9785],
+  [37.5671, 126.9790],
+  [37.5675, 126.9795],
+  [37.5680, 126.9800],
+  [37.5683, 126.9805],
+  [37.5685, 126.9810]
+];
+
+interface PathData {
+  coordinates: [number, number][];
+  totalDistance: number;
+  duration: string;
+  startTime: Date;
+  endTime: Date;
+}
+
 export default function Registration() {
+  const location = useLocation();
+  const [isTestMode, setIsTestMode] = useState(true);
+  
   const [name, setName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [isActive, setIsActive] = useState<boolean>(false);
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState<string>("");
+  const [pathImage, setPathImage] = useState<string>("");
+
+  const pathData: PathData = isTestMode ? {
+    coordinates: samplePathCoords,
+    totalDistance: 1.2,
+    duration: "00:20",
+    startTime: new Date(),
+    endTime: new Date()
+  } : location.state;
+
+  useEffect(() => {
+    const generatePathImage = async () => {
+      const coords = isTestMode ? samplePathCoords : pathData.coordinates;
+      const image = await drawPath(coords);
+      setPathImage(image);
+    };
+    generatePathImage();
+  }, [isTestMode, pathData.coordinates]);
 
   useEffect(() => {
     setIsActive(name.length > 0);
@@ -98,44 +139,67 @@ export default function Registration() {
 
   const handleSubmit = () => {
     if (isActive) {
-      console.log(name, description);
+      const submitData = {
+        coordinates: pathData.coordinates,
+        name,
+        description,
+        tags,
+        pathImage,
+        totalDistance: pathData.totalDistance,
+        duration: pathData.duration,
+        startTime: pathData.startTime,
+        endTime: pathData.endTime
+      };
+      
+      console.log('Submit data:', submitData);
     }
   };
 
   return (
-    <>
-      <Wrapper>
-        <ContentWrapper>
-          <Content>
-            <DateDisplay />
-            <ToggleSwitch />
-          </Content>
-          <TrailInfo duration="00:20" distance={4.8}/>
-        </ContentWrapper>
-        <Img src={trail} alt="Trail" />
-        <InputField
-          name={name}
-          setName={setName}
-          description={description}
-          setDescription={setDescription}
+    <Wrapper>
+      <Button isActive={true} onClick={() => setIsTestMode(!isTestMode)} style={{ marginBottom: '10px' }}>
+        {isTestMode ? '테스트 모드 ON' : '테스트 모드 OFF'}
+      </Button>
+
+      <ContentWrapper>
+        <Content>
+          <DateDisplay />
+          <ToggleSwitch />
+        </Content>
+        <TrailInfo 
+          duration={pathData.duration}
+          distance={pathData.totalDistance}
         />
-        <TagInputWrapper>
-          <TagInput
-            placeholder={"#해시태그 추가하기"}
-            value={tagInput}
-            onChange={handleTagInputChange}
-            onKeyDown={handleTagInputKeyDown}
-          />
-          <TagList>
-            {tags.map((tag, index) => (
-              <Tag key={index}> #{tag}</Tag>
-            ))}
-          </TagList>
-        </TagInputWrapper>
-        <Button isActive={isActive} onClick={handleSubmit}>
-          작성완료
-        </Button>
-      </Wrapper>
-    </>
+      </ContentWrapper>
+      
+      <PathMap pathCoords={pathData.coordinates} />
+      
+      <InputField
+        name={name}
+        setName={setName}
+        description={description}
+        setDescription={setDescription}
+      />
+      
+      <TagInputWrapper>
+        <TagInput
+          placeholder={"#해시태그 추가하기"}
+          value={tagInput}
+          onChange={handleTagInputChange}
+          onKeyDown={handleTagInputKeyDown}
+        />
+        <TagList>
+          {tags.map((tag, index) => (
+            <Tag key={index}> #{tag}</Tag>
+          ))}
+        </TagList>
+      </TagInputWrapper>
+      
+      <Button isActive={isActive} onClick={handleSubmit}>
+        작성완료
+      </Button>
+
+      <PathImagePreview src={pathImage} alt="Path Preview" />
+    </Wrapper>
   );
 }
