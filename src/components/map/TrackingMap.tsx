@@ -47,6 +47,7 @@ export const TrackingMap = ({
     const [userLocation, setUserLocation] = useState<Location | null>(null);
     const [pathCoords, setPathCoords] = useState<number[][]>([]);
     const watchIdRef = useRef<number | null>(null);
+    const lastSaveTimeRef = useRef<number>(0);
 
     const calculateDistance = (coord1: Location, coord2: Location): number => {
         const R = 6371;
@@ -68,26 +69,30 @@ export const TrackingMap = ({
                 lat: position.coords.latitude,
                 lng: position.coords.longitude
             };
-            const newCoord = [newLocation.lng, newLocation.lat];
+            const newCoord = [newLocation.lat, newLocation.lng];
 
             setUserLocation(newLocation);
             setMapCenter(newLocation);
             
             if (isTracking) {
-                setPathCoords(prev => {
-                    const newCoords = [...prev, newCoord];
-                    if (prev.length > 0) {
-                        const lastCoord = prev[prev.length - 1];
-                        const newDistance = calculateDistance(
-                            {lat: lastCoord[1], lng: lastCoord[0]},
-                            newLocation
-                        );
-                        onDistanceUpdate?.(newDistance);
-                    }
+                const currentTime = Date.now();
+                if (currentTime - lastSaveTimeRef.current >= 3000 || pathCoords.length === 0) {
+                    lastSaveTimeRef.current = currentTime;
                     
-                    return newCoords;
-                });
-                onLocationUpdate?.(newLocation);
+                    setPathCoords(prev => {
+                        const newCoords = [...prev, newCoord];
+                            if (prev.length > 0) {
+                            const lastCoord = prev[prev.length - 1];
+                            const newDistance = calculateDistance(
+                                {lat: lastCoord[0], lng: lastCoord[1]},  
+                                newLocation
+                            );
+                            onDistanceUpdate?.(newDistance);
+                        }
+                        return newCoords;
+                    });
+                    onLocationUpdate?.(newLocation);
+                }
             }
         };
 
@@ -143,8 +148,8 @@ export const TrackingMap = ({
                     {userLocation && <MapMarker position={userLocation} />}
                     {pathCoords.length > 1 && (
                         <Polyline
-                            path={pathCoords.map(coord => ({lat: coord[1], lng: coord[0]}))}
-                            strokeWeight={5}
+                        path={pathCoords.map(coord => ({lat: coord[0], lng: coord[1]}))}
+                        strokeWeight={5}
                             strokeColor="#FF7575"
                             strokeOpacity={0.7}
                             strokeStyle="solid"
