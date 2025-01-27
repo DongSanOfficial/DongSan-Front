@@ -69,12 +69,14 @@ interface TrackingMapProps {
   isTracking: boolean;
   onLocationUpdate?: (location: Location) => void;
   onDistanceUpdate?: (distance: number) => void;
+  onCenterChange?: (location: Location) => void;
 }
 
 export const TrackingMap = ({
   isTracking,
   onLocationUpdate,
   onDistanceUpdate,
+  onCenterChange,
 }: TrackingMapProps) => {
   const [mapCenter, setMapCenter] = useState<Location>({
     lat: 37.5665,
@@ -192,12 +194,16 @@ export const TrackingMap = ({
         };
         setUserLocation(newLocation);
         setMapCenter(newLocation);
+        onCenterChange?.(newLocation);
       },
       (error) => {
         console.error("Error getting user location:", error);
-        alert(
-          "위치 정보를 가져올 수 없습니다. 디바이스 설정에서 위치 권한을 확인해주세요."
-        );
+        alert("위치 정보를 가져올 수 없습니다.");
+      },
+      {
+        enableHighAccuracy: true,
+        maximumAge: 0,
+        timeout: 5000,
       }
     );
   };
@@ -207,6 +213,15 @@ export const TrackingMap = ({
       <MapWrapper>
         <Map
           center={mapCenter}
+          onCenterChanged={(map) => {
+            const latlng = map.getCenter();
+            const newCenter = {
+              lat: latlng.getLat(),
+              lng: latlng.getLng(),
+            };
+            setMapCenter(newCenter);
+            onCenterChange?.(newCenter);
+          }}
           style={{ width: "100%", height: "100%" }}
           level={2}
         >
@@ -225,12 +240,14 @@ export const TrackingMap = ({
           )}
         </Map>
       </MapWrapper>
-      <LocationButton
-        onClick={updateUserLocation}
-        aria-label="현재 위치로 이동"
-      >
-        <StyledLocationIcon />
-      </LocationButton>
+      {!isTracking && (
+        <LocationButton
+          onClick={updateUserLocation}
+          aria-label="현재 위치로 이동"
+        >
+          <StyledLocationIcon />
+        </LocationButton>
+      )}
     </MapContainer>
   );
 };
