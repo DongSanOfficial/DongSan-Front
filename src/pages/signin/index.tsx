@@ -1,12 +1,33 @@
-import styled from "styled-components";
-import { Link } from "react-router-dom";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import styled from "styled-components";
 import { ReactComponent as MainLogo } from "../../assets/svg/MainLogo.svg";
-import { ReactComponent as KakaoLogo } from "../../assets/svg/loginKakao.svg";
-import { ReactComponent as GoogleLogo } from "../../assets/svg/loginGoogle.svg";
+import LoginButton from "../../components/button/LoginButton";
 
 const API_BASE_URL = process.env.REACT_APP_BASE_URL;
+
+const Container = styled.div`
+  display: flex;
+  height: 100vh;
+  padding: 0 30px;
+`;
+
+const Content = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  height: 60vh;
+  margin: auto;
+  width: 100%;
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+`;
 
 export default function SignIn() {
   const location = useLocation();
@@ -26,72 +47,15 @@ export default function SignIn() {
         <MainLogo />
         <ButtonContainer>
           <LoginButton
-            isKakao={true}
+            variant="kakaoLogin"
             to={`${API_BASE_URL}/oauth2/authorization/kakao`}
-          >
-            <StyledKakaoIcon />
-            카카오 로그인
-          </LoginButton>
+          />
           <LoginButton
-            isKakao={false}
-            to={`${API_BASE_URL}/oauth2/authorization/google`}
-          >
-            <StyledGoogleIcon />
-            구글 로그인
-          </LoginButton>
+            variant="naverLogin"
+            to={`${API_BASE_URL}/oauth2/authorization/naver`}
+          />
         </ButtonContainer>
       </Content>
     </Container>
   );
 }
-
-const Container = styled.div`
-  display: flex;
-  height: 80vh;
-`;
-
-const Content = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin: auto;
-  align-items: center;
-  gap: 20vh;
-`;
-
-const ButtonContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  padding: 20px;
-`;
-
-interface LoginButtonProps {
-  isKakao?: boolean;
-}
-
-const LoginButton = styled(Link)<LoginButtonProps>`
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-  width: 340px;
-  height: 50px;
-  font-size: 12px;
-  background-color: ${(props) => (props.isKakao ? "#FCE51E" : "#FFFFFF")};
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  font-weight: bold;
-  border-radius: 20px;
-  text-decoration: none;
-  color: ${(props) => (props.isKakao ? "#000000" : "#4285F4")};
-`;
-
-const StyledKakaoIcon = styled(KakaoLogo)`
-  width: 20px;
-  height: 20px;
-`;
-
-const StyledGoogleIcon = styled(GoogleLogo)`
-  width: 20px;
-  height: 20px;
-`;
