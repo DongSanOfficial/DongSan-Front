@@ -127,15 +127,15 @@ function NewWay() {
     }
   
     const formattedCoords: [number, number][] = pathCoordsRef.current.map((coord) => [
-      Number(coord.lat.toFixed(5)),
-      Number(coord.lng.toFixed(5))
-    ]);
+      coord.lat,
+      coord.lng
+      ]);
 
     console.log("Path Coordinates:", formattedCoords);
 
     const pathData: PathData = {
       coordinates: formattedCoords,
-      totalDistance: distance,
+      totalDistance: Number(distance.toFixed(2)),
       duration: duration,
       startTime: new Date(startTimeRef.current!),
       endTime: new Date(),
