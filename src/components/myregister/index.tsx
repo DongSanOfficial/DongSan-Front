@@ -10,7 +10,8 @@ import { useNavigate } from "react-router-dom";
 import { theme } from "src/styles/colors/theme";
 import PathMap from "../map/PathMap";
 
-const Wrapper = styled.div`
+// 레이아웃 관련
+const PageWrapper = styled.div`
   display: flex;
   flex-direction: column;
   padding: 10px 20px;
@@ -20,20 +21,28 @@ const Wrapper = styled.div`
   }
 `;
 
-const ContentWrapper = styled.div`
+const HeaderContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
 `;
 
-const Content = styled.div`
+const HeaderTopBar = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  width: 100%;
 `;
 
-const DateText = styled.div`
+// 산책로 정보 컴포넌트 관련
+const PathTitle = styled.div`
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 5px 0px 5px 0px;
+`;
+
+const PathDate = styled.div`
   color: ${theme.Green500};
   font-weight: 600;
   display: flex;
@@ -44,26 +53,18 @@ const DateText = styled.div`
   }
 `;
 
-const TrailInfoContainer = styled.div`
+const PathInfoContainer = styled.div`
   display: flex;
   justify-content: center;
 `;
 
-const Title = styled.div`
-  font-size: 1.125rem;
-  font-weight: 600;
-  margin: 5px 0px 5px 0px;
+const PathDescription = styled.div`
+  font-size: 13px;
+  margin: 10px;
 `;
 
-const MapContainer = styled.div`
-  width: 100%;
-  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
-  border-radius: 20px 20px 0px 0px;
-  height: 35vh;
-  overflow: hidden;
-`;
-
-const ShowField = styled.div`
+// 지도 관련
+const MapSection = styled.div`
   max-width: 80vw;
   height: 100%;
   display: flex;
@@ -73,7 +74,15 @@ const ShowField = styled.div`
   width: 100%;
 `;
 
-const FieldContent = styled.div`
+const MapBox = styled.div`
+  width: 100%;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
+  border-radius: 20px 20px 0px 0px;
+  height: 35vh;
+  overflow: hidden;
+`;
+
+const MapDetailsContainer = styled.div`
   width: 100%;
   height: 100%;
   background: #ffffff;
@@ -81,18 +90,19 @@ const FieldContent = styled.div`
   border-radius: 0px 0px 10px 10px;
 `;
 
-const IconWrapper = styled.div`
+// 유저 반응(좋아오, 별점, 리뷰) 관련
+const ReactionBar = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-around;
+  justify-content: center;
   margin: 10px;
 `;
 
-interface IconButtonProps {
+interface ReactionButtonProps {
   active?: boolean;
 }
 
-const IconButton = styled.div<IconButtonProps>`
+const ReactionButton = styled.div<ReactionButtonProps>`
   display: flex;
   align-items: center;
   font-size: 12px;
@@ -100,28 +110,7 @@ const IconButton = styled.div<IconButtonProps>`
   color: ${(props) => (props.active ? "red" : "black")};
 `;
 
-const Explanation = styled.div`
-  font-size: 13px;
-  margin: 10px;
-`;
-
-const HashtagContainer = styled.div`
-  display: flex;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  gap: 5px;
-  margin: 10px;
-  padding-bottom: 10px;
-`;
-
-const Hashtag = styled.div`
-  font-size: 12px;
-  font-weight: 600;
-  margin: 2px;
-  flex-shrink: 0;
-`;
-
-const Button = styled.button`
+const EditButton = styled.button`
   background-color: #888;
   color: #ffffff;
   width: 100%;
@@ -132,26 +121,44 @@ const Button = styled.button`
   margin-top: 20px;
 `;
 
-const StarContainer = styled.div`
+// 해시태그 관련
+const TagsContainer = styled.div`
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 5px;
+  margin: 10px;
+  padding-bottom: 10px;
+`;
+
+const TagItem = styled.div`
+  font-size: 12px;
+  font-weight: 600;
+  margin: 2px;
+  flex-shrink: 0;
+`;
+
+// 별점 관련
+const RatingContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
 `;
 
-const StarGroup = styled.div`
+const RatingGroup = styled.div`
   display: flex;
   gap: 2px;
   align-items: center;
   font-size: 13px;
 `;
 
-const StarRating = styled.span`
+const RatingScore = styled.span`
   margin-right: 4px;
   color: ${theme.Gray700};
 `;
 
-const StarWrapper = styled.div`
+const StarBox = styled.div`
   position: relative;
   width: 14px;
   height: 14px;
@@ -184,6 +191,7 @@ const StyledHeart = styled(HeartIcon)<{ $isActive: boolean }>`
   margin-right: 3px;
 `;
 
+// 목데이터
 const mockPathData = {
   pathId: 1,
   name: "홍대 문화거리 산책",
@@ -212,18 +220,16 @@ const mockPathData = {
   },
 };
 
-export default function MyRegister() {
+export default function PathDetails() {
   const navigate = useNavigate();
   const pathData = mockPathData;
 
   const [heartCount, setHeartCount] = useState<number>(
     pathData.statistics.heartCount
   );
-
   const [isHeartActive, setIsHeartActive] = useState<boolean>(
     pathData.statistics.isHearted
   );
-
   const [hashtags, setHashtags] = useState<String[]>(pathData.tags);
 
   const toggleHeart = (): void => {
@@ -252,65 +258,74 @@ export default function MyRegister() {
       const percentage = Math.min(Math.max(diff, 0), 1) * 100;
 
       return (
-        <StarWrapper key={value}>
+        <StarBox key={value}>
           <StyledStar isactive="false" />
           {percentage > 0 && <PartialStar width={percentage} isactive="true" />}
-        </StarWrapper>
+        </StarBox>
       );
     });
   };
 
   return (
-    <Wrapper>
-      <ContentWrapper>
-        <Content>
-          <BiCalendarCheck
-            style={{ color: "black", width: "27px", height: "27px" }}
-          />
-          <DateText>{pathData.date}</DateText>
+    <PageWrapper>
+      <HeaderContainer>
+        {/* 날짜, 공개 토글 */}
+        <HeaderTopBar>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <BiCalendarCheck
+              style={{ color: "black", width: "27px", height: "27px" }}
+            />
+            <PathDate>{pathData.date}</PathDate>
+          </div>
           <ToggleSwitch />
-        </Content>
-        <Title>{pathData.name}</Title>
-        <TrailInfoContainer>
+        </HeaderTopBar>
+        {/* 산책로 제목 */}
+        <PathTitle>{pathData.name}</PathTitle>
+        {/* 산책로 경과 시간, 거리 정보 */}
+        <PathInfoContainer>
           <TrailInfo
             duration={pathData.duration}
             distance={pathData.totalDistance}
           />
-        </TrailInfoContainer>
-      </ContentWrapper>
-      <ShowField>
-        <MapContainer>
+        </PathInfoContainer>
+      </HeaderContainer>
+      {/* 지도를 포함한, 산책로 관련 유저 입력 정보 */}
+      <MapSection>
+        {/* 지도 */}
+        <MapBox>
           <PathMap pathCoords={pathData.coordinates} />
-        </MapContainer>
-        <FieldContent>
-          <IconWrapper>
-            <IconButton active={isHeartActive} onClick={toggleHeart}>
+        </MapBox>
+        <MapDetailsContainer>
+          {/* 좋아요, 별점, 리뷰 */}
+          <ReactionBar>
+            <ReactionButton>
               <StyledHeart $isActive={isHeartActive} onClick={toggleHeart} />
               {heartCount}
-            </IconButton>
-            <StarContainer>
-              <StarGroup>
+            </ReactionButton>
+            <RatingContainer>
+              <RatingGroup>
                 {renderStars(pathData.statistics.starCount)}
-                <StarRating>
+                <RatingScore>
                   {pathData.statistics.starCount.toFixed(1)}
-                </StarRating>
+                </RatingScore>
                 <span>리뷰 {pathData.statistics.reviewCount}개</span>
-              </StarGroup>
-            </StarContainer>
-            <IconButton onClick={goToReviews}>
+              </RatingGroup>
+            </RatingContainer>
+            <ReactionButton onClick={goToReviews}>
               <MdArrowForwardIos />
-            </IconButton>
-          </IconWrapper>
-
-          <Explanation>{pathData.description}</Explanation>
-          <HashtagContainer>
+            </ReactionButton>
+          </ReactionBar>
+          {/* 산책로 부가설명, 태그 */}
+          <PathDescription>{pathData.description}</PathDescription>
+          <TagsContainer>
             {hashtags.map((hashtag, index) => (
-              <Hashtag key={index}> #{hashtag}</Hashtag>
+              <TagItem key={index}> #{hashtag}</TagItem>
             ))}
-          </HashtagContainer>
-        </FieldContent>
-      </ShowField>
-      <Button onClick={handleEditClick}>수정하기</Button>
-    </Wrapper>
+          </TagsContainer>
+        </MapDetailsContainer>
+      </MapSection>
+      {/* 수정하기 버튼 */}
+      <EditButton onClick={handleEditClick}>수정하기</EditButton>
+    </PageWrapper>
   );
 }
