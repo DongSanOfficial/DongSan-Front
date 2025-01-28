@@ -11,6 +11,7 @@ import {
 import { IoMdHeartEmpty, IoMdHeart } from "react-icons/io";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import PathMap from "../map/PathMap";
 
 const Wrapper = styled.div`
   display: flex;
@@ -51,8 +52,7 @@ const ShowField = styled.div`
   align-items: center;
   margin: 10px auto;
 `;
-const Img = styled.img`
-  background: #c7c7c7;
+const Img = styled(PathMap)`
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
   border-radius: 20px 20px 0px 0px;
   height: 35vh;
@@ -117,7 +117,12 @@ export default function MyRegister() {
   const navigate = useNavigate();
   const location = useLocation();
   const submitData = location.state || {};
-  const { name = "", description = "", tags = [] } = submitData;
+  const {
+    name = "",
+    description = "",
+    tags = [],
+    coordinates = [],
+  } = submitData;
 
   const [heartCount, setHeartCount] = useState<number>(0);
   const [starCount, setStarCount] = useState<number>(0);
@@ -160,7 +165,8 @@ export default function MyRegister() {
         </TrailInfoContainer>
       </ContentWrapper>
       <ShowField>
-        <Img src={trail} alt="Trail" />
+        <Img pathCoords={coordinates} />
+
         <FieldContent>
           <IconWrapper>
             <IconButton active={isHeartActive} onClick={toggleHeart}>
