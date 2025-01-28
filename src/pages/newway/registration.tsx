@@ -15,18 +15,19 @@ const Wrapper = styled.div`
   padding: 20px;
   align-items: center;
 `;
+
 const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 `;
+
 const Content = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  gap: 10px;
 `;
 
 const Button = styled.button<{ isActive: boolean }>`
@@ -39,6 +40,7 @@ const Button = styled.button<{ isActive: boolean }>`
   font-size: 16px;
   font-weight: 500;
 `;
+
 const TagInputWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -48,17 +50,20 @@ const TagInputWrapper = styled.div`
   max-width: 322px;
   margin-bottom: 20px;
 `;
+
 const TagList = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
 `;
+
 const TagInput = styled.input`
   border: none;
   outline: none;
   font-size: 12px;
   width: 90%;
 `;
+
 const Tag = styled.span`
   font-size: 12px;
   color: #b4b4b4;
@@ -73,18 +78,27 @@ const PathImagePreview = styled.img`
   object-fit: contain;
 `;
 
-const samplePathCoords: [number, number][] = [
-  [37.5665, 126.978],
-  [37.5668, 126.9785],
-  [37.5671, 126.979],
-  [37.5675, 126.9795],
-  [37.568, 126.98],
-  [37.5683, 126.9805],
-  [37.5685, 126.981],
+const PathMapContainer = styled.div`
+  width: 90vw;
+  height: 35vh;
+  margin-bottom: 10px;
+  border-radius: 15px;
+  overflow: hidden;
+`;
+
+// 샘플 경로 데이터
+const samplePathCoords = [
+  { lat: 37.5665, lng: 126.978 },
+  { lat: 37.5668, lng: 126.9785 },
+  { lat: 37.5671, lng: 126.979 },
+  { lat: 37.5675, lng: 126.9795 },
+  { lat: 37.568, lng: 126.98 },
+  { lat: 37.5683, lng: 126.9805 },
+  { lat: 37.5685, lng: 126.981 },
 ];
 
 interface PathData {
-  coordinates: [number, number][];
+  coordinates: Array<{ lat: number; lng: number }>;
   totalDistance: number;
   duration: string;
   startTime: Date;
@@ -163,16 +177,27 @@ export default function Registration() {
         endTime: pathData.endTime,
       };
 
-      console.log("Submit data:", submitData);
-      navigate("/mypage/myregister/:walkwayId", { state: submitData });
+      console.log("등록 완료 시 전체 데이터:", {
+        경로정보: submitData.coordinates,
+        산책명: submitData.name,
+        설명: submitData.description,
+        해시태그: submitData.tags,
+        총거리: submitData.totalDistance,
+        소요시간: submitData.duration,
+        이미지생성여부: !!submitData.pathImage,
+      });      navigate("/mypage/myregister/:walkwayId", { state: submitData });
     }
+  };
+
+  const toggleTestMode = () => {
+    setIsTestMode(!isTestMode);
   };
 
   return (
     <Wrapper>
       <Button
         isActive={true}
-        onClick={() => setIsTestMode(!isTestMode)}
+        onClick={toggleTestMode}
         style={{ marginBottom: "10px" }}
       >
         {isTestMode ? "테스트 모드 ON" : "테스트 모드 OFF"}
@@ -188,16 +213,15 @@ export default function Registration() {
           distance={pathData.totalDistance}
         />
       </ContentWrapper>
-
-      <PathMap pathCoords={pathData.coordinates} />
-
+      <PathMapContainer>
+        <PathMap pathCoords={pathData.coordinates} />
+      </PathMapContainer>
       <InputField
         name={name}
         setName={setName}
         description={description}
         setDescription={setDescription}
       />
-
       <TagInputWrapper>
         <TagInput
           placeholder={"#해시태그 추가하기"}
@@ -211,7 +235,6 @@ export default function Registration() {
           ))}
         </TagList>
       </TagInputWrapper>
-
       <Button isActive={isActive} onClick={handleSubmit}>
         {isEditMode ? "수정완료" : "작성완료"}
       </Button>

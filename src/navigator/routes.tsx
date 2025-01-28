@@ -27,7 +27,7 @@ export const routes = [
     headerOptions: { headerShown: false },
   },
   {
-    path: "/recommend/detail/:walkwayId",
+    path: "/main/recommend/detail/:walkwayId",
     component: RecommendTrail,
     headerOptions: { title: "산책로", showBackButton: true },
   },
@@ -77,12 +77,12 @@ export const routes = [
     headerOptions: { headerShown: false },
   },
   {
-    path: "/review/:walkwayId/content",
+    path: "/main/review/:walkwayId/content",
     component: ReviewCheck,
     headerOptions: { title: "산책로 리뷰", showBackButton: true },
   },
   {
-    path: "/review/:walkwayId",
+    path: "/main/review/:walkwayId",
     component: ReviewPage,
     headerOptions: { title: "리뷰 작성하기", showBackButton: true },
   },
@@ -92,7 +92,7 @@ export const routes = [
     headerOptions: { title: "산책로 이용하기", showBackButton: true },
   },
   {
-    path: "/usedtrail/detail/:walkwayId",
+    path: "/main/usedtrail/detail/:walkwayId",
     component: DetailUsing,
     headerOptions: { title: "산책로", showBackButton: true },
   },

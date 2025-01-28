@@ -14,9 +14,6 @@ const LayoutWrapper = styled.div<{ hasBottomNav: boolean }>`
 const ContentWrapper = styled.div<{ hasBottomNav: boolean }>`
   flex: 1;
   overflow-y: auto;
-  ${props => props.hasBottomNav && `
-    padding-bottom: 70px;  // 하단 네비게이션이 있을 때만 패딩 적용
-  `}
 `;
 
 interface LayoutProps {

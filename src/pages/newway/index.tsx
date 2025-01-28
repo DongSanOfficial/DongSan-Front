@@ -53,7 +53,7 @@ interface Location {
 }
 
 interface PathData {
-  coordinates: [number, number][]; 
+  coordinates: Location[];
   totalDistance: number;
   duration: string;
   startTime: Date;
@@ -122,20 +122,19 @@ function NewWay() {
 
   // 산책 중단 확인
   const handleStopWalk = () => {
+    // 타이머 정지
     if (timerIdRef.current) {
       clearInterval(timerIdRef.current);
     }
-  
-    const formattedCoords: [number, number][] = pathCoordsRef.current.map((coord) => [
-      coord.lat,
-      coord.lng
-      ]);
-
-    console.log("Path Coordinates:", formattedCoords);
+    console.log('산책 중단 시 저장된 경로 좌표:', {
+      좌표배열: pathCoordsRef.current,
+      총거리: distance,
+      소요시간: duration
+    });
 
     const pathData: PathData = {
-      coordinates: formattedCoords,
-      totalDistance: Number(distance.toFixed(2)),
+      coordinates: pathCoordsRef.current,
+      totalDistance:  Number(distance.toFixed(2)),
       duration: duration,
       startTime: new Date(startTimeRef.current!),
       endTime: new Date(),

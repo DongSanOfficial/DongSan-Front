@@ -3,35 +3,39 @@ import { Map, Polyline } from "react-kakao-maps-sdk";
 import styled from "styled-components";
 
 const MapContainer = styled.div`
-  width: 80vw;
-  max-width: 322px;
-  height: 30vh;
-  max-height: 276px;
-  margin-bottom: 20px;
+  width: 100%;
+  height: 100%;
 `;
 
+interface Location {
+  lat: number;
+  lng: number;
+}
+
 interface PathMapProps {
-  pathCoords: [number, number][];
+  pathCoords: Location[];
 }
 
 const PathMap = ({ pathCoords }: PathMapProps) => {
-  const center = {
-    lat: pathCoords[0][0],
-    lng: pathCoords[0][1],
-  };
+  if (!pathCoords || pathCoords.length === 0) {
+    return <div>표시할 경로 데이터가 없습니다</div>;
+  }
 
-  const mapCoords = pathCoords.map(([lat, lng]) => ({ lat, lng }));
+  const center = {
+    lat: pathCoords[0].lat,
+    lng: pathCoords[0].lng,
+  };
 
   return (
     <MapContainer>
       <Map
         center={center}
         style={{ width: "100%", height: "100%" }}
-        level={3}
+        level={2}
         draggable={true}
       >
         <Polyline
-          path={mapCoords}
+          path={pathCoords}
           strokeWeight={5}
           strokeColor="#FF7575"
           strokeOpacity={0.7}

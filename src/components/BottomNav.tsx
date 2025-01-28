@@ -53,23 +53,27 @@ const StyledSVG = styled.div<{ isActive: boolean }>`
 const BottomNav = () => {
   const location = useLocation();
 
+  const isPathActive = (basePath: string): boolean => {
+    return location.pathname.startsWith(basePath);
+  };
+
   return (
     <NavBar>
       <NavContent>
         <NavLink to="/newway">
-          <StyledSVG isActive={location.pathname === '/newway'}>
+          <StyledSVG isActive={isPathActive('/newway')}>
             <NewWay />
           </StyledSVG>
         </NavLink>
 
         <NavLink to="/main">
-          <StyledSVG isActive={location.pathname === '/main'}>
+          <StyledSVG isActive={isPathActive('/main')}>
             <Home />
           </StyledSVG>
         </NavLink>
 
         <NavLink to="/mypage">
-          <StyledSVG isActive={location.pathname === '/mypage'}>
+          <StyledSVG isActive={isPathActive('/mypage')}>
             <MyPage />
           </StyledSVG>
         </NavLink>
