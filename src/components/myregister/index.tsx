@@ -10,7 +10,7 @@ import {
 } from "react-icons/md";
 import { IoMdHeartEmpty, IoMdHeart } from "react-icons/io";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Wrapper = styled.div`
   display: flex;
@@ -115,12 +115,16 @@ const Button = styled.button`
 
 export default function MyRegister() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const submitData = location.state || {};
+  const { name = "", description = "", tags = [] } = submitData;
+
   const [heartCount, setHeartCount] = useState<number>(0);
   const [starCount, setStarCount] = useState<number>(0);
   const [reviewCount, setReviewCount] = useState<number>(0);
   const [isHeartActive, setIsHeartActive] = useState<boolean>(false);
   const [isStarActive, setIsStarActive] = useState<boolean>(false);
-  const [hashtags, setHashtgs] = useState<String[]>(["청계천", "호수"]);
+  const [hashtags, setHashtgs] = useState<String[]>(tags);
 
   const toggleHeart = (): void => {
     setIsHeartActive(!isHeartActive);
@@ -131,7 +135,7 @@ export default function MyRegister() {
     setStarCount((prev) => (isStarActive ? prev - 1 : prev + 1));
   };
   const goToReviews = (): void => {
-    navigate("/reviews");
+    navigate("/reviews/:walkwayId");
   };
   return (
     <Wrapper>
@@ -140,7 +144,7 @@ export default function MyRegister() {
           <DateDisplay />
           <ToggleSwitch />
         </Content>
-        <Title>가을에 걷기 좋은 산책로</Title>
+        <Title>{name}</Title>
         <TrailInfoContainer>
           <TrailInfo duration={"12:00"} distance={53} />
         </TrailInfoContainer>
@@ -171,7 +175,7 @@ export default function MyRegister() {
             </IconButton>
           </IconWrapper>
 
-          <Explanation>풍경 좋은 청계천 근처 산책로! 걸어보세용</Explanation>
+          <Explanation>{description}</Explanation>
           <HashtagContainer>
             {hashtags.map((hashtag, index) => (
               <Hashtag key={index}> #{hashtag}</Hashtag>
