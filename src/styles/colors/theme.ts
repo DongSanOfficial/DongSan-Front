@@ -3,6 +3,10 @@ export const theme = {
     Black: '#121212',
     Red: '#FF4646',
     Yellow: '#FACC15',
+    Kakao: '#FEE500',
+    KakaoBtnText: '#333B58',
+    Naver: '#03C75A',
+
     
     Gray900: '#191F28',
     Gray800: '#333D4B',
