@@ -6,6 +6,7 @@ import PathCard from "./components/PathCard";
 import SearchBar from "./header/components/SearchInput";
 import styled from "styled-components";
 import SearchResults, { SearchResult } from "./components/SearchResult";
+import BottomNavigation from "src/components/bottomNavigation";
 
 const MainContainer = styled.div`
   position: relative;
@@ -42,7 +43,7 @@ const PathCardList = styled.div`
   align-items: center;
   gap: 20px;
   padding: 10px 0 70px 0;
-  overflow-y: auto;
+  overflow: scroll;
   flex: 1;
 `;
 
@@ -140,7 +141,7 @@ function Main() {
   );
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [pathData, setPathData] = useState(mockPathData);
-  
+
   /**
    * 검색 결과 처리
    * @param results - 검색 결과 배열
@@ -202,59 +203,65 @@ function Main() {
   };
 
   return (
-    <MainContainer>
-      <SearchBarContainer>
-        <SearchBar
-          value={searchValue}
-          onChange={handleSearchChange}
-          onSearch={handleSearch}
-        />
-        <SearchResults results={searchResults} onSelect={handleResultSelect} />
-      </SearchBarContainer>
+    <>
+      <MainContainer>
+        <SearchBarContainer>
+          <SearchBar
+            value={searchValue}
+            onChange={handleSearchChange}
+            onSearch={handleSearch}
+          />
+          <SearchResults
+            results={searchResults}
+            onSelect={handleResultSelect}
+          />
+        </SearchBarContainer>
 
-      <MainMap
-        center={
-          selectedPath
-            ? { lat: selectedPath.location[1], lng: selectedPath.location[0] }
-            : undefined
-        }
-        pathName={selectedPath?.name}
-        searchKeyword={searching ? searchValue : undefined}
-        onSearchResults={handleSearchResults}
-      />
-      <BottomSheet
-        isOpen={isOpen}
-        maxHeight="60vh"
-        minHeight={bottomSheetHeight}
-        onClose={() => {
-          setIsOpen(false);
-          setBottomSheetHeight("23vh");
-        }}
-        onOpen={() => setIsOpen(true)}
-      >
-        <BottomSheetContainer>
-          <FixedHeader>
-            <BottomSheetHeader />
-          </FixedHeader>
-          <PathCardList>
-            {pathData.map((path) => (
-              <PathCard
-                key={path.walkwayId}
-                pathimage={path.courseImageUrl}
-                pathname={path.name}
-                hashtag={path.hashtags.join(" ")}
-                distance={`${path.distance} km`}
-                starCount={path.rating}
-                reviewCount={path.reviewCount}
-                isLiked={likedPaths[path.walkwayId]}
-                onLikeClick={() => handleLikeClick(path.walkwayId)}
-                onClick={() => handlePathClick(path.location, path.name)}
-              />
-            ))}
-          </PathCardList>
-        </BottomSheetContainer>
-      </BottomSheet>
-    </MainContainer>
+        <MainMap
+          center={
+            selectedPath
+              ? { lat: selectedPath.location[1], lng: selectedPath.location[0] }
+              : undefined
+          }
+          pathName={selectedPath?.name}
+          searchKeyword={searching ? searchValue : undefined}
+          onSearchResults={handleSearchResults}
+        />
+        <BottomSheet
+          isOpen={isOpen}
+          maxHeight="60vh"
+          minHeight={bottomSheetHeight}
+          onClose={() => {
+            setIsOpen(false);
+            setBottomSheetHeight("23vh");
+          }}
+          onOpen={() => setIsOpen(true)}
+        >
+          <BottomSheetContainer>
+            <FixedHeader>
+              <BottomSheetHeader />
+            </FixedHeader>
+            <PathCardList>
+              {pathData.map((path) => (
+                <PathCard
+                  key={path.walkwayId}
+                  pathimage={path.courseImageUrl}
+                  pathname={path.name}
+                  hashtag={path.hashtags.join(" ")}
+                  distance={`${path.distance} km`}
+                  starCount={path.rating}
+                  reviewCount={path.reviewCount}
+                  isLiked={likedPaths[path.walkwayId]}
+                  onLikeClick={() => handleLikeClick(path.walkwayId)}
+                  onClick={() => handlePathClick(path.location, path.name)}
+                />
+              ))}
+            </PathCardList>
+          </BottomSheetContainer>
+        </BottomSheet>
+      </MainContainer>
+      <BottomNavigation />
+    </>
   );
 }
 

@@ -5,101 +5,20 @@ import { ReactComponent as Favorite } from "../../assets/svg/Favorite.svg";
 import { ReactComponent as BookMark } from "../../assets/svg/BookMark.svg";
 import TrailCard from "src/components/TrailCard_mp";
 import ReviewCard from "src/components/ReviewCard_mp";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import profileImg from "../../assets/svg/profile.svg";
 import TrailBookmark from "../mypage/TrailBookmark";
 import { getUserProfile } from "../../apis/auth";
 import { UserProfileType } from "../../apis/auth.type";
+import BottomNavigation from "src/components/bottomNavigation";
+import AppBar from "src/components/appBar";
 
-function MyPage() {
-  const [userProfile, setUserProfile] = useState<UserProfileType | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        const profile = await getUserProfile();
-        setUserProfile(profile);
-      } catch (err) {
-        setError("프로필 정보를 불러오는데 실패했습니다.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchUserProfile();
-  }, []);
-
-  if (isLoading) return <div>로딩중...</div>;
-  if (error) return <div>{error}</div>;
-
-  return (
-    <Wrapper>
-      <Profile>
-        <Img 
-          src={userProfile?.profileImageUrl || profileImg} 
-          alt="프로필 이미지" 
-        />
-        <div>
-          <Name>{userProfile?.nickname || "이름"}</Name>
-          <div>{userProfile?.email || "이메일 정보 없음"}</div>
-        </div>
-      </Profile>
-      <Line />
-      <div>
-        <SeeAll>
-          <Title>내가 등록한 산책로 보기</Title>
-          <Link to="/mypage/TrailList">
-            <Button>전체보기</Button>
-          </Link>
-        </SeeAll>
-        <Items>
-          {trails.map((trail) => (
-            <TrailCard key={trail.id} trail={trail} />
-          ))}
-        </Items>
-      </div>
-      <Line />
-      <Title>내가 "찜"한 산책로 조회</Title>
-      {trailsBookmarks.map((trail, index) => (
-        <TrailBookmark
-          key={index}
-          icon={trail.icon}
-          path={trail.path}
-          title={trail.title}
-        />
-      ))}
-      <Line />
-      <div>
-        <SeeAll>
-          <Title>내가 작성한 리뷰 모아보기</Title>
-          <Link to="/mypage/ReviewList">
-            <Button>전체보기</Button>
-          </Link>
-        </SeeAll>
-        <Items>
-          {reviews.map((review) => (
-            <ReviewCard
-              key={review.id}
-              trailName={review.trailName}
-              date={review.date}
-              content={review.content}
-              rating={review.rating}
-            />
-          ))}
-        </Items>
-      </div>
-    </Wrapper>
-  );
-}
-
-export default MyPage;
 const Wrapper = styled.div`
   display: flex;
+  padding: 10px;
   flex-direction: column;
-  padding: 15px;
-  min-height: 100%;
+  overflow: scroll;
+  height: calc(100dvh - 126px);
   &::-webkit-scrollbar {
     display: none;
   }
@@ -230,3 +149,94 @@ const reviews: Review[] = [
     rating: 4,
   },
 ];
+
+function MyPage() {
+  const navigate = useNavigate();
+
+  const [userProfile, setUserProfile] = useState<UserProfileType | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const profile = await getUserProfile();
+        setUserProfile(profile);
+      } catch (err) {
+        setError("프로필 정보를 불러오는데 실패했습니다.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
+
+  if (isLoading) return <div>로딩중...</div>;
+  if (error) return <div>{error}</div>;
+
+  return (
+    <>
+      <AppBar onBack={() => navigate('/')} title="마이 페이지" />
+      <Wrapper>
+        <Profile>
+          <Img
+            src={userProfile?.profileImageUrl || profileImg}
+            alt="프로필 이미지"
+          />
+          <div>
+            <Name>{userProfile?.nickname || "이름"}</Name>
+            <div>{userProfile?.email || "이메일 정보 없음"}</div>
+          </div>
+        </Profile>
+        <Line />
+        <div>
+          <SeeAll>
+            <Title>내가 등록한 산책로 보기</Title>
+            <Link to="/mypage/TrailList">
+              <Button>전체보기</Button>
+            </Link>
+          </SeeAll>
+          <Items>
+            {trails.map((trail) => (
+              <TrailCard key={trail.id} trail={trail} />
+            ))}
+          </Items>
+        </div>
+        <Line />
+        <Title>내가 "찜"한 산책로 조회</Title>
+        {trailsBookmarks.map((trail, index) => (
+          <TrailBookmark
+            key={index}
+            icon={trail.icon}
+            path={trail.path}
+            title={trail.title}
+          />
+        ))}
+        <Line />
+        <div>
+          <SeeAll>
+            <Title>내가 작성한 리뷰 모아보기</Title>
+            <Link to="/mypage/ReviewList">
+              <Button>전체보기</Button>
+            </Link>
+          </SeeAll>
+          <Items>
+            {reviews.map((review) => (
+              <ReviewCard
+                key={review.id}
+                trailName={review.trailName}
+                date={review.date}
+                content={review.content}
+                rating={review.rating}
+              />
+            ))}
+          </Items>
+        </div>
+      </Wrapper>
+      <BottomNavigation />
+    </>
+  );
+}
+
+export default MyPage;

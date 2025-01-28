@@ -5,26 +5,33 @@ import { TrackingMap } from "../../components/map/TrackingMap";
 import TrailInfo from "../../components/newway_register/TrailInfo";
 import SmallButton from "../../components/button/SmallButton";
 import ConfirmationModal from "../../components/modal/ConfirmationModal";
+import AppBar from "src/components/appBar";
 
 const PageContainer = styled.div`
+  display: flex;
+  flex-direction: column;
   position: relative;
-  width: 100%;
-  height: 100dvh;
-  max-width: 430px;
-  margin: 0 auto;
+  height: calc(100dvh - 56px);
+  margin-top: 56px;
 `;
 
 const MapContainer = styled.div`
   position: absolute;
-  inset: 0;
+  top: 0;       
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 0;
 `;
 
 const OverlayContainer = styled.div`
   position: absolute;
-  inset: 0;
+  top: -56px;         
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 10;
-  pointer-events: none; // 지도 조작을 방해하지 않도록 설정
+  pointer-events: none;
 `;
 
 const TopOverlay = styled.div`
@@ -126,15 +133,15 @@ function NewWay() {
     if (timerIdRef.current) {
       clearInterval(timerIdRef.current);
     }
-    console.log('산책 중단 시 저장된 경로 좌표:', {
+    console.log("산책 중단 시 저장된 경로 좌표:", {
       좌표배열: pathCoordsRef.current,
       총거리: distance,
-      소요시간: duration
+      소요시간: duration,
     });
 
     const pathData: PathData = {
       coordinates: pathCoordsRef.current,
-      totalDistance:  Number(distance.toFixed(2)),
+      totalDistance: Number(distance.toFixed(2)),
       duration: duration,
       startTime: new Date(startTimeRef.current!),
       endTime: new Date(),
@@ -164,42 +171,45 @@ function NewWay() {
   }, []);
 
   return (
-    <PageContainer>
-      <MapContainer>
-        <TrackingMap
-          isTracking={isWalking}
-          onLocationUpdate={handleLocationUpdate}
-          onDistanceUpdate={handleDistanceUpdate}
+    <>
+      <AppBar onBack={() => navigate(-1)} title="산책로 등록" />
+      <PageContainer>
+        <MapContainer>
+          <TrackingMap
+            isTracking={isWalking}
+            onLocationUpdate={handleLocationUpdate}
+            onDistanceUpdate={handleDistanceUpdate}
+          />
+        </MapContainer>
+
+        <OverlayContainer>
+          <TopOverlay>
+            <TrailInfo
+              duration={duration}
+              distance={Number(distance.toFixed(2))}
+            />
+          </TopOverlay>
+
+          <BottomOverlay>
+            <SmallButton
+              primaryText="산책 시작"
+              secondaryText="산책 중단"
+              isWalking={isWalking}
+              onClick={handleButtonClick}
+            />
+          </BottomOverlay>
+        </OverlayContainer>
+
+        <ConfirmationModal
+          isOpen={isModalOpen}
+          onClose={handleContinueWalk}
+          onConfirm={handleStopWalk}
+          message="산책을 중단하시겠습니까?"
+          cancelText="계속하기"
+          confirmText="중단하기"
         />
-      </MapContainer>
-
-      <OverlayContainer>
-        <TopOverlay>
-          <TrailInfo
-            duration={duration}
-            distance={Number(distance.toFixed(2))}
-          />
-        </TopOverlay>
-
-        <BottomOverlay>
-          <SmallButton
-            primaryText="산책 시작"
-            secondaryText="산책 중단"
-            isWalking={isWalking}
-            onClick={handleButtonClick}
-          />
-        </BottomOverlay>
-      </OverlayContainer>
-
-      <ConfirmationModal
-        isOpen={isModalOpen}
-        onClose={handleContinueWalk}
-        onConfirm={handleStopWalk}
-        message="산책을 중단하시겠습니까?"
-        cancelText="계속하기"
-        confirmText="중단하기"
-      />
-    </PageContainer>
+      </PageContainer>
+    </>
   );
 }
 

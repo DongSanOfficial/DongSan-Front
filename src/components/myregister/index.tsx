@@ -9,13 +9,16 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { theme } from "src/styles/colors/theme";
 import PathMap from "../map/PathMap";
+import BottomNavigation from "../bottomNavigation";
+import AppBar from "../appBar";
 
 // 레이아웃 관련
 const PageWrapper = styled.div`
   display: flex;
-  flex-direction: column;
   padding: 10px 20px;
-  align-items: center;
+  flex-direction: column;
+  overflow: scroll;
+  height: calc(100dvh - 126px);
   &::-webkit-scrollbar {
     display: none;
   }
@@ -24,7 +27,7 @@ const PageWrapper = styled.div`
 const HeaderContainer = styled.div`
   display: flex;
   flex-direction: column;
-  width: 100%;
+  max-width: 430px;
 `;
 
 const HeaderTopBar = styled.div`
@@ -32,7 +35,7 @@ const HeaderTopBar = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
+  max-width: 430px;
 `;
 
 // 산책로 정보 컴포넌트 관련
@@ -48,9 +51,6 @@ const PathDate = styled.div`
   display: flex;
   align-items: center;
   gap: 4px;
-  @media (max-width: 375px) {
-    width: 300px;
-  }
 `;
 
 const PathInfoContainer = styled.div`
@@ -66,7 +66,7 @@ const PathDescription = styled.div`
 // 지도 관련
 const MapSection = styled.div`
   max-width: 80vw;
-  height: 100%;
+  // height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -83,8 +83,8 @@ const MapBox = styled.div`
 `;
 
 const MapDetailsContainer = styled.div`
-  width: 100%;
-  height: 100%;
+  // width: 100%;
+  // height: 100%;
   background: #ffffff;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
   border-radius: 0px 0px 10px 10px;
@@ -114,7 +114,8 @@ const EditButton = styled.button`
   background-color: #888;
   color: #ffffff;
   width: 100%;
-  height: 3.25rem;
+  min-height: 52px;
+  box-sizing: border-box;
   border: none;
   font-size: 16px;
   font-weight: 500;
@@ -218,7 +219,7 @@ const mockPathData = {
     isHearted: false,
     isStarred: false,
   },
-};
+}; 
 
 export default function PathDetails() {
   const navigate = useNavigate();
@@ -267,65 +268,72 @@ export default function PathDetails() {
   };
 
   return (
-    <PageWrapper>
-      <HeaderContainer>
-        {/* 날짜, 공개 토글 */}
-        <HeaderTopBar>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <BiCalendarCheck
-              style={{ color: "black", width: "27px", height: "27px" }}
-            />
-            <PathDate>{pathData.date}</PathDate>
-          </div>
-          <ToggleSwitch />
-        </HeaderTopBar>
-        {/* 산책로 제목 */}
-        <PathTitle>{pathData.name}</PathTitle>
-        {/* 산책로 경과 시간, 거리 정보 */}
-        <PathInfoContainer>
-          <TrailInfo
-            duration={pathData.duration}
-            distance={pathData.totalDistance}
-          />
-        </PathInfoContainer>
-      </HeaderContainer>
-      {/* 지도를 포함한, 산책로 관련 유저 입력 정보 */}
-      <MapSection>
-        {/* 지도 */}
-        <MapBox>
-          <PathMap pathCoords={pathData.coordinates} />
-        </MapBox>
-        <MapDetailsContainer>
-          {/* 좋아요, 별점, 리뷰 */}
-          <ReactionBar>
-            <ReactionButton>
-              <StyledHeart $isActive={isHeartActive} onClick={toggleHeart} />
-              {heartCount}
-            </ReactionButton>
-            <RatingContainer>
-              <RatingGroup>
-                {renderStars(pathData.statistics.starCount)}
-                <RatingScore>
-                  {pathData.statistics.starCount.toFixed(1)}
-                </RatingScore>
-                <span>리뷰 {pathData.statistics.reviewCount}개</span>
-              </RatingGroup>
-            </RatingContainer>
-            <ReactionButton onClick={goToReviews}>
-              <MdArrowForwardIos />
-            </ReactionButton>
-          </ReactionBar>
-          {/* 산책로 부가설명, 태그 */}
-          <PathDescription>{pathData.description}</PathDescription>
-          <TagsContainer>
-            {hashtags.map((hashtag, index) => (
-              <TagItem key={index}> #{hashtag}</TagItem>
-            ))}
-          </TagsContainer>
-        </MapDetailsContainer>
-      </MapSection>
-      {/* 수정하기 버튼 */}
-      <EditButton onClick={handleEditClick}>수정하기</EditButton>
-    </PageWrapper>
+    <>
+      <AppBar onBack={() => navigate('/main')} title="내 산책로" />
+      <PageWrapper>
+          <HeaderContainer>
+            {/* 날짜, 공개 토글 */}
+            <HeaderTopBar>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <BiCalendarCheck
+                  style={{ color: "black", width: "27px", height: "27px" }}
+                />
+                <PathDate>{pathData.date}</PathDate>
+              </div>
+              <ToggleSwitch />
+            </HeaderTopBar>
+            {/* 산책로 제목 */}
+            <PathTitle>{pathData.name}</PathTitle>
+            {/* 산책로 경과 시간, 거리 정보 */}
+            <PathInfoContainer>
+              <TrailInfo
+                duration={pathData.duration}
+                distance={pathData.totalDistance}
+              />
+            </PathInfoContainer>
+          </HeaderContainer>
+          {/* 지도를 포함한, 산책로 관련 유저 입력 정보 */}
+          <MapSection>
+            {/* 지도 */}
+            <MapBox>
+              <PathMap pathCoords={pathData.coordinates} />
+            </MapBox>
+            <MapDetailsContainer>
+              {/* 좋아요, 별점, 리뷰 */}
+              <ReactionBar>
+                <ReactionButton>
+                  <StyledHeart
+                    $isActive={isHeartActive}
+                    onClick={toggleHeart}
+                  />
+                  {heartCount}
+                </ReactionButton>
+                <RatingContainer>
+                  <RatingGroup>
+                    {renderStars(pathData.statistics.starCount)}
+                    <RatingScore>
+                      {pathData.statistics.starCount.toFixed(1)}
+                    </RatingScore>
+                    <span>리뷰 {pathData.statistics.reviewCount}개</span>
+                  </RatingGroup>
+                </RatingContainer>
+                <ReactionButton onClick={goToReviews}>
+                  <MdArrowForwardIos />
+                </ReactionButton>
+              </ReactionBar>
+              {/* 산책로 부가설명, 태그 */}
+              <PathDescription>{pathData.description}</PathDescription>
+              <TagsContainer>
+                {hashtags.map((hashtag, index) => (
+                  <TagItem key={index}> #{hashtag}</TagItem>
+                ))}
+              </TagsContainer>
+            </MapDetailsContainer>
+          </MapSection>
+          {/* 수정하기 버튼 */}
+          <EditButton onClick={handleEditClick}>수정하기</EditButton>
+      </PageWrapper>
+      <BottomNavigation />
+    </>
   );
 }
