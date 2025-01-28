@@ -1,5 +1,5 @@
 import { ChangeEvent, KeyboardEvent, useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { theme } from "src/styles/colors/theme";
 import DateDisplay from "src/components/newway_register/DateDisplay";
@@ -30,7 +30,8 @@ const Content = styled.div`
 `;
 
 const Button = styled.button<{ isActive: boolean }>`
-  background-color: ${(props) => (props.isActive ? theme.Green500 : theme.Gray400)};
+  background-color: ${(props) =>
+    props.isActive ? theme.Green500 : theme.Gray400};
   color: #ffffff;
   width: 356px;
   height: 52px;
@@ -73,13 +74,13 @@ const PathImagePreview = styled.img`
 `;
 
 const samplePathCoords: [number, number][] = [
-  [37.5665, 126.9780],
+  [37.5665, 126.978],
   [37.5668, 126.9785],
-  [37.5671, 126.9790],
+  [37.5671, 126.979],
   [37.5675, 126.9795],
-  [37.5680, 126.9800],
+  [37.568, 126.98],
   [37.5683, 126.9805],
-  [37.5685, 126.9810]
+  [37.5685, 126.981],
 ];
 
 interface PathData {
@@ -92,23 +93,34 @@ interface PathData {
 
 export default function Registration() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { state } = location;
+
+  const [isEditMode, setIsEditMode] = useState(!!state); // state가 있으면 수정모드로 간주
   const [isTestMode, setIsTestMode] = useState(true);
-  
-  const [name, setName] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
+
+  const [name, setName] = useState(state?.name || "");
+  const [description, setDescription] = useState(state?.description || "");
   const [isActive, setIsActive] = useState<boolean>(false);
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState<string>("");
   const [pathImage, setPathImage] = useState<string>("");
 
-  const pathData: PathData = isTestMode ? {
-    coordinates: samplePathCoords,
-    totalDistance: 1.2,
-    duration: "00:20",
-    startTime: new Date(),
-    endTime: new Date()
-  } : location.state;
-
+  const pathData: PathData = isTestMode
+    ? {
+        coordinates: samplePathCoords,
+        totalDistance: 1.2,
+        duration: "00:20",
+        startTime: new Date(),
+        endTime: new Date(),
+      }
+    : location.state;
+  // 외부에서 해시태그가 넘어오는 경우 초기화
+  useEffect(() => {
+    if (state?.tags) {
+      setTags(state.tags); // state에서 받은 tags 배열을 상태에 설정
+    }
+  }, [state?.tags]);
   useEffect(() => {
     const generatePathImage = async () => {
       const coords = isTestMode ? samplePathCoords : pathData.coordinates;
@@ -148,17 +160,22 @@ export default function Registration() {
         totalDistance: pathData.totalDistance,
         duration: pathData.duration,
         startTime: pathData.startTime,
-        endTime: pathData.endTime
+        endTime: pathData.endTime,
       };
-      
-      console.log('Submit data:', submitData);
+
+      console.log("Submit data:", submitData);
+      navigate("/mypage/myregister/:walkwayId", { state: submitData });
     }
   };
 
   return (
     <Wrapper>
-      <Button isActive={true} onClick={() => setIsTestMode(!isTestMode)} style={{ marginBottom: '10px' }}>
-        {isTestMode ? '테스트 모드 ON' : '테스트 모드 OFF'}
+      <Button
+        isActive={true}
+        onClick={() => setIsTestMode(!isTestMode)}
+        style={{ marginBottom: "10px" }}
+      >
+        {isTestMode ? "테스트 모드 ON" : "테스트 모드 OFF"}
       </Button>
 
       <ContentWrapper>
@@ -166,21 +183,21 @@ export default function Registration() {
           <DateDisplay />
           <ToggleSwitch />
         </Content>
-        <TrailInfo 
+        <TrailInfo
           duration={pathData.duration}
           distance={pathData.totalDistance}
         />
       </ContentWrapper>
-      
+
       <PathMap pathCoords={pathData.coordinates} />
-      
+
       <InputField
         name={name}
         setName={setName}
         description={description}
         setDescription={setDescription}
       />
-      
+
       <TagInputWrapper>
         <TagInput
           placeholder={"#해시태그 추가하기"}
@@ -194,9 +211,9 @@ export default function Registration() {
           ))}
         </TagList>
       </TagInputWrapper>
-      
+
       <Button isActive={isActive} onClick={handleSubmit}>
-        작성완료
+        {isEditMode ? "수정완료" : "작성완료"}
       </Button>
 
       <PathImagePreview src={pathImage} alt="Path Preview" />
