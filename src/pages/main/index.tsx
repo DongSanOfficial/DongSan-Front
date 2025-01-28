@@ -11,7 +11,6 @@ const MainContainer = styled.div`
   position: relative;
   height: 100vh;
   width: 100%;
-  top: -56px;
 `;
 
 const SearchBarContainer = styled.div`

@@ -1,5 +1,5 @@
 import { ChangeEvent, KeyboardEvent, useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { theme } from "src/styles/colors/theme";
 import DateDisplay from "src/components/newway_register/DateDisplay";
@@ -107,10 +107,14 @@ interface PathData {
 
 export default function Registration() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { state } = location;
+
+  const [isEditMode, setIsEditMode] = useState(!!state); // state가 있으면 수정모드로 간주
   const [isTestMode, setIsTestMode] = useState(true);
 
-  const [name, setName] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
+  const [name, setName] = useState(state?.name || "");
+  const [description, setDescription] = useState(state?.description || "");
   const [isActive, setIsActive] = useState<boolean>(false);
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState<string>("");
@@ -125,7 +129,12 @@ export default function Registration() {
         endTime: new Date(),
       }
     : location.state;
-
+  // 외부에서 해시태그가 넘어오는 경우 초기화
+  useEffect(() => {
+    if (state?.tags) {
+      setTags(state.tags); // state에서 받은 tags 배열을 상태에 설정
+    }
+  }, [state?.tags]);
   useEffect(() => {
     const generatePathImage = async () => {
       const coords = isTestMode ? samplePathCoords : pathData.coordinates;
@@ -167,7 +176,7 @@ export default function Registration() {
         startTime: pathData.startTime,
         endTime: pathData.endTime,
       };
-      
+
       console.log("등록 완료 시 전체 데이터:", {
         경로정보: submitData.coordinates,
         산책명: submitData.name,
@@ -176,7 +185,7 @@ export default function Registration() {
         총거리: submitData.totalDistance,
         소요시간: submitData.duration,
         이미지생성여부: !!submitData.pathImage,
-      });
+      });      navigate("/mypage/myregister/:walkwayId", { state: submitData });
     }
   };
 
@@ -227,7 +236,7 @@ export default function Registration() {
         </TagList>
       </TagInputWrapper>
       <Button isActive={isActive} onClick={handleSubmit}>
-        작성완료
+        {isEditMode ? "수정완료" : "작성완료"}
       </Button>
 
       <PathImagePreview src={pathImage} alt="Path Preview" />

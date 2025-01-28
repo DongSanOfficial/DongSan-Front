@@ -186,9 +186,12 @@ export const TrackingMap = ({
       },
       (error) => {
         console.error("Error getting user location:", error);
-        alert(
-          "위치 정보를 가져올 수 없습니다. 디바이스 설정에서 위치 권한을 확인해주세요."
-        );
+        alert("위치 정보를 가져올 수 없습니다.");
+      },
+      {
+        enableHighAccuracy: true,
+        maximumAge: 0,
+        timeout: 5000,
       }
     );
   };
