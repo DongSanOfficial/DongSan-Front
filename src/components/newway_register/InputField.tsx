@@ -50,17 +50,19 @@ export default function InputField({
     <>
       <InPutField>
         <Input
+          value={name}
           placeholder="산책로를 잘 나타내는 이름을 지어주세요."
           maxLength={10}
           onChange={handleNameChange}
           required
         ></Input>
         <CharCounter isMax={name.length === 10}>{name.length}/10</CharCounter>
-        <span style={{color: theme.Red}}>*</span>
+        <span style={{ color: theme.Red }}>*</span>
       </InPutField>
 
       <InPutField>
         <Input
+          value={description}
           placeholder="산책로를 설명해주세요."
           maxLength={30}
           onChange={handleDescriptionChange}

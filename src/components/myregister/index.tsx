@@ -124,7 +124,7 @@ export default function MyRegister() {
   const [reviewCount, setReviewCount] = useState<number>(0);
   const [isHeartActive, setIsHeartActive] = useState<boolean>(false);
   const [isStarActive, setIsStarActive] = useState<boolean>(false);
-  const [hashtags, setHashtgs] = useState<String[]>(tags);
+  const [hashtags, setHashtags] = useState<String[]>(tags);
 
   const toggleHeart = (): void => {
     setIsHeartActive(!isHeartActive);
@@ -136,6 +136,16 @@ export default function MyRegister() {
   };
   const goToReviews = (): void => {
     navigate("/reviews/:walkwayId");
+  };
+  const handleEditClick = () => {
+    navigate("/newway/registration", {
+      state: {
+        name,
+        description,
+        tags,
+        isEditMode: true,
+      },
+    });
   };
   return (
     <Wrapper>
@@ -183,7 +193,7 @@ export default function MyRegister() {
           </HashtagContainer>
         </FieldContent>
       </ShowField>
-      <Button>수정하기</Button>
+      <Button onClick={handleEditClick}>수정하기</Button>
     </Wrapper>
   );
 }
