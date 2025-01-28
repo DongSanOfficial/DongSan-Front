@@ -1,12 +1,12 @@
-import Main from "../pages/main/index";
-import MyPage from "../pages/mypage/index";
+import Main from "../pages/main";
+import MyPage from "../pages/mypage";
 import TrailListPage from "../pages/mypage/TrailListPage";
 import TrailLikeListPage from "../pages/mypage/TrailListLikePage";
-import NewWay from "../pages/newway/index";
-import SignIn from "../pages/signin/index";
+import NewWay from "../pages/newway";
+import SignIn from "../pages/signin";
 import Registration from "../pages/newway/registration";
 import MyRegister from "../components/myregister";
-import ReviewPage from "../pages/review/index";
+import ReviewPage from "../pages/review";
 import Usingtrail from "../pages/usingtrail";
 import DetailUsing from "../pages/usingtrail/detail_using";
 import TrailReviewPage from "../pages/mypage/TrailReviewPage";
@@ -15,87 +15,76 @@ import ReviewCheck from "../pages/review/ReviewCheck";
 import RecommendTrail from "../pages/detailpage/recommend_trail";
 import TrailLiked from "../pages/detailpage/TrailLiked";
 
-export const routes = [
-  {
-    path: "/",
-    component: NavigationPage,
-    headerOptions: { headerShown: false },
-  },
-  {
-    path: "/main",
-    component: Main,
-    headerOptions: { headerShown: false },
-  },
-  {
-    path: "/main/recommend/detail/:walkwayId",
-    component: RecommendTrail,
-    headerOptions: { title: "산책로", showBackButton: true },
-  },
-  {
-    path: "/mypage",
-    component: MyPage,
-    headerOptions: { title: "마이 페이지", showBackButton: true },
-  },
-  {
-    path: "/mypage/TrailList",
-    component: TrailListPage,
-    headerOptions: { title: "전체보기", showBackButton: true },
-  },
-  {
-    path: "/mypage/myregister/:walkwayId",
-    component: MyRegister,
-    headerOptions: { title: "내 산책로", showBackButton: true },
-  },
-  {
-    path: "/mypage/TrailLikeList",
-    component: TrailLikeListPage,
-    headerOptions: { showBackButton: true },
-  },
-  {
-    path: "/mypage/ReviewList",
-    component: TrailReviewPage,
-    headerOptions: { title: "리뷰보기", showBackButton: true },
-  },
-  {
-    path: "/mypage/TrailLikeList/detail/:walkwayId",
-    component: TrailLiked,
-    headerOptions: { title: "찜한 산책로", showBackButton: true },
-  },
-  {
-    path: "/newway",
-    component: NewWay,
-    headerOptions: { title: "산책로 등록", showBackButton: true },
-  },
-  {
-    path: "/newway/registration",
-    component: Registration,
-    headerOptions: { title: "산책로 등록", showBackButton: true },
-  },
-  {
-    path: "/signin",
-    component: SignIn,
-    headerOptions: { headerShown: false },
-  },
-  {
-    path: "/main/review/:walkwayId/content",
-    component: ReviewCheck,
-    headerOptions: { title: "산책로 리뷰", showBackButton: true },
-  },
-  {
-    path: "/main/review/:walkwayId",
-    component: ReviewPage,
-    headerOptions: { title: "리뷰 작성하기", showBackButton: true },
-  },
-  {
-    path: "/usingtrail",
-    component: Usingtrail,
-    headerOptions: { title: "산책로 이용하기", showBackButton: true },
-  },
-  {
-    path: "/main/usedtrail/detail/:walkwayId",
-    component: DetailUsing,
-    headerOptions: { title: "산책로", showBackButton: true },
-  },
+interface RouteConfig {
+ path: string;
+ component: React.ComponentType<any>;
+}
+
+const routes: RouteConfig[] = [
+ {
+   path: "/",
+   component: NavigationPage,
+ },
+ {
+   path: "/main",
+   component: Main,
+ },
+ {
+   path: "/main/recommend/detail/:walkwayId",
+   component: RecommendTrail,
+ },
+ {
+   path: "/mypage",
+   component: MyPage,
+ },
+ {
+   path: "/mypage/TrailList",
+   component: TrailListPage,
+ },
+ {
+   path: "/mypage/myregister/:walkwayId",
+   component: MyRegister,
+ },
+ {
+   path: "/mypage/TrailLikeList",
+   component: TrailLikeListPage,
+ },
+ {
+   path: "/mypage/ReviewList",
+   component: TrailReviewPage,
+ },
+ {
+   path: "/mypage/TrailLikeList/detail/:walkwayId",
+   component: TrailLiked,
+ },
+ {
+   path: "/newway",
+   component: NewWay,
+ },
+ {
+   path: "/newway/registration",
+   component: Registration,
+ },
+ {
+   path: "/signin",
+   component: SignIn,
+ },
+ {
+   path: "/main/review/:walkwayId/content",
+   component: ReviewCheck,
+ },
+ {
+   path: "/main/review/:walkwayId",
+   component: ReviewPage,
+ },
+ {
+   path: "/usingtrail",
+   component: Usingtrail,
+ },
+ {
+   path: "/main/usedtrail/detail/:walkwayId",
+   component: DetailUsing,
+ }
 ];
 
 export default routes;
