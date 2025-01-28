@@ -69,21 +69,22 @@ interface TrackingMapProps {
   isTracking: boolean;
   onLocationUpdate?: (location: Location) => void;
   onDistanceUpdate?: (distance: number) => void;
+  onCenterChange?: (location: Location) => void;
 }
 
 export const TrackingMap = ({
   isTracking,
   onLocationUpdate,
   onDistanceUpdate,
+  onCenterChange,
 }: TrackingMapProps) => {
   const [mapCenter, setMapCenter] = useState<Location>({
     lat: 37.5665,
     lng: 126.978,
   });
   const [userLocation, setUserLocation] = useState<Location | null>(null);
-  const [pathCoords, setPathCoords] = useState<number[][]>([]);
+  const [pathCoords, setPathCoords] = useState<Location[]>([]);
   const watchIdRef = useRef<number | null>(null);
-  const lastSaveTimeRef = useRef<number>(0);
 
   const calculateDistance = (coord1: Location, coord2: Location): number => {
     const R = 6371;
@@ -107,33 +108,22 @@ export const TrackingMap = ({
         lat: position.coords.latitude,
         lng: position.coords.longitude,
       };
-      const newCoord = [newLocation.lat, newLocation.lng];
 
       setUserLocation(newLocation);
       setMapCenter(newLocation);
 
       if (isTracking) {
-        const currentTime = Date.now();
-        if (
-          currentTime - lastSaveTimeRef.current >= 3000 ||
-          pathCoords.length === 0
-        ) {
-          lastSaveTimeRef.current = currentTime;
+        setPathCoords((prev) => {
+          const newCoords = [...prev, newLocation];
+          if (prev.length > 0) {
+            const lastCoord = prev[prev.length - 1];
+            const newDistance = calculateDistance(lastCoord, newLocation);
+            onDistanceUpdate?.(newDistance);
+          }
 
-          setPathCoords((prev) => {
-            const newCoords = [...prev, newCoord];
-            if (prev.length > 0) {
-              const lastCoord = prev[prev.length - 1];
-              const newDistance = calculateDistance(
-                { lat: lastCoord[0], lng: lastCoord[1] },
-                newLocation
-              );
-              onDistanceUpdate?.(newDistance);
-            }
-            return newCoords;
-          });
-          onLocationUpdate?.(newLocation);
-        }
+          return newCoords;
+        });
+        onLocationUpdate?.(newLocation);
       }
     };
 
@@ -164,7 +154,7 @@ export const TrackingMap = ({
         navigator.geolocation.clearWatch(watchIdRef.current);
       }
     };
-  }, [isTracking, onLocationUpdate, onDistanceUpdate, pathCoords.length]);
+  }, [isTracking, onLocationUpdate, onDistanceUpdate]);
 
   useEffect(() => {
     const setVh = () => {
@@ -192,6 +182,7 @@ export const TrackingMap = ({
         };
         setUserLocation(newLocation);
         setMapCenter(newLocation);
+        onCenterChange?.(newLocation);
       },
       (error) => {
         console.error("Error getting user location:", error);
@@ -207,16 +198,22 @@ export const TrackingMap = ({
       <MapWrapper>
         <Map
           center={mapCenter}
+          onCenterChanged={(map) => {
+            const latlng = map.getCenter();
+            const newCenter = {
+              lat: latlng.getLat(),
+              lng: latlng.getLng(),
+            };
+            setMapCenter(newCenter);
+            onCenterChange?.(newCenter);
+          }}
           style={{ width: "100%", height: "100%" }}
-          level={2}
+          level={1}
         >
           {userLocation && <MapMarker position={userLocation} />}
           {pathCoords.length > 1 && (
             <Polyline
-              path={pathCoords.map((coord) => ({
-                lat: coord[0],
-                lng: coord[1],
-              }))}
+              path={pathCoords}
               strokeWeight={5}
               strokeColor="#FF7575"
               strokeOpacity={0.7}
@@ -225,12 +222,14 @@ export const TrackingMap = ({
           )}
         </Map>
       </MapWrapper>
-      <LocationButton
-        onClick={updateUserLocation}
-        aria-label="현재 위치로 이동"
-      >
-        <StyledLocationIcon />
-      </LocationButton>
+      {!isTracking && (
+        <LocationButton
+          onClick={updateUserLocation}
+          aria-label="현재 위치로 이동"
+        >
+          <StyledLocationIcon />
+        </LocationButton>
+      )}
     </MapContainer>
   );
 };

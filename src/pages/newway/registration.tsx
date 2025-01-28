@@ -15,22 +15,24 @@ const Wrapper = styled.div`
   padding: 20px;
   align-items: center;
 `;
+
 const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 `;
+
 const Content = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  gap: 10px;
 `;
 
 const Button = styled.button<{ isActive: boolean }>`
-  background-color: ${(props) => (props.isActive ? theme.Green500 : theme.Gray400)};
+  background-color: ${(props) =>
+    props.isActive ? theme.Green500 : theme.Gray400};
   color: #ffffff;
   width: 356px;
   height: 52px;
@@ -38,6 +40,7 @@ const Button = styled.button<{ isActive: boolean }>`
   font-size: 16px;
   font-weight: 500;
 `;
+
 const TagInputWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -47,17 +50,20 @@ const TagInputWrapper = styled.div`
   max-width: 322px;
   margin-bottom: 20px;
 `;
+
 const TagList = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
 `;
+
 const TagInput = styled.input`
   border: none;
   outline: none;
   font-size: 12px;
   width: 90%;
 `;
+
 const Tag = styled.span`
   font-size: 12px;
   color: #b4b4b4;
@@ -72,18 +78,27 @@ const PathImagePreview = styled.img`
   object-fit: contain;
 `;
 
-const samplePathCoords: [number, number][] = [
-  [37.5665, 126.9780],
-  [37.5668, 126.9785],
-  [37.5671, 126.9790],
-  [37.5675, 126.9795],
-  [37.5680, 126.9800],
-  [37.5683, 126.9805],
-  [37.5685, 126.9810]
+const PathMapContainer = styled.div`
+  width: 90vw;
+  height: 35vh;
+  margin-bottom: 10px;
+  border-radius: 15px;
+  overflow: hidden;
+`;
+
+// 샘플 경로 데이터
+const samplePathCoords = [
+  { lat: 37.5665, lng: 126.978 },
+  { lat: 37.5668, lng: 126.9785 },
+  { lat: 37.5671, lng: 126.979 },
+  { lat: 37.5675, lng: 126.9795 },
+  { lat: 37.568, lng: 126.98 },
+  { lat: 37.5683, lng: 126.9805 },
+  { lat: 37.5685, lng: 126.981 },
 ];
 
 interface PathData {
-  coordinates: [number, number][];
+  coordinates: Array<{ lat: number; lng: number }>;
   totalDistance: number;
   duration: string;
   startTime: Date;
@@ -93,7 +108,7 @@ interface PathData {
 export default function Registration() {
   const location = useLocation();
   const [isTestMode, setIsTestMode] = useState(true);
-  
+
   const [name, setName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [isActive, setIsActive] = useState<boolean>(false);
@@ -101,13 +116,15 @@ export default function Registration() {
   const [tagInput, setTagInput] = useState<string>("");
   const [pathImage, setPathImage] = useState<string>("");
 
-  const pathData: PathData = isTestMode ? {
-    coordinates: samplePathCoords,
-    totalDistance: 1.2,
-    duration: "00:20",
-    startTime: new Date(),
-    endTime: new Date()
-  } : location.state;
+  const pathData: PathData = isTestMode
+    ? {
+        coordinates: samplePathCoords,
+        totalDistance: 1.2,
+        duration: "00:20",
+        startTime: new Date(),
+        endTime: new Date(),
+      }
+    : location.state;
 
   useEffect(() => {
     const generatePathImage = async () => {
@@ -148,17 +165,33 @@ export default function Registration() {
         totalDistance: pathData.totalDistance,
         duration: pathData.duration,
         startTime: pathData.startTime,
-        endTime: pathData.endTime
+        endTime: pathData.endTime,
       };
       
-      console.log('Submit data:', submitData);
+      console.log("등록 완료 시 전체 데이터:", {
+        경로정보: submitData.coordinates,
+        산책명: submitData.name,
+        설명: submitData.description,
+        해시태그: submitData.tags,
+        총거리: submitData.totalDistance,
+        소요시간: submitData.duration,
+        이미지생성여부: !!submitData.pathImage,
+      });
     }
+  };
+
+  const toggleTestMode = () => {
+    setIsTestMode(!isTestMode);
   };
 
   return (
     <Wrapper>
-      <Button isActive={true} onClick={() => setIsTestMode(!isTestMode)} style={{ marginBottom: '10px' }}>
-        {isTestMode ? '테스트 모드 ON' : '테스트 모드 OFF'}
+      <Button
+        isActive={true}
+        onClick={toggleTestMode}
+        style={{ marginBottom: "10px" }}
+      >
+        {isTestMode ? "테스트 모드 ON" : "테스트 모드 OFF"}
       </Button>
 
       <ContentWrapper>
@@ -166,21 +199,20 @@ export default function Registration() {
           <DateDisplay />
           <ToggleSwitch />
         </Content>
-        <TrailInfo 
+        <TrailInfo
           duration={pathData.duration}
           distance={pathData.totalDistance}
         />
       </ContentWrapper>
-      
-      <PathMap pathCoords={pathData.coordinates} />
-      
+      <PathMapContainer>
+        <PathMap pathCoords={pathData.coordinates} />
+      </PathMapContainer>
       <InputField
         name={name}
         setName={setName}
         description={description}
         setDescription={setDescription}
       />
-      
       <TagInputWrapper>
         <TagInput
           placeholder={"#해시태그 추가하기"}
@@ -194,7 +226,6 @@ export default function Registration() {
           ))}
         </TagList>
       </TagInputWrapper>
-      
       <Button isActive={isActive} onClick={handleSubmit}>
         작성완료
       </Button>
