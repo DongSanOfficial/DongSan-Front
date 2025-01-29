@@ -71,6 +71,14 @@ const LoadingSpinner = styled.div`
   padding: 1rem;
 `;
 
+/**
+ * 위치 정보 인터페이스
+ */
+interface Location {
+  lat: number;
+  lng: number;
+}
+
 function Main() {
   // 바텀시트 상태
   const [isOpen, setIsOpen] = useState(false);
@@ -154,6 +162,8 @@ function Main() {
         "산책로를 불러오는데 실패했습니다.";
       setError(errorMessage);
       console.error("산책로 불러오기 실패:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -221,6 +231,48 @@ function Main() {
   };
 
   /**
+   * 초기 위치 설정 시 처리
+   */
+  const handleInitialLocation = async (location: {
+    lat: number;
+    lng: number;
+  }) => {
+    try {
+      await fetchWalkways(location.lat, location.lng, sortOption, true);
+      setSelectedLocation({
+        latitude: location.lat,
+        longitude: location.lng,
+        name: "현재 위치",
+      });
+      setBottomSheetHeight("60vh");
+      setIsOpen(true);
+    } catch (error) {
+      console.error("현재 위치 기반 산책로 조회 실패:", error);
+    }
+  };
+
+  /**
+   * 위치 버튼 클릭 처리
+   */
+  const handleLocationButtonClick = async (location: {
+    lat: number;
+    lng: number;
+  }) => {
+    try {
+      await fetchWalkways(location.lat, location.lng, sortOption, true);
+      setSelectedLocation({
+        latitude: location.lat,
+        longitude: location.lng,
+        name: "현재 위치",
+      });
+      setBottomSheetHeight("60vh");
+      setIsOpen(true);
+    } catch (error) {
+      console.error("현재 위치 기반 산책로 조회 실패:", error);
+    }
+  };
+
+  /**
    * 무한 스크롤 처리
    */
   const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
@@ -263,6 +315,21 @@ function Main() {
     setIsOpen(false);
   };
 
+  const handleSearchCurrentLocation = async (location: Location) => {
+    try {
+      await fetchWalkways(location.lat, location.lng, sortOption, true);
+      setSelectedLocation({
+        latitude: location.lat,
+        longitude: location.lng,
+        name: "선택한 위치",
+      });
+      setBottomSheetHeight("60vh");
+      setIsOpen(true);
+    } catch (error) {
+      console.error("선택 위치 기반 산책로 조회 실패:", error);
+    }
+  };
+
   return (
     <>
       <MainContainer>
@@ -290,6 +357,9 @@ function Main() {
           pathName={selectedLocation?.name}
           searchKeyword={searching ? searchValue : undefined}
           onSearchResults={handleSearchResults}
+          onInitialLocation={handleInitialLocation}
+          onLocationButtonClick={handleLocationButtonClick}
+          onSearchCurrentLocation={handleSearchCurrentLocation}
         />
 
         <BottomSheet
@@ -328,9 +398,11 @@ function Main() {
                   />
                 ))
               ) : (
-                <NoWalkwaysMessage>
-                  전방 500m 부근에 등록된 산책로가 없습니다.
-                </NoWalkwaysMessage>
+                !loading && (
+                  <NoWalkwaysMessage>
+                    전방 500m 부근에 등록된 산책로가 없습니다.
+                  </NoWalkwaysMessage>
+                )
               )}
               {loading && <LoadingSpinner />}
             </PathCardList>

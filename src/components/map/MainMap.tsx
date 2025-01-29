@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { theme } from "../../styles/colors/theme";
 import { ReactComponent as LocationIcon } from "../../assets/svg/LocationIcon.svg";
-import CurrentLocationMarker from "../../assets/svg/RegisteredLocation.svg";
+// import CurrentLocationMarker from "../../assets/svg/RegisteredLocation.svg";
 import SelectedLocationMarker from "../../assets/svg/UserLocation.svg";
 import { SearchResult } from "../../pages/main/components/SearchResult";
 
@@ -79,6 +79,32 @@ const MarkerTitle = styled.div`
   text-overflow: ellipsis;
 `;
 
+const SearchButton = styled.button`
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 80px;
+  background-color: ${theme.Green300};
+  color: ${theme.White};
+  padding: 10px 20px;
+  border-radius: 24px;
+  border: none;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  z-index: 1;
+  white-space: nowrap;
+
+  &:hover {
+    background-color: ${theme.Green600};
+  }
+
+  &:active {
+    background-color: ${theme.Green700};
+  }
+`;
+
 /**
  * 위치 정보 인터페이스
  */
@@ -101,6 +127,11 @@ interface MainMapProps {
   searchKeyword?: string;
   /** 검색 결과 처리 함수 */
   onSearchResults?: (results: SearchResult[]) => void;
+  /** 초기 위치 설정 시 호출되는 함수 */
+  onInitialLocation?: (location: Location) => void;
+  /** 위치 버튼 클릭 시 호출되는 함수 */
+  onLocationButtonClick?: (location: Location) => void;
+  onSearchCurrentLocation?: (location: Location) => void; // 추가
 }
 
 /**
@@ -114,6 +145,9 @@ export const MainMap = ({
   pathName,
   searchKeyword,
   onSearchResults,
+  onInitialLocation,
+  onLocationButtonClick,
+  onSearchCurrentLocation,
 }: MainMapProps) => {
   const navigate = useNavigate();
   /** 지도 중심 좌표 */
@@ -122,7 +156,8 @@ export const MainMap = ({
   );
   /** 사용자 현재 위치 */
   const [userLocation, setUserLocation] = useState<Location | null>(null);
-
+  const [showSearchButton, setShowSearchButton] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   /**
    * 사용자의 현재 위치를 가져와 지도에 표시
    */
@@ -144,14 +179,35 @@ export const MainMap = ({
       },
       (error) => {
         console.error("Error getting user location:", error);
-        alert("위치 정보를 가져올 수 없습니다. 디바이스 설정에서 위치 권한을 확인해주세요.");
+        alert(
+          "위치 정보를 가져올 수 없습니다. 디바이스 설정에서 위치 권한을 확인해주세요."
+        );
       }
     );
   };
 
   /** 컴포넌트 마운트 시 현재 위치 가져오기 */
   useEffect(() => {
-    updateUserLocation();
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const newLocation: Location = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+          setUserLocation(newLocation);
+          setMapCenter(newLocation);
+          onCenterChange?.(newLocation);
+          onInitialLocation?.(newLocation);
+        },
+        (error) => {
+          console.error("Error getting user location:", error);
+          alert(
+            "위치 정보를 가져올 수 없습니다. 디바이스 설정에서 위치 권한을 확인해주세요."
+          );
+        }
+      );
+    }
   }, []);
 
   /** 모바일 뷰포트 높이 설정 */
@@ -214,6 +270,11 @@ export const MainMap = ({
           center={mapCenter}
           style={{ width: "100%", height: "100%" }}
           level={2}
+          onDragStart={() => setIsDragging(true)}
+          onDragEnd={() => {
+            setIsDragging(false);
+            setShowSearchButton(true);
+          }}
           onCenterChanged={(map) => {
             const latlng = map.getCenter();
             const newCenter = {
@@ -224,7 +285,7 @@ export const MainMap = ({
             onCenterChange?.(newCenter);
           }}
         >
-          {userLocation && (
+          {/* {userLocation && (
             <MapMarker
               position={userLocation}
               image={{
@@ -241,7 +302,7 @@ export const MainMap = ({
                 },
               }}
             />
-          )}
+          )} */}
 
           {center && (
             <>
@@ -266,6 +327,16 @@ export const MainMap = ({
           )}
         </Map>
       </MapWrapper>
+      {showSearchButton && !isDragging && (
+        <SearchButton
+          onClick={() => {
+            onSearchCurrentLocation?.(mapCenter);
+            setShowSearchButton(false);
+          }}
+        >
+          현재 위치에서 재검색
+        </SearchButton>
+      )}
       <LocationButton
         onClick={updateUserLocation}
         aria-label="현재 위치로 이동"
