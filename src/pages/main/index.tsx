@@ -317,19 +317,20 @@ function Main() {
 
   const handleSearchCurrentLocation = async (location: Location) => {
     try {
-      await fetchWalkways(location.lat, location.lng, sortOption, true);
+      // API 호출과 selectedLocation 업데이트를 동시에 실행
       setSelectedLocation({
         latitude: location.lat,
         longitude: location.lng,
-        name: "선택한 위치",
+        name: "선택한 위치"
       });
       setBottomSheetHeight("60vh");
       setIsOpen(true);
+  
+      await fetchWalkways(location.lat, location.lng, sortOption, true);
     } catch (error) {
-      console.error("선택 위치 기반 산책로 조회 실패:", error);
+      console.error('선택 위치 기반 산책로 조회 실패:', error);
     }
   };
-
   return (
     <>
       <MainContainer>
