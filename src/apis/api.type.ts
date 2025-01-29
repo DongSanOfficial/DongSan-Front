@@ -4,3 +4,9 @@ export interface ApiResponseFormat<T> {
   message?: string;
   isSuccess: boolean;
 }
+
+export interface ApiErrorResponse {
+  isSuccess: false;
+  code: string;
+  message: string;
+}

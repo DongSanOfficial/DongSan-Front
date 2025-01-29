@@ -4,18 +4,20 @@ import { MdKeyboardArrowDown } from "react-icons/md";
 import { theme } from "../../styles/colors/theme";
 
 /** 드롭다운 옵션 인터페이스 */
-interface Option {
+export interface Option<T extends string> {
   /** 옵션 값 */
-  value: string;
+  value: T;
   /** 화면에 표시될 텍스트 */
   label: string;
 }
 
-interface DropDownButtonProps {
-  options: Option[];
-  value: string;
-  onChange: (value: string) => void;
-  className?: string;
+interface DropDownButtonProps<T extends string> {
+  /** 드롭다운 옵션 배열 */
+  options: readonly Option<T>[];
+  /** 현재 선택된 값 */
+  value: T;
+  /** 값 변경 핸들러 */
+  onChange: (value: T) => void;
 }
 
 const DropdownContainer = styled.div`
@@ -88,12 +90,11 @@ const SelectedContent = styled.div`
   gap: 0.5rem;
 `;
 
-const DropDownButton = ({
+function DropDownButton<T extends string>({
   options,
   value,
   onChange,
-  className,
-}: DropDownButtonProps) => {
+}: DropDownButtonProps<T>) {
   /** 드롭다운 열림/닫힘 상태 */
   const [isOpen, setIsOpen] = useState(false);
   /** 드롭다운 요소 참조 */
@@ -115,7 +116,7 @@ const DropDownButton = ({
         setIsOpen(false);
       }
     };
-    
+
     /** 외부 클릭 시 드롭다운 닫기 */
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside);
@@ -129,7 +130,7 @@ const DropDownButton = ({
   }, [isOpen]);
 
   return (
-    <DropdownContainer ref={dropdownRef} className={className}>
+    <DropdownContainer ref={dropdownRef}>
       <SelectWrapper onClick={() => setIsOpen(!isOpen)}>
         <CustomSelect>
           <SelectedContent>{currentOption.label}</SelectedContent>
@@ -150,7 +151,7 @@ const DropDownButton = ({
           <OptionItem
             key={option.value}
             onClick={() => {
-              onChange(option.value);
+              onChange(option.value as T);
               setIsOpen(false);
             }}
           >
@@ -160,6 +161,6 @@ const DropDownButton = ({
       </OptionsList>
     </DropdownContainer>
   );
-};
+}
 
 export default DropDownButton;
