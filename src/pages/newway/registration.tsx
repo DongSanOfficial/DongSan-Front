@@ -8,12 +8,18 @@ import ToggleSwitch from "src/components/newway_register/ToggleSwitch";
 import InputField from "src/components/newway_register/InputField";
 import PathMap from "../../components/map/PathMap";
 import { drawPath } from "../../utils/drawPathUtils";
+import BottomNavigation from "src/components/bottomNavigation";
+import AppBar from "src/components/appBar";
 
 const Wrapper = styled.div`
   display: flex;
+  padding: 10px 20px;
   flex-direction: column;
-  padding: 20px;
-  align-items: center;
+  overflow: scroll;
+  height: calc(100dvh - 126px);
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const ContentWrapper = styled.div`
@@ -34,8 +40,8 @@ const Button = styled.button<{ isActive: boolean }>`
   background-color: ${(props) =>
     props.isActive ? theme.Green500 : theme.Gray400};
   color: #ffffff;
-  width: 356px;
-  height: 52px;
+  width: 100%;
+  min-height: 52px;
   border: none;
   font-size: 16px;
   font-weight: 500;
@@ -79,8 +85,8 @@ const PathImagePreview = styled.img`
 `;
 
 const PathMapContainer = styled.div`
-  width: 90vw;
-  height: 35vh;
+  width: 100%;
+  min-height: 300px;
   margin-bottom: 10px;
   border-radius: 15px;
   overflow: hidden;
@@ -185,7 +191,8 @@ export default function Registration() {
         총거리: submitData.totalDistance,
         소요시간: submitData.duration,
         이미지생성여부: !!submitData.pathImage,
-      });      navigate("/mypage/myregister/:walkwayId", { state: submitData });
+      });
+      navigate("/mypage/myregister/:walkwayId", { state: submitData });
     }
   };
 
@@ -194,52 +201,56 @@ export default function Registration() {
   };
 
   return (
-    <Wrapper>
-      <Button
-        isActive={true}
-        onClick={toggleTestMode}
-        style={{ marginBottom: "10px" }}
-      >
-        {isTestMode ? "테스트 모드 ON" : "테스트 모드 OFF"}
-      </Button>
+    <>
+      <AppBar onBack={() => navigate(-1)} title="산책로 등록" />
+      <Wrapper>
+        <Button
+          isActive={true}
+          onClick={toggleTestMode}
+          style={{ marginBottom: "10px" }}
+        >
+          {isTestMode ? "테스트 모드 ON" : "테스트 모드 OFF"}
+        </Button>
 
-      <ContentWrapper>
-        <Content>
-          <DateDisplay />
-          <ToggleSwitch />
-        </Content>
-        <TrailInfo
-          duration={pathData.duration}
-          distance={pathData.totalDistance}
+        <ContentWrapper>
+          <Content>
+            <DateDisplay />
+            <ToggleSwitch />
+          </Content>
+          <TrailInfo
+            duration={pathData.duration}
+            distance={pathData.totalDistance}
+          />
+        </ContentWrapper>
+        <PathMapContainer>
+          <PathMap pathCoords={pathData.coordinates} />
+        </PathMapContainer>
+        <InputField
+          name={name}
+          setName={setName}
+          description={description}
+          setDescription={setDescription}
         />
-      </ContentWrapper>
-      <PathMapContainer>
-        <PathMap pathCoords={pathData.coordinates} />
-      </PathMapContainer>
-      <InputField
-        name={name}
-        setName={setName}
-        description={description}
-        setDescription={setDescription}
-      />
-      <TagInputWrapper>
-        <TagInput
-          placeholder={"#해시태그 추가하기"}
-          value={tagInput}
-          onChange={handleTagInputChange}
-          onKeyDown={handleTagInputKeyDown}
-        />
-        <TagList>
-          {tags.map((tag, index) => (
-            <Tag key={index}> #{tag}</Tag>
-          ))}
-        </TagList>
-      </TagInputWrapper>
-      <Button isActive={isActive} onClick={handleSubmit}>
-        {isEditMode ? "수정완료" : "작성완료"}
-      </Button>
+        <TagInputWrapper>
+          <TagInput
+            placeholder={"#해시태그 추가하기"}
+            value={tagInput}
+            onChange={handleTagInputChange}
+            onKeyDown={handleTagInputKeyDown}
+          />
+          <TagList>
+            {tags.map((tag, index) => (
+              <Tag key={index}> #{tag}</Tag>
+            ))}
+          </TagList>
+        </TagInputWrapper>
+        <Button isActive={isActive} onClick={handleSubmit}>
+          {isEditMode ? "수정완료" : "작성완료"}
+        </Button>
 
-      <PathImagePreview src={pathImage} alt="Path Preview" />
-    </Wrapper>
+        <PathImagePreview src={pathImage} alt="Path Preview" />
+      </Wrapper>
+      <BottomNavigation />
+    </>
   );
 }

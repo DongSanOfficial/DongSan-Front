@@ -30,7 +30,7 @@ const ModalContainer = styled.div<{ width?: string; height?: string }>`
     max-width: ${({ width }) => width || '400px'};
     height: ${({ height }) => height || 'auto'};
     max-height: 90vh;
-    overflow-y: auto;
+    overflow: scroll;
     position: relative;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 `;

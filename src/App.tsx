@@ -1,10 +1,8 @@
 import React, { Suspense, useEffect, useState } from "react";
-
-import CustomNavigator from "./navigator/CustomNavigator";
 import routes from "./navigator/routes";
 import GlobalStyles from "./styles/GlobalStyles";
-import Layout from "./styles/BottomBarLayout";
 import Splash from "./pages/splash";
+import Navigator from "src/navigator/Navigator";
 import { ThemeProvider } from "styled-components";
 import { theme } from "./styles/colors/theme";
 
@@ -23,15 +21,13 @@ function App() {
     <>
       <ThemeProvider theme={theme}>
         <GlobalStyles />
-        <Layout>
           {showSplash ? (
             <Splash />
           ) : (
             <Suspense fallback={<div />}>
-              <CustomNavigator routes={routes} initialRouteName="/" />
+              <Navigator routes={routes} initialRouteName="/" />
             </Suspense>
           )}
-        </Layout>
       </ThemeProvider>
     </>
   );

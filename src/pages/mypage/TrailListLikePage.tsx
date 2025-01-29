@@ -1,22 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import Header from "src/components/Header";
 import TrailCardAll from "src/components/TrailCardAll_View";
 import { Trail, getTrails } from "../../apis/trail";
+import AppBar from "src/components/appBar";
+import BottomNavigation from "src/components/bottomNavigation";
 
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
+  overflow: scroll;
+  height: calc(100dvh - 126px);
   align-items: center;
-  padding: 15px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const List = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 15px;
 `;
 
 function TrailLikeListPage() {
@@ -57,7 +64,7 @@ function TrailLikeListPage() {
 
   return (
     <>
-      <Header title={title} showBackButton={true} onBack={() => navigate(-1)} />
+      <AppBar onBack={() => navigate(-1)} title={title} />
       <Wrapper>
         {loading && <div>Loading...</div>}
         {error && <div>{error}</div>}
@@ -69,6 +76,7 @@ function TrailLikeListPage() {
           </List>
         )}
       </Wrapper>
+      <BottomNavigation />
     </>
   );
 }

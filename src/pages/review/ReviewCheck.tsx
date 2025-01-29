@@ -5,13 +5,19 @@ import { showReviewContent, showReviewRating } from "src/apis/review";
 import { ReviewContentType, ReviewRatingType } from "src/apis/review.type";
 import { useNavigate, useParams } from "react-router-dom";
 import { MdKeyboardArrowDown } from "react-icons/md";
+import AppBar from "src/components/appBar";
+import BottomNavigation from "src/components/bottomNavigation";
 
-// Styled components
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 15px;
+  height: calc(100dvh - 126px);
+  overflow: scroll;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const RatingsContainer = styled.div`
@@ -221,61 +227,65 @@ const ReviewCheck: React.FC = () => {
     { label: 1, percent: reviewStats?.one ?? 0 },
   ];
   return (
-    <Wrapper>
-      <RatingsContainer>
-        <RatingLeft>
-          <StarLength>{reviewStats?.rating.toFixed(1)}</StarLength>
-          <StarContainer>
-            <StarRating rating={reviewStats?.rating ?? 0} />
-          </StarContainer>
-          <span>{`후기 ${reviewStats?.reviewCount}개`}</span>
-        </RatingLeft>
-        <RatingRight>
-          {ratingData.map((data) => (
-            <RatingBreakdown key={data.label}>
-              <Label>{data.label}</Label>
-              <ProgressBar percent={data.percent} />
-              <Label>{`${data.percent}%`}</Label>
-            </RatingBreakdown>
+    <>
+      <AppBar onBack={() => navigate(-1)} title="산책로 리뷰" />
+      <Wrapper>
+        <RatingsContainer>
+          <RatingLeft>
+            <StarLength>{reviewStats?.rating.toFixed(1)}</StarLength>
+            <StarContainer>
+              <StarRating rating={reviewStats?.rating ?? 0} />
+            </StarContainer>
+            <span>{`후기 ${reviewStats?.reviewCount}개`}</span>
+          </RatingLeft>
+          <RatingRight>
+            {ratingData.map((data) => (
+              <RatingBreakdown key={data.label}>
+                <Label>{data.label}</Label>
+                <ProgressBar percent={data.percent} />
+                <Label>{`${data.percent}%`}</Label>
+              </RatingBreakdown>
+            ))}
+          </RatingRight>
+        </RatingsContainer>
+        <SortContainer>
+          <SortType
+            onClick={() => {
+              setIsDropdownOpen((prev) => !prev);
+            }}
+          >
+            {sortType === "rating" ? "별점순" : "최근순"}
+            <MdKeyboardArrowDown />
+          </SortType>
+          {isDropdownOpen && (
+            <DropdownMenu>
+              <DropdownItem onClick={() => handleSortChange("rating")}>
+                별점순
+              </DropdownItem>
+              <DropdownItem onClick={() => handleSortChange("latest")}>
+                최근순
+              </DropdownItem>
+            </DropdownMenu>
+          )}
+        </SortContainer>
+        {loading && <div>Loading...</div>}
+        {error && <div>{error}</div>}
+        {!loading &&
+          !error &&
+          reviews.map((review) => (
+            <div key={review.reviewId}>
+              <TrailReviewCard
+                trailName={review.nickname}
+                date={review.date}
+                content={review.content}
+                rating={review.rating}
+              />
+              <hr />
+            </div>
           ))}
-        </RatingRight>
-      </RatingsContainer>
-      <SortContainer>
-        <SortType
-          onClick={() => {
-            setIsDropdownOpen((prev) => !prev);
-          }}
-        >
-          {sortType === "rating" ? "별점순" : "최근순"}
-          <MdKeyboardArrowDown />
-        </SortType>
-        {isDropdownOpen && (
-          <DropdownMenu>
-            <DropdownItem onClick={() => handleSortChange("rating")}>
-              별점순
-            </DropdownItem>
-            <DropdownItem onClick={() => handleSortChange("latest")}>
-              최근순
-            </DropdownItem>
-          </DropdownMenu>
-        )}
-      </SortContainer>
-      {loading && <div>Loading...</div>}
-      {error && <div>{error}</div>}
-      {!loading &&
-        !error &&
-        reviews.map((review) => (
-          <div key={review.reviewId}>
-            <TrailReviewCard
-              trailName={review.nickname}
-              date={review.date}
-              content={review.content}
-              rating={review.rating}
-            />
-            <hr />
-          </div>
-        ))}
-    </Wrapper>
+      </Wrapper>{" "}
+      <BottomNavigation />
+    </>
   );
 };
 

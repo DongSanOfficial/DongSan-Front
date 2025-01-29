@@ -12,14 +12,15 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { theme } from "src/styles/colors/theme";
 import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
+import AppBar from "src/components/appBar";
+import BottomNavigation from "src/components/bottomNavigation";
 
 const Wrapper = styled.div`
   display: flex;
+  padding: 10px 20px;
   flex-direction: column;
-  justify-content: space-between;
-  padding: 20px;
-  align-items: center;
-  min-height: 100%;
+  overflow: scroll;
+  height: calc(100dvh - 126px);
   &::-webkit-scrollbar {
     display: none;
   }
@@ -148,56 +149,63 @@ export default function RecommendTrail() {
     navigate("/reviews");
   };
   return (
-    <Wrapper>
-      <ContentWrapper>
-        <Content>
-          <DateDisplay />
-        </Content>
-        <Title>가을에 걷기 좋은 산책로</Title>
-        <TrailInfoContainer>
-          <TrailInfo duration={"12:00"} distance={53} />
-        </TrailInfoContainer>
-      </ContentWrapper>
-      <ShowField>
-        <Img src={trail} alt="Trail" />
-        <FieldContent>
-          <IconWrapper>
-            <LeftIcon>
-              <IconButton active={isHeartActive} onClick={toggleHeart}>
-                {isHeartActive ? (
-                  <IoMdHeart size={20} />
-                ) : (
-                  <IoMdHeartEmpty size={20} />
-                )}{" "}
-                {heartCount}
-              </IconButton>
-              <IconButton active={isStarActive} onClick={toggleStar}>
-                {isStarActive ? (
-                  <MdOutlineStar size={20} />
-                ) : (
-                  <MdOutlineStarBorder size={20} />
-                )}{" "}
-                {starCount}
-              </IconButton>
-              <ReviewCount>리뷰 {reviewCount}개</ReviewCount>
-              <IconButton onClick={goToReviews}>
-                <MdArrowForwardIos />
-              </IconButton>
-            </LeftIcon>
-            <BookmarkButton active={isBookmarkActive} onClick={toggleBookmark}>
-              {isBookmarkActive ? <BsBookmarkFill /> : <BsBookmark />}
-            </BookmarkButton>
-          </IconWrapper>
+    <>
+      <AppBar onBack={() => navigate(-1)} title="산책로" />
+      <Wrapper>
+        <ContentWrapper>
+          <Content>
+            <DateDisplay />
+          </Content>
+          <Title>가을에 걷기 좋은 산책로</Title>
+          <TrailInfoContainer>
+            <TrailInfo duration={"12:00"} distance={53} />
+          </TrailInfoContainer>
+        </ContentWrapper>
+        <ShowField>
+          <Img src={trail} alt="Trail" />
+          <FieldContent>
+            <IconWrapper>
+              <LeftIcon>
+                <IconButton active={isHeartActive} onClick={toggleHeart}>
+                  {isHeartActive ? (
+                    <IoMdHeart size={20} />
+                  ) : (
+                    <IoMdHeartEmpty size={20} />
+                  )}{" "}
+                  {heartCount}
+                </IconButton>
+                <IconButton active={isStarActive} onClick={toggleStar}>
+                  {isStarActive ? (
+                    <MdOutlineStar size={20} />
+                  ) : (
+                    <MdOutlineStarBorder size={20} />
+                  )}{" "}
+                  {starCount}
+                </IconButton>
+                <ReviewCount>리뷰 {reviewCount}개</ReviewCount>
+                <IconButton onClick={goToReviews}>
+                  <MdArrowForwardIos />
+                </IconButton>
+              </LeftIcon>
+              <BookmarkButton
+                active={isBookmarkActive}
+                onClick={toggleBookmark}
+              >
+                {isBookmarkActive ? <BsBookmarkFill /> : <BsBookmark />}
+              </BookmarkButton>
+            </IconWrapper>
 
-          <Explanation>풍경 좋은 청계천 근처 산책로! 걸어보세용</Explanation>
-          <HashtagContainer>
-            {hashtags.map((hashtag, index) => (
-              <Hashtag key={index}> #{hashtag}</Hashtag>
-            ))}
-          </HashtagContainer>
-        </FieldContent>
-      </ShowField>
-      <Button>이용하기</Button>
-    </Wrapper>
+            <Explanation>풍경 좋은 청계천 근처 산책로! 걸어보세용</Explanation>
+            <HashtagContainer>
+              {hashtags.map((hashtag, index) => (
+                <Hashtag key={index}> #{hashtag}</Hashtag>
+              ))}
+            </HashtagContainer>
+          </FieldContent>
+        </ShowField>
+        <Button>이용하기</Button>
+      </Wrapper>
+      <BottomNavigation />
+    </>
   );
 }

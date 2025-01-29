@@ -3,17 +3,23 @@ import styled from "styled-components";
 import { theme } from "src/styles/colors/theme";
 import { ReactComponent as StarIcon } from "../../assets/svg/ReviewStar.svg";
 import Divider from "../../components/Divider";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { getCookie } from "src/utils/cookieUtils";
+import BottomNavigation from "src/components/bottomNavigation";
+import AppBar from "src/components/appBar";
 
 const CenterWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  overflow: scroll;
+  height: calc(100dvh - 126px);
   align-items: center;
-  height: 70vh;
+  justigy-content: space-between;
   padding-top: 80px;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const ContentWrapper = styled.div`
@@ -89,9 +95,11 @@ const Button = styled.button<{ isActive: boolean }>`
   border: none;
   font-size: 16px;
   font-weight: 500;
+  margin-top: 50px;
 `;
 
 const ReviewPage = () => {
+  const navigate = useNavigate();
   const [rating, setRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
   const [review, setReview] = useState("");
@@ -147,7 +155,7 @@ const ReviewPage = () => {
   };
 
   return (
-    <CenterWrapper>
+    <><AppBar onBack={() => navigate(-1)} title="산책로 리뷰" /><CenterWrapper>
       <ContentWrapper>
         <TitleWrapper>
           <RequiredMark>*</RequiredMark>
@@ -161,8 +169,7 @@ const ReviewPage = () => {
               isactive={((hoveredRating || rating) >= value).toString()}
               onMouseEnter={() => setHoveredRating(value)}
               onMouseLeave={() => setHoveredRating(0)}
-              onClick={() => setRating(value)}
-            />
+              onClick={() => setRating(value)} />
           ))}
         </StarContainer>
 
@@ -177,8 +184,7 @@ const ReviewPage = () => {
           <TextArea
             value={review}
             onChange={(e) => setReview(e.target.value.slice(0, 100))}
-            placeholder="리뷰를 입력해주세요"
-          />
+            placeholder="리뷰를 입력해주세요" />
           <CharCount>
             <span>{review.length}</span> / 100
           </CharCount>
@@ -188,7 +194,8 @@ const ReviewPage = () => {
       <Button isActive={isActive} onClick={handleSubmit}>
         리뷰 등록하기
       </Button>
-    </CenterWrapper>
+    </CenterWrapper><BottomNavigation /></>
+
   );
 };
 

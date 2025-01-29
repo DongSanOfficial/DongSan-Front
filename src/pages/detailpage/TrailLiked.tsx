@@ -12,14 +12,15 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { theme } from "src/styles/colors/theme";
 import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
+import AppBar from "src/components/appBar";
+import BottomNavigation from "src/components/bottomNavigation";
 
 const Wrapper = styled.div`
   display: flex;
+  padding: 10px 20px;
   flex-direction: column;
-  justify-content: space-between;
-  padding: 20px;
-  align-items: center;
-  min-height: 100%;
+  overflow: scroll;
+  height: calc(100dvh - 126px);
   &::-webkit-scrollbar {
     display: none;
   }
@@ -148,7 +149,7 @@ export default function TrailLiked() {
     navigate("/reviews");
   };
   return (
-    <Wrapper>
+    <><AppBar onBack={() => navigate(-1)} title="내 산책로" /><Wrapper>
       <ContentWrapper>
         <Content>
           <DateDisplay />
@@ -198,6 +199,7 @@ export default function TrailLiked() {
         </FieldContent>
       </ShowField>
       <Button>이용하기</Button>
-    </Wrapper>
+    </Wrapper><BottomNavigation /></>
+
   );
 }

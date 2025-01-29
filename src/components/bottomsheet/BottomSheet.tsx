@@ -73,7 +73,7 @@ const Handle = styled.div`
 
 const Content = styled.div`
     padding: 0 20px 20px;
-    overflow-y: auto;
+    overflow: scroll;
     background-color: white;
     height: calc(100% - 32px);
 `;
