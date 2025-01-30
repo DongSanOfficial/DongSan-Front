@@ -205,7 +205,6 @@ export default function RecommendTrail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isLiked, setIsLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(0);
   const [isBookmarked, setIsBookmarked] = useState(false);
 
   const toggleBookmark = () => {
@@ -294,7 +293,6 @@ export default function RecommendTrail() {
                       // TODO: API 호출로 좋아요 상태 업데이트
                     }}
                   />
-                  {likeCount}
                 </ReactionButton>
                 <RatingContainer>
                   <RatingGroup>
