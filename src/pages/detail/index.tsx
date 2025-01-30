@@ -1,23 +1,21 @@
 import styled from "styled-components";
+import ToggleSwitch from "../../components/newway_register/ToggleSwitch";
+import TrailInfo from "../../components/newway_register/TrailInfo";
 import { ReactComponent as StarIcon } from "../../assets/svg/Star.svg";
 import { ReactComponent as HeartIcon } from "../../assets/svg/Heart.svg";
-import { BiCalendarCheck } from "react-icons/bi";
 import { MdArrowForwardIos } from "react-icons/md";
-import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
+import { BiCalendarCheck } from "react-icons/bi";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { theme } from "src/styles/colors/theme";
-import AppBar from "src/components/appBar";
-import PathMap from "src/components/map/PathMap";
-import BottomNavigation from "src/components/bottomNavigation";
-import TrailInfo from "src/components/newway_register/TrailInfo";
-import { getWalkwayDetail } from "src/apis/walkway";
+import PathMap from "../../components/map/PathMap";
+import BottomNavigation from "../../components/bottomNavigation";
+import AppBar from "../../components/appBar";
 import { WalkwayDetail } from "src/apis/walkway.type";
+import { getWalkwayDetail } from "src/apis/walkway";
+import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
 
-interface ReactionButtonProps {
-  active?: boolean;
-}
-
+// 레이아웃 관련
 const PageWrapper = styled.div`
   display: flex;
   padding: 10px 20px;
@@ -32,7 +30,7 @@ const PageWrapper = styled.div`
 const HeaderContainer = styled.div`
   display: flex;
   flex-direction: column;
-  width: 100%;
+  max-width: 430px;
 `;
 
 const HeaderTopBar = styled.div`
@@ -43,6 +41,7 @@ const HeaderTopBar = styled.div`
   max-width: 430px;
 `;
 
+// 산책로 정보 컴포넌트 관련
 const PathTitle = styled.div`
   font-size: 1.125rem;
   font-weight: 600;
@@ -67,8 +66,10 @@ const PathDescription = styled.div`
   margin: 10px;
 `;
 
+// 지도 관련
 const MapSection = styled.div`
   max-width: 80vw;
+  // height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -91,6 +92,7 @@ const MapDetailsContainer = styled.div`
   border-radius: 0px 0px 10px 10px;
 `;
 
+// 유저 반응(좋아오, 별점, 리뷰) 관련
 const ReactionBar = styled.div`
   display: flex;
   align-items: center;
@@ -104,6 +106,10 @@ const LeftIcon = styled.div`
   gap: 5px;
 `;
 
+interface ReactionButtonProps {
+  active?: boolean;
+}
+
 const ReactionButton = styled.div<ReactionButtonProps>`
   display: flex;
   align-items: center;
@@ -112,12 +118,7 @@ const ReactionButton = styled.div<ReactionButtonProps>`
   color: ${(props) => (props.active ? "red" : "black")};
 `;
 
-const BookmarkButton = styled.div<{ $isActive: boolean }>`
-  cursor: pointer;
-  color: ${({ $isActive }) => ($isActive ? theme.Green500 : theme.Gray200)};
-`;
-
-const WalkButton = styled.button`
+const EditButton = styled.button`
   background-color: #888;
   color: #ffffff;
   width: 100%;
@@ -129,6 +130,7 @@ const WalkButton = styled.button`
   margin-top: 20px;
 `;
 
+// 해시태그 관련
 const TagsContainer = styled.div`
   display: flex;
   flex-wrap: nowrap;
@@ -145,6 +147,7 @@ const TagItem = styled.div`
   flex-shrink: 0;
 `;
 
+// 별점 관련
 const RatingContainer = styled.div`
   display: flex;
   justify-content: space-between;
@@ -194,37 +197,29 @@ const StyledHeart = styled(HeartIcon)<{ $isActive: boolean }>`
   fill: ${({ $isActive }) => ($isActive ? theme.Green500 : theme.Gray200)};
   cursor: pointer;
   transition: fill 0.2s ease;
+  margin-right: 5px;
 `;
 
-export default function RecommendTrail() {
+const BookmarkButton = styled.div<{ $isActive: boolean }>`
+  cursor: pointer;
+  color: ${({ $isActive }) => ($isActive ? theme.Green500 : theme.Gray200)};
+`;
+
+interface PathDetailsProps {
+  isMyPath?: boolean;
+}
+
+export default function PathDetails({
+  isMyPath = false,
+}: PathDetailsProps) {
   const navigate = useNavigate();
   const { walkwayId } = useParams<{ walkwayId: string }>();
+
   const [walkwayDetail, setWalkwayDetail] = useState<WalkwayDetail | null>(
     null
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isLiked, setIsLiked] = useState(false);
-  const [isBookmarked, setIsBookmarked] = useState(false);
-
-  const toggleBookmark = () => {
-    setIsBookmarked(!isBookmarked);
-    // TODO: API 호출로 북마크 상태 업데이트
-  };
-
-  const renderStars = (rating: number) => {
-    return [1, 2, 3, 4, 5].map((value) => {
-      const diff = rating - (value - 1);
-      const percentage = Math.min(Math.max(diff, 0), 1) * 100;
-
-      return (
-        <StarBox key={value}>
-          <StyledStar isactive="false" />
-          {percentage > 0 && <PartialStar width={percentage} isactive="true" />}
-        </StarBox>
-      );
-    });
-  };
 
   useEffect(() => {
     const fetchWalkwayDetail = async () => {
@@ -232,7 +227,6 @@ export default function RecommendTrail() {
         setLoading(true);
         const data = await getWalkwayDetail(Number(walkwayId));
         setWalkwayDetail(data);
-        setIsLiked(data.isLike);
       } catch (error) {
         if (error instanceof Error) {
           setError(error.message);
@@ -249,20 +243,87 @@ export default function RecommendTrail() {
     }
   }, [walkwayId]);
 
+  const toggleHeart = (): void => {
+    if (walkwayDetail) {
+      setWalkwayDetail({
+        ...walkwayDetail,
+        isLike: !walkwayDetail.isLike,
+        likeCount: walkwayDetail.likeCount + (walkwayDetail.isLike ? -1 : 1),
+      });
+    }
+    // TODO: API 호출로 좋아요 상태 업데이트
+  };
+
+  const toggleBookmark = () => {
+    if (walkwayDetail) {
+      setWalkwayDetail({
+        ...walkwayDetail,
+        isBookmarked: !walkwayDetail.isBookmarked,
+      });
+    }
+    // TODO: API 북마크
+  };
+
+  const goToReviews = (): void => {
+    navigate(`/main/review/${walkwayId}/content`);
+    // TODO: API 리뷰 페이지 이동 업데이트
+  };
+
+  const handleEditClick = () => {
+    navigate("/newway/registration", {
+      state: {
+        walkwayId: walkwayId,
+        isEditMode: true,
+      },
+    });
+  };
+
+  const handleWalkClick = () => {
+    navigate("/usingtrail", {
+      state: {
+        walkwayId: walkwayId,
+      },
+    });
+  };
+
+  const renderStars = (rating: number) => {
+    return [1, 2, 3, 4, 5].map((value) => {
+      const diff = rating - (value - 1);
+      const percentage = Math.min(Math.max(diff, 0), 1) * 100;
+      return (
+        <StarBox key={value}>
+          <StyledStar isactive="false" />
+          {percentage > 0 && <PartialStar width={percentage} isactive="true" />}
+        </StarBox>
+      );
+    });
+  };
+
   if (loading) return <div>로딩 중...</div>;
   if (error) return <div>{error}</div>;
   if (!walkwayDetail) return null;
 
   return (
     <>
-      <AppBar onBack={() => navigate(-1)} title="산책로" />
+      <AppBar
+        onBack={() => navigate(-1)}
+        title={isMyPath ? "내 산책로" : "산책로"}
+      />
       <PageWrapper>
         <HeaderContainer>
           <HeaderTopBar>
             <div style={{ display: "flex", alignItems: "center" }}>
-              <BiCalendarCheck />
+              <BiCalendarCheck
+                style={{ color: "black", width: "27px", height: "27px" }}
+              />
               <PathDate>{walkwayDetail.date}</PathDate>
             </div>
+            {isMyPath && (
+              <ToggleSwitch
+                isPublic={walkwayDetail.accessLevel === "PUBLIC"}
+                readOnly={true}
+              />
+            )}
           </HeaderTopBar>
           <PathTitle>{walkwayDetail.name}</PathTitle>
           <PathInfoContainer>
@@ -272,7 +333,6 @@ export default function RecommendTrail() {
             />
           </PathInfoContainer>
         </HeaderContainer>
-
         <MapSection>
           <MapBox>
             <PathMap
@@ -287,35 +347,32 @@ export default function RecommendTrail() {
               <LeftIcon>
                 <ReactionButton>
                   <StyledHeart
-                    $isActive={isLiked}
-                    onClick={() => {
-                      setIsLiked(!isLiked);
-                      // TODO: API 호출로 좋아요 상태 업데이트
-                    }}
+                    $isActive={walkwayDetail.isLike}
+                    onClick={toggleHeart}
                   />
+                  {walkwayDetail.likeCount}
+                  {/* 서버 디비에 좋아요 수 추가되면 필드명 반영하기 */}
                 </ReactionButton>
                 <RatingContainer>
                   <RatingGroup>
                     {renderStars(walkwayDetail.rating)}
                     <RatingScore>{walkwayDetail.rating.toFixed(1)}</RatingScore>
-                    <span
-                      style={{ cursor: "pointer" }}
-                      onClick={() => navigate(`/reviews/${walkwayId}`)}
-                    >
-                      리뷰 {walkwayDetail.reviewCount}개
-                    </span>
+                    <span>리뷰 {walkwayDetail.reviewCount}개</span>
                   </RatingGroup>
                 </RatingContainer>
                 <ReactionButton
-                  onClick={() => navigate(`/main/review/:walkwayId/content`)}
-                  // TODO: API 리뷰 페이지 이동 업데이트
+                  onClick={goToReviews}
                   style={{ cursor: "pointer" }}
                 >
-                  <MdArrowForwardIos size={16} />
+                  <MdArrowForwardIos />
                 </ReactionButton>
               </LeftIcon>
-              <BookmarkButton $isActive={isBookmarked} onClick={toggleBookmark}>
-                {isBookmarked ? (
+              {/* 서버 디비에 북마크 여부 추가되면 필드명 반영하기 */}
+              <BookmarkButton
+                $isActive={walkwayDetail.isBookmarked}
+                onClick={toggleBookmark}
+              >
+                {walkwayDetail.isBookmarked ? (
                   <BsBookmarkFill size={20} />
                 ) : (
                   <BsBookmark size={20} />
@@ -323,18 +380,18 @@ export default function RecommendTrail() {
               </BookmarkButton>
             </ReactionBar>
             <PathDescription>{walkwayDetail.memo}</PathDescription>
-            {walkwayDetail.hashTags && walkwayDetail.hashTags.length > 0 && (
+            {walkwayDetail.hashtags && walkwayDetail.hashtags.length > 0 && (
               <TagsContainer>
-                {walkwayDetail.hashTags.map((hashtag, index) => (
-                  <TagItem key={index}> #{hashtag}</TagItem>
+                {walkwayDetail.hashtags.map((hashtag, index) => (
+                  <TagItem key={index}>{hashtag}</TagItem>
                 ))}
               </TagsContainer>
             )}
           </MapDetailsContainer>
         </MapSection>
-        <WalkButton onClick={() => navigate("/usingtrail")}>
-          이용하기
-        </WalkButton>
+        <EditButton onClick={isMyPath ? handleEditClick : handleWalkClick}>
+          {isMyPath ? "수정하기" : "이용하기"}
+        </EditButton>
       </PageWrapper>
       <BottomNavigation />
     </>

@@ -5,15 +5,13 @@ import TrailLikeListPage from "../pages/mypage/TrailListLikePage";
 import NewWay from "../pages/newway";
 import SignIn from "../pages/signin";
 import Registration from "../pages/newway/registration";
-import MyRegister from "../components/myregister";
 import ReviewPage from "../pages/review";
 import Usingtrail from "../pages/usingtrail";
 import DetailUsing from "../pages/usingtrail/detail_using";
 import TrailReviewPage from "../pages/mypage/TrailReviewPage";
 import NavigationPage from "../pages";
 import ReviewCheck from "../pages/review/ReviewCheck";
-import RecommendTrail from "../pages/detailpage/recommend_trail";
-import TrailLiked from "../pages/detailpage/TrailLiked";
+import PathDetails from "../pages/detail";
 
 interface RouteConfig {
  path: string;
@@ -30,10 +28,6 @@ const routes: RouteConfig[] = [
    component: Main,
  },
  {
-   path: "/main/recommend/detail/:walkwayId",
-   component: RecommendTrail,
- },
- {
    path: "/mypage",
    component: MyPage,
  },
@@ -41,10 +35,16 @@ const routes: RouteConfig[] = [
    path: "/mypage/TrailList",
    component: TrailListPage,
  },
+// 내 산책로 > 단건 조회 루트를 제외한 모든 디테일 페이지
  {
-   path: "/mypage/myregister/:walkwayId",
-   component: MyRegister,
- },
+  path: "/main/recommend/detail/:walkwayId",
+  component: () => <PathDetails />,
+},
+// 내 산책로 > 단건 조회 루트로 진입한 디테일 페이지
+{
+  path: "/mypage/myregister/:walkwayId",
+  component: () => <PathDetails isMyPath={true} />,
+},
  {
    path: "/mypage/TrailLikeList",
    component: TrailLikeListPage,
@@ -52,10 +52,6 @@ const routes: RouteConfig[] = [
  {
    path: "/mypage/ReviewList",
    component: TrailReviewPage,
- },
- {
-   path: "/mypage/TrailLikeList/detail/:walkwayId",
-   component: TrailLiked,
  },
  {
    path: "/newway",

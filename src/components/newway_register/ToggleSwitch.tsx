@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import { theme } from "src/styles/colors/theme";
 
@@ -57,20 +57,30 @@ const Label = styled.span<{ isOn: boolean }>`
   transition: color 0.3s ease;
 `;
 
-const ToggleSwitch: React.FC = () => {
-  const [isOn, setIsOn] = useState(false);
+interface ToggleSwitchProps {
+  isPublic: boolean;
+  readOnly?: boolean;
+  onChange?: (isPublic: boolean) => void;
+}
 
+const ToggleSwitch = ({
+  isPublic,
+  readOnly = false,
+  onChange,
+}: ToggleSwitchProps) => {
   const toggleSwitch = () => {
-    setIsOn(!isOn);
+    if (!readOnly && onChange) {
+      onChange(!isPublic);
+    }
   };
 
   return (
     <Content>
       <IsPublic>전체공개</IsPublic>
       <SwitchContainer onClick={toggleSwitch}>
-        <Switch isOn={isOn}>
-          <Toggle isOn={isOn} />
-          <Label isOn={isOn}>{isOn ? "ON" : "OFF"}</Label>
+        <Switch isOn={isPublic}>
+          <Toggle isOn={isPublic} />
+          <Label isOn={isPublic}>{isPublic ? "ON" : "OFF"}</Label>
         </Switch>
       </SwitchContainer>
     </Content>
