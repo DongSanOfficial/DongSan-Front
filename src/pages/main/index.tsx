@@ -108,6 +108,11 @@ function Main() {
   const [likedPaths, setLikedPaths] = useState<{ [key: number]: boolean }>({});
   const [likeCounts, setLikeCounts] = useState<{ [key: number]: number }>({});
 
+  // 산책로 id
+  const [selectedWalkwayId, setSelectedWalkwayId] = useState<number | null>(
+    null
+  );
+
   /**
    * 산책로 검색 api 연동
    */
@@ -184,8 +189,10 @@ function Main() {
       longitude: result.location.lng,
       name: result.placeName,
     });
+    setSelectedWalkwayId(null);
     setSearchResults([]);
     setSearchValue(result.placeName);
+    setSelectedWalkwayId(null);
     setBottomSheetHeight("60vh");
     setIsOpen(true);
 
@@ -244,8 +251,8 @@ function Main() {
         longitude: location.lng,
         name: "현재 위치",
       });
-      setBottomSheetHeight("60vh");
-      setIsOpen(true);
+      setBottomSheetHeight("23vh");
+      setIsOpen(false);
     } catch (error) {
       console.error("현재 위치 기반 산책로 조회 실패:", error);
     }
@@ -303,15 +310,18 @@ function Main() {
   /**
    * 산책로 카드 클릭 처리
    */
-  const handlePathClick = (location: {
-    latitude: number;
-    longitude: number;
-  }) => {
+  const handlePathClick = (
+    walkwayId: number,
+    location: { latitude: number; longitude: number },
+    name: string
+  ) => {
     setSelectedLocation((prevLocation) => ({
       ...prevLocation!,
       latitude: location.latitude,
       longitude: location.longitude,
+      name: name,
     }));
+    setSelectedWalkwayId(walkwayId); 
     setIsOpen(false);
   };
 
@@ -321,14 +331,15 @@ function Main() {
       setSelectedLocation({
         latitude: location.lat,
         longitude: location.lng,
-        name: "선택한 위치"
+        name: "선택한 위치",
       });
+      setSelectedWalkwayId(null);
       setBottomSheetHeight("60vh");
       setIsOpen(true);
-  
+
       await fetchWalkways(location.lat, location.lng, sortOption, true);
     } catch (error) {
-      console.error('선택 위치 기반 산책로 조회 실패:', error);
+      console.error("선택 위치 기반 산책로 조회 실패:", error);
     }
   };
   return (
@@ -356,6 +367,7 @@ function Main() {
               : undefined
           }
           pathName={selectedLocation?.name}
+          walkwayId={selectedWalkwayId}
           searchKeyword={searching ? searchValue : undefined}
           onSearchResults={handleSearchResults}
           onInitialLocation={handleInitialLocation}
@@ -387,15 +399,22 @@ function Main() {
                 walkways.map((walkway) => (
                   <PathCard
                     key={walkway.walkwayId}
+                    walkwayId={walkway.walkwayId}
                     pathimage={walkway.courseImageUrl}
                     pathname={walkway.name}
                     hashtag={walkway.hashtags.join(" ")}
                     distance={`${walkway.distance.toFixed(1)} km`}
                     starCount={walkway.rating}
                     reviewCount={walkway.reviewCount}
-                    isLiked={likedPaths[walkway.walkwayId]}
+                    isLiked={walkway.isLike}
                     onLikeClick={() => handleLikeClick(walkway.walkwayId)}
-                    onClick={() => handlePathClick(walkway.location)}
+                    onClick={() =>
+                      handlePathClick(
+                        walkway.walkwayId,
+                        walkway.location,
+                        walkway.name
+                      )
+                    }
                   />
                 ))
               ) : (

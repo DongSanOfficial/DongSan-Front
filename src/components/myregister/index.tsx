@@ -211,7 +211,7 @@ const mockPathData = {
   ],
   tags: ["홍대", "문화거리", "카페", "벽화", "데이트"],
   totalDistance: 2.1,
-  duration: "00:35",
+  duration: 80,
   statistics: {
     heartCount: 156,
     starCount: 4.8,

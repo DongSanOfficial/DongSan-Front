@@ -106,7 +106,7 @@ const samplePathCoords = [
 interface PathData {
   coordinates: Array<{ lat: number; lng: number }>;
   totalDistance: number;
-  duration: string;
+  duration: number;
   startTime: Date;
   endTime: Date;
 }
@@ -130,7 +130,7 @@ export default function Registration() {
     ? {
         coordinates: samplePathCoords,
         totalDistance: 1.2,
-        duration: "00:20",
+        duration: 20,
         startTime: new Date(),
         endTime: new Date(),
       }

@@ -4,7 +4,6 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { theme } from "../../styles/colors/theme";
 import { ReactComponent as LocationIcon } from "../../assets/svg/LocationIcon.svg";
-// import CurrentLocationMarker from "../../assets/svg/RegisteredLocation.svg";
 import SelectedLocationMarker from "../../assets/svg/UserLocation.svg";
 import { SearchResult } from "../../pages/main/components/SearchResult";
 
@@ -123,6 +122,8 @@ interface MainMapProps {
   onCenterChange?: (location: Location) => void;
   /** 선택된 산책로 이름 */
   pathName?: string;
+  /** 선택된 산책로 ID */
+  walkwayId?: number | null;
   /** 검색 키워드 */
   searchKeyword?: string;
   /** 검색 결과 처리 함수 */
@@ -131,7 +132,8 @@ interface MainMapProps {
   onInitialLocation?: (location: Location) => void;
   /** 위치 버튼 클릭 시 호출되는 함수 */
   onLocationButtonClick?: (location: Location) => void;
-  onSearchCurrentLocation?: (location: Location) => void; // 추가
+  /** 현재 위치에서 재검색 시 호출되는 함수 */
+  onSearchCurrentLocation?: (location: Location) => void;
 }
 
 /**
@@ -143,6 +145,7 @@ export const MainMap = ({
   center,
   onCenterChange,
   pathName,
+  walkwayId,
   searchKeyword,
   onSearchResults,
   onInitialLocation,
@@ -176,6 +179,7 @@ export const MainMap = ({
         setUserLocation(newLocation);
         setMapCenter(newLocation);
         onCenterChange?.(newLocation);
+        onLocationButtonClick?.(newLocation);
       },
       (error) => {
         console.error("Error getting user location:", error);
@@ -219,7 +223,6 @@ export const MainMap = ({
 
     setVh();
     window.addEventListener("resize", setVh);
-
     return () => window.removeEventListener("resize", setVh);
   }, []);
 
@@ -260,7 +263,9 @@ export const MainMap = ({
    * 마커 클릭 시 상세 페이지로 이동
    */
   const handleMarkerClick = () => {
-    navigate("/recommend/detail/:walkwayId");
+    if (walkwayId) {
+      navigate(`/main/recommend/detail/${walkwayId}`);
+    }
   };
 
   return (
@@ -276,34 +281,17 @@ export const MainMap = ({
             setShowSearchButton(true);
           }}
           onCenterChanged={(map) => {
-            const latlng = map.getCenter();
-            const newCenter = {
-              lat: latlng.getLat(),
-              lng: latlng.getLng(),
-            };
-            setMapCenter(newCenter);
-            onCenterChange?.(newCenter);
+            if (!center) {
+              const latlng = map.getCenter();
+              const newCenter = {
+                lat: latlng.getLat(),
+                lng: latlng.getLng(),
+              };
+              setMapCenter(newCenter);
+              onCenterChange?.(newCenter);
+            }
           }}
         >
-          {/* {userLocation && (
-            <MapMarker
-              position={userLocation}
-              image={{
-                src: CurrentLocationMarker,
-                size: {
-                  width: 30,
-                  height: 30,
-                },
-                options: {
-                  offset: {
-                    x: 20,
-                    y: 40,
-                  },
-                },
-              }}
-            />
-          )} */}
-
           {center && (
             <>
               <MapMarker

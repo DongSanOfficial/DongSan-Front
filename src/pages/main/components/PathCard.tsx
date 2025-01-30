@@ -114,6 +114,7 @@ const StyledHeart = styled(HeartIcon)<{ $isActive: boolean }>`
 `;
 
 interface PathCardProps {
+  walkwayId: number;
   pathimage: string;
   pathname: string;
   hashtag: string;
@@ -126,6 +127,7 @@ interface PathCardProps {
 }
 
 export default function PathCard({
+  walkwayId,  
   pathimage,
   pathname,
   hashtag,
@@ -156,17 +158,21 @@ export default function PathCard({
     e.stopPropagation();
     onLikeClick();
   };
-  const goDetailPage =()=>{
-    //임시경로
-    navigate("/newway/registration");
-    // /detail/:walkwayId
-  }
+
+  const goDetailPage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate(`/main/recommend/detail/${walkwayId}`);
+  };
 
   return (
     <Layout onClick={onClick}>
       <PathCardContainer>
         <PathContent>
-          <WalkwayImage src={pathimage} onClick={goDetailPage} alt="산책로 이미지" />
+          <WalkwayImage 
+            src={pathimage} 
+            onClick={goDetailPage} 
+            alt="산책로 이미지" 
+          />
           <ContentWrapper>
             <InfoSection>
               <Title>{pathname}</Title>

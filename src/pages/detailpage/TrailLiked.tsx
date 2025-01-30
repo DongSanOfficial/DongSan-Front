@@ -156,7 +156,7 @@ export default function TrailLiked() {
         </Content>
         <Title>가을에 걷기 좋은 산책로</Title>
         <TrailInfoContainer>
-          <TrailInfo duration={"12:00"} distance={53} />
+          <TrailInfo duration={50} distance={53} />
         </TrailInfoContainer>
       </ContentWrapper>
       <ShowField>
