@@ -30,6 +30,21 @@ const useWatchLocation = (options = {}) => {
     }
   };
 
+  // 현재 위치를 즉시 가져오는 함수
+  const getLocation = () => {
+    const { geolocation } = navigator;
+    if (!geolocation) {
+      setError("Geolocation is not supported.");
+      return;
+    }
+
+    geolocation.getCurrentPosition(handleSuccess, handleError, {
+      enableHighAccuracy: true,
+      maximumAge: 0, // 캐시된 위치를 사용하지 않음
+      timeout: 3000,
+    });
+  };
+
   useEffect(() => {
     const { geolocation } = navigator;
     if (!geolocation) {
@@ -40,20 +55,20 @@ const useWatchLocation = (options = {}) => {
     // 위치 업데이트 옵션
     const watchOptions = {
       enableHighAccuracy: true,
-      maximumAge: 3000,        // 3초 이내의 캐시된 위치만 사용
-      timeout: 3000           // 27초 타임아웃
+      maximumAge: 3000, // 3초 이내의 캐시된 위치만 사용
+      timeout: 3000, // 3초 타임아웃
     };
 
     locationWatchId.current = geolocation.watchPosition(
-      handleSuccess, 
+      handleSuccess,
       handleError,
       watchOptions
     );
 
     return cancelLocationWatch;
-  }, []);  // options 의존성 제거
+  }, []);
 
-  return { location, cancelLocationWatch, error };
+  return { location, cancelLocationWatch, error, getLocation };
 };
 
 export default useWatchLocation;

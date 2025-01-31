@@ -7,9 +7,9 @@ import TrailInfo from "src/components/newway_register/TrailInfo";
 import ToggleSwitch from "src/components/newway_register/ToggleSwitch";
 import InputField from "src/components/newway_register/InputField";
 import PathMap from "../../components/map/PathMap";
-import { drawPath } from "../../utils/drawPathUtils";
 import BottomNavigation from "src/components/bottomNavigation";
 import AppBar from "src/components/appBar";
+import CourseImage from "src/components/map/CourseImage";
 
 const Wrapper = styled.div`
   display: flex;
@@ -75,14 +75,6 @@ const Tag = styled.span`
   color: #b4b4b4;
 `;
 
-const PathImagePreview = styled.img`
-  width: 80vw;
-  max-width: 322px;
-  height: 30vh;
-  max-height: 276px;
-  margin-top: 20px;
-  object-fit: contain;
-`;
 
 const PathMapContainer = styled.div`
   width: 100%;
@@ -92,33 +84,20 @@ const PathMapContainer = styled.div`
   overflow: hidden;
 `;
 
-// 샘플 경로 데이터
-const samplePathCoords = [
-  { lat: 37.5665, lng: 126.978 },
-  { lat: 37.5668, lng: 126.9785 },
-  { lat: 37.5671, lng: 126.979 },
-  { lat: 37.5675, lng: 126.9795 },
-  { lat: 37.568, lng: 126.98 },
-  { lat: 37.5683, lng: 126.9805 },
-  { lat: 37.5685, lng: 126.981 },
-];
-
 interface PathData {
   coordinates: Array<{ lat: number; lng: number }>;
   totalDistance: number;
   duration: number;
   startTime: Date;
   endTime: Date;
+  pathImage: string;
 }
 
 export default function Registration() {
   const location = useLocation();
   const navigate = useNavigate();
   const { state } = location;
-
-  const [isEditMode, setIsEditMode] = useState(!!state); // state가 있으면 수정모드로 간주
-  const [isTestMode, setIsTestMode] = useState(true);
-
+  const [isEditMode, setIsEditMode] = useState(!!state);
   const [name, setName] = useState(state?.name || "");
   const [description, setDescription] = useState(state?.description || "");
   const [isActive, setIsActive] = useState<boolean>(false);
@@ -129,29 +108,28 @@ export default function Registration() {
     "PRIVATE"
   );
 
-  const pathData: PathData = isTestMode
-    ? {
-        coordinates: samplePathCoords,
-        totalDistance: 1.2,
-        duration: 20,
-        startTime: new Date(),
-        endTime: new Date(),
-      }
-    : location.state;
-  // 외부에서 해시태그가 넘어오는 경우 초기화
+  const pathData: PathData = location.state;
+
   useEffect(() => {
     if (state?.tags) {
-      setTags(state.tags); // state에서 받은 tags 배열을 상태에 설정
+      setTags(state.tags);
     }
   }, [state?.tags]);
+
   useEffect(() => {
-    const generatePathImage = async () => {
-      const coords = isTestMode ? samplePathCoords : pathData.coordinates;
-      const image = await drawPath(coords);
-      setPathImage(image);
-    };
-    generatePathImage();
-  }, [isTestMode, pathData.coordinates]);
+    if (pathData.pathImage) {
+      setPathImage(pathData.pathImage);
+    }
+  }, [pathData.pathImage]);
+
+  useEffect(() => {
+    console.log("전달받은 pathData:", pathData);
+    console.log("전달받은 이미지:", pathData?.pathImage?.substring(0, 100));
+
+    if (pathData?.pathImage) {
+      setPathImage(pathData.pathImage);
+    }
+  }, [pathData, pathData.pathImage]);
 
   useEffect(() => {
     setIsActive(name.length > 0);
@@ -201,22 +179,10 @@ export default function Registration() {
     }
   };
 
-  const toggleTestMode = () => {
-    setIsTestMode(!isTestMode);
-  };
-
   return (
     <>
       <AppBar onBack={() => navigate(-1)} title="산책로 등록" />
       <Wrapper>
-        <Button
-          isActive={true}
-          onClick={toggleTestMode}
-          style={{ marginBottom: "10px" }}
-        >
-          {isTestMode ? "테스트 모드 ON" : "테스트 모드 OFF"}
-        </Button>
-
         <ContentWrapper>
           <Content>
             <DateDisplay />
@@ -226,7 +192,7 @@ export default function Registration() {
               onChange={(isPublic) =>
                 setAccessLevel(isPublic ? "PUBLIC" : "PRIVATE")
               }
-            />{" "}
+            />
           </Content>
           <TrailInfo
             duration={pathData.duration}
@@ -258,8 +224,10 @@ export default function Registration() {
         <Button isActive={isActive} onClick={handleSubmit}>
           {isEditMode ? "수정완료" : "작성완료"}
         </Button>
-
-        <PathImagePreview src={pathImage} alt="Path Preview" />
+        <CourseImage
+          src={pathImage}
+          alt='경로 이미지화'
+        />
       </Wrapper>
       <BottomNavigation />
     </>

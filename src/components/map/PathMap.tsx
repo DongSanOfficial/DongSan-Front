@@ -1,4 +1,4 @@
-import React from "react";
+import { theme } from "src/styles/colors/theme";
 import { Map, Polyline } from "react-kakao-maps-sdk";
 import styled from "styled-components";
 
@@ -37,7 +37,7 @@ const PathMap = ({ pathCoords }: PathMapProps) => {
         <Polyline
           path={pathCoords}
           strokeWeight={5}
-          strokeColor="#FF7575"
+          strokeColor={theme.Green500}
           strokeOpacity={0.7}
           strokeStyle="solid"
         />
