@@ -1,41 +1,7 @@
-// src/components/TrailCardAll_View.tsx
 import React from "react";
 import { FaStar } from "react-icons/fa";
 import styled from "styled-components";
 import { Trail } from "../apis/trail";
-
-interface TrailCardProps {
-  trail: Trail;
-  onClick?: () => void;
-}
-
-interface CourseProps {
-  courseImageUrl: string;
-}
-
-const TrailCardAll: React.FC<TrailCardProps> = ({ trail }) => (
-  <TrailContents>
-    <Course courseImageUrl={trail.courseImageUrl} />
-    <MytrailInfo>
-      <MytrailHeader>{trail.name}</MytrailHeader>
-      <Mytrailhashtag>#{trail.hashtags.join(" #")}</Mytrailhashtag>
-      <MytrailSubContent>
-        {trail.rating}
-        <ReviewStars>
-          {Array.from({ length: trail.rating }).map((_, index) => (
-            <FaStar key={index} />
-          ))}
-        </ReviewStars>
-        리뷰{trail.reviewCount}개
-      </MytrailSubContent>
-      <MytrailContent>
-        <MytrailLength>{trail.distance}km</MytrailLength>
-      </MytrailContent>
-    </MytrailInfo>
-  </TrailContents>
-);
-
-export default TrailCardAll;
 
 const TrailContents = styled.div`
   flex: 0 0 auto;
@@ -47,6 +13,12 @@ const TrailContents = styled.div`
   display: flex;
   align-items: center;
   text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
 `;
 
 const MytrailInfo = styled.div`
@@ -102,3 +74,36 @@ const ReviewStars = styled.div`
   margin: 0 4px;
   color: #fbbc05;
 `;
+
+interface TrailCardProps {
+  trail: Trail;
+  onClick?: (walkwayId: number) => void;
+}
+
+interface CourseProps {
+  courseImageUrl: string;
+}
+
+const TrailCardAll = ({ trail, onClick }: TrailCardProps) => (
+  <TrailContents onClick={() => onClick?.(trail.walkwayId)}>
+    <Course courseImageUrl={trail.courseImageUrl} />
+    <MytrailInfo>
+      <MytrailHeader>{trail.name}</MytrailHeader>
+      <Mytrailhashtag>#{trail.hashtags.join(" #")}</Mytrailhashtag>
+      <MytrailSubContent>
+        {trail.rating}
+        <ReviewStars>
+          {Array.from({ length: trail.rating }).map((_, index) => (
+            <FaStar key={index} />
+          ))}
+        </ReviewStars>
+        리뷰{trail.reviewCount}개
+      </MytrailSubContent>
+      <MytrailContent>
+        <MytrailLength>{trail.distance}km</MytrailLength>
+      </MytrailContent>
+    </MytrailInfo>
+  </TrailContents>
+);
+
+export default TrailCardAll;

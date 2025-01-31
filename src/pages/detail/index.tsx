@@ -1,0 +1,399 @@
+import styled from "styled-components";
+import ToggleSwitch from "../../components/newway_register/ToggleSwitch";
+import TrailInfo from "../../components/newway_register/TrailInfo";
+import { ReactComponent as StarIcon } from "../../assets/svg/Star.svg";
+import { ReactComponent as HeartIcon } from "../../assets/svg/Heart.svg";
+import { MdArrowForwardIos } from "react-icons/md";
+import { BiCalendarCheck } from "react-icons/bi";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { theme } from "src/styles/colors/theme";
+import PathMap from "../../components/map/PathMap";
+import BottomNavigation from "../../components/bottomNavigation";
+import AppBar from "../../components/appBar";
+import { WalkwayDetail } from "src/apis/walkway.type";
+import { getWalkwayDetail } from "src/apis/walkway";
+import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
+
+// 레이아웃 관련
+const PageWrapper = styled.div`
+  display: flex;
+  padding: 10px 20px;
+  flex-direction: column;
+  overflow: scroll;
+  height: calc(100dvh - 126px);
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
+const HeaderContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  max-width: 430px;
+`;
+
+const HeaderTopBar = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 430px;
+`;
+
+// 산책로 정보 컴포넌트 관련
+const PathTitle = styled.div`
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 5px 0px 5px 0px;
+`;
+
+const PathDate = styled.div`
+  color: ${theme.Green500};
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
+const PathInfoContainer = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+
+const PathDescription = styled.div`
+  font-size: 13px;
+  margin: 10px;
+`;
+
+// 지도 관련
+const MapSection = styled.div`
+  max-width: 80vw;
+  // height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 10px auto;
+  width: 100%;
+`;
+
+const MapBox = styled.div`
+  width: 100%;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
+  border-radius: 20px 20px 0px 0px;
+  height: 35vh;
+  overflow: hidden;
+`;
+
+const MapDetailsContainer = styled.div`
+  width: 100%;
+  background: #ffffff;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
+  border-radius: 0px 0px 10px 10px;
+`;
+
+// 유저 반응(좋아오, 별점, 리뷰) 관련
+const ReactionBar = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 10px;
+`;
+
+const LeftIcon = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 5px;
+`;
+
+interface ReactionButtonProps {
+  active?: boolean;
+}
+
+const ReactionButton = styled.div<ReactionButtonProps>`
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  margin-right: 2px;
+  color: ${(props) => (props.active ? "red" : "black")};
+`;
+
+const EditButton = styled.button`
+  background-color: #888;
+  color: #ffffff;
+  width: 100%;
+  min-height: 52px;
+  box-sizing: border-box;
+  border: none;
+  font-size: 16px;
+  font-weight: 500;
+  margin-top: 20px;
+`;
+
+// 해시태그 관련
+const TagsContainer = styled.div`
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 5px;
+  margin: 10px;
+  padding-bottom: 10px;
+`;
+
+const TagItem = styled.div`
+  font-size: 12px;
+  font-weight: 600;
+  margin: 2px;
+  flex-shrink: 0;
+`;
+
+// 별점 관련
+const RatingContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+`;
+
+const RatingGroup = styled.div`
+  display: flex;
+  gap: 2px;
+  align-items: center;
+  font-size: 13px;
+`;
+
+const RatingScore = styled.span`
+  margin-right: 4px;
+  color: ${theme.Gray700};
+`;
+
+const StarBox = styled.div`
+  position: relative;
+  width: 14px;
+  height: 14px;
+`;
+
+const StyledStar = styled(StarIcon)<{ isactive: string }>`
+  width: 14px;
+  height: 14px;
+  position: absolute;
+  left: 0;
+  path {
+    fill: ${({ isactive }) =>
+      isactive === "true" ? theme.Yellow : theme.Gray100};
+  }
+`;
+
+const PartialStar = styled(StyledStar)<{ width: number }>`
+  clip-path: ${({ width }) => `inset(0 ${100 - width}% 0 0)`};
+  path {
+    fill: ${theme.Yellow};
+  }
+`;
+
+const StyledHeart = styled(HeartIcon)<{ $isActive: boolean }>`
+  width: 15px;
+  height: 15px;
+  fill: ${({ $isActive }) => ($isActive ? theme.Green500 : theme.Gray200)};
+  cursor: pointer;
+  transition: fill 0.2s ease;
+  margin-right: 5px;
+`;
+
+const BookmarkButton = styled.div<{ $isActive: boolean }>`
+  cursor: pointer;
+  color: ${({ $isActive }) => ($isActive ? theme.Green500 : theme.Gray200)};
+`;
+
+interface PathDetailsProps {
+  isMyPath?: boolean;
+}
+
+export default function PathDetails({
+  isMyPath = false,
+}: PathDetailsProps) {
+  const navigate = useNavigate();
+  const { walkwayId } = useParams<{ walkwayId: string }>();
+
+  const [walkwayDetail, setWalkwayDetail] = useState<WalkwayDetail | null>(
+    null
+  );
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchWalkwayDetail = async () => {
+      try {
+        setLoading(true);
+        const data = await getWalkwayDetail(Number(walkwayId));
+        setWalkwayDetail(data);
+      } catch (error) {
+        if (error instanceof Error) {
+          setError(error.message);
+        } else {
+          setError("산책로 정보를 불러오는데 실패했습니다.");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (walkwayId) {
+      fetchWalkwayDetail();
+    }
+  }, [walkwayId]);
+
+  const toggleHeart = (): void => {
+    if (walkwayDetail) {
+      setWalkwayDetail({
+        ...walkwayDetail,
+        isLike: !walkwayDetail.isLike,
+        likeCount: walkwayDetail.likeCount + (walkwayDetail.isLike ? -1 : 1),
+      });
+    }
+    // TODO: API 호출로 좋아요 상태 업데이트
+  };
+
+  const toggleBookmark = () => {
+    if (walkwayDetail) {
+      setWalkwayDetail({
+        ...walkwayDetail,
+        isBookmarked: !walkwayDetail.isBookmarked,
+      });
+    }
+    // TODO: API 북마크
+  };
+
+  const goToReviews = (): void => {
+    navigate(`/main/review/${walkwayId}/content`);
+    // TODO: API 리뷰 페이지 이동 업데이트
+  };
+
+  const handleEditClick = () => {
+    navigate("/newway/registration", {
+      state: {
+        walkwayId: walkwayId,
+        isEditMode: true,
+      },
+    });
+  };
+
+  const handleWalkClick = () => {
+    navigate("/usingtrail", {
+      state: {
+        walkwayId: walkwayId,
+      },
+    });
+  };
+
+  const renderStars = (rating: number) => {
+    return [1, 2, 3, 4, 5].map((value) => {
+      const diff = rating - (value - 1);
+      const percentage = Math.min(Math.max(diff, 0), 1) * 100;
+      return (
+        <StarBox key={value}>
+          <StyledStar isactive="false" />
+          {percentage > 0 && <PartialStar width={percentage} isactive="true" />}
+        </StarBox>
+      );
+    });
+  };
+
+  if (loading) return <div>로딩 중...</div>;
+  if (error) return <div>{error}</div>;
+  if (!walkwayDetail) return null;
+
+  return (
+    <>
+      <AppBar
+        onBack={() => navigate(-1)}
+        title={isMyPath ? "내 산책로" : "산책로"}
+      />
+      <PageWrapper>
+        <HeaderContainer>
+          <HeaderTopBar>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <BiCalendarCheck
+                style={{ color: "black", width: "27px", height: "27px" }}
+              />
+              <PathDate>{walkwayDetail.date}</PathDate>
+            </div>
+            {isMyPath && (
+              <ToggleSwitch
+                isPublic={walkwayDetail.accessLevel === "PUBLIC"}
+                readOnly={true}
+              />
+            )}
+          </HeaderTopBar>
+          <PathTitle>{walkwayDetail.name}</PathTitle>
+          <PathInfoContainer>
+            <TrailInfo
+              duration={walkwayDetail.time}
+              distance={walkwayDetail.distance}
+            />
+          </PathInfoContainer>
+        </HeaderContainer>
+        <MapSection>
+          <MapBox>
+            <PathMap
+              pathCoords={walkwayDetail.course.map((loc) => ({
+                lat: loc.latitude,
+                lng: loc.longitude,
+              }))}
+            />
+          </MapBox>
+          <MapDetailsContainer>
+            <ReactionBar>
+              <LeftIcon>
+                <ReactionButton>
+                  <StyledHeart
+                    $isActive={walkwayDetail.isLike}
+                    onClick={toggleHeart}
+                  />
+                  {walkwayDetail.likeCount}
+                  {/* 서버 디비에 좋아요 수 추가되면 필드명 반영하기 */}
+                </ReactionButton>
+                <RatingContainer>
+                  <RatingGroup>
+                    {renderStars(walkwayDetail.rating)}
+                    <RatingScore>{walkwayDetail.rating.toFixed(1)}</RatingScore>
+                    <span>리뷰 {walkwayDetail.reviewCount}개</span>
+                  </RatingGroup>
+                </RatingContainer>
+                <ReactionButton
+                  onClick={goToReviews}
+                  style={{ cursor: "pointer" }}
+                >
+                  <MdArrowForwardIos />
+                </ReactionButton>
+              </LeftIcon>
+              {/* 서버 디비에 북마크 여부 추가되면 필드명 반영하기 */}
+              <BookmarkButton
+                $isActive={walkwayDetail.isBookmarked}
+                onClick={toggleBookmark}
+              >
+                {walkwayDetail.isBookmarked ? (
+                  <BsBookmarkFill size={20} />
+                ) : (
+                  <BsBookmark size={20} />
+                )}
+              </BookmarkButton>
+            </ReactionBar>
+            <PathDescription>{walkwayDetail.memo}</PathDescription>
+            {walkwayDetail.hashtags && walkwayDetail.hashtags.length > 0 && (
+              <TagsContainer>
+                {walkwayDetail.hashtags.map((hashtag, index) => (
+                  <TagItem key={index}>{hashtag}</TagItem>
+                ))}
+              </TagsContainer>
+            )}
+          </MapDetailsContainer>
+        </MapSection>
+        <EditButton onClick={isMyPath ? handleEditClick : handleWalkClick}>
+          {isMyPath ? "수정하기" : "이용하기"}
+        </EditButton>
+      </PageWrapper>
+      <BottomNavigation />
+    </>
+  );
+}

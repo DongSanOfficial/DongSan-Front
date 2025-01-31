@@ -26,23 +26,22 @@ const List = styled.div`
   gap: 16px;
 `;
 
-function TrailLikeListPage() {
+export default function TrailListLikePage() {
   const location = useLocation();
   const navigate = useNavigate();
   const [trails, setTrails] = useState<Trail[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const searchParams = new URLSearchParams(location.search);
   const type = searchParams.get("type");
-
   const title =
     type === "favorites" ? "내가 좋아하는 산책로" : "북마크 이름 산책로";
 
   useEffect(() => {
     const fetchTrails = async () => {
       try {
-        const fetchedTrails = await getTrails(); // 실제 구현에 따라 API 변경이 필요할 수 있습니다.
+        const fetchedTrails = await getTrails();
         if (type === "favorites") {
           setTrails(
             fetchedTrails.filter((trail) =>
@@ -60,25 +59,31 @@ function TrailLikeListPage() {
     };
 
     fetchTrails();
-  }, [type]); // type이 변경되면 API 다시 호출
+  }, [type]);
+
+  const handleCardClick = (walkwayId: number) => {
+    navigate(`/main/recommend/detail/${walkwayId}`);
+  };
 
   return (
     <>
       <AppBar onBack={() => navigate(-1)} title={title} />
       <Wrapper>
-        {loading && <div>Loading...</div>}
-        {error && <div>{error}</div>}
-        {!loading && !error && (
-          <List>
-            {trails.map((trail) => (
-              <TrailCardAll key={trail.walkwayId} trail={trail} />
+        <List>
+          {loading && <div>Loading...</div>}
+          {error && <div>{error}</div>}
+          {!loading &&
+            !error &&
+            trails.map((trail) => (
+              <TrailCardAll
+                key={trail.walkwayId}
+                trail={trail}
+                onClick={handleCardClick}
+              />
             ))}
-          </List>
-        )}
+        </List>
       </Wrapper>
       <BottomNavigation />
     </>
   );
 }
-
-export default TrailLikeListPage;

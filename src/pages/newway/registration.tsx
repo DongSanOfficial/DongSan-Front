@@ -106,7 +106,7 @@ const samplePathCoords = [
 interface PathData {
   coordinates: Array<{ lat: number; lng: number }>;
   totalDistance: number;
-  duration: string;
+  duration: number;
   startTime: Date;
   endTime: Date;
 }
@@ -125,12 +125,15 @@ export default function Registration() {
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState<string>("");
   const [pathImage, setPathImage] = useState<string>("");
+  const [accessLevel, setAccessLevel] = useState<"PRIVATE" | "PUBLIC">(
+    "PRIVATE"
+  );
 
   const pathData: PathData = isTestMode
     ? {
         coordinates: samplePathCoords,
         totalDistance: 1.2,
-        duration: "00:20",
+        duration: 20,
         startTime: new Date(),
         endTime: new Date(),
       }
@@ -181,6 +184,7 @@ export default function Registration() {
         duration: pathData.duration,
         startTime: pathData.startTime,
         endTime: pathData.endTime,
+        accessLevel: accessLevel,
       };
 
       console.log("등록 완료 시 전체 데이터:", {
@@ -191,6 +195,7 @@ export default function Registration() {
         총거리: submitData.totalDistance,
         소요시간: submitData.duration,
         이미지생성여부: !!submitData.pathImage,
+        공개여부: submitData.accessLevel,
       });
       navigate("/mypage/myregister/:walkwayId", { state: submitData });
     }
@@ -215,7 +220,13 @@ export default function Registration() {
         <ContentWrapper>
           <Content>
             <DateDisplay />
-            <ToggleSwitch />
+            <ToggleSwitch
+              isPublic={accessLevel === "PUBLIC"}
+              readOnly={false}
+              onChange={(isPublic) =>
+                setAccessLevel(isPublic ? "PUBLIC" : "PRIVATE")
+              }
+            />{" "}
           </Content>
           <TrailInfo
             duration={pathData.duration}

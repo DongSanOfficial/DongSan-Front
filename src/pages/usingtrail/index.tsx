@@ -168,17 +168,19 @@ function Usingtrail() {
   return (
     <><AppBar onBack={() => navigate(-1)} title="산책로 이용" /><PageContainer>
       <MapContainer>
-        <TrackingMap
+        {/* <TrackingMap
           isTracking={isWalking}
           onLocationUpdate={handleLocationUpdate}
-          onDistanceUpdate={handleDistanceUpdate} />
+          onDistanceUpdate={handleDistanceUpdate} /> */}
       </MapContainer>
 
       <OverlayContainer>
         <TopOverlay>
-          <TrailInfo
-            duration={duration}
-            distance={Number(distance.toFixed(2))} />
+        {/* <TrailInfo
+              duration={walkwayDetail.time}
+              distance={distance}
+            /> */}
+        {/* TrailInfo 형식에 맞게 바뀌어야 함 */}
         </TopOverlay>
 
         <BottomOverlay>

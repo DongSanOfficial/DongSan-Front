@@ -46,16 +46,24 @@ function TrailListPage() {
     fetchTrails();
   }, [lastWalkwayId]);
 
+  const handleCardClick = (walkwayId: number) => {
+    navigate(`/mypage/myregister/${walkwayId}`);
+  };
+
   return (
     <>
-      <AppBar onBack={() => navigate(-1)} title="전체보기" />
+      <AppBar onBack={() => navigate(-1)} title="내가 등록한 산책로" />
       <Wrapper>
         {loading && <div>Loading...</div>}
         {error && <div>{error}</div>}
         {!loading && !error && (
           <List>
             {trails.map((trail) => (
-              <TrailCardAll key={trail.walkwayId} trail={trail} />
+              <TrailCardAll
+                key={trail.walkwayId}
+                trail={trail}
+                onClick={handleCardClick}
+              />
             ))}
           </List>
         )}
