@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 interface TrailInfoProps {
   duration: number; // 초 단위
-  distance: number; // km 단위 (소수점)
+  distance: number; // km 단위 (소수)
 }
 
 const TrailInfoContainer = styled.div`
@@ -22,6 +22,7 @@ const TrailInfoContainer = styled.div`
     height: 8vh;
   }
 `;
+
 const ClockItems = styled.div`
   display: flex;
   flex-direction: row;
@@ -33,6 +34,7 @@ const ClockItems = styled.div`
     font-size: 40px;
   }
 `;
+
 const DistanceItems = styled.div`
   display: flex;
   flex-direction: row;
@@ -49,8 +51,7 @@ export default function TrailInfo({ duration, distance }: TrailInfoProps) {
   // 초를 "MM:SS" 형식으로 변환
   const formatDuration = (seconds: number): string => {
     const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-
+    const remainingSeconds = Math.floor(seconds % 60);
     return `${String(minutes).padStart(2, "0")}:${String(
       remainingSeconds
     ).padStart(2, "0")}`;

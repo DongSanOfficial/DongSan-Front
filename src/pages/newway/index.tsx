@@ -17,7 +17,7 @@ const PageContainer = styled.div`
 
 const MapContainer = styled.div`
   position: absolute;
-  top: 0;       
+  top: 0;
   left: 0;
   right: 0;
   bottom: 0;
@@ -26,7 +26,7 @@ const MapContainer = styled.div`
 
 const OverlayContainer = styled.div`
   position: absolute;
-  top: -56px;         
+  top: -56px;
   left: 0;
   right: 0;
   bottom: 0;
@@ -62,7 +62,7 @@ interface Location {
 interface PathData {
   coordinates: Location[];
   totalDistance: number;
-  duration: string;
+  duration: number;
   startTime: Date;
   endTime: Date;
 }
@@ -74,22 +74,11 @@ function NewWay() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isWalking, setIsWalking] = useState(false);
   const [distance, setDistance] = useState(0);
+  const [totalSeconds, setTotalSeconds] = useState(0);
 
-  // 타이머 관련 상태와 ref
-  const [duration, setDuration] = useState("00:00");
+  // 타이머 관련 ref
   const startTimeRef = useRef<number | null>(null);
   const timerIdRef = useRef<NodeJS.Timeout | null>(null);
-
-  // 시간을 포맷하는 함수
-  const formatTime = (ms: number) => {
-    const minutes = Math.floor((ms % 3600000) / 60000);
-    const seconds = Math.floor((ms % 60000) / 1000);
-
-    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
-      2,
-      "0"
-    )}`;
-  };
 
   // 타이머 업데이트 함수
   const updateTimer = () => {
@@ -97,7 +86,8 @@ function NewWay() {
 
     const now = Date.now();
     const diff = now - startTimeRef.current;
-    setDuration(formatTime(diff));
+    const seconds = Math.floor(diff / 1000);
+    setTotalSeconds(seconds);
   };
 
   // 산책 시작/중단 핸들러
@@ -108,6 +98,7 @@ function NewWay() {
       startTimeRef.current = Date.now();
       pathCoordsRef.current = [];
       setDistance(0);
+      setTotalSeconds(0);
 
       // 타이머 시작
       timerIdRef.current = setInterval(updateTimer, 1000);
@@ -133,27 +124,28 @@ function NewWay() {
     if (timerIdRef.current) {
       clearInterval(timerIdRef.current);
     }
-    console.log("산책 중단 시 저장된 경로 좌표:", {
-      좌표배열: pathCoordsRef.current,
-      총거리: distance,
-      소요시간: duration,
-    });
 
     const pathData: PathData = {
       coordinates: pathCoordsRef.current,
       totalDistance: Number(distance.toFixed(2)),
-      duration: duration,
+      duration: totalSeconds,
       startTime: new Date(startTimeRef.current!),
       endTime: new Date(),
     };
+
+    console.log("산책 중단 시 저장된 경로 좌표:", {
+      좌표배열: pathData.coordinates,
+      총거리: pathData.totalDistance,
+      소요시간: pathData.duration,
+      시작시간: pathData.startTime,
+      종료시간: pathData.endTime,
+    });
 
     setIsModalOpen(false);
     setIsWalking(false);
 
     // 등록 페이지로 이동하면서 데이터 전달
-    navigate("/newway/registration", {
-      state: pathData,
-    });
+    navigate("/newway/registration", { state: pathData });
   };
 
   // 산책 계속하기
@@ -184,10 +176,7 @@ function NewWay() {
 
         <OverlayContainer>
           <TopOverlay>
-            <TrailInfo
-              duration={duration}
-              distance={Number(distance.toFixed(2))}
-            />
+            <TrailInfo duration={totalSeconds} distance={distance} />
           </TopOverlay>
 
           <BottomOverlay>
