@@ -167,7 +167,7 @@ export default function NewwayTest() {
 
     // 경로 이미지 생성
     const pathImage = await drawPath(movingPath);
-    console.log("생성된 이미지:", pathImage?.substring(0, 100));
+    console.log("생성된 이미지:", pathImage);
 
     const pathData: PathData = {
       coordinates: movingPath,

@@ -224,6 +224,7 @@ export default function Registration() {
         <Button isActive={isActive} onClick={handleSubmit}>
           {isEditMode ? "수정완료" : "작성완료"}
         </Button>
+        확인용 배포시 삭제
         <CourseImage
           src={pathImage}
           alt='경로 이미지화'
