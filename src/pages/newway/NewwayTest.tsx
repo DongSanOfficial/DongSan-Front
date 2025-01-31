@@ -14,7 +14,7 @@ interface Location {
 const Container = styled.div`
  position: relative;
  width: 100%;
- height: 100vh;
+ height: 100dvh;
  max-width: 430px;
  margin: 0 auto;
 `;
@@ -52,7 +52,7 @@ const InfoItem = styled.div`
 
 const ButtonContainer = styled.div`
  position: absolute;
- bottom: 30px;
+ bottom: 100px;
  right: 30px;
  z-index: 1;
 `;
