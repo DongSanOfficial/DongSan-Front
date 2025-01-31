@@ -1,249 +1,255 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { calculateDistance } from "src/utils/calculateDistance";
 import TrackingMapTest from "../../components/map/TrackingMapTest";
 import SmallButton from "src/components/button/SmallButton";
 import ConfirmationModal from "src/components/modal/ConfirmationModal";
 import useWatchLocation from "src/hooks/useWatchLocation";
+import TrailInfo from "src/components/newway_register/TrailInfo";
+import { useNavigate } from "react-router-dom";
+import { BiCurrentLocation } from "react-icons/bi";
+import AppBar from "src/components/appBar";
+import { drawPath } from "src/utils/drawPathUtils";
 
 interface Location {
- lat: number;
- lng: number;
+  lat: number;
+  lng: number;
+}
+
+interface PathData {
+  coordinates: Location[];
+  totalDistance: number;
+  duration: number;
+  startTime: Date;
+  endTime: Date;
+  pathImage: string;
 }
 
 const Container = styled.div`
- position: relative;
- width: 100%;
- height: 100dvh;
- max-width: 430px;
- margin: 0 auto;
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  max-width: 430px;
+  margin: 0 auto;
 `;
 
 const InfoContainer = styled.div`
- position: absolute;
- top: 20px;
- left: 20px;
- right: 20px;
- background-color: rgba(255, 255, 255, 0.9);
- padding: 15px;
- border-radius: 10px;
- box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
- z-index: 1;
- display: flex;
- justify-content: space-around;
- z-index: 20;
-`;
-
-const InfoItem = styled.div`
- text-align: center;
- font-weight: 500;
-
- .label {
-   font-size: 14px;
-   color: #666;
-   margin-bottom: 4px;
- }
-
- .value {
-   font-size: 20px;
-   color: #333;
- }
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 20;
+  display: flex;
+  justify-content: center;
 `;
 
 const ButtonContainer = styled.div`
- position: absolute;
- bottom: 100px;
- right: 30px;
- z-index: 1;
+  position: absolute;
+  bottom: 100px;
+  right: 30px;
+  z-index: 1;
 `;
 
-const StatusMessage = styled.div`
- position: absolute;
- bottom: 100px;
- left: 0;
- right: 0;
- text-align: center;
- padding: 20px;
- background-color: rgba(255, 255, 255, 0.9);
- 
- h4 {
-   margin: 0 0 10px 0;
-   font-weight: bold;
- }
+const LocationButton = styled.button`
+  position: absolute;
+  bottom: 180px;
+  right: 30px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  cursor: pointer;
+  z-index: 1;
 
- p {
-   margin: 0;
-   color: #666;
- }
+  &:active {
+    background-color: #f0f0f0;
+  }
 `;
 
 const LoadingBox = styled.div`
- width: 100%;
- height: 100vh;
- display: flex;
- justify-content: center;
- align-items: center;
- background-color: #f5f5f5;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f5f5f5;
 `;
 
 export default function NewwayTest() {
- // 상태 관리
- const [isWalking, setIsWalking] = useState(false);
- const [isModalOpen, setIsModalOpen] = useState(false);
- const [userLocation, setUserLocation] = useState<Location | null>(null);
- const [movingPath, setMovingPath] = useState<Location[]>([]);
- const [distances, setDistances] = useState(0);
- const [elapsedTime, setElapsedTime] = useState(0);
- const timerRef = useRef<NodeJS.Timeout | null>(null);
- const lastLocationRef = useRef<Location | null>(null);
+  const navigate = useNavigate();
+  const [isWalking, setIsWalking] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [userLocation, setUserLocation] = useState<Location | null>(null);
+  const [movingPath, setMovingPath] = useState<Location[]>([]);
+  const [distances, setDistances] = useState(0);
+  const [elapsedTime, setElapsedTime] = useState(0);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const lastLocationRef = useRef<Location | null>(null);
+  const startTimeRef = useRef<Date | null>(null);
 
- // 위치 추적 설정
- const geolocationOptions = {
-   enableHighAccuracy: true,
-   maximumAge: 3000,    // 3초 이내의 캐시된 위치만 사용
-   timeout: 3000        // 3초 타임아웃
- };
+  const geolocationOptions = {
+    enableHighAccuracy: true,
+    maximumAge: 3000,
+    timeout: 3000,
+  };
 
- const { location } = useWatchLocation(geolocationOptions);
+  const { location, getLocation } = useWatchLocation(geolocationOptions);
 
- // 위치 업데이트 처리
- useEffect(() => {
-   if (!location) return;
+  useEffect(() => {
+    if (!location) return;
 
-   const newLocation = {
-     lat: location.latitude,
-     lng: location.longitude,
-   };
+    const newLocation = {
+      lat: location.latitude,
+      lng: location.longitude,
+    };
 
-   setUserLocation(newLocation);
-   lastLocationRef.current = newLocation;
- }, [location]);
+    setUserLocation(newLocation);
+    lastLocationRef.current = newLocation;
+  }, [location]);
 
- // 3초마다 경로 저장
- useEffect(() => {
-   let interval: NodeJS.Timeout | null = null;
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
 
-   if (isWalking && lastLocationRef.current) {
-     interval = setInterval(() => {
-       if (lastLocationRef.current) {
-         setMovingPath(prev => {
-           const newPath = [...prev, lastLocationRef.current!];
-           if (prev.length > 0) {
-             const newDistance = calculateDistance(newPath);
-             setDistances(prev => prev + newDistance);
-           }
-           return newPath;
-         });
-       }
-     }, 3000);
-   }
+    if (isWalking && lastLocationRef.current) {
+      interval = setInterval(() => {
+        if (lastLocationRef.current) {
+          setMovingPath((prev) => {
+            const newPath = [...prev, lastLocationRef.current!];
+            if (prev.length > 0) {
+              const newDistance = calculateDistance(newPath);
+              setDistances((prev) => prev + newDistance);
+            }
+            return newPath;
+          });
+        }
+      }, 3000);
+    }
 
-   return () => {
-     if (interval) {
-       clearInterval(interval);
-     }
-   };
- }, [isWalking]);
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [isWalking]);
 
- // 산책 시작/중단 핸들러
- const handleStartWalking = () => {
-   setIsWalking(true);
-   setMovingPath([]);
-   setDistances(0);
-   setElapsedTime(0);
-   
-   // 타이머 시작
-   timerRef.current = setInterval(() => {
-     setElapsedTime(prev => prev + 1);
-   }, 1000);
- };
+  const handleStartWalking = () => {
+    setIsWalking(true);
+    setMovingPath([]);
+    setDistances(0);
+    setElapsedTime(0);
+    startTimeRef.current = new Date();
 
- const handleStopRequest = () => {
-   setIsModalOpen(true);
- };
+    timerRef.current = setInterval(() => {
+      setElapsedTime((prev) => prev + 1);
+    }, 1000);
+  };
 
- const handleStopWalking = () => {
-   setIsWalking(false);
-   setIsModalOpen(false);
-   console.log("movingPath:", movingPath);
-   
-   // 타이머 중지
-   if (timerRef.current) {
-     clearInterval(timerRef.current);
-     timerRef.current = null;
-   }
- };
+  const handleStopRequest = () => {
+    setIsModalOpen(true);
+  };
 
- const handleContinueWalking = () => {
-   setIsModalOpen(false);
- };
+  const handleStopWalking = async () => {
+    setIsWalking(false);
+    setIsModalOpen(false);
 
- // 컴포넌트 언마운트시 타이머 정리
- useEffect(() => {
-   return () => {
-     if (timerRef.current) {
-       clearInterval(timerRef.current);
-     }
-   };
- }, []);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
 
- // 시간 포맷팅
- const formatTime = (seconds: number): string => {
-   const mins = Math.floor(seconds / 60);
-   const secs = seconds % 60;
-   return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
- };
+    // 경로 이미지 생성
+    const pathImage = await drawPath(movingPath);
+    console.log("생성된 이미지:", pathImage);
 
- if (!userLocation) {
-   return (
-     <LoadingBox>
-       <h3>위치 정보를 불러오는 중...</h3>
-     </LoadingBox>
-   );
- }
+    const pathData: PathData = {
+      coordinates: movingPath,
+      totalDistance: Number((distances / 1000).toFixed(2)),
+      duration: elapsedTime,
+      startTime:
+        startTimeRef.current || new Date(Date.now() - elapsedTime * 1000),
+      endTime: new Date(),
+      pathImage: pathImage,
+    };
 
- return (
-   <Container>
-     <InfoContainer>
-       <InfoItem>
-         <div className="label">경과 시간</div>
-         <div className="value">{formatTime(elapsedTime)}</div>
-       </InfoItem>
-       <InfoItem>
-         <div className="label">이동 거리</div>
-         <div className="value">{distances}m</div>
-       </InfoItem>
-     </InfoContainer>
-     
-     <TrackingMapTest
-       userLocation={userLocation}
-       movingPath={movingPath}
-     />
+    console.log("산책 중단 시 저장된 정보:", {
+      경로좌표: pathData.coordinates,
+      총거리: pathData.totalDistance,
+      소요시간: pathData.duration,
+      시작시간: pathData.startTime,
+      종료시간: pathData.endTime,
+      경로이미지: pathData.pathImage,
+    });
 
-     <ButtonContainer>
-       <SmallButton
-         primaryText="산책 시작"
-         secondaryText="산책 중단"
-         isWalking={isWalking}
-         onClick={isWalking ? handleStopRequest : handleStartWalking}
-       />
-     </ButtonContainer>
+    navigate("/newway/registration", { state: pathData });
+  };
 
-     {isWalking && (
-       <StatusMessage>
-         <h4>측정중이에요</h4>
-         <p>산책 중단 버튼을 누르면 이동 모드가 종료됩니다.</p>
-       </StatusMessage>
-     )}
+  const handleContinueWalking = () => {
+    setIsModalOpen(false);
+  };
 
-     <ConfirmationModal
-       isOpen={isModalOpen}
-       onClose={handleContinueWalking}
-       onConfirm={handleStopWalking}
-       message="산책을 중단하시겠습니까?"
-       cancelText="계속하기"
-       confirmText="중단하기"
-     />
-   </Container>
- );
+  const handleUpdateLocation = () => {
+    getLocation();
+  };
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, []);
+
+  if (!userLocation) {
+    return (
+      <LoadingBox>
+        {/* 로딩 스피너 추가 */}
+        <h3>위치 정보를 불러오는 중...</h3>
+      </LoadingBox>
+    );
+  }
+
+  return (
+    <>
+      <AppBar onBack={() => navigate(-1)} title="산책로 등록" />
+      <Container>
+        <InfoContainer>
+          <TrailInfo duration={elapsedTime} distance={distances / 1000} />
+        </InfoContainer>
+
+        <TrackingMapTest userLocation={userLocation} movingPath={movingPath} />
+
+        {!isWalking && (
+          <LocationButton onClick={handleUpdateLocation}>
+            <BiCurrentLocation size={24} />
+          </LocationButton>
+        )}
+
+        <ButtonContainer>
+          <SmallButton
+            primaryText="산책 시작"
+            secondaryText="산책 중단"
+            isWalking={isWalking}
+            onClick={isWalking ? handleStopRequest : handleStartWalking}
+          />
+        </ButtonContainer>
+
+        <ConfirmationModal
+          isOpen={isModalOpen}
+          onClose={handleContinueWalking}
+          onConfirm={handleStopWalking}
+          message="산책을 중단하시겠습니까?"
+          cancelText="계속하기"
+          confirmText="중단하기"
+        />
+      </Container>
+    </>
+  );
 }

@@ -1,4 +1,5 @@
-import { Map, MapMarker, Polyline } from 'react-kakao-maps-sdk';
+import { theme } from "src/styles/colors/theme";
+import { Map, MapMarker, Polyline } from "react-kakao-maps-sdk";
 
 interface Location {
   lat: number;
@@ -10,26 +11,28 @@ interface TrackingMapProps {
   movingPath: Location[];
 }
 
-export default function TrackingMapTest({ userLocation, movingPath }: TrackingMapProps) {
+export default function TrackingMapTest({
+  userLocation,
+  movingPath,
+}: TrackingMapProps) {
   return (
-    <Map 
-    draggable={true}
-    center={userLocation}
+    <Map
+      draggable={true}
+      center={userLocation}
       style={{
         width: "100%",
         height: "100%",
       }}
       level={3}
     >
-      <MapMarker position={userLocation}>
-      </MapMarker>
+      <MapMarker position={userLocation}></MapMarker>
       {movingPath.length > 0 && (
         <Polyline
           path={movingPath}
-          strokeWeight={5} 
-          strokeColor={"#167258"}
-          strokeOpacity={0.7} 
-          strokeStyle={"solid"} 
+          strokeWeight={5}
+          strokeColor={theme.Green500}
+          strokeOpacity={0.7}
+          strokeStyle={"solid"}
         />
       )}
     </Map>

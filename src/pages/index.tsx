@@ -16,7 +16,7 @@ const NavigationPage = () => {
     {
       title: "산책로 등록",
       routes: [
-        { route: "/newway", name: "산책로 트래킹" },
+        { route: "/newway/test", name: "산책로 트래킹" },
         { route: "/newway/registration", name: "산책 후 등록하기" },
       ],
     },
