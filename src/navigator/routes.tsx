@@ -12,6 +12,7 @@ import TrailReviewPage from "../pages/mypage/TrailReviewPage";
 import NavigationPage from "../pages";
 import ReviewCheck from "../pages/review/ReviewCheck";
 import PathDetails from "../pages/detail";
+import NewwayTest from "../pages/newway/NewwayTest";
 
 interface RouteConfig {
  path: string;
@@ -54,8 +55,13 @@ const routes: RouteConfig[] = [
    component: TrailReviewPage,
  },
  {
-   path: "/newway",
-   component: NewWay,
+  path: "/newway",
+  component: NewWay,
+},
+// 트래킹 테스트 페이지
+ {
+   path: "/newway/test",
+   component: NewwayTest,
  },
  {
    path: "/newway/registration",
