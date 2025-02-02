@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import styled from "styled-components";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { MdError } from "react-icons/md";
-import { theme } from "@/styles/colors/theme";
+import { theme } from "src/styles/colors/theme";
 
 const StyledToast = styled.div<{ type: "success" | "error" }>`
   border-radius: 20px;

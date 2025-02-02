@@ -1,11 +1,13 @@
 import styled from 'styled-components';
 import Modal from './Modal'
+import { theme } from "src/styles/colors/theme";
+import { ReactNode } from 'react';
 
 interface ConfirmationModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
-  message: string;
+  message: ReactNode;
   cancelText?: string;
   confirmText?: string;
 }
@@ -13,7 +15,7 @@ interface ConfirmationModalProps {
 const ModalText = styled.p`
   text-align: center;
   font-size: 1.1rem;
-  margin: 20px 0 30px;
+  white-space: pre-line;
 `;
 
 const ButtonContainer = styled.div`
@@ -24,10 +26,10 @@ const ButtonContainer = styled.div`
 
 const Button = styled.button<{ isConfirm?: boolean }>`
   padding: 12px 30px;
-  border-radius: 20px;
-  border: 0.5px solid black;
-  background-color: white;
-  color: black;
+  border-radius: 15px;
+  border: none;
+  background-color: ${props => props.isConfirm ? theme.Green500 : theme.Gray400};
+  color: ${theme.White};
   cursor: pointer;
 `;
 

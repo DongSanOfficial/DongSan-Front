@@ -11,6 +11,7 @@ import BottomNavigation from "src/components/bottomNavigation";
 import AppBar from "src/components/appBar";
 import CourseImage from "src/components/map/CourseImage";
 import { createWalkway } from "src/apis/walkway";
+import ConfirmationModal from "src/components/modal/ConfirmationModal";
 
 const Wrapper = styled.div`
   display: flex;
@@ -110,6 +111,7 @@ export default function Registration() {
   const [description, setDescription] = useState(state?.description || "");
   const [isActive, setIsActive] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState<string>("");
   const [pathImage, setPathImage] = useState<string>("");
@@ -198,9 +200,23 @@ export default function Registration() {
       }
     }
   };
+
+  const handleBackClick = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleModalConfirm = () => {
+    setIsModalOpen(false);
+    navigate("/main");
+  };
+
   return (
     <>
-      <AppBar onBack={() => navigate(-1)} title="산책로 등록" />
+      <AppBar onBack={handleBackClick} title="산책로 등록" />
       <Wrapper>
         <ContentWrapper>
           <Content>
@@ -247,6 +263,16 @@ export default function Registration() {
         <CourseImage src={pathImage} alt="경로 이미지화" />
       </Wrapper>
       <BottomNavigation />
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+        onConfirm={handleModalConfirm}
+        message={`
+                  등록을 취소하시겠습니까?
+                  작성 중인 정보는 저장되지 
+                  않습니다.
+                `}
+      />
     </>
   );
 }
