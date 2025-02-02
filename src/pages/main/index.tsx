@@ -81,8 +81,6 @@ interface Location {
 }
 
 function Main() {
-  const { showToast } = useToast();
-
   // 바텀시트 상태
   const [isOpen, setIsOpen] = useState(false);
   const [bottomSheetHeight, setBottomSheetHeight] = useState("23vh");

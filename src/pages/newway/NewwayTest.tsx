@@ -11,6 +11,7 @@ import { BiCurrentLocation } from "react-icons/bi";
 import AppBar from "src/components/appBar";
 import { drawPath } from "src/utils/drawPathUtils";
 import { uploadCourseImage } from "src/apis/walkway";
+import { useToast } from "src/hooks/useToast";
 
 interface Location {
   lat: number;
@@ -90,6 +91,7 @@ const LoadingBox = styled.div`
 
 export default function NewwayTest() {
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [isWalking, setIsWalking] = useState(false);
   const [modalType, setModalType] = useState<ModalType>(null);
   const [userLocation, setUserLocation] = useState<Location | null>(null);
@@ -158,9 +160,12 @@ export default function NewwayTest() {
   };
 
   const handleStopRequest = () => {
+    if (elapsedTime < 60) {  // 산책 경과 시간이 1분 미만인 경우
+      showToast("1분 이상 산책해주세요.", "error");
+      return;
+    }
     setModalType("stop");
   };
-
   const handleBackClick = () => {
     setModalType("back");
   };
