@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useState, useEffect } from "react";
 import routes from "./navigator/routes";
 import GlobalStyles from "./styles/GlobalStyles";
 import Splash from "./pages/splash";
@@ -12,24 +12,21 @@ function App() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowSplash(false);
-    }, 3000);
-
+    }, 2500);
     return () => clearTimeout(timer);
   }, []);
 
   return (
-    <>
-      <ThemeProvider theme={theme}>
-        <GlobalStyles />
-          {showSplash ? (
-            <Splash />
-          ) : (
-            <Suspense fallback={<div />}>
-              <Navigator routes={routes} initialRouteName="/" />
-            </Suspense>
-          )}
-      </ThemeProvider>
-    </>
+    <ThemeProvider theme={theme}>
+      <GlobalStyles />
+      {showSplash ? (
+        <Splash />
+      ) : (
+        <Suspense fallback={<div />}>
+          <Navigator routes={routes} initialRouteName="/" />
+        </Suspense>
+      )}
+    </ThemeProvider>
   );
 }
 

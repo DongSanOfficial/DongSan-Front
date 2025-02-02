@@ -10,6 +10,8 @@ import { useNavigate } from "react-router-dom";
 import { BiCurrentLocation } from "react-icons/bi";
 import AppBar from "src/components/appBar";
 import { drawPath } from "src/utils/drawPathUtils";
+import { uploadCourseImage } from "src/apis/walkway";
+import { useToast } from "src/hooks/useToast";
 
 interface Location {
   lat: number;
@@ -23,7 +25,11 @@ interface PathData {
   startTime: Date;
   endTime: Date;
   pathImage: string;
+  courseImageId: number;
 }
+
+// 산책중단 버튼 클릭시 팜업 모달 | 백버튼 클릭시 팝업하는 모달
+type ModalType = "stop" | "back" | null;
 
 const Container = styled.div`
   position: relative;
@@ -85,8 +91,9 @@ const LoadingBox = styled.div`
 
 export default function NewwayTest() {
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [isWalking, setIsWalking] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<ModalType>(null);
   const [userLocation, setUserLocation] = useState<Location | null>(null);
   const [movingPath, setMovingPath] = useState<Location[]>([]);
   const [distances, setDistances] = useState(0);
@@ -153,46 +160,84 @@ export default function NewwayTest() {
   };
 
   const handleStopRequest = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleStopWalking = async () => {
-    setIsWalking(false);
-    setIsModalOpen(false);
-
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
+    if (elapsedTime < 60) {  // 산책 경과 시간이 1분 미만인 경우
+      showToast("1분 이상 산책해주세요.", "error");
+      return;
     }
-
-    // 경로 이미지 생성
-    const pathImage = await drawPath(movingPath);
-    console.log("생성된 이미지:", pathImage);
-
-    const pathData: PathData = {
-      coordinates: movingPath,
-      totalDistance: Number((distances / 1000).toFixed(2)),
-      duration: elapsedTime,
-      startTime:
-        startTimeRef.current || new Date(Date.now() - elapsedTime * 1000),
-      endTime: new Date(),
-      pathImage: pathImage,
-    };
-
-    console.log("산책 중단 시 저장된 정보:", {
-      경로좌표: pathData.coordinates,
-      총거리: pathData.totalDistance,
-      소요시간: pathData.duration,
-      시작시간: pathData.startTime,
-      종료시간: pathData.endTime,
-      경로이미지: pathData.pathImage,
-    });
-
-    navigate("/newway/registration", { state: pathData });
+    setModalType("stop");
+  };
+  const handleBackClick = () => {
+    setModalType("back");
   };
 
-  const handleContinueWalking = () => {
-    setIsModalOpen(false);
+  const handleModalClose = () => {
+    setModalType(null);
+  };
+
+  const handleModalConfirm = async () => {
+    if (modalType === "stop") {
+      setIsWalking(false);
+
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+
+      try {
+        const pathImage = await drawPath(movingPath);
+
+        const blob = await fetch(pathImage).then((res) => res.blob());
+        const courseImageFile = new File([blob], "course-image.png", {
+          type: "image/png",
+        });
+
+        const courseImageId = await uploadCourseImage(courseImageFile);
+
+        const pathData: PathData = {
+          coordinates: movingPath,
+          totalDistance: Number((distances / 1000).toFixed(2)),
+          duration: elapsedTime,
+          startTime:
+            startTimeRef.current || new Date(Date.now() - elapsedTime * 1000),
+          endTime: new Date(),
+          pathImage: pathImage,
+          courseImageId: courseImageId,
+        };
+
+        navigate("/newway/registration", {
+          state: { ...pathData, isEditMode: false },
+        });
+      } catch (error) {
+        console.error("이미지 업로드 실패:", error);
+      }
+    } else if (modalType === "back") {
+      navigate("/main");
+    }
+    setModalType(null);
+  };
+
+  const getModalType = (type: ModalType) => {
+    switch (type) {
+      case "stop":
+        return {
+          message: "산책을 중단하시겠습니까?",
+          cancelText: "계속하기",
+          confirmText: "중단하기",
+        };
+      case "back":
+        return {
+          message: `홈으로 돌아가시겠습니까?
+                    산책정보는 저장되지 않습니다.`,
+          cancelText: "취소",
+          confirmText: "확인",
+        };
+      default:
+        return {
+          message: "",
+          cancelText: "취소",
+          confirmText: "확인",
+        };
+    }
   };
 
   const handleUpdateLocation = () => {
@@ -210,7 +255,6 @@ export default function NewwayTest() {
   if (!userLocation) {
     return (
       <LoadingBox>
-        {/* 로딩 스피너 추가 */}
         <h3>위치 정보를 불러오는 중...</h3>
       </LoadingBox>
     );
@@ -218,7 +262,7 @@ export default function NewwayTest() {
 
   return (
     <>
-      <AppBar onBack={() => navigate(-1)} title="산책로 등록" />
+      <AppBar onBack={handleBackClick} title="산책로 등록" />
       <Container>
         <InfoContainer>
           <TrailInfo duration={elapsedTime} distance={distances / 1000} />
@@ -242,12 +286,10 @@ export default function NewwayTest() {
         </ButtonContainer>
 
         <ConfirmationModal
-          isOpen={isModalOpen}
-          onClose={handleContinueWalking}
-          onConfirm={handleStopWalking}
-          message="산책을 중단하시겠습니까?"
-          cancelText="계속하기"
-          confirmText="중단하기"
+          isOpen={modalType !== null}
+          onClose={handleModalClose}
+          onConfirm={handleModalConfirm}
+          {...getModalType(modalType)}
         />
       </Container>
     </>

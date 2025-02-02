@@ -10,6 +10,9 @@ import PathMap from "../../components/map/PathMap";
 import BottomNavigation from "src/components/bottomNavigation";
 import AppBar from "src/components/appBar";
 import CourseImage from "src/components/map/CourseImage";
+import { createWalkway } from "src/apis/walkway";
+import ConfirmationModal from "src/components/modal/ConfirmationModal";
+import { useToast } from "src/hooks/useToast";
 
 const Wrapper = styled.div`
   display: flex;
@@ -38,13 +41,19 @@ const Content = styled.div`
 
 const Button = styled.button<{ isActive: boolean }>`
   background-color: ${(props) =>
-    props.isActive ? theme.Green500 : theme.Gray400};
+    props.disabled
+      ? theme.Gray400
+      : props.isActive
+      ? theme.Green500
+      : theme.Gray400};
   color: #ffffff;
   width: 100%;
   min-height: 52px;
   border: none;
   font-size: 16px;
   font-weight: 500;
+  cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
+  opacity: ${(props) => (props.disabled ? 0.7 : 1)};
 `;
 
 const TagInputWrapper = styled.div`
@@ -75,7 +84,6 @@ const Tag = styled.span`
   color: #b4b4b4;
 `;
 
-
 const PathMapContainer = styled.div`
   width: 100%;
   min-height: 300px;
@@ -91,16 +99,21 @@ interface PathData {
   startTime: Date;
   endTime: Date;
   pathImage: string;
+  courseImageId: number;
 }
 
 export default function Registration() {
   const location = useLocation();
   const navigate = useNavigate();
   const { state } = location;
-  const [isEditMode, setIsEditMode] = useState(!!state);
+  const { showToast } = useToast();
+  // state.isEditMode를 직접 확인
+  const [isEditMode, setIsEditMode] = useState(state?.isEditMode || false);
   const [name, setName] = useState(state?.name || "");
   const [description, setDescription] = useState(state?.description || "");
   const [isActive, setIsActive] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState<string>("");
   const [pathImage, setPathImage] = useState<string>("");
@@ -149,39 +162,64 @@ export default function Registration() {
       setTags(newTags);
     }
   };
+  const handleSubmit = async () => {
+    if (isActive && !isLoading) {
+      setIsLoading(true);
 
-  const handleSubmit = () => {
-    if (isActive) {
-      const submitData = {
-        coordinates: pathData.coordinates,
-        name,
-        description,
-        tags,
-        pathImage,
-        totalDistance: pathData.totalDistance,
-        duration: pathData.duration,
-        startTime: pathData.startTime,
-        endTime: pathData.endTime,
-        accessLevel: accessLevel,
-      };
+      try {
+        const walkwayData = {
+          courseImageId: pathData.courseImageId!,
+          name,
+          memo: description,
+          distance: pathData.totalDistance,
+          time: pathData.duration,
+          hashtags: tags,
+          exposeLevel: accessLevel,
+          course: pathData.coordinates.map((coord) => ({
+            latitude: coord.lat,
+            longitude: coord.lng,
+          })),
+        };
 
-      console.log("등록 완료 시 전체 데이터:", {
-        경로정보: submitData.coordinates,
-        산책명: submitData.name,
-        설명: submitData.description,
-        해시태그: submitData.tags,
-        총거리: submitData.totalDistance,
-        소요시간: submitData.duration,
-        이미지생성여부: !!submitData.pathImage,
-        공개여부: submitData.accessLevel,
-      });
-      navigate("/mypage/myregister/:walkwayId", { state: submitData });
+        const walkwayId = await createWalkway(walkwayData);
+        showToast("등록이 완료되었습니다.", "success");
+        console.log("등록 완료 시 전체 데이터:", {
+          경로정보: walkwayData.course,
+          산책명: walkwayData.name,
+          설명: walkwayData.memo,
+          해시태그: walkwayData.hashtags,
+          총거리: walkwayData.distance,
+          소요시간: walkwayData.time,
+          이미지ID: walkwayData.courseImageId,
+          공개여부: walkwayData.exposeLevel,
+        });
+
+        navigate(`/mypage/myregister/${walkwayId}`);
+      } catch (error) {
+        showToast("다시 한 번 시도해주세요.", "error");
+        console.error("산책로 등록 실패:", error);
+      } finally {
+        setIsLoading(false);
+      }
     }
+  };
+
+  const handleBackClick = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleModalConfirm = () => {
+    setIsModalOpen(false);
+    navigate("/main");
   };
 
   return (
     <>
-      <AppBar onBack={() => navigate(-1)} title="산책로 등록" />
+      <AppBar onBack={handleBackClick} title="산책로 등록" />
       <Wrapper>
         <ContentWrapper>
           <Content>
@@ -221,16 +259,23 @@ export default function Registration() {
             ))}
           </TagList>
         </TagInputWrapper>
-        <Button isActive={isActive} onClick={handleSubmit}>
-          {isEditMode ? "수정완료" : "작성완료"}
+        <Button isActive={isActive} onClick={handleSubmit} disabled={isLoading}>
+          {isLoading ? "등록 중..." : isEditMode ? "수정완료" : "작성완료"}
         </Button>
         확인용 배포시 삭제
-        <CourseImage
-          src={pathImage}
-          alt='경로 이미지화'
-        />
+        <CourseImage src={pathImage} alt="경로 이미지화" />
       </Wrapper>
       <BottomNavigation />
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+        onConfirm={handleModalConfirm}
+        message={`
+                  등록을 취소하시겠습니까?
+                  작성 중인 정보는 저장되지 
+                  않습니다.
+                `}
+      />
     </>
   );
 }
