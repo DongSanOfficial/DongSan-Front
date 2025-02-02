@@ -12,6 +12,7 @@ import { theme } from "src/styles/colors/theme";
 import { Walkway, SortOption } from "../../apis/walkway.type";
 import { searchWalkways } from "../../apis/walkway";
 import { ApiErrorResponse } from "src/apis/api.type";
+import { useToast } from "src/hooks/useToast";
 
 const MainContainer = styled.div`
   position: relative;
@@ -80,6 +81,8 @@ interface Location {
 }
 
 function Main() {
+  const { showToast } = useToast();
+
   // 바텀시트 상태
   const [isOpen, setIsOpen] = useState(false);
   const [bottomSheetHeight, setBottomSheetHeight] = useState("23vh");
@@ -272,8 +275,6 @@ function Main() {
         longitude: location.lng,
         name: "현재 위치",
       });
-      setBottomSheetHeight("60vh");
-      setIsOpen(true);
     } catch (error) {
       console.error("현재 위치 기반 산책로 조회 실패:", error);
     }

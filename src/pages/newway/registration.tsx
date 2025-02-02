@@ -12,6 +12,7 @@ import AppBar from "src/components/appBar";
 import CourseImage from "src/components/map/CourseImage";
 import { createWalkway } from "src/apis/walkway";
 import ConfirmationModal from "src/components/modal/ConfirmationModal";
+import { useToast } from "src/hooks/useToast";
 
 const Wrapper = styled.div`
   display: flex;
@@ -105,6 +106,7 @@ export default function Registration() {
   const location = useLocation();
   const navigate = useNavigate();
   const { state } = location;
+  const { showToast } = useToast();
   // state.isEditMode를 직접 확인
   const [isEditMode, setIsEditMode] = useState(state?.isEditMode || false);
   const [name, setName] = useState(state?.name || "");
@@ -180,7 +182,7 @@ export default function Registration() {
         };
 
         const walkwayId = await createWalkway(walkwayData);
-
+        showToast("등록이 완료되었습니다.", "success");
         console.log("등록 완료 시 전체 데이터:", {
           경로정보: walkwayData.course,
           산책명: walkwayData.name,
@@ -194,6 +196,7 @@ export default function Registration() {
 
         navigate(`/mypage/myregister/${walkwayId}`);
       } catch (error) {
+        showToast("다시 한 번 시도해주세요.", "error");
         console.error("산책로 등록 실패:", error);
       } finally {
         setIsLoading(false);
