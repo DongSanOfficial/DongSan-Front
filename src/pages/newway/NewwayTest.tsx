@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { BiCurrentLocation } from "react-icons/bi";
 import AppBar from "src/components/appBar";
 import { drawPath } from "src/utils/drawPathUtils";
+import { uploadCourseImage } from "src/apis/walkway";
 
 interface Location {
   lat: number;
@@ -23,6 +24,7 @@ interface PathData {
   startTime: Date;
   endTime: Date;
   pathImage: string;
+  courseImageId: number;
 }
 
 const Container = styled.div`
@@ -165,32 +167,43 @@ export default function NewwayTest() {
       timerRef.current = null;
     }
 
-    // 경로 이미지 생성
-    const pathImage = await drawPath(movingPath);
-    console.log("생성된 이미지:", pathImage);
+    try {
+      const pathImage = await drawPath(movingPath);
 
-    const pathData: PathData = {
-      coordinates: movingPath,
-      totalDistance: Number((distances / 1000).toFixed(2)),
-      duration: elapsedTime,
-      startTime:
-        startTimeRef.current || new Date(Date.now() - elapsedTime * 1000),
-      endTime: new Date(),
-      pathImage: pathImage,
-    };
+      const blob = await fetch(pathImage).then((res) => res.blob());
+      const courseImageFile = new File([blob], "course-image.png", {
+        type: "image/png",
+      });
 
-    console.log("산책 중단 시 저장된 정보:", {
-      경로좌표: pathData.coordinates,
-      총거리: pathData.totalDistance,
-      소요시간: pathData.duration,
-      시작시간: pathData.startTime,
-      종료시간: pathData.endTime,
-      경로이미지: pathData.pathImage,
-    });
+      const courseImageId = await uploadCourseImage(courseImageFile);
 
-    navigate("/newway/registration", {
-      state: { ...pathData, isEditMode: false },
-    });
+      const pathData: PathData = {
+        coordinates: movingPath,
+        totalDistance: Number((distances / 1000).toFixed(2)),
+        duration: elapsedTime,
+        startTime:
+          startTimeRef.current || new Date(Date.now() - elapsedTime * 1000),
+        endTime: new Date(),
+        pathImage: pathImage,
+        courseImageId: courseImageId,
+      };
+
+      console.log("산책 중단 시 저장된 정보:", {
+        경로좌표: pathData.coordinates,
+        총거리: pathData.totalDistance,
+        소요시간: pathData.duration,
+        시작시간: pathData.startTime,
+        종료시간: pathData.endTime,
+        경로이미지: pathData.pathImage,
+        코스이미지ID: pathData.courseImageId,
+      });
+
+      navigate("/newway/registration", {
+        state: { ...pathData, isEditMode: false },
+      });
+    } catch (error) {
+      console.error("이미지 업로드 실패:", error);
+    }
   };
 
   const handleContinueWalking = () => {
