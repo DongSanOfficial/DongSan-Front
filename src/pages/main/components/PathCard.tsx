@@ -3,6 +3,7 @@ import { ReactComponent as HeartIcon } from "../../../assets/svg/Heart.svg";
 import { ReactComponent as StarIcon } from "../../../assets/svg/Star.svg";
 import { theme } from "../../../styles/colors/theme";
 import { useNavigate } from "react-router-dom";
+import CourseImage from "src/components/map/CourseImage";
 
 const Layout = styled.div`
   width: calc(100% - 10px);
@@ -21,13 +22,6 @@ const PathCardContainer = styled.div`
 const PathContent = styled.div`
   display: flex;
   gap: 10px;
-`;
-
-const WalkwayImage = styled.img`
-  width: 90px;
-  height: 90px;
-  border-radius: 10px;
-  background-color: grey;
 `;
 
 const ContentWrapper = styled.div`
@@ -86,7 +80,8 @@ const StyledStar = styled(StarIcon)<{ isactive: string }>`
   position: absolute;
   left: 0;
   path {
-    fill: ${({ isactive }) => isactive === "true" ? theme.Yellow : theme.Gray100};
+    fill: ${({ isactive }) =>
+      isactive === "true" ? theme.Yellow : theme.Gray100};
   }
 `;
 
@@ -108,7 +103,7 @@ const Distance = styled.h1`
 const StyledHeart = styled(HeartIcon)<{ $isActive: boolean }>`
   width: 18px;
   height: 18px;
-  fill: ${({ $isActive }) => $isActive ? theme.Green500 : theme.Gray200};
+  fill: ${({ $isActive }) => ($isActive ? theme.Green500 : theme.Gray200)};
   cursor: pointer;
   transition: fill 0.2s ease;
 `;
@@ -127,7 +122,7 @@ interface PathCardProps {
 }
 
 export default function PathCard({
-  walkwayId,  
+  walkwayId,
   pathimage,
   pathname,
   hashtag,
@@ -168,11 +163,11 @@ export default function PathCard({
     <Layout onClick={onClick}>
       <PathCardContainer>
         <PathContent>
-          <WalkwayImage 
-            src={pathimage} 
-            onClick={goDetailPage} 
-            alt="산책로 이미지" 
-          />
+          <div onClick={goDetailPage}>
+            {" "}
+            <CourseImage src={pathimage} alt="산책로 이미지" />
+          </div>
+
           <ContentWrapper>
             <InfoSection>
               <Title>{pathname}</Title>

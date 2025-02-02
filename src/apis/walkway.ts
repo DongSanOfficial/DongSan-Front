@@ -3,6 +3,7 @@ import {
   WalkwayParams,
   WalkwaysApiResponse,
   WalkwayDetailResponse,
+  CreateWalkwayType,
 } from "./walkway.type";
 import { ApiErrorResponse, ApiResponseFormat } from "src/apis/api.type";
 import { AxiosError } from "axios";
@@ -61,24 +62,21 @@ export const getWalkwayDetail = async (walkwayId: number) => {
   }
 };
 
-
 /**
  * 산책로 코스 이미지 등록 API 호출
  */
 export const uploadCourseImage = async (courseImage: File) => {
   try {
     const formData = new FormData();
-    formData.append('courseImage', courseImage);
+    formData.append("courseImage", courseImage);
 
-    const { data: response } = await instance.post<ApiResponseFormat<{ courseImageId: number }>>(
-      '/walkways/image',
-      formData,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      }
-    );
+    const { data: response } = await instance.post<
+      ApiResponseFormat<{ courseImageId: number }>
+    >("/walkways/image", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
 
     if (!response.isSuccess) {
       throw new Error(response.message);
@@ -89,6 +87,28 @@ export const uploadCourseImage = async (courseImage: File) => {
     const axiosError = error as AxiosError<ApiErrorResponse>;
     throw new Error(
       axiosError.response?.data?.message || "이미지 등록에 실패했습니다."
+    );
+  }
+};
+
+/**
+ * 산책로 등록 API 호출
+ */
+export const createWalkway = async (walkwayData: CreateWalkwayType) => {
+  try {
+    const { data: response } = await instance.post<
+      ApiResponseFormat<{ walkwayId: number }>
+    >("/walkways", walkwayData);
+
+    if (!response.isSuccess) {
+      throw new Error(response.message);
+    }
+
+    return response.data.walkwayId;
+  } catch (error) {
+    const axiosError = error as AxiosError<ApiErrorResponse>;
+    throw new Error(
+      axiosError.response?.data?.message || "산책로 등록에 실패했습니다."
     );
   }
 };
