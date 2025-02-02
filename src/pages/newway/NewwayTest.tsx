@@ -188,7 +188,9 @@ export default function NewwayTest() {
       경로이미지: pathData.pathImage,
     });
 
-    navigate("/newway/registration", { state: pathData });
+    navigate("/newway/registration", {
+      state: { ...pathData, isEditMode: false },
+    });
   };
 
   const handleContinueWalking = () => {

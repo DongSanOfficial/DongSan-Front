@@ -75,7 +75,6 @@ const Tag = styled.span`
   color: #b4b4b4;
 `;
 
-
 const PathMapContainer = styled.div`
   width: 100%;
   min-height: 300px;
@@ -97,7 +96,8 @@ export default function Registration() {
   const location = useLocation();
   const navigate = useNavigate();
   const { state } = location;
-  const [isEditMode, setIsEditMode] = useState(!!state);
+  // state.isEditMode를 직접 확인
+  const [isEditMode, setIsEditMode] = useState(state?.isEditMode || false);
   const [name, setName] = useState(state?.name || "");
   const [description, setDescription] = useState(state?.description || "");
   const [isActive, setIsActive] = useState<boolean>(false);
