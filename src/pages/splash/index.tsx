@@ -2,6 +2,8 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { getCookie } from "src/utils/cookieUtils";
+import { useLocationStore } from "../../store/useLocationStore";
+import { LocationState } from "../../store/locationStore.type";
 
 const Wrapper = styled.div`
   display: flex;
@@ -12,23 +14,41 @@ const Wrapper = styled.div`
 
 export default function Splash() {
   const navigate = useNavigate();
+  const getCurrentLocation = useLocationStore(
+    (state: LocationState) => state.getCurrentLocation
+  );
 
   useEffect(() => {
-    const checkTokenAndNavigate = () => {
-      const accessToken = getCookie("access_token");
-      console.log('토큰: ', accessToken);
+    const initializeApp = async () => {
+      try {
+        const location = await getCurrentLocation();
+        console.log("스플래시 화면에서 받아온 현재 위치:", location);
 
-      setTimeout(() => {
-        if (accessToken) {
-          navigate("/main");
-        } else {
-          navigate("/signin");
-        }
-      }, 2000);
+        const accessToken = getCookie("access_token");
+        console.log("토큰: ", accessToken);
+
+        setTimeout(() => {
+          if (accessToken) {
+            navigate("/main");
+          } else {
+            navigate("/signin");
+          }
+        }, 2000);
+      } catch (error) {
+        console.error("초기화 중 오류 발생:", error);
+        setTimeout(() => {
+          const accessToken = getCookie("access_token");
+          if (accessToken) {
+            navigate("/main");
+          } else {
+            navigate("/signin");
+          }
+        }, 2000);
+      }
     };
 
-    checkTokenAndNavigate();
-  }, [navigate]);
+    initializeApp();
+  }, [navigate, getCurrentLocation]);
 
   return (
     <Wrapper>

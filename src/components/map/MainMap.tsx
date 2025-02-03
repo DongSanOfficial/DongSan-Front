@@ -6,6 +6,7 @@ import { theme } from "../../styles/colors/theme";
 import { ReactComponent as LocationIcon } from "../../assets/svg/LocationIcon.svg";
 import SelectedLocationMarker from "../../assets/svg/UserLocation.svg";
 import { SearchResult } from "../../pages/main/components/SearchResult";
+import { useLocationStore } from "../../store/useLocationStore";
 
 const MapContainer = styled.div`
   width: 100%;
@@ -153,66 +154,34 @@ export const MainMap = ({
   onSearchCurrentLocation,
 }: MainMapProps) => {
   const navigate = useNavigate();
-  /** 지도 중심 좌표 */
+  const { currentLocation, getCurrentLocation } = useLocationStore();
   const [mapCenter, setMapCenter] = useState<Location>(
-    center || { lat: 37.5665, lng: 126.978 }
+    center || currentLocation || { lat: 37.5665, lng: 126.978 }
   );
-  /** 사용자 현재 위치 */
-  const [userLocation, setUserLocation] = useState<Location | null>(null);
   const [showSearchButton, setShowSearchButton] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  /**
-   * 사용자의 현재 위치를 가져와 지도에 표시
-   */
-  const updateUserLocation = () => {
-    if (!navigator.geolocation) {
-      alert("위치 정보가 지원되지 않는 브라우저입니다.");
-      return;
-    }
 
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const newLocation: Location = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        };
-        setUserLocation(newLocation);
-        setMapCenter(newLocation);
-        onCenterChange?.(newLocation);
-        onLocationButtonClick?.(newLocation);
-      },
-      (error) => {
-        console.error("Error getting user location:", error);
-        alert(
-          "위치 정보를 가져올 수 없습니다. 디바이스 설정에서 위치 권한을 확인해주세요."
-        );
-      }
-    );
+  const updateUserLocation = async () => {
+    try {
+      // getCurrentLocation을 호출하면 자동으로 locationStore의 currentLocation이 업데이트됨
+      const location = await getCurrentLocation();
+      console.log("위치 정보 업데이트:", location);
+
+      setMapCenter(location);
+      onCenterChange?.(location);
+      onLocationButtonClick?.(location);
+    } catch (error) {
+      console.error("Error updating user location:", error);
+    }
   };
 
-  /** 컴포넌트 마운트 시 현재 위치 가져오기 */
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const newLocation: Location = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          };
-          setUserLocation(newLocation);
-          setMapCenter(newLocation);
-          onCenterChange?.(newLocation);
-          onInitialLocation?.(newLocation);
-        },
-        (error) => {
-          console.error("Error getting user location:", error);
-          alert(
-            "위치 정보를 가져올 수 없습니다. 디바이스 설정에서 위치 권한을 확인해주세요."
-          );
-        }
-      );
+    if (currentLocation && !center) {
+      setMapCenter(currentLocation);
+      onCenterChange?.(currentLocation);
+      onInitialLocation?.(currentLocation);
     }
-  }, []);
+  }, [currentLocation, center, onCenterChange, onInitialLocation]);
 
   /** 모바일 뷰포트 높이 설정 */
   useEffect(() => {
