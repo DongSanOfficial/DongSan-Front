@@ -37,14 +37,14 @@ export const showReviewRating = async (
 // 산책로 리뷰 내용보기 api
 export const showReviewContent = async (
   walkwayId: string,
-  type: string
+  sort: string
 ): Promise<{
   reviews: ReviewContentType[];
 }> => {
   try {
     const response = await instance.get<
       ApiResponseFormat<{ reviews: ReviewContentType[] }>
-    >(`/walkways/${walkwayId}/review/content?type=${type}`);
+    >(`/walkways/${walkwayId}/review/content?sort=${sort}`);
     return response.data.data;
   } catch (error) {
     throw error;

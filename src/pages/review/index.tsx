@@ -15,7 +15,7 @@ const CenterWrapper = styled.div`
   overflow: scroll;
   height: calc(100dvh - 126px);
   align-items: center;
-  justigy-content: space-between;
+  justify-content: space-between;
   padding-top: 80px;
   &::-webkit-scrollbar {
     display: none;
@@ -155,47 +155,52 @@ const ReviewPage = () => {
   };
 
   return (
-    <><AppBar onBack={() => navigate(-1)} title="산책로 리뷰" /><CenterWrapper>
-      <ContentWrapper>
-        <TitleWrapper>
-          <RequiredMark>*</RequiredMark>
-          <Title>이번 산책은 어떠셨나요?</Title>
-        </TitleWrapper>
+    <>
+      <AppBar onBack={() => navigate(-1)} title="산책로 리뷰" />
+      <CenterWrapper>
+        <ContentWrapper>
+          <TitleWrapper>
+            <RequiredMark>*</RequiredMark>
+            <Title>이번 산책은 어떠셨나요?</Title>
+          </TitleWrapper>
 
-        <StarContainer>
-          {[1, 2, 3, 4, 5].map((value) => (
-            <StyledStarIcon
-              key={value}
-              isactive={((hoveredRating || rating) >= value).toString()}
-              onMouseEnter={() => setHoveredRating(value)}
-              onMouseLeave={() => setHoveredRating(0)}
-              onClick={() => setRating(value)} />
-          ))}
-        </StarContainer>
+          <StarContainer>
+            {[1, 2, 3, 4, 5].map((value) => (
+              <StyledStarIcon
+                key={value}
+                isactive={((hoveredRating || rating) >= value).toString()}
+                onMouseEnter={() => setHoveredRating(value)}
+                onMouseLeave={() => setHoveredRating(0)}
+                onClick={() => setRating(value)}
+              />
+            ))}
+          </StarContainer>
 
-        <Divider margin="0 0 2rem 0" height="3px" />
+          <Divider margin="0 0 2rem 0" height="3px" />
 
-        <TitleWrapper>
-          <RequiredMark>*</RequiredMark>
-          <Title fontSize="13px">산책로에 대한 솔직 리뷰를 남겨주세요!</Title>
-        </TitleWrapper>
+          <TitleWrapper>
+            <RequiredMark>*</RequiredMark>
+            <Title fontSize="13px">산책로에 대한 솔직 리뷰를 남겨주세요!</Title>
+          </TitleWrapper>
 
-        <TextAreaWrapper>
-          <TextArea
-            value={review}
-            onChange={(e) => setReview(e.target.value.slice(0, 100))}
-            placeholder="리뷰를 입력해주세요" />
-          <CharCount>
-            <span>{review.length}</span> / 100
-          </CharCount>
-        </TextAreaWrapper>
-      </ContentWrapper>
+          <TextAreaWrapper>
+            <TextArea
+              value={review}
+              onChange={(e) => setReview(e.target.value.slice(0, 100))}
+              placeholder="리뷰를 입력해주세요"
+            />
+            <CharCount>
+              <span>{review.length}</span> / 100
+            </CharCount>
+          </TextAreaWrapper>
+        </ContentWrapper>
 
-      <Button isActive={isActive} onClick={handleSubmit}>
-        리뷰 등록하기
-      </Button>
-    </CenterWrapper><BottomNavigation /></>
-
+        <Button isActive={isActive} onClick={handleSubmit}>
+          리뷰 등록하기
+        </Button>
+      </CenterWrapper>
+      <BottomNavigation />
+    </>
   );
 };
 
