@@ -209,12 +209,9 @@ interface PathDetailsProps {
   isMyPath?: boolean;
 }
 
-export default function PathDetails({
-  isMyPath = false,
-}: PathDetailsProps) {
+export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
   const navigate = useNavigate();
   const { walkwayId } = useParams<{ walkwayId: string }>();
-
   const [walkwayDetail, setWalkwayDetail] = useState<WalkwayDetail | null>(
     null
   );
@@ -270,11 +267,26 @@ export default function PathDetails({
   };
 
   const handleEditClick = () => {
+    const editData = {
+      isEditMode: true,
+      walkwayId: Number(walkwayId),
+      name: walkwayDetail?.name,
+      date: walkwayDetail?.date,
+      description: walkwayDetail?.memo,
+      hashtags: walkwayDetail?.hashtags,
+      totalDistance: walkwayDetail?.distance,
+      duration: walkwayDetail?.time,
+      accessLevel: walkwayDetail?.accessLevel,
+      coordinates: walkwayDetail?.course.map((coord) => ({
+        lat: coord.latitude,
+        lng: coord.longitude,
+      })),
+    };
+
+    console.log("수정을 위해 전달하는 데이터:", editData);
+
     navigate("/newway/registration", {
-      state: {
-        walkwayId: walkwayId,
-        isEditMode: true,
-      },
+      state: editData,
     });
   };
 
@@ -306,7 +318,13 @@ export default function PathDetails({
   return (
     <>
       <AppBar
-        onBack={() => navigate(-1)}
+        onBack={() => {
+          if (isMyPath) {
+            navigate("/mypage/TrailList");
+          } else {
+            navigate(-1);
+          }
+        }}
         title={isMyPath ? "내 산책로" : "산책로"}
       />
       <PageWrapper>

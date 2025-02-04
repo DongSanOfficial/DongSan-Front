@@ -10,9 +10,30 @@ import PathMap from "../../components/map/PathMap";
 import BottomNavigation from "src/components/bottomNavigation";
 import AppBar from "src/components/appBar";
 import CourseImage from "src/components/map/CourseImage";
-import { createWalkway } from "src/apis/walkway";
+import { createWalkway, updateWalkway } from "src/apis/walkway";
 import ConfirmationModal from "src/components/modal/ConfirmationModal";
 import { useToast } from "src/hooks/useToast";
+import { CreateWalkwayType, UpdateWalkwayType } from "src/apis/walkway.type";
+
+interface PathData {
+  coordinates: Array<{ lat: number; lng: number }>;
+  totalDistance: number;
+  duration: number;
+  startTime: Date;
+  endTime: Date;
+  pathImage: string;
+  courseImageId: number;
+}
+
+interface LocationState extends PathData {
+  isEditMode?: boolean;
+  walkwayId?: number;
+  name?: string;
+  date?: string;
+  description?: string;
+  hashtags?: string[];
+  accessLevel?: "PRIVATE" | "PUBLIC";
+}
 
 const Wrapper = styled.div`
   display: flex;
@@ -92,21 +113,11 @@ const PathMapContainer = styled.div`
   overflow: hidden;
 `;
 
-interface PathData {
-  coordinates: Array<{ lat: number; lng: number }>;
-  totalDistance: number;
-  duration: number;
-  startTime: Date;
-  endTime: Date;
-  pathImage: string;
-  courseImageId: number;
-}
-
 export default function Registration() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { state } = location;
   const { showToast } = useToast();
+  const { state } = location as { state: LocationState };
   // state.isEditMode를 직접 확인
   const [isEditMode, setIsEditMode] = useState(state?.isEditMode || false);
   const [name, setName] = useState(state?.name || "");
@@ -118,31 +129,21 @@ export default function Registration() {
   const [tagInput, setTagInput] = useState<string>("");
   const [pathImage, setPathImage] = useState<string>("");
   const [accessLevel, setAccessLevel] = useState<"PRIVATE" | "PUBLIC">(
-    "PRIVATE"
+    state?.accessLevel || "PRIVATE"
   );
-
-  const pathData: PathData = location.state;
+  const pathData: PathData = state;
 
   useEffect(() => {
-    if (state?.tags) {
-      setTags(state.tags);
+    if (state?.hashtags) {
+      setTags(state.hashtags);
     }
-  }, [state?.tags]);
+  }, []);
 
   useEffect(() => {
     if (pathData.pathImage) {
       setPathImage(pathData.pathImage);
     }
   }, [pathData.pathImage]);
-
-  useEffect(() => {
-    console.log("전달받은 pathData:", pathData);
-    console.log("전달받은 이미지:", pathData?.pathImage?.substring(0, 100));
-
-    if (pathData?.pathImage) {
-      setPathImage(pathData.pathImage);
-    }
-  }, [pathData, pathData.pathImage]);
 
   useEffect(() => {
     setIsActive(name.length > 0);
@@ -154,7 +155,8 @@ export default function Registration() {
 
   const handleTagInputKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === " " && tagInput.trim() !== "") {
-      setTags([...tags, tagInput.trim()]);
+      const newTag = tagInput.trim().replace('#', '');
+      setTags([...tags, newTag]);
       setTagInput("");
     } else if (e.key === "Backspace" && tagInput === "" && tags.length > 0) {
       const newTags = [...tags];
@@ -162,42 +164,49 @@ export default function Registration() {
       setTags(newTags);
     }
   };
+
   const handleSubmit = async () => {
     if (isActive && !isLoading) {
       setIsLoading(true);
+      console.log("수정 모드:", isEditMode);
+      console.log("walkwayId:", state.walkwayId);
 
       try {
-        const walkwayData = {
-          courseImageId: pathData.courseImageId!,
-          name,
-          memo: description,
-          distance: pathData.totalDistance,
-          time: pathData.duration,
-          hashtags: tags,
-          exposeLevel: accessLevel,
-          course: pathData.coordinates.map((coord) => ({
-            latitude: coord.lat,
-            longitude: coord.lng,
-          })),
-        };
-
-        const walkwayId = await createWalkway(walkwayData);
-        showToast("등록이 완료되었습니다.", "success");
-        console.log("등록 완료 시 전체 데이터:", {
-          경로정보: walkwayData.course,
-          산책명: walkwayData.name,
-          설명: walkwayData.memo,
-          해시태그: walkwayData.hashtags,
-          총거리: walkwayData.distance,
-          소요시간: walkwayData.time,
-          이미지ID: walkwayData.courseImageId,
-          공개여부: walkwayData.exposeLevel,
-        });
-
-        navigate(`/mypage/myregister/${walkwayId}`);
+        if (isEditMode && state.walkwayId) {
+          const updateData: UpdateWalkwayType = {
+            name,
+            memo: description,
+            hashtags: tags,
+            exposeLevel: accessLevel,
+          };
+          await updateWalkway(state.walkwayId, updateData);
+          showToast("수정이 완료되었습니다.", "success");
+          navigate(`/mypage/myregister/${state.walkwayId}`);
+        } else {
+          // 신규 등록일 경우
+          const walkwayData: CreateWalkwayType = {
+            courseImageId: pathData.courseImageId!,
+            name,
+            memo: description,
+            distance: pathData.totalDistance,
+            time: pathData.duration,
+            hashtags: tags,
+            exposeLevel: accessLevel,
+            course: pathData.coordinates.map((coord) => ({
+              latitude: coord.lat,
+              longitude: coord.lng,
+            })),
+          };
+          const walkwayId = await createWalkway(walkwayData);
+          showToast("등록이 완료되었습니다.", "success");
+          navigate(`/mypage/myregister/${walkwayId}`);
+        }
       } catch (error) {
         showToast("다시 한 번 시도해주세요.", "error");
-        console.error("산책로 등록 실패:", error);
+        console.error(
+          isEditMode ? "산책로 수정 실패:" : "산책로 등록 실패:",
+          error
+        );
       } finally {
         setIsLoading(false);
       }
@@ -214,17 +223,24 @@ export default function Registration() {
 
   const handleModalConfirm = () => {
     setIsModalOpen(false);
-    navigate("/main");
+    if (isEditMode) {
+      navigate(-1);
+    } else {
+      navigate("/main");
+    }
   };
 
   return (
     <>
-      <AppBar onBack={handleBackClick} title="산책로 등록" />
+      <AppBar
+        onBack={handleBackClick}
+        title={isEditMode ? "산책로 수정" : "산책로 등록"}
+      />{" "}
       <Wrapper>
         <ContentWrapper>
           <Content>
-            <DateDisplay />
-            <ToggleSwitch
+          <DateDisplay date={isEditMode && state.date ? state.date : undefined} />
+          <ToggleSwitch
               isPublic={accessLevel === "PUBLIC"}
               readOnly={false}
               onChange={(isPublic) =>
@@ -260,7 +276,7 @@ export default function Registration() {
           </TagList>
         </TagInputWrapper>
         <Button isActive={isActive} onClick={handleSubmit} disabled={isLoading}>
-          {isLoading ? "등록 중..." : isEditMode ? "수정완료" : "작성완료"}
+          {isLoading ? "처리 중..." : isEditMode ? "수정완료" : "작성완료"}
         </Button>
         확인용 배포시 삭제
         <CourseImage src={pathImage} alt="경로 이미지화" />
@@ -271,10 +287,10 @@ export default function Registration() {
         onClose={handleModalClose}
         onConfirm={handleModalConfirm}
         message={`
-                  등록을 취소하시겠습니까?
-                  작성 중인 정보는 저장되지 
-                  않습니다.
-                `}
+            ${isEditMode ? "수정" : "등록"}을 취소하시겠습니까?
+            작성 중인 정보는 저장되지 
+            않습니다.
+          `}
       />
     </>
   );

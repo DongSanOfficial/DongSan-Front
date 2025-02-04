@@ -4,6 +4,9 @@ import {
   WalkwaysApiResponse,
   WalkwayDetailResponse,
   CreateWalkwayType,
+  UpdateWalkwayType,
+  TrailsResponse,
+  TrailsApiResponse,
 } from "./walkway.type";
 import { ApiErrorResponse, ApiResponseFormat } from "src/apis/api.type";
 import { AxiosError } from "axios";
@@ -109,6 +112,69 @@ export const createWalkway = async (walkwayData: CreateWalkwayType) => {
     const axiosError = error as AxiosError<ApiErrorResponse>;
     throw new Error(
       axiosError.response?.data?.message || "산책로 등록에 실패했습니다."
+    );
+  }
+};
+
+/**
+ * 산책로 수정 API 호출
+ */
+export const updateWalkway = async (
+  walkwayId: number,
+  walkwayData: UpdateWalkwayType
+) => {
+  try {
+    const response = await instance.put<ApiResponseFormat<number>>(
+      `/walkways/${walkwayId}`,
+      walkwayData
+    );
+
+    // 204 응답은 성공으로 처리
+    if (response.status === 204) {
+      return true;
+    }
+
+    // 200 응답 처리
+    if (!response.data.isSuccess) {
+      throw new Error(response.data.message);
+    }
+
+    return response.data.data;
+  } catch (error) {
+    const axiosError = error as AxiosError<ApiErrorResponse>;
+    throw new Error(
+      axiosError.response?.data?.message || "등록한 산책로 수정에 실패했습니다."
+    );
+  }
+};
+
+/**
+ * 등록한 산책로 조회 API 호출
+ */
+export const getTrails = async (
+  size: number = 10,
+  lastId?: number
+): Promise<TrailsResponse> => {
+  try {
+    const { data: response } = await instance.get<TrailsApiResponse>(
+      "/users/walkways/upload",
+      {
+        params: {
+          size,
+          lastId,
+        },
+      }
+    );
+
+    if (!response.isSuccess) {
+      throw new Error(response.message);
+    }
+
+    return response.data;
+  } catch (error) {
+    const axiosError = error as AxiosError<ApiErrorResponse>;
+    throw new Error(
+      axiosError.response?.data?.message || "등록한 산책로 조회에 실패했습니다."
     );
   }
 };
