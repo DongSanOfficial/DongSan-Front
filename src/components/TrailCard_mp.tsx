@@ -5,6 +5,7 @@ import CourseImage from "./map/CourseImage";
 
 interface TrailCardProps {
   trail: Trail;
+  onClick?: (walkwayId: number) => void;
 }
 
 const TrailContents = styled.div`
@@ -55,8 +56,8 @@ const MytrailLength = styled.div`
   font-family: "Lalezar";
 `;
 
-const TrailCard = ({ trail }: TrailCardProps) => (
-  <TrailContents>
+const TrailCard = ({ trail, onClick }: TrailCardProps) => (
+  <TrailContents onClick={() => onClick?.(trail.walkwayId)}>
     <div>
       <CourseImage
         src={trail.courseImageUrl}
@@ -78,4 +79,5 @@ const TrailCard = ({ trail }: TrailCardProps) => (
     </MytrailInfo>
   </TrailContents>
 );
+
 export default TrailCard;

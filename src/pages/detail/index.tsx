@@ -6,7 +6,7 @@ import { ReactComponent as HeartIcon } from "../../assets/svg/Heart.svg";
 import { MdArrowForwardIos } from "react-icons/md";
 import { BiCalendarCheck } from "react-icons/bi";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { theme } from "src/styles/colors/theme";
 import PathMap from "../../components/map/PathMap";
 import BottomNavigation from "../../components/bottomNavigation";
@@ -211,6 +211,7 @@ interface PathDetailsProps {
 
 export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
   const navigate = useNavigate();
+  const location = useLocation();
   const { walkwayId } = useParams<{ walkwayId: string }>();
   const [walkwayDetail, setWalkwayDetail] = useState<WalkwayDetail | null>(
     null
@@ -312,22 +313,23 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
     });
   };
 
+  const handleBack = () => {
+    if (location.state?.from === "mypage") {
+      navigate("/mypage"); // 마이페이지로 직접 이동
+    } else if (isMyPath) {
+      navigate("/mypage/TrailList"); // 전체보기 페이지로 이동
+    } else {
+      navigate(-1); // 기본 뒤로가기
+    }
+  };
+
   if (loading) return <div>로딩 중...</div>;
   if (error) return <div>{error}</div>;
   if (!walkwayDetail) return null;
 
   return (
     <>
-      <AppBar
-        onBack={() => {
-          if (isMyPath) {
-            navigate("/mypage/TrailList");
-          } else {
-            navigate(-1);
-          }
-        }}
-        title={isMyPath ? "내 산책로" : "산책로"}
-      />
+      <AppBar onBack={handleBack} title={isMyPath ? "내 산책로" : "산책로"} />
       <PageWrapper>
         <HeaderContainer>
           <HeaderTopBar>

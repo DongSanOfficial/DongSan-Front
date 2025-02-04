@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import styled from "styled-components";
 import { ReactComponent as Favorite } from "../../assets/svg/Favorite.svg";
 import { ReactComponent as BookMark } from "../../assets/svg/BookMark.svg";
@@ -158,6 +158,18 @@ function MyPage() {
     fetchData();
   }, []);
 
+  const handleCardClick = useCallback(
+    (walkwayId: number) => {
+      navigate(`/mypage/myregister/${walkwayId}`, {
+        //프리뷰를 클릭해서 단건 조회 페이지로 이동했을 시,
+        //단건 조회 페이지에서 백버튼 네이게이션은 다시 마이페이지로
+        //하기 위해서 state 전달
+        state: { from: 'mypage' }
+      });
+    },
+    [navigate]
+  );
+
   if (isLoading) return <div>로딩중...</div>;
   if (error) return <div>{error}</div>;
 
@@ -185,7 +197,7 @@ function MyPage() {
           </SeeAll>
           <Items>
             {previewTrails.map((trail) => (
-              <TrailCard key={trail.walkwayId} trail={trail} />
+              <TrailCard key={trail.walkwayId} trail={trail} onClick={handleCardClick} />
             ))}
           </Items>
         </div>
