@@ -273,7 +273,8 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
       name: walkwayDetail?.name,
       date: walkwayDetail?.date,
       description: walkwayDetail?.memo,
-      hashtags: walkwayDetail?.hashtags,
+      //서버에서 #가 붙은채로 와서 #를 제거
+      hashtags: walkwayDetail?.hashtags.map((tag) => tag.replace("#", "")),
       totalDistance: walkwayDetail?.distance,
       duration: walkwayDetail?.time,
       accessLevel: walkwayDetail?.accessLevel,

@@ -87,12 +87,6 @@ const TagInputWrapper = styled.div`
   margin-bottom: 20px;
 `;
 
-const TagList = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-`;
-
 const TagInput = styled.input`
   border: none;
   outline: none;
@@ -101,8 +95,32 @@ const TagInput = styled.input`
 `;
 
 const Tag = styled.span`
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  background-color: ${theme.Gray400};
+  color: white;
+  border-radius: 20px;
   font-size: 12px;
-  color: #b4b4b4;
+  cursor: pointer;
+  gap: 4px;
+
+  &:hover {
+    opacity: 0.9;
+  }
+`;
+
+const DeleteIcon = styled.span`
+  font-size: 14px;
+  font-weight: 500;
+  margin-left: 4px;
+`;
+
+const TagList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
 `;
 
 const PathMapContainer = styled.div`
@@ -150,20 +168,34 @@ export default function Registration() {
   }, [name, description]);
 
   const handleTagInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setTagInput(e.target.value);
+    // '#' 기호 제거 및 공백을 '_'로 대체
+    const value = e.target.value.replace("#", "").replace(/\s/g, "_"); // 모든 공백을 '_'로 대체
+    setTagInput(value);
   };
 
   const handleTagInputKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === " " && tagInput.trim() !== "") {
-      const newTag = tagInput.trim().replace('#', '');
-      setTags([...tags, newTag]);
+    if (e.key === "Enter" && tagInput.trim() !== "") {
+      e.preventDefault();
+      const newTag = tagInput.trim();
+
+      // 중복 태그 방지
+      if (!tags.includes(newTag)) {
+        setTags([...tags, newTag]);
+      }
       setTagInput("");
-    } else if (e.key === "Backspace" && tagInput === "" && tags.length > 0) {
-      const newTags = [...tags];
-      newTags.pop();
-      setTags(newTags);
     }
   };
+
+  // 태그 삭제 함수 추가
+  const handleTagDelete = (indexToDelete: number) => {
+    setTags(tags.filter((_, index) => index !== indexToDelete));
+  };
+
+  useEffect(() => {
+    if (state?.hashtags) {
+      setTags(state.hashtags);
+    }
+  }, [state?.hashtags]);
 
   const handleSubmit = async () => {
     if (isActive && !isLoading) {
@@ -176,7 +208,9 @@ export default function Registration() {
           const updateData: UpdateWalkwayType = {
             name,
             memo: description,
-            hashtags: tags,
+            hashtags: tags.map((tag) =>
+              tag.startsWith("#") ? tag.slice(1) : tag
+            ),
             exposeLevel: accessLevel,
           };
           await updateWalkway(state.walkwayId, updateData);
@@ -190,7 +224,9 @@ export default function Registration() {
             memo: description,
             distance: pathData.totalDistance,
             time: pathData.duration,
-            hashtags: tags,
+            hashtags: tags.map((tag) =>
+              tag.startsWith("#") ? tag.slice(1) : tag
+            ),
             exposeLevel: accessLevel,
             course: pathData.coordinates.map((coord) => ({
               latitude: coord.lat,
@@ -239,8 +275,10 @@ export default function Registration() {
       <Wrapper>
         <ContentWrapper>
           <Content>
-          <DateDisplay date={isEditMode && state.date ? state.date : undefined} />
-          <ToggleSwitch
+            <DateDisplay
+              date={isEditMode && state.date ? state.date : undefined}
+            />
+            <ToggleSwitch
               isPublic={accessLevel === "PUBLIC"}
               readOnly={false}
               onChange={(isPublic) =>
@@ -264,14 +302,17 @@ export default function Registration() {
         />
         <TagInputWrapper>
           <TagInput
-            placeholder={"#해시태그 추가하기"}
+            placeholder={"해시태그 추가하기"}
             value={tagInput}
             onChange={handleTagInputChange}
             onKeyDown={handleTagInputKeyDown}
           />
           <TagList>
             {tags.map((tag, index) => (
-              <Tag key={index}> #{tag}</Tag>
+              <Tag key={index} onClick={() => handleTagDelete(index)}>
+                #{tag}
+                <DeleteIcon>×</DeleteIcon>
+              </Tag>
             ))}
           </TagList>
         </TagInputWrapper>
