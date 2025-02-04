@@ -27,10 +27,11 @@ export default function Splash() {
         const accessToken = getCookie("access_token");
         console.log("토큰: ", accessToken);
 
+        // 유효 여부 검사, 리프레시 api 연동시 수정해야 함. 
         setTimeout(() => {
-          if (accessToken) {
-            navigate("/main");
-          } else {
+          if (!accessToken) {
+          //   navigate("/main");
+          // } else {
             navigate("/signin");
           }
         }, 2000);
@@ -38,9 +39,9 @@ export default function Splash() {
         console.error("초기화 중 오류 발생:", error);
         setTimeout(() => {
           const accessToken = getCookie("access_token");
-          if (accessToken) {
-            navigate("/main");
-          } else {
+          if (!accessToken) {
+          //   navigate("/main");
+          // } else {
             navigate("/signin");
           }
         }, 2000);
