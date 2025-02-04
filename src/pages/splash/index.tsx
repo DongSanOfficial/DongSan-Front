@@ -16,12 +16,15 @@ export default function Splash() {
   useEffect(() => {
     const checkTokenAndNavigate = () => {
       const accessToken = getCookie("access_token");
-      console.log('토큰: ', accessToken);
+      console.log("토큰: ", accessToken);
 
       setTimeout(() => {
-        if (accessToken) {
-          navigate("/main");
-        } else {
+        // if (accessToken) {
+        //   navigate("/main");
+        // } else {
+        //   navigate("/signin");
+        // }
+        if (!accessToken) {
           navigate("/signin");
         }
       }, 2000);
