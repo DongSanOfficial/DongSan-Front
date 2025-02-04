@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import thumnail from "src/assets/images/TrailThumbnail.png";
 import { ReactComponent as Favorite } from "../../assets/svg/Favorite.svg";
 import { ReactComponent as BookMark } from "../../assets/svg/BookMark.svg";
 import TrailCard from "src/components/TrailCard_mp";
@@ -12,6 +11,8 @@ import { getUserProfile } from "../../apis/auth";
 import { UserProfileType } from "../../apis/auth.type";
 import BottomNavigation from "src/components/bottomNavigation";
 import AppBar from "src/components/appBar";
+import { getMyWalkways } from "src/apis/walkway";
+import { Trail } from "src/apis/walkway.type";
 
 const Wrapper = styled.div`
   display: flex;
@@ -82,30 +83,6 @@ const Items = styled.div`
     display: none;
   }
 `;
-interface Trail {
-  id: number;
-  name: string;
-  date: string;
-  length: number;
-  image: string;
-}
-
-const trails: Trail[] = [
-  {
-    id: 1,
-    name: "휴양림 산책",
-    date: "2024.09.25",
-    length: 4.8,
-    image: thumnail,
-  },
-  {
-    id: 2,
-    name: "다른 산책로",
-    date: "2024.10.01",
-    length: 3.2,
-    image: thumnail,
-  },
-];
 
 const trailsBookmarks = [
   {
@@ -154,22 +131,31 @@ function MyPage() {
   const navigate = useNavigate();
 
   const [userProfile, setUserProfile] = useState<UserProfileType | null>(null);
+  const [previewTrails, setPreviewTrails] = useState<Trail[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchUserProfile = async () => {
+    const fetchData = async () => {
       try {
-        const profile = await getUserProfile();
+        setIsLoading(true);
+        const [profile, walkwaysResponse] = await Promise.all([
+          getUserProfile(),
+          getMyWalkways({ preview: true }),
+        ]);
+
         setUserProfile(profile);
+        setPreviewTrails(walkwaysResponse.walkways);
+        setError(null);
+        console.log("프리뷰 산책로: ", walkwaysResponse.walkways);
       } catch (err) {
-        setError("프로필 정보를 불러오는데 실패했습니다.");
+        setError("데이터를 불러오는데 실패했습니다.");
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchUserProfile();
+    fetchData();
   }, []);
 
   if (isLoading) return <div>로딩중...</div>;
@@ -177,7 +163,7 @@ function MyPage() {
 
   return (
     <>
-      <AppBar onBack={() => navigate('/')} title="마이 페이지" />
+      <AppBar onBack={() => navigate("/")} title="마이 페이지" />
       <Wrapper>
         <Profile>
           <Img
@@ -193,13 +179,13 @@ function MyPage() {
         <div>
           <SeeAll>
             <Title>내가 등록한 산책로 보기</Title>
-            <Link to="/mypage/TrailList">
-              <Button>전체보기</Button>
-            </Link>
+            <Button onClick={() => navigate("/mypage/TrailList")}>
+              전체보기
+            </Button>
           </SeeAll>
           <Items>
-            {trails.map((trail) => (
-              <TrailCard key={trail.id} trail={trail} />
+            {previewTrails.map((trail) => (
+              <TrailCard key={trail.walkwayId} trail={trail} />
             ))}
           </Items>
         </div>

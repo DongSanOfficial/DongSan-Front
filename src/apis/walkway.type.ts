@@ -83,7 +83,6 @@ export interface UpdateWalkwayType {
   exposeLevel: "PRIVATE" | "PUBLIC";
 }
 
-
 // 등록한 산책로 조회
 export interface Trail {
   walkwayId: number;
@@ -99,9 +98,15 @@ export interface Trail {
   hashtags: string[];
 }
 
-export interface TrailsResponse {
+export interface FetchWalkwaysOptions {
+  size?: number;
+  lastId?: number;
+  preview?: boolean;
+}
+
+export interface MyWalkwaysResponse {
   walkways: Trail[];
   hasNext: boolean;
 }
 
-export type TrailsApiResponse = ApiResponseFormat<TrailsResponse>;
+export type MyWalkwaysApiResponse = ApiResponseFormat<MyWalkwaysResponse>;

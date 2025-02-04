@@ -5,7 +5,7 @@ import BottomNavigation from "src/components/bottomNavigation";
 import AppBar from "src/components/appBar";
 import { useNavigate } from "react-router-dom";
 import { Trail } from "src/apis/walkway.type";
-import { getTrails } from "src/apis/walkway";
+import { getMyWalkways } from "src/apis/walkway";
 import TrailCardAll from "src/components/TrailCardAll_View";
 
 const Wrapper = styled.div`
@@ -49,7 +49,10 @@ function TrailListPage() {
 
     try {
       setLoading(true);
-      const response = await getTrails(10, lastIdRef.current);
+      const response = await getMyWalkways({
+        size: 10,
+        lastId: lastIdRef.current,
+      });
       setTrails(response.walkways);
       setHasNext(response.hasNext);
 

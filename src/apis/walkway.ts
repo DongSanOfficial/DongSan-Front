@@ -5,8 +5,9 @@ import {
   WalkwayDetailResponse,
   CreateWalkwayType,
   UpdateWalkwayType,
-  TrailsResponse,
-  TrailsApiResponse,
+  MyWalkwaysResponse,
+  MyWalkwaysApiResponse,
+  FetchWalkwaysOptions,
 } from "./walkway.type";
 import { ApiErrorResponse, ApiResponseFormat } from "src/apis/api.type";
 import { AxiosError } from "axios";
@@ -151,16 +152,17 @@ export const updateWalkway = async (
 /**
  * 등록한 산책로 조회 API 호출
  */
-export const getTrails = async (
-  size: number = 10,
-  lastId?: number
-): Promise<TrailsResponse> => {
+export const getMyWalkways = async ({
+  size = 10,
+  lastId,
+  preview = false,
+}: FetchWalkwaysOptions = {}): Promise<MyWalkwaysResponse> => {
   try {
-    const { data: response } = await instance.get<TrailsApiResponse>(
+    const { data: response } = await instance.get<MyWalkwaysApiResponse>(
       "/users/walkways/upload",
       {
         params: {
-          size,
+          size: preview ? 3 : size, // preview면 3개만(마이페이지 프리뷰로 보여줄 것), 아니면 요청된 size
           lastId,
         },
       }
