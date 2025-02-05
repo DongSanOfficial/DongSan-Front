@@ -12,6 +12,7 @@ import AppBar from "src/components/appBar";
 import { drawPath } from "src/utils/drawPathUtils";
 import { uploadCourseImage } from "src/apis/walkway";
 import { useToast } from "src/hooks/useToast";
+import WaveTextLoader from "src/components/loading/WaveTextLoader";
 
 interface Location {
   lat: number;
@@ -78,15 +79,6 @@ const LocationButton = styled.button`
   &:active {
     background-color: #f0f0f0;
   }
-`;
-
-const LoadingBox = styled.div`
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #f5f5f5;
 `;
 
 export default function NewwayTest() {
@@ -160,7 +152,8 @@ export default function NewwayTest() {
   };
 
   const handleStopRequest = () => {
-    if (elapsedTime < 60) {  // 산책 경과 시간이 1분 미만인 경우
+    if (elapsedTime < 60) {
+      // 산책 경과 시간이 1분 미만인 경우
       showToast("1분 이상 산책해주세요.", "error");
       return;
     }
@@ -253,13 +246,8 @@ export default function NewwayTest() {
   }, []);
 
   if (!userLocation) {
-    return (
-      <LoadingBox>
-        <h3>위치 정보를 불러오는 중...</h3>
-      </LoadingBox>
-    );
+    return <WaveTextLoader>위치 정보를 불러오는 중...</WaveTextLoader>;
   }
-
   return (
     <>
       <AppBar onBack={handleBackClick} title="산책로 등록" />
