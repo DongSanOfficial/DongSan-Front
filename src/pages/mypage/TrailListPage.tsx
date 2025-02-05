@@ -52,7 +52,7 @@ function TrailListPage() {
 
   return (
     <>
-      <AppBar onBack={() => navigate(-1)} title="내가 등록한 산책로" />
+      <AppBar onBack={() => navigate("/mypage")} title="내가 등록한 산책로" />
       <Wrapper>
         {loading && <div>Loading...</div>}
         {error && <div>{error}</div>}

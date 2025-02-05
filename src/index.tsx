@@ -10,12 +10,10 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <CookiesProvider>
-    <React.StrictMode>
-      <BrowserRouter>
-        <ToastProvider>
-          <App />
-        </ToastProvider>
-      </BrowserRouter>
-    </React.StrictMode>
+    <BrowserRouter>
+      <ToastProvider>
+        <App />
+      </ToastProvider>
+    </BrowserRouter>
   </CookiesProvider>
 );
