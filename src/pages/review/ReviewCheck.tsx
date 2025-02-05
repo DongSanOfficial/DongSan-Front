@@ -161,10 +161,10 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ percent }) => (
 );
 
 // Main component
-const ReviewCheck: React.FC = () => {
-  const { walkwayId = "", type = "rating" } = useParams<{
+const ReviewCheck = () => {
+  const { walkwayId = "", sort = "rating" } = useParams<{
     walkwayId: string;
-    type: string;
+    sort: string;
   }>();
   const navigate = useNavigate();
 
@@ -217,7 +217,7 @@ const ReviewCheck: React.FC = () => {
 
   const handleSortChange = (newType: string) => {
     setSortType(newType);
-    navigate(`/review/${walkwayId}/content?type=${newType}`); // URL 업데이트
+    navigate(`/main/review/${walkwayId}/content?sort=${newType}`); // URL 업데이트
   };
   const ratingData = [
     { label: 5, percent: reviewStats?.five ?? 0 },

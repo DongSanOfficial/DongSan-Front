@@ -45,6 +45,7 @@ export default function Splash() {
           }
         }, 2000);
       }
+
     };
 
     initializeApp();
