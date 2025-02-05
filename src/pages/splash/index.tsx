@@ -1,16 +1,11 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
 import { getCookie } from "src/utils/cookieUtils";
 import { useLocationStore } from "../../store/useLocationStore";
 import { LocationState } from "../../store/locationStore.type";
-
-const Wrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100dvh;
-`;
+import instance from "../../apis/instance";
+import SplashScreen from "src/components/SplashScreen";
+import { refreshTokens } from "src/apis/auth";
 
 export default function Splash() {
   const navigate = useNavigate();
@@ -24,36 +19,38 @@ export default function Splash() {
         const location = await getCurrentLocation();
         console.log("스플래시 화면에서 받아온 현재 위치:", location);
 
-        const accessToken = getCookie("access_token");
-        console.log("토큰: ", accessToken);
+        const accessToken = getCookie("accessToken");
+        const refreshToken = getCookie("refreshToken");
 
-        setTimeout(() => {
-          if (accessToken) {
-            navigate("/main");
-          } else {
-            navigate("/signin");
-          }
-        }, 2000);
+        if (!accessToken || !refreshToken) {
+          setTimeout(() => navigate("/signin"), 2000);
+          return;
+        }
+
+        const response = await instance.post("/dev/token/expired", {
+          accessToken,
+          refreshToken,
+        });
+
+        const { accessTokenExpired, refreshTokenExpired } = response.data.data;
+
+        if (!accessTokenExpired && !refreshTokenExpired) {
+          //나중에 여기 "/main" 으로 변경하기
+          setTimeout(() => navigate("/navigation"), 2000);
+        } else if (accessTokenExpired && !refreshTokenExpired) {
+          const success = await refreshTokens(refreshToken);
+          setTimeout(() => navigate(success ? "/main" : "/signin"), 2000);
+        } else {
+          setTimeout(() => navigate("/signin"), 2000);
+        }
       } catch (error) {
         console.error("초기화 중 오류 발생:", error);
-        setTimeout(() => {
-          const accessToken = getCookie("access_token");
-          if (accessToken) {
-            navigate("/main");
-          } else {
-            navigate("/signin");
-          }
-        }, 2000);
+        setTimeout(() => navigate("/signin"), 2000);
       }
-
     };
 
     initializeApp();
-  }, [navigate, getCurrentLocation]);
+  }, []);
 
-  return (
-    <Wrapper>
-      <b>동산과 동네산책해요</b>
-    </Wrapper>
-  );
+  return <SplashScreen />;
 }
