@@ -2,6 +2,7 @@ import {
   ReviewContentType,
   ReviewRatingType,
   UserReviewsType,
+  WriteReviewType,
 } from "./review.type";
 import { ApiResponseFormat } from "./api.type";
 import instance from "./instance";
@@ -46,6 +47,22 @@ export const showReviewContent = async (
       ApiResponseFormat<{ reviews: ReviewContentType[] }>
     >(`/walkways/${walkwayId}/review/content?sort=${sort}`);
     return response.data.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// 리뷰 작성하기 api
+export const writingReview = async (
+  walkwayId: number,
+  reviewData: WriteReviewType
+): Promise<WriteReviewType> => {
+  try {
+    const response = await instance.post<WriteReviewType>(
+      `/walkways/${walkwayId}/review`,
+      reviewData
+    );
+    return response.data;
   } catch (error) {
     throw error;
   }
