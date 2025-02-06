@@ -6,7 +6,7 @@ import { ReactComponent as HeartIcon } from "../../assets/svg/Heart.svg";
 import { MdArrowForwardIos } from "react-icons/md";
 import { BiCalendarCheck } from "react-icons/bi";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { theme } from "src/styles/colors/theme";
 import PathMap from "../../components/map/PathMap";
 import BottomNavigation from "../../components/bottomNavigation";
@@ -209,12 +209,10 @@ interface PathDetailsProps {
   isMyPath?: boolean;
 }
 
-export default function PathDetails({
-  isMyPath = false,
-}: PathDetailsProps) {
+export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
   const navigate = useNavigate();
+  const location = useLocation();
   const { walkwayId } = useParams<{ walkwayId: string }>();
-
   const [walkwayDetail, setWalkwayDetail] = useState<WalkwayDetail | null>(
     null
   );
@@ -270,11 +268,27 @@ export default function PathDetails({
   };
 
   const handleEditClick = () => {
+    const editData = {
+      isEditMode: true,
+      walkwayId: Number(walkwayId),
+      name: walkwayDetail?.name,
+      date: walkwayDetail?.date,
+      description: walkwayDetail?.memo,
+      //서버에서 #가 붙은채로 와서 #를 제거
+      hashtags: walkwayDetail?.hashtags.map((tag) => tag.replace("#", "")),
+      totalDistance: walkwayDetail?.distance,
+      duration: walkwayDetail?.time,
+      accessLevel: walkwayDetail?.accessLevel,
+      coordinates: walkwayDetail?.course.map((coord) => ({
+        lat: coord.latitude,
+        lng: coord.longitude,
+      })),
+    };
+
+    console.log("수정을 위해 전달하는 데이터:", editData);
+
     navigate("/newway/registration", {
-      state: {
-        walkwayId: walkwayId,
-        isEditMode: true,
-      },
+      state: editData,
     });
   };
 
@@ -299,16 +313,23 @@ export default function PathDetails({
     });
   };
 
+  const handleBack = () => {
+    if (location.state?.from === "mypage") {
+      navigate("/mypage"); // 마이페이지로 직접 이동
+    } else if (isMyPath) {
+      navigate("/mypage/TrailList"); // 전체보기 페이지로 이동
+    } else {
+      navigate(-1); // 기본 뒤로가기
+    }
+  };
+
   if (loading) return <div>로딩 중...</div>;
   if (error) return <div>{error}</div>;
   if (!walkwayDetail) return null;
 
   return (
     <>
-      <AppBar
-        onBack={() => navigate(-1)}
-        title={isMyPath ? "내 산책로" : "산책로"}
-      />
+      <AppBar onBack={handleBack} title={isMyPath ? "내 산책로" : "산책로"} />
       <PageWrapper>
         <HeaderContainer>
           <HeaderTopBar>

@@ -10,9 +10,8 @@ import SearchResults, { SearchResult } from "./components/SearchResult";
 import BottomNavigation from "src/components/bottomNavigation";
 import { theme } from "src/styles/colors/theme";
 import { Walkway, SortOption } from "../../apis/walkway.type";
-import { searchWalkways } from "../../apis/walkway";
+import { searchWalkways, getWalkwayDetail } from "../../apis/walkway";
 import { ApiErrorResponse } from "src/apis/api.type";
-import { useToast } from "src/hooks/useToast";
 
 const MainContainer = styled.div`
   position: relative;
@@ -72,9 +71,6 @@ const LoadingSpinner = styled.div`
   padding: 1rem;
 `;
 
-/**
- * 위치 정보 인터페이스
- */
 interface Location {
   lat: number;
   lng: number;
@@ -104,6 +100,9 @@ function Main() {
   const [lastId, setLastId] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // 선택된 산책로의 경로 상태
+  const [selectedPath, setSelectedPath] = useState<Location[]>([]);
 
   // 좋아요 상태
   const [likedPaths, setLikedPaths] = useState<{ [key: number]: boolean }>({});
@@ -173,17 +172,11 @@ function Main() {
     }
   };
 
-  /**
-   * 검색 결과 처리
-   */
   const handleSearchResults = (results: SearchResult[]) => {
     setSearchResults(results);
     setSearching(false);
   };
 
-  /**
-   * 검색 결과 선택 처리
-   */
   const handleResultSelect = async (result: SearchResult) => {
     setSelectedLocation({
       latitude: result.location.lat,
@@ -191,9 +184,9 @@ function Main() {
       name: result.placeName,
     });
     setSelectedWalkwayId(null);
+    setSelectedPath([]); // 경로 초기화
     setSearchResults([]);
     setSearchValue(result.placeName);
-    setSelectedWalkwayId(null);
     setBottomSheetHeight("60vh");
     setIsOpen(true);
 
@@ -205,9 +198,6 @@ function Main() {
     );
   };
 
-  /**
-   * 검색어 변경 처리
-   */
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
   };
@@ -241,10 +231,7 @@ function Main() {
   /**
    * 초기 위치 설정 시 처리
    */
-  const handleInitialLocation = async (location: {
-    lat: number;
-    lng: number;
-  }) => {
+  const handleInitialLocation = async (location: Location) => {
     try {
       await fetchWalkways(location.lat, location.lng, sortOption, true);
       setSelectedLocation({
@@ -252,6 +239,7 @@ function Main() {
         longitude: location.lng,
         name: "현재 위치",
       });
+      setSelectedPath([]); // 경로 초기화
       setBottomSheetHeight("23vh");
       setIsOpen(false);
     } catch (error) {
@@ -262,10 +250,7 @@ function Main() {
   /**
    * 위치 버튼 클릭 처리
    */
-  const handleLocationButtonClick = async (location: {
-    lat: number;
-    lng: number;
-  }) => {
+  const handleLocationButtonClick = async (location: Location) => {
     try {
       await fetchWalkways(location.lat, location.lng, sortOption, true);
       setSelectedLocation({
@@ -273,14 +258,12 @@ function Main() {
         longitude: location.lng,
         name: "현재 위치",
       });
+      setSelectedPath([]); // 경로 초기화
     } catch (error) {
       console.error("현재 위치 기반 산책로 조회 실패:", error);
     }
   };
 
-  /**
-   * 무한 스크롤 처리
-   */
   const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
     const { scrollTop, clientHeight, scrollHeight } = event.currentTarget;
     if (scrollHeight - scrollTop <= clientHeight * 1.5 && hasMore && !loading) {
@@ -309,19 +292,32 @@ function Main() {
   /**
    * 산책로 카드 클릭 처리
    */
-  const handlePathClick = (
+  const handlePathClick = async (
     walkwayId: number,
     location: { latitude: number; longitude: number },
     name: string
   ) => {
-    setSelectedLocation((prevLocation) => ({
-      ...prevLocation!,
-      latitude: location.latitude,
-      longitude: location.longitude,
-      name: name,
-    }));
-    setSelectedWalkwayId(walkwayId); 
-    setIsOpen(false);
+    try {
+      // 단건 조회 API를 호출하여 course 정보를 가져옴
+      const detailData = await getWalkwayDetail(walkwayId);
+
+      // course 데이터를 kakao maps 형식에 맞게 변환
+      const pathCoords = detailData.course.map((coord) => ({
+        lat: coord.latitude,
+        lng: coord.longitude,
+      }));
+
+      setSelectedPath(pathCoords);
+      setSelectedLocation({
+        latitude: location.latitude,
+        longitude: location.longitude,
+        name: name,
+      });
+      setSelectedWalkwayId(walkwayId);
+      setIsOpen(false);
+    } catch (error) {
+      console.error("산책로 상세 정보 조회 실패:", error);
+    }
   };
 
   const handleSearchCurrentLocation = async (location: Location) => {
@@ -333,6 +329,7 @@ function Main() {
         name: "선택한 위치",
       });
       setSelectedWalkwayId(null);
+      setSelectedPath([]); // 경로 초기화
       setBottomSheetHeight("60vh");
       setIsOpen(true);
 
@@ -341,6 +338,7 @@ function Main() {
       console.error("선택 위치 기반 산책로 조회 실패:", error);
     }
   };
+
   return (
     <>
       <MainContainer>
@@ -367,6 +365,7 @@ function Main() {
           }
           pathName={selectedLocation?.name}
           walkwayId={selectedWalkwayId}
+          pathCoords={selectedPath}
           searchKeyword={searching ? searchValue : undefined}
           onSearchResults={handleSearchResults}
           onInitialLocation={handleInitialLocation}

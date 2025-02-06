@@ -2,7 +2,6 @@ import Main from "../pages/main";
 import MyPage from "../pages/mypage";
 import TrailListPage from "../pages/mypage/TrailListPage";
 import TrailLikeListPage from "../pages/mypage/TrailListLikePage";
-import NewWay from "../pages/newway";
 import SignIn from "../pages/signin";
 import Registration from "../pages/newway/registration";
 import ReviewPage from "../pages/review";
@@ -14,6 +13,7 @@ import ReviewCheck from "../pages/review/ReviewCheck";
 import PathDetails from "../pages/detail";
 import SplashScreen from "src/components/SplashScreen";
 import Splash from "src/pages/splash";
+import NewWay from "../pages/newway";
 
 interface RouteConfig {
   path: string;
@@ -90,7 +90,7 @@ const routes: RouteConfig[] = [
   {
     path: "/main/usedtrail/detail/:walkwayId",
     component: DetailUsing,
-  },
+  }
 ];
 
 export default routes;

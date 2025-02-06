@@ -1,72 +1,103 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import styled from "styled-components";
-import TrailCardAll from "../../components/TrailCardAll_View";
-import { Trail, getTrails } from "../../apis/trail";
+
 import BottomNavigation from "src/components/bottomNavigation";
 import AppBar from "src/components/appBar";
 import { useNavigate } from "react-router-dom";
+import { Trail } from "src/apis/walkway.type";
+import { getMyWalkways } from "src/apis/walkway";
+import TrailCardAll from "src/components/TrailCardAll_View";
 
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 15px;
+  height: calc(100vh - 120px);
+  overflow-y: auto;
+  padding: 10px;
+  max-width: 430px;
 `;
 
 const List = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 15px;
+`;
+
+const LoadingSpinner = styled.div`
+  text-align: center;
+  padding: 20px;
+`;
+
+const ErrorMessage = styled.div`
+  color: red;
+  text-align: center;
+  padding: 20px;
 `;
 
 function TrailListPage() {
   const navigate = useNavigate();
+  const [trails, setTrails] = React.useState<Trail[]>([]);
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+  const [hasNext, setHasNext] = React.useState(true);
+  const lastIdRef = useRef<number | undefined>(undefined);
+  const observer = useRef<IntersectionObserver>();
 
-  const [trails, setTrails] = useState<Trail[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [lastWalkwayId, setLastWalkwayId] = useState<number | undefined>(
-    undefined
-  );
+  const loadTrails = useCallback(async () => {
+    if (loading || !hasNext) return;
+
+    try {
+      setLoading(true);
+      const response = await getMyWalkways({
+        size: 10,
+        lastId: lastIdRef.current,
+      });
+      setTrails(response.walkways);
+      setHasNext(response.hasNext);
+
+      if (response.walkways.length > 0) {
+        lastIdRef.current =
+          response.walkways[response.walkways.length - 1].walkwayId;
+      }
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : "산책로 조회에 실패했습니다."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [loading, hasNext]);
 
   useEffect(() => {
-    const fetchTrails = async () => {
-      try {
-        const fetchedTrails = await getTrails(lastWalkwayId);
-        setTrails((prevTrails) => [...prevTrails, ...fetchedTrails]);
-        setLoading(false);
-        setLastWalkwayId(fetchedTrails[fetchedTrails.length - 1]?.walkwayId);
-      } catch (err) {
-        setError("Failed to fetch trails");
-        setLoading(false);
+    loadTrails();
+    return () => {
+      if (observer.current) {
+        observer.current.disconnect();
       }
     };
+  }, []);
 
-    fetchTrails();
-  }, [lastWalkwayId]);
-
-  const handleCardClick = (walkwayId: number) => {
-    navigate(`/mypage/myregister/${walkwayId}`);
-  };
+  const handleCardClick = useCallback(
+    (walkwayId: number) => {
+      navigate(`/mypage/myregister/${walkwayId}`);
+    },
+    [navigate]
+  );
 
   return (
     <>
       <AppBar onBack={() => navigate("/mypage")} title="내가 등록한 산책로" />
       <Wrapper>
-        {loading && <div>Loading...</div>}
-        {error && <div>{error}</div>}
-        {!loading && !error && (
-          <List>
-            {trails.map((trail) => (
-              <TrailCardAll
-                key={trail.walkwayId}
-                trail={trail}
-                onClick={handleCardClick}
-              />
-            ))}
-          </List>
-        )}
+        {error && <ErrorMessage>{error}</ErrorMessage>}
+        <List>
+          {trails.map((trail, index) => (
+            <div key={trail.walkwayId}>
+              <TrailCardAll trail={trail} onClick={handleCardClick} />
+            </div>
+          ))}
+        </List>
+        {loading && <LoadingSpinner>Loading...</LoadingSpinner>}
       </Wrapper>
       <BottomNavigation />
     </>

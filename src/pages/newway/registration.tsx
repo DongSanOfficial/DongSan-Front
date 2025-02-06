@@ -10,9 +10,30 @@ import PathMap from "../../components/map/PathMap";
 import BottomNavigation from "src/components/bottomNavigation";
 import AppBar from "src/components/appBar";
 import CourseImage from "src/components/map/CourseImage";
-import { createWalkway } from "src/apis/walkway";
+import { createWalkway, updateWalkway } from "src/apis/walkway";
 import ConfirmationModal from "src/components/modal/ConfirmationModal";
 import { useToast } from "src/hooks/useToast";
+import { CreateWalkwayType, UpdateWalkwayType } from "src/apis/walkway.type";
+
+interface PathData {
+  coordinates: Array<{ lat: number; lng: number }>;
+  totalDistance: number;
+  duration: number;
+  startTime: Date;
+  endTime: Date;
+  pathImage: string;
+  courseImageId: number;
+}
+
+interface LocationState extends PathData {
+  isEditMode?: boolean;
+  walkwayId?: number;
+  name?: string;
+  date?: string;
+  description?: string;
+  hashtags?: string[];
+  accessLevel?: "PRIVATE" | "PUBLIC";
+}
 
 const Wrapper = styled.div`
   display: flex;
@@ -66,12 +87,6 @@ const TagInputWrapper = styled.div`
   margin-bottom: 20px;
 `;
 
-const TagList = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-`;
-
 const TagInput = styled.input`
   border: none;
   outline: none;
@@ -80,8 +95,32 @@ const TagInput = styled.input`
 `;
 
 const Tag = styled.span`
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  background-color: ${theme.Gray400};
+  color: white;
+  border-radius: 20px;
   font-size: 12px;
-  color: #b4b4b4;
+  cursor: pointer;
+  gap: 4px;
+
+  &:hover {
+    opacity: 0.9;
+  }
+`;
+
+const DeleteIcon = styled.span`
+  font-size: 14px;
+  font-weight: 500;
+  margin-left: 4px;
+`;
+
+const TagList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
 `;
 
 const PathMapContainer = styled.div`
@@ -92,21 +131,11 @@ const PathMapContainer = styled.div`
   overflow: hidden;
 `;
 
-interface PathData {
-  coordinates: Array<{ lat: number; lng: number }>;
-  totalDistance: number;
-  duration: number;
-  startTime: Date;
-  endTime: Date;
-  pathImage: string;
-  courseImageId: number;
-}
-
 export default function Registration() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { state } = location;
   const { showToast } = useToast();
+  const { state } = location as { state: LocationState };
   // state.isEditMode를 직접 확인
   const [isEditMode, setIsEditMode] = useState(state?.isEditMode || false);
   const [name, setName] = useState(state?.name || "");
@@ -118,16 +147,15 @@ export default function Registration() {
   const [tagInput, setTagInput] = useState<string>("");
   const [pathImage, setPathImage] = useState<string>("");
   const [accessLevel, setAccessLevel] = useState<"PRIVATE" | "PUBLIC">(
-    "PRIVATE"
+    state?.accessLevel || "PRIVATE"
   );
-
-  const pathData: PathData = location.state;
+  const pathData: PathData = state;
 
   useEffect(() => {
-    if (state?.tags) {
-      setTags(state.tags);
+    if (state?.hashtags) {
+      setTags(state.hashtags);
     }
-  }, [state?.tags]);
+  }, []);
 
   useEffect(() => {
     if (pathData.pathImage) {
@@ -136,68 +164,85 @@ export default function Registration() {
   }, [pathData.pathImage]);
 
   useEffect(() => {
-    console.log("전달받은 pathData:", pathData);
-    console.log("전달받은 이미지:", pathData?.pathImage?.substring(0, 100));
-
-    if (pathData?.pathImage) {
-      setPathImage(pathData.pathImage);
-    }
-  }, [pathData, pathData.pathImage]);
-
-  useEffect(() => {
     setIsActive(name.length > 0);
   }, [name, description]);
 
   const handleTagInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setTagInput(e.target.value);
+    // '#' 기호 제거 및 공백을 '_'로 대체
+    const value = e.target.value.replace("#", "").replace(/\s/g, "_"); // 모든 공백을 '_'로 대체
+    setTagInput(value);
   };
 
   const handleTagInputKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === " " && tagInput.trim() !== "") {
-      setTags([...tags, tagInput.trim()]);
+    if (e.key === "Enter" && tagInput.trim() !== "") {
+      e.preventDefault();
+      const newTag = tagInput.trim();
+
+      // 중복 태그 방지
+      if (!tags.includes(newTag)) {
+        setTags([...tags, newTag]);
+      }
       setTagInput("");
-    } else if (e.key === "Backspace" && tagInput === "" && tags.length > 0) {
-      const newTags = [...tags];
-      newTags.pop();
-      setTags(newTags);
     }
   };
+
+  // 태그 삭제 함수 추가
+  const handleTagDelete = (indexToDelete: number) => {
+    setTags(tags.filter((_, index) => index !== indexToDelete));
+  };
+
+  useEffect(() => {
+    if (state?.hashtags) {
+      setTags(state.hashtags);
+    }
+  }, [state?.hashtags]);
+
   const handleSubmit = async () => {
     if (isActive && !isLoading) {
       setIsLoading(true);
+      console.log("수정 모드:", isEditMode);
+      console.log("walkwayId:", state.walkwayId);
 
       try {
-        const walkwayData = {
-          courseImageId: pathData.courseImageId!,
-          name,
-          memo: description,
-          distance: pathData.totalDistance,
-          time: pathData.duration,
-          hashtags: tags,
-          exposeLevel: accessLevel,
-          course: pathData.coordinates.map((coord) => ({
-            latitude: coord.lat,
-            longitude: coord.lng,
-          })),
-        };
-
-        const walkwayId = await createWalkway(walkwayData);
-        showToast("등록이 완료되었습니다.", "success");
-        console.log("등록 완료 시 전체 데이터:", {
-          경로정보: walkwayData.course,
-          산책명: walkwayData.name,
-          설명: walkwayData.memo,
-          해시태그: walkwayData.hashtags,
-          총거리: walkwayData.distance,
-          소요시간: walkwayData.time,
-          이미지ID: walkwayData.courseImageId,
-          공개여부: walkwayData.exposeLevel,
-        });
-
-        navigate(`/mypage/myregister/${walkwayId}`);
+        if (isEditMode && state.walkwayId) {
+          const updateData: UpdateWalkwayType = {
+            name,
+            memo: description,
+            hashtags: tags.map((tag) =>
+              tag.startsWith("#") ? tag.slice(1) : tag
+            ),
+            exposeLevel: accessLevel,
+          };
+          await updateWalkway(state.walkwayId, updateData);
+          showToast("수정이 완료되었습니다.", "success");
+          navigate(`/mypage/myregister/${state.walkwayId}`);
+        } else {
+          // 신규 등록일 경우
+          const walkwayData: CreateWalkwayType = {
+            courseImageId: pathData.courseImageId!,
+            name,
+            memo: description,
+            distance: pathData.totalDistance,
+            time: pathData.duration,
+            hashtags: tags.map((tag) =>
+              tag.startsWith("#") ? tag.slice(1) : tag
+            ),
+            exposeLevel: accessLevel,
+            course: pathData.coordinates.map((coord) => ({
+              latitude: coord.lat,
+              longitude: coord.lng,
+            })),
+          };
+          const walkwayId = await createWalkway(walkwayData);
+          showToast("등록이 완료되었습니다.", "success");
+          navigate(`/mypage/myregister/${walkwayId}`);
+        }
       } catch (error) {
         showToast("다시 한 번 시도해주세요.", "error");
-        console.error("산책로 등록 실패:", error);
+        console.error(
+          isEditMode ? "산책로 수정 실패:" : "산책로 등록 실패:",
+          error
+        );
       } finally {
         setIsLoading(false);
       }
@@ -214,16 +259,25 @@ export default function Registration() {
 
   const handleModalConfirm = () => {
     setIsModalOpen(false);
-    navigate("/main");
+    if (isEditMode) {
+      navigate(-1);
+    } else {
+      navigate("/main");
+    }
   };
 
   return (
     <>
-      <AppBar onBack={handleBackClick} title="산책로 등록" />
+      <AppBar
+        onBack={handleBackClick}
+        title={isEditMode ? "산책로 수정" : "산책로 등록"}
+      />{" "}
       <Wrapper>
         <ContentWrapper>
           <Content>
-            <DateDisplay />
+            <DateDisplay
+              date={isEditMode && state.date ? state.date : undefined}
+            />
             <ToggleSwitch
               isPublic={accessLevel === "PUBLIC"}
               readOnly={false}
@@ -248,19 +302,22 @@ export default function Registration() {
         />
         <TagInputWrapper>
           <TagInput
-            placeholder={"#해시태그 추가하기"}
+            placeholder={"해시태그 추가하기"}
             value={tagInput}
             onChange={handleTagInputChange}
             onKeyDown={handleTagInputKeyDown}
           />
           <TagList>
             {tags.map((tag, index) => (
-              <Tag key={index}> #{tag}</Tag>
+              <Tag key={index} onClick={() => handleTagDelete(index)}>
+                #{tag}
+                <DeleteIcon>×</DeleteIcon>
+              </Tag>
             ))}
           </TagList>
         </TagInputWrapper>
         <Button isActive={isActive} onClick={handleSubmit} disabled={isLoading}>
-          {isLoading ? "등록 중..." : isEditMode ? "수정완료" : "작성완료"}
+          {isLoading ? "처리 중..." : isEditMode ? "수정완료" : "작성완료"}
         </Button>
         확인용 배포시 삭제
         <CourseImage src={pathImage} alt="경로 이미지화" />
@@ -271,10 +328,10 @@ export default function Registration() {
         onClose={handleModalClose}
         onConfirm={handleModalConfirm}
         message={`
-                  등록을 취소하시겠습니까?
-                  작성 중인 정보는 저장되지 
-                  않습니다.
-                `}
+            ${isEditMode ? "수정" : "등록"}을 취소하시겠습니까?
+            작성 중인 정보는 저장되지 
+            않습니다.
+          `}
       />
     </>
   );

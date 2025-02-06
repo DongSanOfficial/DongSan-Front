@@ -1,4 +1,9 @@
-import { Map, MapMarker, CustomOverlayMap } from "react-kakao-maps-sdk";
+import {
+  Map,
+  MapMarker,
+  CustomOverlayMap,
+  Polyline,
+} from "react-kakao-maps-sdk";
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
@@ -125,6 +130,8 @@ interface MainMapProps {
   pathName?: string;
   /** 선택된 산책로 ID */
   walkwayId?: number | null;
+  /**경로 좌표 배열 */
+  pathCoords?: Location[];
   /** 검색 키워드 */
   searchKeyword?: string;
   /** 검색 결과 처리 함수 */
@@ -147,6 +154,7 @@ export const MainMap = ({
   onCenterChange,
   pathName,
   walkwayId,
+  pathCoords,
   searchKeyword,
   onSearchResults,
   onInitialLocation,
@@ -282,8 +290,19 @@ export const MainMap = ({
               )}
             </>
           )}
+          {/* PathCard 클릭시 보이는 경로 폴리라인 */}
+          {pathCoords && pathCoords.length > 0 && (
+            <Polyline
+              path={pathCoords}
+              strokeWeight={5}
+              strokeColor={theme.Green500}
+              strokeOpacity={0.7}
+              strokeStyle="solid"
+            />
+          )}
         </Map>
       </MapWrapper>
+
       {showSearchButton && !isDragging && (
         <SearchButton
           onClick={() => {
