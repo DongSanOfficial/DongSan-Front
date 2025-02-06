@@ -2,7 +2,6 @@ import Main from "../pages/main";
 import MyPage from "../pages/mypage";
 import TrailListPage from "../pages/mypage/TrailListPage";
 import TrailLikeListPage from "../pages/mypage/TrailListLikePage";
-import NewWay from "../pages/newway";
 import SignIn from "../pages/signin";
 import Registration from "../pages/newway/registration";
 import ReviewPage from "../pages/review";
@@ -12,7 +11,7 @@ import TrailReviewPage from "../pages/mypage/TrailReviewPage";
 import NavigationPage from "../pages";
 import ReviewCheck from "../pages/review/ReviewCheck";
 import PathDetails from "../pages/detail";
-import NewwayTest from "../pages/newway/NewwayTest";
+import NewWay from "../pages/newway";
 
 interface RouteConfig {
  path: string;
@@ -58,11 +57,6 @@ const routes: RouteConfig[] = [
   path: "/newway",
   component: NewWay,
 },
-// 트래킹 테스트 페이지
- {
-   path: "/newway/test",
-   component: NewwayTest,
- },
  {
    path: "/newway/registration",
    component: Registration,

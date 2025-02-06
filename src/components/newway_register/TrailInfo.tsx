@@ -57,10 +57,8 @@ export default function TrailInfo({ duration, distance }: TrailInfoProps) {
     ).padStart(2, "0")}`;
   };
 
-  // 거리를 "0.00km" 형식으로 변환
   const formatDistance = (km: number): string => {
-    // toFixed(2)로 소수점 둘째자리까지 표시하고, 불필요한 0 제거
-    return Number(km.toFixed(2)).toString();
+    return km.toString();
   };
 
   return (

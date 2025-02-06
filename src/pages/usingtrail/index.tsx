@@ -1,8 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { TrackingMap } from "../../components/map/TrackingMap";
-import TrailInfo from "../../components/newway_register/TrailInfo";
 import SmallButton from "../../components/button/SmallButton";
 import ConfirmationModal from "../../components/modal/ConfirmationModal";
 import AppBar from "src/components/appBar";

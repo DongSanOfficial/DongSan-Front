@@ -40,6 +40,7 @@ export type WalkwaysApiResponse = ApiResponseFormat<WalkwaysResponse>;
 
 // 디테일 조회 타입
 export interface WalkwayDetail {
+  walkwayId: number;
   date: string;
   time: number;
   distance: number;
@@ -73,3 +74,39 @@ export interface CreateWalkwayType {
     longitude: number;
   }>;
 }
+
+// 수정 타입
+export interface UpdateWalkwayType {
+  name: string;
+  memo: string;
+  hashtags: string[];
+  exposeLevel: "PRIVATE" | "PUBLIC";
+}
+
+// 등록한 산책로 조회
+export interface Trail {
+  walkwayId: number;
+  name: string;
+  date: string;
+  distance: number;
+  courseImageUrl: string;
+  time: number;
+  memo: string;
+  likeCount: number;
+  reviewCount: number;
+  rating: number;
+  hashtags: string[];
+}
+
+export interface FetchWalkwaysOptions {
+  size?: number;
+  lastId?: number;
+  preview?: boolean;
+}
+
+export interface MyWalkwaysResponse {
+  walkways: Trail[];
+  hasNext: boolean;
+}
+
+export type MyWalkwaysApiResponse = ApiResponseFormat<MyWalkwaysResponse>;
