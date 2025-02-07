@@ -5,8 +5,6 @@ import TrailLikeListPage from "../pages/mypage/TrailListLikePage";
 import SignIn from "../pages/signin";
 import Registration from "../pages/newway/registration";
 import ReviewPage from "../pages/review";
-import Usingtrail from "../pages/usingtrail";
-import DetailUsing from "../pages/usingtrail/detail_using";
 import TrailReviewPage from "../pages/mypage/TrailReviewPage";
 import NavigationPage from "../pages";
 import ReviewCheck from "../pages/review/ReviewCheck";
@@ -83,14 +81,6 @@ const routes: RouteConfig[] = [
     path: "/main/review/:walkwayId",
     component: ReviewPage,
   },
-  {
-    path: "/usingtrail",
-    component: Usingtrail,
-  },
-  {
-    path: "/main/usedtrail/detail/:walkwayId",
-    component: DetailUsing,
-  }
 ];
 
 export default routes;
