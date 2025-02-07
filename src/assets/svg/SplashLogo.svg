@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <path 
+    d="M10,50 C20,40 30,60 40,50 C50,40 60,60 70,50 C80,40 90,60 90,50"
+    fill="none"
+    stroke="#1b8f6e"
+    stroke-width="2"
+  />
+
+  <g>
+    <path
+      d="M10,42 C10,37 14,33 18,33 C22,33 26,37 26,42 C26,47 18,50 18,50 C18,50 10,47 10,42 Z"
+      fill="#ef4444"
+    />
+    <circle cx="18" cy="42" r="2" fill="white" />
+  </g>
+
+  <circle cx="40" cy="50" r="1.5" fill="#1b8f6e" />
+  <circle cx="70" cy="50" r="1.5" fill="#1b8f6e" />
+  <circle cx="90" cy="50" r="1.5" fill="#1b8f6e" />
+</svg>
