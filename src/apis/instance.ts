@@ -13,19 +13,19 @@ export const instance = axios.create({
   withCredentials: true,
 });
 
-const handleLogout = async () => {
-  try {
-    // 로그아웃 API 호출
-    await instance.delete("/auth/logout");
-  } catch (error) {
-    console.error("로그아웃 API 호출 실패:", error);
-    // API 호출 실패 시에도 토큰 제거
-    removeCookie("accessToken");
-    removeCookie("refreshToken");
-  } finally {
-    window.location.href = "/signin";
-  }
-};
+// const handleLogout = async () => {
+//   try {
+//     // 로그아웃 API 호출
+//     await instance.delete("/auth/logout");
+//   } catch (error) {
+//     console.error("로그아웃 API 호출 실패:", error);
+//     // API 호출 실패 시에도 토큰 제거
+//     removeCookie("access_token");
+//     removeCookie("refresh_token");
+//   } finally {
+//     window.location.href = "/signin";
+//   }
+// };
 
 // 요청 인터셉터
 instance.interceptors.request.use(
@@ -52,17 +52,17 @@ instance.interceptors.response.use(
 
     const config = originalRequest as RetryConfig & typeof originalRequest;
 
-    // 401 에러이고 아직 재시도하지 않은 경우에만 토큰 갱신 시도
+    if (originalRequest.url === "/auth/refresh") {
+      // handleLogout();
+      return Promise.reject(error);
+    }
     if (error.response?.status === 401 && !config._retry) {
       config._retry = true;
 
       try {
         const refreshToken = getCookie("refreshToken");
-        if (!refreshToken) {
-          console.log("리프레시 토큰이 없음");
-          handleLogout();
-          return Promise.reject("로그인이 필요합니다.");
-        }
+        console.log("리프레시 토큰: ", refreshToken);
+        if (!refreshToken) throw new Error("리프레시 토큰이 없음");
 
         const success = await refreshTokens(refreshToken);
         if (success) {
@@ -70,26 +70,13 @@ instance.interceptors.response.use(
           config.headers.Authorization = `Bearer ${newAccessToken}`;
           return instance(originalRequest);
         }
-
-        // 토큰 갱신 실패
-        handleLogout();
-        return Promise.reject("세션이 만료되었습니다. 다시 로그인해 주세요.");
+        throw new Error("토큰 리프레시 실패");
       } catch (refreshError) {
-        // 토큰 갱신 과정에서 에러 발생
-        if (axios.isAxiosError(refreshError)) {
-          if (refreshError.response?.status === 401) {
-            // 리프레시 토큰이 만료된 경우
-            handleLogout();
-            return Promise.reject("세션이 만료되었습니다. 다시 로그인해 주세요.");
-          }
-          return Promise.reject("일시적인 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
-        }
-        console.error("토큰 갱신 중 오류 발생:", refreshError);
-        return Promise.reject("일시적인 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
+        console.error("토큰 리프레시 실패", refreshError);
+        // handleLogout();
+        return Promise.reject("로그아웃되었습니다. 다시 로그인 해주세요.");
       }
     }
-
-    // 401 이외의 에러는 그대로 반환
     return Promise.reject(error);
   }
 );
