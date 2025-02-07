@@ -7,6 +7,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import AppBar from "src/components/appBar";
 import BottomNavigation from "src/components/bottomNavigation";
+import StarCount from "src/components/review/starCount";
 
 const Wrapper = styled.div`
   display: flex;
@@ -233,9 +234,10 @@ const ReviewCheck = () => {
         <RatingsContainer>
           <RatingLeft>
             <StarLength>{reviewStats?.rating.toFixed(1)}</StarLength>
-            <StarContainer>
+            {/* <StarContainer>
               <StarRating rating={reviewStats?.rating ?? 0} />
-            </StarContainer>
+            </StarContainer> */}
+            <StarCount rating={reviewStats?.rating ?? 0} />
             <span>{`후기 ${reviewStats?.reviewCount}개`}</span>
           </RatingLeft>
           <RatingRight>
