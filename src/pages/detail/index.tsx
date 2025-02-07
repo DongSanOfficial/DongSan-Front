@@ -14,6 +14,7 @@ import AppBar from "../../components/appBar";
 import { WalkwayDetail } from "src/apis/walkway.type";
 import { getWalkwayDetail } from "src/apis/walkway";
 import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
+import StarCount from "src/components/review/starCount";
 
 // 레이아웃 관련
 const PageWrapper = styled.div`
@@ -376,7 +377,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
                 </ReactionButton>
                 <RatingContainer>
                   <RatingGroup>
-                    {renderStars(walkwayDetail.rating)}
+                    <StarCount rating={walkwayDetail.rating} size={14} />
                     <RatingScore>{walkwayDetail.rating.toFixed(1)}</RatingScore>
                     <span>리뷰 {walkwayDetail.reviewCount}개</span>
                   </RatingGroup>

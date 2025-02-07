@@ -3,6 +3,7 @@ import { FaStar } from "react-icons/fa";
 import styled from "styled-components";
 import { Trail } from "../apis/walkway.type";
 import CourseImage from "./map/CourseImage";
+import StarCount from "./review/starCount";
 
 const TrailContents = styled.div`
   flex: 0 0 auto;
@@ -94,7 +95,7 @@ function TrailCardAll({ trail, onClick }: TrailCardProps) {
         </Mytrailhashtag>
         <MytrailSubContent>
           <span>{trail.rating.toFixed(1)}</span>
-          <ReviewStars>
+          {/* <ReviewStars>
             {[...Array(5)].map((_, index) => (
               <FaStar
                 key={index}
@@ -104,7 +105,8 @@ function TrailCardAll({ trail, onClick }: TrailCardProps) {
                 }}
               />
             ))}
-          </ReviewStars>
+          </ReviewStars> */}
+          <StarCount rating={trail.rating} size={12} />
           <span>리뷰 {trail.reviewCount.toLocaleString()}개</span>
         </MytrailSubContent>
         <MytrailContent>
