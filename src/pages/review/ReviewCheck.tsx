@@ -93,7 +93,7 @@ const BarContainer = styled.div`
   border-radius: 5px;
   overflow: hidden;
   margin: 5px;
-  width: 130px;
+  width: 120px;
 `;
 
 const Bar = styled.div`
