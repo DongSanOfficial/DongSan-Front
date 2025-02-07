@@ -279,6 +279,7 @@ const ReviewCheck = () => {
                 date={review.date}
                 content={review.content}
                 rating={review.rating}
+                period={review.period}
               />
               <hr />
             </div>
