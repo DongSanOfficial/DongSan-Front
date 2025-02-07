@@ -13,19 +13,19 @@ export const instance = axios.create({
   withCredentials: true,
 });
 
-const handleLogout = async () => {
-  try {
-    // 로그아웃 API 호출
-    await instance.delete("/auth/logout");
-  } catch (error) {
-    console.error("로그아웃 API 호출 실패:", error);
-    // API 호출 실패 시에도 토큰 제거
-    removeCookie("access_token");
-    removeCookie("refresh_token");
-  } finally {
-    window.location.href = "/signin";
-  }
-};
+// const handleLogout = async () => {
+//   try {
+//     // 로그아웃 API 호출
+//     await instance.delete("/auth/logout");
+//   } catch (error) {
+//     console.error("로그아웃 API 호출 실패:", error);
+//     // API 호출 실패 시에도 토큰 제거
+//     removeCookie("access_token");
+//     removeCookie("refresh_token");
+//   } finally {
+//     window.location.href = "/signin";
+//   }
+// };
 
 // 요청 인터셉터
 instance.interceptors.request.use(
@@ -53,10 +53,9 @@ instance.interceptors.response.use(
     const config = originalRequest as RetryConfig & typeof originalRequest;
 
     if (originalRequest.url === "/auth/refresh") {
-      handleLogout();
+      // handleLogout();
       return Promise.reject(error);
     }
-
     if (error.response?.status === 401 && !config._retry) {
       config._retry = true;
 
@@ -74,7 +73,7 @@ instance.interceptors.response.use(
         throw new Error("토큰 리프레시 실패");
       } catch (refreshError) {
         console.error("토큰 리프레시 실패", refreshError);
-        handleLogout();
+        // handleLogout();
         return Promise.reject("로그아웃되었습니다. 다시 로그인 해주세요.");
       }
     }
