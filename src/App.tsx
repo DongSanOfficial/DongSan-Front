@@ -1,31 +1,24 @@
-import React, { Suspense, useState, useEffect } from "react";
+import React, { Suspense } from "react";
 import routes from "./navigator/routes";
 import GlobalStyles from "./styles/GlobalStyles";
-import Splash from "./pages/splash";
 import Navigator from "src/navigator/Navigator";
 import { ThemeProvider } from "styled-components";
 import { theme } from "./styles/colors/theme";
+import { useLocation } from "react-router-dom";
 
 function App() {
-  const [showSplash, setShowSplash] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowSplash(false);
-    }, 2500);
-    return () => clearTimeout(timer);
-  }, []);
+  const location = useLocation();
+  const isRootPath = location.pathname === "/";
 
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyles />
-      {showSplash ? (
-        <Splash />
-      ) : (
-        <Suspense fallback={<div />}>
-          <Navigator routes={routes} initialRouteName="/" />
-        </Suspense>
-      )}
+      <Suspense fallback={<div />}>
+        <Navigator
+          routes={routes}
+          initialRouteName={isRootPath ? "/splash" : location.pathname}
+        />
+      </Suspense>
     </ThemeProvider>
   );
 }
