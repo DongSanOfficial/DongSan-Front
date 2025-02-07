@@ -27,3 +27,10 @@ export interface ReviewContentType {
   rating: number; //?
   content: string;
 }
+
+export interface WriteReviewType {
+  //리뷰 작성하기
+  walkwayHistoryId: number;
+  rating: number;
+  content: string;
+}

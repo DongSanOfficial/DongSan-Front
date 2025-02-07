@@ -1,3 +1,4 @@
+import { theme } from "src/styles/colors/theme";
 import { FaStar } from "react-icons/fa";
 import styled from "styled-components";
 
@@ -6,6 +7,7 @@ interface ReviewCardProps {
   date: string;
   content: string;
   rating: number;
+  period?: string;
 }
 const ReviewItems = styled.div`
   flex: 0 0 auto;
@@ -33,6 +35,12 @@ const ReviewStars = styled.div`
   margin: 0 18px;
   color: #fbbc05;
 `;
+const PeriodContent = styled.div`
+  color: #737373;
+  font-size: 12px;
+  font-weight: 500;
+  margin-left: 1rem;
+`;
 const ReviewContents = styled.div`
   font-size: 12px;
   font-weight: 600;
@@ -43,6 +51,7 @@ const TrailReviewCard: React.FC<ReviewCardProps> = ({
   date,
   content,
   rating,
+  period,
 }) => {
   const formattedDate = new Date(date).toLocaleDateString("ko-KR");
 
@@ -64,7 +73,9 @@ const TrailReviewCard: React.FC<ReviewCardProps> = ({
         {Array.from({ length: rating }).map((_, index) => (
           <FaStar key={index} />
         ))}
+        <PeriodContent>{period}</PeriodContent>
       </ReviewStars>
+
       <ReviewContents>{content}</ReviewContents>
     </ReviewItems>
   );

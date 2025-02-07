@@ -5,9 +5,10 @@ import { ReactComponent as StarIcon } from "../../assets/svg/ReviewStar.svg";
 import Divider from "../../components/Divider";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { getCookie } from "src/utils/cookieUtils";
 import BottomNavigation from "src/components/bottomNavigation";
 import AppBar from "src/components/appBar";
+import { writingReview } from "src/apis/review";
+import { WriteReviewType } from "src/apis/review.type";
 
 const CenterWrapper = styled.div`
   display: flex;
@@ -108,41 +109,22 @@ const ReviewPage = () => {
   const isActive = rating > 0 && review.trim().length > 0;
 
   const handleSubmit = async () => {
-    console.log(
-      "Request URL:",
-      `${process.env.REACT_APP_BASE_URL}/walkways/${walkwayId}/review`
-    );
-    console.log("Request Body:", {
-      rating: rating.toString(),
-      content: review,
-    });
-    const token = getCookie("access_token");
-
-    if (!token) {
-      console.error("Access token not found in cookie");
-      alert("로그인 후 이용해주세요.");
-      return; // Handle missing token gracefully
+    if (!walkwayId) {
+      alert("산책로 ID가 없습니다.");
+      return;
     }
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_BASE_URL}/walkways/${walkwayId}/review`,
-        {
-          rating: rating.toString(),
-          content: review,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
-      );
-      console.log("Response Data:", response.data);
-      console.log("Response Headers:", response.headers);
-
+      const reviewData: WriteReviewType = {
+        walkwayHistoryId: 0, //산책 기록 id받아오는 것은 추후 수정해야함
+        rating,
+        content: review,
+      };
+      const response = await writingReview(Number(walkwayId), reviewData);
+      console.log("리뷰 등록 성공:", response);
       setRating(0);
       setReview("");
+
+      navigate(`/main/review/${walkwayId}/content`);
     } catch (error) {
       console.error("Error:", error);
       if (axios.isAxiosError(error) && error.response) {
