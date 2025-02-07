@@ -1,12 +1,14 @@
 import React from "react";
 import { FaStar } from "react-icons/fa";
 import styled from "styled-components";
-import { Trail } from "../apis/trail";
+import { Trail } from "../apis/walkway.type";
+import CourseImage from "./map/CourseImage";
 
 const TrailContents = styled.div`
   flex: 0 0 auto;
-  width: 350px;
-  height: 134px;
+  width: calc(100dvw - 50px);
+  max-width: 400px;
+  height: 100%;
   background: #ffffff;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
   border-radius: 10px;
@@ -24,7 +26,6 @@ const TrailContents = styled.div`
 const MytrailInfo = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   width: 60%;
   padding-right: 10px;
 `;
@@ -45,27 +46,21 @@ const MytrailContent = styled.div`
 
 const Mytrailhashtag = styled.div`
   display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
   font-size: 12px;
-  // color: #929292;
 `;
 
 const MytrailSubContent = styled.div`
   display: flex;
+  align-items: center;
+  gap: 4px;
   font-size: 12px;
 `;
 
 const MytrailLength = styled.div`
   font-size: 35px;
   font-family: "Lalezar";
-`;
-
-const Course = styled.div<CourseProps>`
-  width: 100px;
-  height: 100px;
-  margin: 20px;
-  background-image: url(${(props) => props.courseImageUrl});
-  background-size: cover;
-  border-radius: 10px;
 `;
 
 const ReviewStars = styled.div`
@@ -80,30 +75,44 @@ interface TrailCardProps {
   onClick?: (walkwayId: number) => void;
 }
 
-interface CourseProps {
-  courseImageUrl: string;
-}
-
-const TrailCardAll = ({ trail, onClick }: TrailCardProps) => (
-  <TrailContents onClick={() => onClick?.(trail.walkwayId)}>
-    <Course courseImageUrl={trail.courseImageUrl} />
-    <MytrailInfo>
-      <MytrailHeader>{trail.name}</MytrailHeader>
-      <Mytrailhashtag>#{trail.hashtags.join(" #")}</Mytrailhashtag>
-      <MytrailSubContent>
-        {trail.rating}
-        <ReviewStars>
-          {Array.from({ length: trail.rating }).map((_, index) => (
-            <FaStar key={index} />
+function TrailCardAll({ trail, onClick }: TrailCardProps) {
+  return (
+    <TrailContents onClick={() => onClick?.(trail.walkwayId)}>
+      <div style={{ padding: "10px" }}>
+        <CourseImage
+          src={trail.courseImageUrl}
+          alt="산책로 이미지"
+          size="100px"
+        />
+      </div>
+      <MytrailInfo>
+        <MytrailHeader>{trail.name}</MytrailHeader>
+        <Mytrailhashtag>
+          {trail.hashtags.map((tag, index) => (
+            <span key={index}>#{tag}</span>
           ))}
-        </ReviewStars>
-        리뷰{trail.reviewCount}개
-      </MytrailSubContent>
-      <MytrailContent>
-        <MytrailLength>{trail.distance}km</MytrailLength>
-      </MytrailContent>
-    </MytrailInfo>
-  </TrailContents>
-);
+        </Mytrailhashtag>
+        <MytrailSubContent>
+          <span>{trail.rating.toFixed(1)}</span>
+          <ReviewStars>
+            {[...Array(5)].map((_, index) => (
+              <FaStar
+                key={index}
+                style={{
+                  color:
+                    index < Math.round(trail.rating) ? "#FBBC05" : "#E0E0E0",
+                }}
+              />
+            ))}
+          </ReviewStars>
+          <span>리뷰 {trail.reviewCount.toLocaleString()}개</span>
+        </MytrailSubContent>
+        <MytrailContent>
+          <MytrailLength>{trail.distance}km</MytrailLength>
+        </MytrailContent>
+      </MytrailInfo>
+    </TrailContents>
+  );
+}
 
 export default TrailCardAll;

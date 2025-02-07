@@ -1,31 +1,27 @@
 import React from "react";
 import styled from "styled-components";
-
-interface Trail {
-  id: number;
-  name: string;
-  date: string;
-  length: number;
-  image: string;
-}
+import { Trail } from "src/apis/walkway.type";
+import CourseImage from "./map/CourseImage";
 
 interface TrailCardProps {
   trail: Trail;
+  onClick?: (walkwayId: number) => void;
 }
 
 const TrailContents = styled.div`
   flex: 0 0 auto;
-  width: 282px;
-  height: 142px;
+  width: 280px;
+  height: 100%;
   background: #ffffff;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
   border-radius: 20px;
   margin-left: 7px;
   display: flex;
   align-items: center;
-  padding-left: 16px;
+  padding: 10px;
   gap: 16px;
 `;
+
 const MytrailInfo = styled.div`
   display: flex;
   flex-direction: column;
@@ -35,10 +31,6 @@ const MytrailInfo = styled.div`
   padding-right: 10px;
 `;
 
-const TrailImg = styled.img`
-  width: 100px;
-  height: 100px;
-`;
 const MytrailHeader = styled.div`
   display: flex;
   justify-content: space-between;
@@ -46,37 +38,46 @@ const MytrailHeader = styled.div`
   font-size: 12px;
   font-weight: 900;
 `;
+
 const MytrailContent = styled.div`
   display: flex;
   justify-content: space-between;
   font-size: 12px;
 `;
+
 const Mytrail = styled.div`
   font-size: 12px;
   color: #054630;
   font-weight: 600;
 `;
+
 const MytrailLength = styled.div`
   font-size: 40px;
   font-family: "Lalezar";
 `;
 
-const TrailCard: React.FC<TrailCardProps> = ({ trail }) => (
-  <TrailContents key={trail.id}>
-    <TrailImg src={trail.image} alt={`${trail.name} 이미지`} />
+const TrailCard = ({ trail, onClick }: TrailCardProps) => (
+  <TrailContents onClick={() => onClick?.(trail.walkwayId)}>
+    <div>
+      <CourseImage
+        src={trail.courseImageUrl}
+        alt="산책로 이미지"
+        size="100px"
+      />
+    </div>
     <MytrailInfo>
       <MytrailHeader>
         <Mytrail>{trail.name}</Mytrail>
-        <Mytrail>{trail.date}</Mytrail>
       </MytrailHeader>
       <MytrailContent>
         <div>코스 길이</div>
         <MytrailLength>
-          {trail.length}
+          {trail.distance}
           <span style={{ fontSize: "12px", fontFamily: "Pretendard" }}>km</span>
         </MytrailLength>
       </MytrailContent>
     </MytrailInfo>
   </TrailContents>
 );
+
 export default TrailCard;
