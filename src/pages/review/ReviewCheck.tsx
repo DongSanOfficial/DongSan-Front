@@ -88,13 +88,6 @@ const RatingRight = styled.div`
   margin-left: 20px;
 `;
 
-const StarContainer = styled.div`
-  display: flex;
-  align-items: center;
-  font-size: 24px;
-  color: #ffc107;
-`;
-
 const BarContainer = styled.div`
   background: #e4e5e9;
   border-radius: 5px;
@@ -121,35 +114,6 @@ const Label = styled.span`
   color: #666;
   width: 10px;
 `;
-
-// TypeScript interfaces
-interface StarProps {
-  fill: number;
-}
-
-const Star: React.FC<StarProps> = ({ fill }) => {
-  return (
-    <div
-      style={{
-        width: "24px",
-        height: "24px",
-        background: `linear-gradient(to right, #ffc107 ${fill}%, #e4e5e9 ${fill}%)`,
-        clipPath: `polygon(
-          50% 0%,
-          61% 35%,
-          98% 35%,
-          68% 57%,
-          79% 91%,
-          50% 70%,
-          21% 91%,
-          32% 57%,
-          2% 35%,
-          39% 35%
-        )`,
-      }}
-    />
-  );
-};
 
 interface ProgressBarProps {
   percent: number;
@@ -203,19 +167,6 @@ const ReviewCheck = () => {
     fetchReviews();
   }, [walkwayId, sortType]);
 
-  const StarRating: React.FC<{ rating: number }> = ({ rating }) => {
-    const fullStars = Math.floor(rating);
-    const decimalPart = (rating - fullStars) * 100;
-
-    const stars = Array.from({ length: 5 }, (_, index) => {
-      if (index < fullStars) return <Star key={index} fill={100} />;
-      if (index === fullStars) return <Star key={index} fill={decimalPart} />;
-      return <Star key={index} fill={0} />;
-    });
-
-    return <div style={{ display: "flex" }}>{stars}</div>;
-  };
-
   const handleSortChange = (newType: string) => {
     setSortType(newType);
     navigate(`/main/review/${walkwayId}/content?sort=${newType}`); // URL 업데이트
@@ -234,10 +185,7 @@ const ReviewCheck = () => {
         <RatingsContainer>
           <RatingLeft>
             <StarLength>{reviewStats?.rating.toFixed(1)}</StarLength>
-            {/* <StarContainer>
-              <StarRating rating={reviewStats?.rating ?? 0} />
-            </StarContainer> */}
-            <StarCount rating={reviewStats?.rating ?? 0} />
+            <StarCount rating={reviewStats?.rating ?? 0} size={24} />
             <span>{`후기 ${reviewStats?.reviewCount}개`}</span>
           </RatingLeft>
           <RatingRight>
