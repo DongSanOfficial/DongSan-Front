@@ -12,14 +12,19 @@ const Star: React.FC<StarProps> = ({ fill, size }) => {
       style={{
         width: `${size}px`,
         height: `${size}px`,
+        position: "relative",
+        display: "inline-block",
       }}
     >
-      <FaStar size={size} color="#e4e5e9" style={{ position: "absolute" }} />
+      <FaStar size={size} color="#e4e5e9" />
 
       <FaStar
         size={size}
         color="#ffc107"
         style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
           clipPath: `inset(0 ${100 - fill}% 0 0)`, // fill% 만큼 노란색 부분 표시
         }}
       />
