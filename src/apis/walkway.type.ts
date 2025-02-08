@@ -52,9 +52,8 @@ export interface WalkwayDetail {
   reviewCount: number;
   hashtags: string[];
   accessLevel: "PRIVATE" | "PUBLIC";
-  isBookmarked: boolean;
+  marked: boolean;
   likeCount: number;
-  // 서버에 좋아요수, 북마크 여부 추가되면 필드명 비교하기!
   course: Location[];
 }
 

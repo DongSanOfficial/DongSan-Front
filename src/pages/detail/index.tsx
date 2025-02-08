@@ -257,7 +257,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
     if (walkwayDetail) {
       setWalkwayDetail({
         ...walkwayDetail,
-        isBookmarked: !walkwayDetail.isBookmarked,
+        marked: !walkwayDetail.marked,
       });
     }
     // TODO: API 북마크
@@ -301,18 +301,6 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
     });
   };
 
-  const renderStars = (rating: number) => {
-    return [1, 2, 3, 4, 5].map((value) => {
-      const diff = rating - (value - 1);
-      const percentage = Math.min(Math.max(diff, 0), 1) * 100;
-      return (
-        <StarBox key={value}>
-          <StyledStar isactive="false" />
-          {percentage > 0 && <PartialStar width={percentage} isactive="true" />}
-        </StarBox>
-      );
-    });
-  };
 
   const handleBack = () => {
     if (location.state?.from === "mypage") {
@@ -389,12 +377,11 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
                   <MdArrowForwardIos />
                 </ReactionButton>
               </LeftIcon>
-              {/* 서버 디비에 북마크 여부 추가되면 필드명 반영하기 */}
               <BookmarkButton
-                $isActive={walkwayDetail.isBookmarked}
+                $isActive={walkwayDetail.marked}
                 onClick={toggleBookmark}
               >
-                {walkwayDetail.isBookmarked ? (
+                {walkwayDetail.marked ? (
                   <BsBookmarkFill size={20} />
                 ) : (
                   <BsBookmark size={20} />
