@@ -6,6 +6,7 @@ export const theme = {
     Kakao: '#FEE500',
     KakaoBtnText: '#333B58',
     Naver: '#03C75A',
+    Following: '#FBBC05',
 
     
     Gray900: '#191F28',

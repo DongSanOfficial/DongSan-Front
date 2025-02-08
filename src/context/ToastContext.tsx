@@ -20,7 +20,7 @@ const StyledToast = styled.div<{ type: "success" | "error" }>`
   color: ${theme.White};
   background-color: ${theme.Gray600};
   width: calc(100vw - 40px);
-  height: 50px;
+  height: 100%;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   padding: 8px 10px;
   display: flex;

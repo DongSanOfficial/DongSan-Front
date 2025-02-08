@@ -9,23 +9,40 @@ interface Location {
 interface TrackingMapProps {
   userLocation: Location;
   movingPath: Location[];
+  pathToFollow?: Location[];
+  isFollowing?: boolean;
+  initialCenter?: Location;
 }
 
-export default function TrackingMapTest({
+export default function TrackingMap({
   userLocation,
   movingPath,
+  pathToFollow,
+  isFollowing,
+  initialCenter,
 }: TrackingMapProps) {
   return (
     <Map
       draggable={true}
-      center={userLocation}
+      center={initialCenter || userLocation}
       style={{
         width: "100%",
         height: "100%",
       }}
-      level={3}
+      level={1}
     >
       <MapMarker position={userLocation}></MapMarker>
+
+      {isFollowing && pathToFollow && pathToFollow.length > 0 && (
+        <Polyline
+          path={pathToFollow}
+          strokeWeight={5}
+          strokeColor={theme.Following}
+          strokeOpacity={0.5}
+          strokeStyle={"solid"}
+        />
+      )}
+
       {movingPath.length > 0 && (
         <Polyline
           path={movingPath}

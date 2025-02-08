@@ -294,13 +294,13 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
   };
 
   const handleWalkClick = () => {
-    navigate("/usingtrail", {
+    navigate("/newway", {
       state: {
+        mode: "follow",
         walkwayId: walkwayId,
       },
     });
   };
-
 
   const handleBack = () => {
     if (location.state?.from === "mypage") {
