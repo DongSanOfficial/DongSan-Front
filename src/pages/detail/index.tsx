@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import ToggleSwitch from "../../components/newway_register/ToggleSwitch";
 import TrailInfo from "../../components/newway_register/TrailInfo";
-import { ReactComponent as StarIcon } from "../../assets/svg/Star.svg";
 import { ReactComponent as HeartIcon } from "../../assets/svg/Heart.svg";
 import { MdArrowForwardIos } from "react-icons/md";
 import { BiCalendarCheck } from "react-icons/bi";
@@ -168,29 +167,6 @@ const RatingScore = styled.span`
   color: ${theme.Gray700};
 `;
 
-const StarBox = styled.div`
-  position: relative;
-  width: 14px;
-  height: 14px;
-`;
-
-const StyledStar = styled(StarIcon)<{ isactive: string }>`
-  width: 14px;
-  height: 14px;
-  position: absolute;
-  left: 0;
-  path {
-    fill: ${({ isactive }) =>
-      isactive === "true" ? theme.Yellow : theme.Gray100};
-  }
-`;
-
-const PartialStar = styled(StyledStar)<{ width: number }>`
-  clip-path: ${({ width }) => `inset(0 ${100 - width}% 0 0)`};
-  path {
-    fill: ${theme.Yellow};
-  }
-`;
 
 const StyledHeart = styled(HeartIcon)<{ $isActive: boolean }>`
   width: 15px;
