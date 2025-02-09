@@ -10,7 +10,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { BiCurrentLocation } from "react-icons/bi";
 import AppBar from "src/components/appBar";
 import { drawPath } from "src/utils/drawPathUtils";
-import { uploadCourseImage, getWalkwayDetail } from "src/apis/walkway";
+import { uploadCourseImage, getWalkwayDetail, createWalkwayHistory } from "src/apis/walkway";
 import { useToast } from "src/hooks/useToast";
 import WaveTextLoader from "src/components/loading/WaveTextLoader";
 
@@ -225,7 +225,19 @@ export default function NewWay() {
           showToast("이미지 업로드에 실패했습니다.", "error");
         }
       } else {
-        navigate(-1);
+        try {
+          //산책로 이용내역 전송, 에러처리 수정 필요
+          await createWalkwayHistory(walkwayId, {
+            time: elapsedTime,
+            distance: distances,
+          });
+          showToast("산책로를 이용해주셔서 감사합니다!", "success");
+          navigate(-1);
+        } catch (error) {
+          console.error("산책로 이용 기록 저장 실패:", error);
+          showToast("산책로 이용 기록 저장에 실패했습니다.", "error");
+          navigate(-1);
+        }
       }
     } else if (modalType === "back") {
       if (mode === "create") {

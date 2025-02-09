@@ -180,3 +180,29 @@ export const getMyWalkways = async ({
     );
   }
 };
+
+/**
+ * 산책로 이용기록 전송 API 호출
+ */
+export const createWalkwayHistory = async (
+  walkwayId: number,
+  historyData: { time: number; distance: number }
+) => {
+  try {
+    const { data: response } = await instance.post<
+      ApiResponseFormat<{ walkwayHistoryId: number }>
+    >(`/walkways/${walkwayId}/history`, historyData);
+
+    if (!response.isSuccess) {
+      throw new Error(response.message);
+    }
+
+    return response.data.walkwayHistoryId;
+  } catch (error) {
+    const axiosError = error as AxiosError<ApiErrorResponse>;
+    throw new Error(
+      axiosError.response?.data?.message || "산책로 이용 기록 등록에 실패했습니다."
+    );
+  }
+};
+
