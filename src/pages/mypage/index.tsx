@@ -135,31 +135,6 @@ const trailsBookmarks = [
   },
 ];
 
-// interface Review {
-//   id: number;
-//   trailName: string;
-//   date: string;
-//   content: string;
-//   rating: number;
-// }
-
-// const reviews: Review[] = [
-//   {
-//     id: 1,
-//     trailName: "산책로1",
-//     date: "2024.09.25",
-//     content: "산책로가 이뻐요 8시쯤 가세요 근데 벌레 개많음 ㅜ",
-//     rating: 3,
-//   },
-//   {
-//     id: 2,
-//     trailName: "산책로2",
-//     date: "2024.09.26",
-//     content: "경치 좋고 산책하기 좋아요, 하지만 조심하세요.",
-//     rating: 4,
-//   },
-// ];
-
 function MyPage() {
   const navigate = useNavigate();
   const { showToast } = useToast();
@@ -247,8 +222,9 @@ function MyPage() {
             </ProfileInfo>
             <LogoutButton onClick={handleLogout}>로그아웃</LogoutButton>
           </ProfileTop>
+          <Line />
         </Profile>
-        <Line />
+
         <div>
           <SeeAll>
             <Title>내가 등록한 산책로 보기</Title>
@@ -265,18 +241,40 @@ function MyPage() {
               />
             ))}
           </Items>
+          <Line />
         </div>
-        <Line />
-        <Title>내가 "찜"한 산책로 조회</Title>
-        {trailsBookmarks.map((trail, index) => (
-          <TrailBookmark
-            key={index}
-            icon={trail.icon}
-            path={trail.path}
-            title={trail.title}
-          />
-        ))}
-        <Line />
+        <div>
+          <Title>내가 "찜"한 산책로 조회</Title>
+          {trailsBookmarks.map((trail, index) => (
+            <TrailBookmark
+              key={index}
+              icon={trail.icon}
+              path={trail.path}
+              title={trail.title}
+            />
+          ))}
+          <Line />
+        </div>
+
+        <div>
+          <SeeAll>
+            <Title>산책로 리뷰작성하기</Title>
+            <Button onClick={() => navigate("/mypage/TrailList")}>
+              전체보기
+            </Button>
+          </SeeAll>
+          <Items>
+            {previewTrails.map((trail) => (
+              <TrailCard
+                key={trail.walkwayId}
+                trail={trail}
+                onClick={handleCardClick}
+              />
+            ))}
+          </Items>
+          <Line />
+        </div>
+
         <div>
           <SeeAll>
             <Title>내가 작성한 리뷰 모아보기</Title>
