@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { theme } from "src/styles/colors/theme";
 import { ReactComponent as StarIcon } from "../../assets/svg/ReviewStar.svg";
 import Divider from "../../components/Divider";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import BottomNavigation from "src/components/bottomNavigation";
 import AppBar from "src/components/appBar";
@@ -101,10 +101,12 @@ const Button = styled.button<{ isActive: boolean }>`
 
 const ReviewPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [rating, setRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
   const [review, setReview] = useState("");
   const { walkwayId } = useParams<{ walkwayId: string }>();
+  const walkwayHistoryId = location.state?.walkwayHistoryId;
 
   const isActive = rating > 0 && review.trim().length > 0;
 
@@ -113,9 +115,15 @@ const ReviewPage = () => {
       alert("산책로 ID가 없습니다.");
       return;
     }
+    
+    if (!walkwayHistoryId) {
+      alert("산책 기록을 찾을 수 없습니다.");
+      return;
+    }
+
     try {
       const reviewData: WriteReviewType = {
-        walkwayHistoryId: 0, //산책 기록 id받아오는 것은 추후 수정해야함
+        walkwayHistoryId,
         rating,
         content: review,
       };
