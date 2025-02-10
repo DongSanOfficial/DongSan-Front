@@ -182,6 +182,26 @@ const BookmarkButton = styled.div<{ $isActive: boolean }>`
   color: ${({ $isActive }) => ($isActive ? theme.Green500 : theme.Gray200)};
 `;
 
+// 리뷰 작성하기 버튼
+const ReviewButton = styled.button`
+  background-color: ${theme.Green500};
+  color: #ffffff;
+  width: 100%;
+  min-height: 52px;
+  box-sizing: border-box;
+  border: none;
+  font-size: 16px;
+  font-weight: 500;
+  margin-top: 10px;
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+`;
+
+
 interface PathDetailsProps {
   isMyPath?: boolean;
 }
@@ -195,6 +215,10 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [walkwayHistory, setWalkwayHistory] = useState<{
+    historyId?: number;
+    canReview?: boolean;
+  }>({});
 
   useEffect(() => {
     const fetchWalkwayDetail = async () => {
@@ -276,6 +300,23 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
         walkwayId: walkwayId,
       },
     });
+  };
+
+  useEffect(() => {
+    if (location.state?.historyId && location.state?.canReview !== undefined) {
+      setWalkwayHistory({
+        historyId: location.state.historyId,
+        canReview: location.state.canReview
+      });
+    }
+  }, [location.state]);
+
+  const handleReviewClick = () => {
+    if (walkwayHistory.historyId) {
+      navigate(`/main/review/${walkwayId}`, {
+        state: { walkwayHistoryId: walkwayHistory.historyId }
+      });
+    }
   };
 
   const handleBack = () => {
@@ -374,9 +415,18 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
             )}
           </MapDetailsContainer>
         </MapSection>
-        <EditButton onClick={isMyPath ? handleEditClick : handleWalkClick}>
-          {isMyPath ? "수정하기" : "이용하기"}
-        </EditButton>
+        <ButtonContainer>
+          <EditButton onClick={isMyPath ? handleEditClick : handleWalkClick}>
+            {isMyPath ? "수정하기" : "이용하기"}
+          </EditButton>
+          {/* 테스트시
+          {walkwayHistory.canReview === false && ( */}
+          {walkwayHistory.canReview && (
+            <ReviewButton onClick={handleReviewClick}>
+              리뷰 작성하기
+            </ReviewButton>
+          )}
+        </ButtonContainer>
       </PageWrapper>
       <BottomNavigation />
     </>

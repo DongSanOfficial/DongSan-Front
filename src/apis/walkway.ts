@@ -8,6 +8,7 @@ import {
   MyWalkwaysResponse,
   MyWalkwaysApiResponse,
   FetchWalkwaysOptions,
+  WalkwayHistoryResponse,
 } from "./walkway.type";
 import { ApiErrorResponse, ApiResponseFormat } from "src/apis/api.type";
 import { AxiosError } from "axios";
@@ -182,22 +183,27 @@ export const getMyWalkways = async ({
 };
 
 /**
- * 산책로 이용기록 전송 API 호출
- */
+* 산책로 이용기록 전송 API 호출
+* @param walkwayId - 산책로 ID 
+* @param historyData - 산책 이용 데이터 
+* @returns {WalkwayHistoryResponse} 
+* - walkwayHistoryId: 리뷰작성 가능 여부와 상관없이 history Id는 항상 반환됨
+* - canReview: 리뷰작성 가능 여부
+*/
 export const createWalkwayHistory = async (
   walkwayId: number,
   historyData: { time: number; distance: number }
 ) => {
   try {
     const { data: response } = await instance.post<
-      ApiResponseFormat<{ walkwayHistoryId: number }>
+      ApiResponseFormat<WalkwayHistoryResponse>
     >(`/walkways/${walkwayId}/history`, historyData);
 
     if (!response.isSuccess) {
       throw new Error(response.message);
     }
 
-    return response.data.walkwayHistoryId;
+    return response.data;
   } catch (error) {
     const axiosError = error as AxiosError<ApiErrorResponse>;
     throw new Error(

@@ -113,4 +113,5 @@ export type MyWalkwaysApiResponse = ApiResponseFormat<MyWalkwaysResponse>;
 // 이용한 산책로 내역
 export interface WalkwayHistoryResponse {
   walkwayHistoryId: number;
+  canReview: boolean;
 }

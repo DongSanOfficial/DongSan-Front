@@ -226,13 +226,17 @@ export default function NewWay() {
         }
       } else {
         try {
-          //산책로 이용내역 전송, 에러처리 수정 필요
-          await createWalkwayHistory(walkwayId, {
+          const historyResponse = await createWalkwayHistory(walkwayId, {
             time: elapsedTime,
             distance: distances,
           });
           showToast("산책로를 이용해주셔서 감사합니다!", "success");
-          navigate(-1);
+          navigate(`/main/recommend/detail/${walkwayId}`, {
+            state: {
+              historyId: historyResponse.walkwayHistoryId,
+              canReview: historyResponse.canReview
+            }
+          });
         } catch (error) {
           console.error("산책로 이용 기록 저장 실패:", error);
           showToast("산책로 이용 기록 저장에 실패했습니다.", "error");
