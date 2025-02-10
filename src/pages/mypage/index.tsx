@@ -156,7 +156,7 @@ function MyPage() {
         const [profile, walkwaysResponse, userReviews] = await Promise.all([
           getUserProfile(),
           getMyWalkways({ preview: true }),
-          getUserReviews(),
+          getUserReviews({ size: 3 }),
         ]);
 
         setUserProfile(profile);

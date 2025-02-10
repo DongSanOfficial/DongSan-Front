@@ -33,7 +33,7 @@ function TrailReviewPage() {
     const fetchUserReviews = async () => {
       try {
         setLoading(true);
-        const response = await getUserReviews();
+        const response = await getUserReviews({ size: 10 });
         console.log(response);
         setReviews(response.reviews);
         setError(null);
