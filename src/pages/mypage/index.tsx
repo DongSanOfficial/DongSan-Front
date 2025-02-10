@@ -16,8 +16,9 @@ import { Trail } from "src/apis/walkway.type";
 import instance from "src/apis/instance";
 import { theme } from "src/styles/colors/theme";
 import { useToast } from "src/hooks/useToast";
-import { UserReviewsType } from "src/apis/review.type";
-import { getUserReviews } from "src/apis/review";
+import { UserReviewsType, walkwayHistoryType } from "src/apis/review.type";
+import { getUserReviews, writeableReviewRecord } from "src/apis/review";
+import HistoryCard from "src/components/HistoryCard_mp";
 
 const Wrapper = styled.div`
   display: flex;
@@ -144,6 +145,9 @@ function MyPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [reviews, setReviews] = useState<UserReviewsType[]>([]);
+  const [previewHistory, setPreviewHistory] = useState<walkwayHistoryType[]>(
+    []
+  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -159,9 +163,9 @@ function MyPage() {
         setPreviewTrails(walkwaysResponse.walkways);
         setReviews(userReviews.reviews || []);
         setError(null);
-        console.log("프리뷰 산책로: ", walkwaysResponse.walkways);
       } catch (err) {
         setError("데이터를 불러오는데 실패했습니다.");
+        setPreviewHistory([]); // 에러 발생 시 빈 배열로 초기화
         setReviews([]);
       } finally {
         setIsLoading(false);
@@ -182,7 +186,14 @@ function MyPage() {
     },
     [navigate]
   );
-
+  const handleHistoryClick = useCallback(
+    (walkwayId: number) => {
+      navigate(`/main/review/${walkwayId}`, {
+        state: { from: "mypage" },
+      });
+    },
+    [navigate]
+  );
   const handleReviewClick = useCallback(
     (walkwayId: number) => {
       navigate(`/main/review/${walkwayId}/content`, {
@@ -259,16 +270,16 @@ function MyPage() {
         <div>
           <SeeAll>
             <Title>산책로 리뷰작성하기</Title>
-            <Button onClick={() => navigate("/mypage/TrailList")}>
+            <Button onClick={() => navigate("/mypage/ReviewableWalkway")}>
               전체보기
             </Button>
           </SeeAll>
           <Items>
-            {previewTrails.map((trail) => (
-              <TrailCard
-                key={trail.walkwayId}
-                trail={trail}
-                onClick={handleCardClick}
+            {previewHistory.map((history) => (
+              <HistoryCard
+                key={history.walkwayHistoryId}
+                history={history}
+                onClick={handleHistoryClick}
               />
             ))}
           </Items>

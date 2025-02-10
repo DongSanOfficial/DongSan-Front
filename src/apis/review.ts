@@ -2,6 +2,7 @@ import {
   ReviewContentType,
   ReviewRatingType,
   UserReviewsType,
+  walkwayHistoryType,
   WriteReviewType,
 } from "./review.type";
 import { ApiResponseFormat } from "./api.type";
@@ -62,6 +63,18 @@ export const writingReview = async (
       `/walkways/${walkwayId}/review`,
       reviewData
     );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+//리뷰 작성 가능한 산책로 이용기록 보기
+export const writeableReviewRecord = async (
+  walkwayId: number
+): Promise<walkwayHistoryType> => {
+  try {
+    const response = await instance.get(`/walkways/${walkwayId}/history`);
     return response.data;
   } catch (error) {
     throw error;

@@ -34,3 +34,11 @@ export interface WriteReviewType {
   rating: number;
   content: string;
 }
+
+export interface walkwayHistoryType {
+  //리뷰작성가능한 산책로
+  walkwayHistoryId: number;
+  date: string;
+  time: number;
+  distance: number;
+}
