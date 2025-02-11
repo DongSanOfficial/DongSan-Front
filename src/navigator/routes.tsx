@@ -12,6 +12,7 @@ import PathDetails from "../pages/detail";
 import SplashScreen from "src/components/SplashScreen";
 import Splash from "src/pages/splash";
 import NewWay from "../pages/newway";
+import ReviewableHistory from "../pages/mypage/ReviewableHistory";
 
 interface RouteConfig {
   path: string;
@@ -56,6 +57,10 @@ const routes: RouteConfig[] = [
   {
     path: "/mypage/TrailLikeList",
     component: TrailLikeListPage,
+  },
+  {
+    path: "/mypage/ReviewableWalkway",
+    component: ReviewableHistory,
   },
   {
     path: "/mypage/ReviewList",
