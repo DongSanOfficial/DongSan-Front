@@ -205,13 +205,16 @@ export default function NewWay() {
           });
 
           const courseImageId = await uploadCourseImage(courseImageFile);
+          
+          // 미터를 킬로미터로 변환하고 소수점 2자리까지 반올림
+          const distanceInKm = Number((distances / 1000).toFixed(2));
+          console.log('산책시간, 산책거리:', elapsedTime, distanceInKm);
 
           const pathData: PathData = {
             coordinates: movingPath,
-            totalDistance: distances,
+            totalDistance: distanceInKm,  // km 단위로 변환하여 저장
             duration: elapsedTime,
-            startTime:
-              startTimeRef.current || new Date(Date.now() - elapsedTime * 1000),
+            startTime: startTimeRef.current || new Date(Date.now() - elapsedTime * 1000),
             endTime: new Date(),
             pathImage: pathImage,
             courseImageId: courseImageId,
@@ -226,10 +229,15 @@ export default function NewWay() {
         }
       } else {
         try {
+          // 미터를 킬로미터로 변환하고 소수점 2자리까지 반올림
+          const distanceInKm = Number((distances / 1000).toFixed(2));
+          console.log('이용시간, 이용거리:', elapsedTime, distanceInKm);
+          
           const historyResponse = await createWalkwayHistory(walkwayId, {
             time: elapsedTime,
-            distance: distances,
+            distance: distanceInKm,  // km 단위로 전송
           });
+          
           showToast("산책로를 이용해주셔서 감사합니다!", "success");
           navigate(`/main/recommend/detail/${walkwayId}`, {
             state: {
@@ -242,12 +250,6 @@ export default function NewWay() {
           showToast("산책로 이용 기록 저장에 실패했습니다.", "error");
           navigate(-1);
         }
-      }
-    } else if (modalType === "back") {
-      if (mode === "create") {
-        navigate("/main");
-      } else {
-        navigate(-1); // follow 모드일 때는 이전 페이지로
       }
     }
     setModalType(null);
@@ -340,10 +342,12 @@ export default function NewWay() {
         title={mode === "create" ? "산책로 등록" : "산책로 따라걷기"}
       />
       <Container>
-        <InfoContainer>
-          <TrailInfo duration={elapsedTime} distance={distances / 1000} />
+      <InfoContainer>
+          <TrailInfo 
+            duration={elapsedTime} 
+            distance={distances}  // 미터나 키로미터 단위
+          />
         </InfoContainer>
-
         <TrackingMap
           userLocation={userLocation}
           movingPath={movingPath}

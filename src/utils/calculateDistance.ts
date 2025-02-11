@@ -22,10 +22,10 @@ export function calculateDistance(movingPath: Location[]): number {
         Math.sin(dLng / 2) *
         Math.sin(dLng / 2);
     let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    let distance = R * c; // 거리 (km)
-
-    // 소수점 2자리까지만 반환
-    return parseFloat(distance.toFixed(2));
+    let distanceKm = R * c; // 거리 (km)
+    
+    // 미터 단위로 변환하여 반환
+    return Math.round(distanceKm * 1000);
   }
   return 0;
 }
