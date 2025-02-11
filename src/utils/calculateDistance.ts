@@ -4,7 +4,8 @@ interface Location {
 }
 
 export function calculateDistance(movingPath: Location[]): number {
-  let totalDistance = 0;
+  if (movingPath.length < 2) return 0;
+
   let lat1 = movingPath[movingPath.length - 2].lat;
   let lng1 = movingPath[movingPath.length - 2].lng;
   let lat2 = movingPath[movingPath.length - 1].lat;
@@ -22,9 +23,9 @@ export function calculateDistance(movingPath: Location[]): number {
         Math.sin(dLng / 2);
     let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     let distance = R * c; // 거리 (km)
-    distance = distance * 1000; //거리 단위 m으로 변환
-    totalDistance = parseFloat((totalDistance + distance).toFixed(2));
-    return totalDistance;
+
+    // 소수점 2자리까지만 반환
+    return parseFloat(distance.toFixed(2));
   }
   return 0;
 }

@@ -62,7 +62,7 @@ const BottomNavigation = () => {
       <NavContent>
         <NavLink to="/newway">
           <StyledSVG isActive={isPathActive('/newway')}>
-            <NewWay />
+            <NewWay mode="create" />
           </StyledSVG>
         </NavLink>
 
