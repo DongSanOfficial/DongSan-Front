@@ -44,6 +44,11 @@ export interface walkwayHistoryType {
   time: number;
   distance: number;
   courseImageUrl: string;
+  memo: string;
+  likeCount: number;
+  reviewCount: number;
+  rating: number;
+  hashtags: string[];
 }
 
 export interface walkwayHistoryResponse {
