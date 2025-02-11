@@ -153,14 +153,17 @@ function MyPage() {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const [profile, walkwaysResponse, userReviews] = await Promise.all([
-          getUserProfile(),
-          getMyWalkways({ preview: true }),
-          getUserReviews({ size: 3 }),
-        ]);
+        const [profile, walkwaysResponse, historyReview, userReviews] =
+          await Promise.all([
+            getUserProfile(),
+            getMyWalkways({ preview: true }),
+            writeableReviewRecord(5), //일단 하드코딩해둠
+            getUserReviews({ size: 3 }),
+          ]);
 
         setUserProfile(profile);
         setPreviewTrails(walkwaysResponse.walkways);
+        setPreviewHistory(historyReview ?? []);
         setReviews(userReviews.reviews || []);
         setError(null);
       } catch (err) {
@@ -277,7 +280,7 @@ function MyPage() {
           <Items>
             {previewHistory.map((history) => (
               <HistoryCard
-                key={history.walkwayHistoryId}
+                key={history.walkwayId}
                 history={history}
                 onClick={handleHistoryClick}
               />

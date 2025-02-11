@@ -58,13 +58,13 @@ const MytrailLength = styled.div`
 `;
 
 const HistoryCard = ({ history, onClick }: HistoryCardProps) => (
-  <TrailContents onClick={() => onClick?.(history.walkwayHistoryId)}>
+  <TrailContents onClick={() => onClick?.(history.walkwayId)}>
     <div>
-      {/* <CourseImage
-        src={trail.courseImageUrl}
+      <CourseImage
+        src={history.courseImageUrl}
         alt="산책로 이미지"
         size="100px"
-      /> */}
+      />
     </div>
     <MytrailInfo>
       <MytrailHeader>

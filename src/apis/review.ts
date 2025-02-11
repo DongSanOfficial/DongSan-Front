@@ -2,6 +2,7 @@ import {
   ReviewContentType,
   ReviewRatingType,
   UserReviewsType,
+  walkwayHistoryResponse,
   walkwayHistoryType,
   WriteReviewType,
 } from "./review.type";
@@ -81,10 +82,12 @@ export const writingReview = async (
 //리뷰 작성 가능한 산책로 이용기록 보기
 export const writeableReviewRecord = async (
   walkwayId: number
-): Promise<walkwayHistoryType> => {
+): Promise<walkwayHistoryType[]> => {
   try {
-    const response = await instance.get(`/walkways/${walkwayId}/history`);
-    return response.data;
+    const { data } = await instance.get<{ data: walkwayHistoryResponse }>(
+      `/walkways/${walkwayId}/history`
+    );
+    return data.data.walkwayHistories ?? [];
   } catch (error) {
     throw error;
   }

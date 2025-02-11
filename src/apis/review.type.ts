@@ -38,7 +38,14 @@ export interface WriteReviewType {
 export interface walkwayHistoryType {
   //리뷰작성가능한 산책로
   walkwayHistoryId: number;
+  walkwayId: number;
+  name: string;
   date: string;
   time: number;
   distance: number;
+  courseImageUrl: string;
+}
+
+export interface walkwayHistoryResponse {
+  walkwayHistories: walkwayHistoryType[];
 }
