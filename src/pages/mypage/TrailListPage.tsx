@@ -49,16 +49,21 @@ function TrailListPage() {
 
     try {
       setLoading(true);
+      console.log("🔍 산책로 요청 시 lastId:", lastIdRef.current);
+
       const response = await getMyWalkways({
         size: 10,
         lastId: lastIdRef.current,
       });
-      setTrails(response.walkways);
+
+      setTrails((prev) => [...prev, ...response.walkways]);
       setHasNext(response.hasNext);
 
       if (response.walkways.length > 0) {
-        lastIdRef.current =
+        const newLastId =
           response.walkways[response.walkways.length - 1].walkwayId;
+        console.log("📌 응답에서 추출한 새로운 lastId:", newLastId);
+        lastIdRef.current = newLastId;
       }
     } catch (error) {
       setError(
@@ -68,6 +73,28 @@ function TrailListPage() {
       setLoading(false);
     }
   }, [loading, hasNext]);
+
+  // Intersection Observer 설정
+  const lastTrailElementRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (loading) return;
+
+      if (observer.current) observer.current.disconnect();
+
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasNext) {
+          console.log(
+            "👀 스크롤이 마지막에 도달했을 때의 lastId:",
+            lastIdRef.current
+          );
+          loadTrails();
+        }
+      });
+
+      if (node) observer.current.observe(node);
+    },
+    [loading, hasNext, loadTrails]
+  );
 
   useEffect(() => {
     loadTrails();
@@ -92,7 +119,10 @@ function TrailListPage() {
         {error && <ErrorMessage>{error}</ErrorMessage>}
         <List>
           {trails.map((trail, index) => (
-            <div key={trail.walkwayId}>
+            <div
+              key={trail.walkwayId}
+              ref={index === trails.length - 1 ? lastTrailElementRef : null}
+            >
               <TrailCardAll trail={trail} onClick={handleCardClick} />
             </div>
           ))}
