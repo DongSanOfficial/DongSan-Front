@@ -287,7 +287,8 @@ export default function Registration() {
           </Content>
           <TrailInfo
             duration={pathData.duration}
-            distance={pathData.totalDistance}
+            distance={pathData.totalDistance}  // 여기서는 이미 km 단위로 받은 값을 그대로 전달함
+            isRegistration={true}
           />
         </ContentWrapper>
         <PathMapContainer>
