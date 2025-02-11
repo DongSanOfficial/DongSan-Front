@@ -251,9 +251,15 @@ export default function NewWay() {
           navigate(-1);
         }
       }
+    } else if (modalType === "back") {
+      if (mode === "create") {
+        navigate("/main");
+      } else {
+        navigate(`/main/recommend/detail/${walkwayId}`);
+      }
     }
     setModalType(null);
-  };
+};
 
   const getModalType = (type: ModalType) => {
     switch (type) {

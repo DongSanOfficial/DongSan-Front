@@ -357,6 +357,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
             <TrailInfo
               duration={walkwayDetail.time}
               distance={walkwayDetail.distance}
+              isRegistration={true} 
             />
           </PathInfoContainer>
         </HeaderContainer>
