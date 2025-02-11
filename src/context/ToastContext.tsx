@@ -7,22 +7,24 @@ import { Toast, ToastContextType } from "src/types/toast.type";
 
 const ToastContainer = styled.div`
   position: fixed;
-  bottom: 20px;
+  bottom: 100px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
-`;
+  width: calc(100vw - 40px);
+  max-width: 430px;
+  `;
 
 const StyledToast = styled.div<{ type: "success" | "error" }>`
   border-radius: 20px;
   font-size: 15px;
   font-weight: 500;
   color: ${theme.White};
-  background-color: ${theme.Gray600};
-  width: calc(100vw - 40px);
-  height: 50px;
+  background-color: ${theme.Gray800};
+  height: 100%;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  padding: 8px 10px;
+  opacity: 90%;
+  padding: 15px 10px;
   display: flex;
   flex-direction: row;
   justify-content: center;

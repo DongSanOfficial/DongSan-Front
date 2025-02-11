@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import ToggleSwitch from "../../components/newway_register/ToggleSwitch";
 import TrailInfo from "../../components/newway_register/TrailInfo";
-import { ReactComponent as StarIcon } from "../../assets/svg/Star.svg";
 import { ReactComponent as HeartIcon } from "../../assets/svg/Heart.svg";
 import { MdArrowForwardIos } from "react-icons/md";
 import { BiCalendarCheck } from "react-icons/bi";
@@ -168,29 +167,6 @@ const RatingScore = styled.span`
   color: ${theme.Gray700};
 `;
 
-const StarBox = styled.div`
-  position: relative;
-  width: 14px;
-  height: 14px;
-`;
-
-const StyledStar = styled(StarIcon)<{ isactive: string }>`
-  width: 14px;
-  height: 14px;
-  position: absolute;
-  left: 0;
-  path {
-    fill: ${({ isactive }) =>
-      isactive === "true" ? theme.Yellow : theme.Gray100};
-  }
-`;
-
-const PartialStar = styled(StyledStar)<{ width: number }>`
-  clip-path: ${({ width }) => `inset(0 ${100 - width}% 0 0)`};
-  path {
-    fill: ${theme.Yellow};
-  }
-`;
 
 const StyledHeart = styled(HeartIcon)<{ $isActive: boolean }>`
   width: 15px;
@@ -206,6 +182,26 @@ const BookmarkButton = styled.div<{ $isActive: boolean }>`
   color: ${({ $isActive }) => ($isActive ? theme.Green500 : theme.Gray200)};
 `;
 
+// 리뷰 작성하기 버튼
+const ReviewButton = styled.button`
+  background-color: ${theme.Green500};
+  color: #ffffff;
+  width: 100%;
+  min-height: 52px;
+  box-sizing: border-box;
+  border: none;
+  font-size: 16px;
+  font-weight: 500;
+  margin-top: 10px;
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+`;
+
+
 interface PathDetailsProps {
   isMyPath?: boolean;
 }
@@ -219,6 +215,10 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [walkwayHistory, setWalkwayHistory] = useState<{
+    historyId?: number;
+    canReview?: boolean;
+  }>({});
 
   useEffect(() => {
     const fetchWalkwayDetail = async () => {
@@ -257,7 +257,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
     if (walkwayDetail) {
       setWalkwayDetail({
         ...walkwayDetail,
-        isBookmarked: !walkwayDetail.isBookmarked,
+        marked: !walkwayDetail.marked,
       });
     }
     // TODO: API 북마크
@@ -294,24 +294,29 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
   };
 
   const handleWalkClick = () => {
-    navigate("/usingtrail", {
+    navigate("/newway", {
       state: {
+        mode: "follow",
         walkwayId: walkwayId,
       },
     });
   };
 
-  const renderStars = (rating: number) => {
-    return [1, 2, 3, 4, 5].map((value) => {
-      const diff = rating - (value - 1);
-      const percentage = Math.min(Math.max(diff, 0), 1) * 100;
-      return (
-        <StarBox key={value}>
-          <StyledStar isactive="false" />
-          {percentage > 0 && <PartialStar width={percentage} isactive="true" />}
-        </StarBox>
-      );
-    });
+  useEffect(() => {
+    if (location.state?.historyId && location.state?.canReview !== undefined) {
+      setWalkwayHistory({
+        historyId: location.state.historyId,
+        canReview: location.state.canReview
+      });
+    }
+  }, [location.state]);
+
+  const handleReviewClick = () => {
+    if (walkwayHistory.historyId) {
+      navigate(`/main/review/${walkwayId}`, {
+        state: { walkwayHistoryId: walkwayHistory.historyId }
+      });
+    }
   };
 
   const handleBack = () => {
@@ -352,6 +357,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
             <TrailInfo
               duration={walkwayDetail.time}
               distance={walkwayDetail.distance}
+              isRegistration={true} 
             />
           </PathInfoContainer>
         </HeaderContainer>
@@ -389,12 +395,11 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
                   <MdArrowForwardIos />
                 </ReactionButton>
               </LeftIcon>
-              {/* 서버 디비에 북마크 여부 추가되면 필드명 반영하기 */}
               <BookmarkButton
-                $isActive={walkwayDetail.isBookmarked}
+                $isActive={walkwayDetail.marked}
                 onClick={toggleBookmark}
               >
-                {walkwayDetail.isBookmarked ? (
+                {walkwayDetail.marked ? (
                   <BsBookmarkFill size={20} />
                 ) : (
                   <BsBookmark size={20} />
@@ -411,9 +416,18 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
             )}
           </MapDetailsContainer>
         </MapSection>
-        <EditButton onClick={isMyPath ? handleEditClick : handleWalkClick}>
-          {isMyPath ? "수정하기" : "이용하기"}
-        </EditButton>
+        <ButtonContainer>
+          <EditButton onClick={isMyPath ? handleEditClick : handleWalkClick}>
+            {isMyPath ? "수정하기" : "이용하기"}
+          </EditButton>
+          {/* 테스트시
+          {walkwayHistory.canReview === false && ( */}
+          {walkwayHistory.canReview && (
+            <ReviewButton onClick={handleReviewClick}>
+              리뷰 작성하기
+            </ReviewButton>
+          )}
+        </ButtonContainer>
       </PageWrapper>
       <BottomNavigation />
     </>
