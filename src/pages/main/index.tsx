@@ -401,7 +401,7 @@ function Main() {
                     pathimage={walkway.courseImageUrl}
                     pathname={walkway.name}
                     hashtag={walkway.hashtags.join(" ")}
-                    distance={`${walkway.distance.toFixed(1)} km`}
+                    distance={`${walkway.distance} km`}
                     starCount={walkway.rating}
                     reviewCount={walkway.reviewCount}
                     isLiked={walkway.isLike}
