@@ -125,6 +125,7 @@ function Main() {
     try {
       setLoading(true);
       setError(null);
+      console.log("🔍 산책로 요청 시 lastId:", reset ? null : lastId);
 
       const response = await searchWalkways({
         sort,
@@ -139,11 +140,14 @@ function Main() {
         reset ? response.walkways : [...prev, ...response.walkways]
       );
       setHasMore(response.hasNext);
+
       if (response.walkways.length > 0) {
-        setLastId(response.walkways[response.walkways.length - 1]?.walkwayId);
+        const newLastId =
+          response.walkways[response.walkways.length - 1]?.walkwayId;
+        console.log("📌 응답에서 추출한 새로운 lastId:", newLastId);
+        setLastId(newLastId);
       }
 
-      // 좋아요 상태 초기화
       if (reset) {
         const newLikedPaths = Object.fromEntries(
           response.walkways.map((walkway) => [
@@ -267,14 +271,16 @@ function Main() {
   const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
     const { scrollTop, clientHeight, scrollHeight } = event.currentTarget;
     if (scrollHeight - scrollTop <= clientHeight * 1.5 && hasMore && !loading) {
-      fetchWalkways(
-        selectedLocation!.latitude,
-        selectedLocation!.longitude,
-        sortOption
-      );
+      console.log("👀 스크롤이 하단에 도달했을 때의 lastId:", lastId);
+      if (selectedLocation) {
+        fetchWalkways(
+          selectedLocation.latitude,
+          selectedLocation.longitude,
+          sortOption
+        );
+      }
     }
   };
-
   /**
    * 좋아요 클릭 처리
    */
