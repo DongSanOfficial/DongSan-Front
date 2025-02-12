@@ -176,12 +176,26 @@ export default function NewWay() {
   }, [isWalking]);
 
   const handleStopRequest = () => {
-    if (mode === "create" && elapsedTime < 60) {
-      showToast("1분 이상 산책해주세요.", "error");
-      return;
+    if (mode === "create") {
+      if (elapsedTime < 600 || distances <= 200) {
+        showToast("10분 이상, 200m 이상 산책해주세요.", "error");
+        return;
+      }
     }
     setModalType("stop");
   };
+
+  // 산책 조건을 충족하면 등록 가능 토스트 팝업
+  useEffect(() => {
+    if (
+      mode === "create" &&
+      isWalking &&
+      elapsedTime >= 600 &&
+      distances > 200
+    ) {
+      showToast("이제 산책로를 등록할 수 있어요!", "success");
+    }
+  }, [mode, isWalking, elapsedTime, distances, showToast]);
 
   const handleBackClick = () => {
     setModalType("back");
@@ -212,7 +226,7 @@ export default function NewWay() {
 
           // 미터를 킬로미터로 변환하고 소수점 2자리까지 반올림
           const distanceInKm = Number((distances / 1000).toFixed(2));
-          console.log('산책시간, 산책거리:', elapsedTime, distanceInKm);
+          console.log("산책시간, 산책거리:", elapsedTime, distanceInKm);
 
           const pathData: PathData = {
             coordinates: movingPath,
@@ -236,8 +250,8 @@ export default function NewWay() {
         try {
           // 미터를 킬로미터로 변환하고 소수점 2자리까지 반올림
           const distanceInKm = Number((distances / 1000).toFixed(2));
-          console.log('이용시간, 이용거리:', elapsedTime, distanceInKm);
-          
+          console.log("이용시간, 이용거리:", elapsedTime, distanceInKm);
+
           const historyResponse = await createWalkwayHistory(walkwayId, {
             time: elapsedTime,
             distance: distanceInKm, // km 단위로 전송
