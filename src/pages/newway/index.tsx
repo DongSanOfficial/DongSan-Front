@@ -10,7 +10,11 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { BiCurrentLocation } from "react-icons/bi";
 import AppBar from "src/components/appBar";
 import { drawPath } from "src/utils/drawPathUtils";
-import { uploadCourseImage, getWalkwayDetail, createWalkwayHistory } from "src/apis/walkway";
+import {
+  uploadCourseImage,
+  getWalkwayDetail,
+  createWalkwayHistory,
+} from "src/apis/walkway";
 import { useToast } from "src/hooks/useToast";
 import WaveTextLoader from "src/components/loading/WaveTextLoader";
 
@@ -205,16 +209,17 @@ export default function NewWay() {
           });
 
           const courseImageId = await uploadCourseImage(courseImageFile);
-          
+
           // 미터를 킬로미터로 변환하고 소수점 2자리까지 반올림
           const distanceInKm = Number((distances / 1000).toFixed(2));
           console.log('산책시간, 산책거리:', elapsedTime, distanceInKm);
 
           const pathData: PathData = {
             coordinates: movingPath,
-            totalDistance: distanceInKm,  // km 단위로 변환하여 저장
+            totalDistance: distanceInKm, // km 단위로 변환하여 저장
             duration: elapsedTime,
-            startTime: startTimeRef.current || new Date(Date.now() - elapsedTime * 1000),
+            startTime:
+              startTimeRef.current || new Date(Date.now() - elapsedTime * 1000),
             endTime: new Date(),
             pathImage: pathImage,
             courseImageId: courseImageId,
@@ -235,15 +240,15 @@ export default function NewWay() {
           
           const historyResponse = await createWalkwayHistory(walkwayId, {
             time: elapsedTime,
-            distance: distanceInKm,  // km 단위로 전송
+            distance: distanceInKm, // km 단위로 전송
           });
-          
+
           showToast("산책로를 이용해주셔서 감사합니다!", "success");
           navigate(`/main/recommend/detail/${walkwayId}`, {
             state: {
               historyId: historyResponse.walkwayHistoryId,
-              canReview: historyResponse.canReview
-            }
+              canReview: historyResponse.canReview,
+            },
           });
         } catch (error) {
           console.error("산책로 이용 기록 저장 실패:", error);
@@ -259,7 +264,7 @@ export default function NewWay() {
       }
     }
     setModalType(null);
-};
+  };
 
   const getModalType = (type: ModalType) => {
     switch (type) {
@@ -348,10 +353,10 @@ export default function NewWay() {
         title={mode === "create" ? "산책로 등록" : "산책로 따라걷기"}
       />
       <Container>
-      <InfoContainer>
-          <TrailInfo 
-            duration={elapsedTime} 
-            distance={distances}  // 미터나 키로미터 단위
+        <InfoContainer>
+          <TrailInfo
+            duration={elapsedTime}
+            distance={distances} // 미터나 키로미터 단위
           />
         </InfoContainer>
         <TrackingMap
