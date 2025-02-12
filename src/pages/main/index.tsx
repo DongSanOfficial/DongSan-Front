@@ -12,6 +12,8 @@ import { theme } from "src/styles/colors/theme";
 import { Walkway, SortOption } from "../../apis/walkway.type";
 import { searchWalkways, getWalkwayDetail } from "../../apis/walkway";
 import { ApiErrorResponse } from "src/apis/api.type";
+import GuideButton from "src/components/button/GuideButton";
+import { useNavigate } from "react-router-dom";
 
 const MainContainer = styled.div`
   position: relative;
@@ -25,7 +27,11 @@ const SearchBarContainer = styled.div`
   top: 20px;
   transform: translateX(-50%);
   width: 90%;
+  max-width: 400px;
   z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 `;
 
 const BottomSheetContainer = styled.div`
@@ -77,6 +83,8 @@ interface Location {
 }
 
 function Main() {
+  const navigate = useNavigate();
+
   // 바텀시트 상태
   const [isOpen, setIsOpen] = useState(false);
   const [bottomSheetHeight, setBottomSheetHeight] = useState("23vh");
@@ -349,10 +357,12 @@ function Main() {
     <>
       <MainContainer>
         <SearchBarContainer>
+          <GuideButton onClick={()=> navigate('/guide')} />
           <SearchBar
             value={searchValue}
             onChange={handleSearchChange}
             onSearch={handleSearch}
+            onOutsideClick={() => setSearchResults([])}
           />
           <SearchResults
             results={searchResults}

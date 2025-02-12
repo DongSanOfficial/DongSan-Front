@@ -221,7 +221,7 @@ function MyPage() {
 
   return (
     <>
-      <AppBar onBack={() => navigate("/")} title="마이 페이지" />
+      <AppBar onBack={() => navigate("/main")} title="마이 페이지" />
       <Wrapper>
         <Profile>
           <ProfileTop>
