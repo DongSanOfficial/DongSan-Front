@@ -75,6 +75,7 @@ export const writingReview = async (
     );
     return response.data;
   } catch (error) {
+    console.error("리뷰 작성 실패:", error);
     throw error;
   }
 };

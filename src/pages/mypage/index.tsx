@@ -190,13 +190,14 @@ function MyPage() {
     [navigate]
   );
   const handleHistoryClick = useCallback(
-    (walkwayId: number) => {
-      navigate(`/main/review/${walkwayId}`, {
-        state: { from: "mypage" },
+    (walkwayHistory: walkwayHistoryType) => {
+      navigate(`/main/review/${walkwayHistory.walkwayId}`, {
+        state: { walkwayHistoryId: walkwayHistory.walkwayHistoryId }, // ✅ 올바르게 전달
       });
     },
     [navigate]
   );
+
   const handleReviewClick = useCallback(
     (walkwayId: number) => {
       navigate(`/main/review/${walkwayId}/content`, {
@@ -282,7 +283,7 @@ function MyPage() {
               <HistoryCard
                 key={history.walkwayId}
                 history={history}
-                onClick={handleHistoryClick}
+                onClick={() => handleHistoryClick(history)}
               />
             ))}
           </Items>
