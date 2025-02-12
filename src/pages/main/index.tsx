@@ -263,6 +263,7 @@ function Main() {
         name: "현재 위치",
       });
       setSelectedPath([]); // 경로 초기화
+      setSearchValue("");
     } catch (error) {
       console.error("현재 위치 기반 산책로 조회 실패:", error);
     }
