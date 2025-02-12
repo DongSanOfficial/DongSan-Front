@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { theme } from '../../../../styles/colors/theme';
 import { BsSearch } from 'react-icons/bs';
@@ -8,8 +8,7 @@ const SearchBarContainer = styled.div`
   position: relative;
   display: flex;
   align-items: center;
-  max-width: 400px;
-  margin: 0 auto;
+  width: 100%;
 `;
 
 const SearchInput = styled.input`
@@ -18,9 +17,10 @@ const SearchInput = styled.input`
   padding: 0.75rem;
   padding-left: 45px;
   border-radius: 2rem;
-  border: 0.5px solid;
+  border: 2px solid ${theme.Green400};
   font-size: 0.875rem;
   transition: all 0.2s ease-in-out;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
 
   &::placeholder {
     color: ${theme.Gray500};
@@ -44,6 +44,7 @@ interface SearchBarProps {
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onSearch: () => void;
   className?: string;
+  onOutsideClick?: () => void;  // 외부 클릭 핸들러 추가
 }
 
 const SearchBar = ({
@@ -51,8 +52,24 @@ const SearchBar = ({
   onChange,
   value,
   onSearch,
-  className
+  className,
+  onOutsideClick
 }: SearchBarProps) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        onOutsideClick?.();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [onOutsideClick]);
+
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       onSearch();
@@ -60,7 +77,7 @@ const SearchBar = ({
   };
 
   return (
-    <SearchBarContainer className={className}>
+    <SearchBarContainer ref={containerRef} className={className}>
       <IconWrapper position="left">
         <FootPrint />
       </IconWrapper>

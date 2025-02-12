@@ -13,6 +13,7 @@ import SplashScreen from "src/components/SplashScreen";
 import Splash from "src/pages/splash";
 import NewWay from "../pages/newway";
 import ReviewableHistory from "../pages/mypage/ReviewableHistory";
+import Guide from "../pages/guide";
 
 interface RouteConfig {
   path: string;
@@ -85,6 +86,10 @@ const routes: RouteConfig[] = [
   {
     path: "/main/review/:walkwayId",
     component: ReviewPage,
+  },
+  {
+    path: "/guide",
+    component: Guide,
   },
 ];
 
