@@ -8,6 +8,7 @@ import { MdKeyboardArrowDown } from "react-icons/md";
 import AppBar from "src/components/appBar";
 import BottomNavigation from "src/components/bottomNavigation";
 import StarCount from "src/components/review/starCount";
+import LoadingSpinner from "src/components/loading/LoadingSpinner";
 
 const Wrapper = styled.div`
   display: flex;
@@ -218,7 +219,7 @@ const ReviewCheck = () => {
             </DropdownMenu>
           )}
         </SortContainer>
-        {loading && <div>Loading...</div>}
+        {loading && <LoadingSpinner />}
         {error && <div>{error}</div>}
         {!loading &&
           !error &&

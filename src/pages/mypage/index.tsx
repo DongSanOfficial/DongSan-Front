@@ -19,6 +19,7 @@ import { useToast } from "src/hooks/useToast";
 import { UserReviewsType, walkwayHistoryType } from "src/apis/review.type";
 import { getUserReviews, writeableReviewRecord } from "src/apis/review";
 import HistoryCard from "src/components/HistoryCard_mp";
+import LoadingSpinner from "src/components/loading/LoadingSpinner";
 
 const Wrapper = styled.div`
   display: flex;
@@ -216,7 +217,7 @@ function MyPage() {
     }
   };
 
-  if (isLoading) return <div>로딩중...</div>;
+  if (isLoading) return <LoadingSpinner />;
   if (error) return <div>{error}</div>;
 
   return (
