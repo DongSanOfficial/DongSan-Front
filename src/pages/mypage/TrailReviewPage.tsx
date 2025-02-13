@@ -6,6 +6,7 @@ import { getUserReviews } from "src/apis/review";
 import BottomNavigation from "src/components/bottomNavigation";
 import AppBar from "src/components/appBar";
 import { useNavigate } from "react-router-dom";
+import LoadingSpinner from "src/components/loading/LoadingSpinner";
 
 const Wrapper = styled.div`
   display: flex;
@@ -46,7 +47,7 @@ function TrailReviewPage() {
     fetchUserReviews();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <LoadingSpinner />;
   if (error) return <div>{error}</div>;
 
   return (

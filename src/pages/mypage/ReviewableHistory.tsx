@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { Trail } from "src/apis/walkway.type";
 import { getMyWalkways } from "src/apis/walkway";
 import TrailCardAll from "src/components/TrailCardAll_View";
+import LoadingSpinner from "src/components/loading/LoadingSpinner";
 
 const Wrapper = styled.div`
   display: flex;
@@ -24,10 +25,10 @@ const List = styled.div`
   gap: 16px;
 `;
 
-const LoadingSpinner = styled.div`
-  text-align: center;
-  padding: 20px;
-`;
+// const LoadingSpinner = styled.div`
+//   text-align: center;
+//   padding: 20px;
+// `;
 
 const ErrorMessage = styled.div`
   color: red;
@@ -99,7 +100,7 @@ function ReviewableHistory() {
             </div>
           ))}
         </List>
-        {loading && <LoadingSpinner>Loading...</LoadingSpinner>}
+        {loading && <LoadingSpinner />}
       </Wrapper>
       <BottomNavigation />
     </>
