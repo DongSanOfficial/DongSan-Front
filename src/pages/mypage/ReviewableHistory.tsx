@@ -4,10 +4,10 @@ import styled from "styled-components";
 import BottomNavigation from "src/components/bottomNavigation";
 import AppBar from "src/components/appBar";
 import { useNavigate } from "react-router-dom";
-import { Trail } from "src/apis/walkway.type";
-import { getMyWalkways } from "src/apis/walkway";
 import TrailCardAll from "src/components/TrailCardAll_View";
 import LoadingSpinner from "src/components/loading/LoadingSpinner";
+import { getReviewRecord } from "src/apis/review";
+import { walkwayHistoryType } from "src/apis/review.type";
 
 const Wrapper = styled.div`
   display: flex;
@@ -38,7 +38,7 @@ const ErrorMessage = styled.div`
 
 function ReviewableHistory() {
   const navigate = useNavigate();
-  const [trails, setTrails] = React.useState<Trail[]>([]);
+  const [reviews, setReviews] = React.useState<walkwayHistoryType[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [hasNext, setHasNext] = React.useState(true);
@@ -50,17 +50,22 @@ function ReviewableHistory() {
 
     try {
       setLoading(true);
-      const response = await getMyWalkways({
+      const response = await getReviewRecord({
         size: 10,
         lastId: lastIdRef.current,
       });
-      setTrails(response.walkways);
-      setHasNext(response.hasNext);
+      setReviews((prevReviews) => [
+        ...prevReviews,
+        ...response.walkwayHistories,
+      ]);
 
-      if (response.walkways.length > 0) {
+      if (response.walkwayHistories.length > 0) {
         lastIdRef.current =
-          response.walkways[response.walkways.length - 1].walkwayId;
+          response.walkwayHistories[
+            response.walkwayHistories.length - 1
+          ].walkwayId;
       }
+      //setHasNext(response.hasNext);
     } catch (error) {
       setError(
         error instanceof Error ? error.message : "산책로 조회에 실패했습니다."
@@ -94,9 +99,9 @@ function ReviewableHistory() {
       <Wrapper>
         {error && <ErrorMessage>{error}</ErrorMessage>}
         <List>
-          {trails.map((trail, index) => (
-            <div key={trail.walkwayId}>
-              <TrailCardAll trail={trail} onClick={handleHistoryClick} />
+          {reviews.map((review, index) => (
+            <div key={review.walkwayId}>
+              <TrailCardAll trail={review} onClick={handleHistoryClick} />
             </div>
           ))}
         </List>

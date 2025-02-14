@@ -103,13 +103,11 @@ export const getReviewRecord = async ({
   lastId?: number;
 }): Promise<{
   walkwayHistories: walkwayHistoryType[];
-  hasNext: boolean;
 }> => {
   try {
     const response = await instance.get<
       ApiResponseFormat<{
         walkwayHistories: walkwayHistoryType[];
-        hasNext: boolean;
       }>
     >("/users/walkways/history", {
       params: { size, lastId },
