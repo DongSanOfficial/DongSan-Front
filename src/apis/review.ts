@@ -93,3 +93,29 @@ export const writeableReviewRecord = async (
     throw error;
   }
 };
+
+//회원의 리뷰작성 가능한 산책로 이용기록 모두 보기(마이페이지)
+export const getReviewRecord = async ({
+  size,
+  lastId,
+}: {
+  size: number;
+  lastId?: number;
+}): Promise<{
+  walkwayHistories: walkwayHistoryType[];
+  hasNext: boolean;
+}> => {
+  try {
+    const response = await instance.get<
+      ApiResponseFormat<{
+        walkwayHistories: walkwayHistoryType[];
+        hasNext: boolean;
+      }>
+    >("/users/walkways/history", {
+      params: { size, lastId },
+    });
+    return response.data.data;
+  } catch (error) {
+    throw error;
+  }
+};

@@ -17,7 +17,11 @@ import instance from "src/apis/instance";
 import { theme } from "src/styles/colors/theme";
 import { useToast } from "src/hooks/useToast";
 import { UserReviewsType, walkwayHistoryType } from "src/apis/review.type";
-import { getUserReviews, writeableReviewRecord } from "src/apis/review";
+import {
+  getReviewRecord,
+  getUserReviews,
+  writeableReviewRecord,
+} from "src/apis/review";
 import HistoryCard from "src/components/HistoryCard_mp";
 import LoadingSpinner from "src/components/loading/LoadingSpinner";
 
@@ -158,13 +162,13 @@ function MyPage() {
           await Promise.all([
             getUserProfile(),
             getMyWalkways({ preview: true }),
-            writeableReviewRecord(5), //일단 하드코딩해둠
+            getReviewRecord({ size: 3 }),
             getUserReviews({ size: 3 }),
           ]);
 
         setUserProfile(profile);
         setPreviewTrails(walkwaysResponse.walkways);
-        setPreviewHistory(historyReview ?? []);
+        setPreviewHistory(historyReview.walkwayHistories ?? []);
         setReviews(userReviews.reviews || []);
         setError(null);
       } catch (err) {
