@@ -2,19 +2,30 @@ import {
   ReviewContentType,
   ReviewRatingType,
   UserReviewsType,
+  walkwayHistoryResponse,
+  walkwayHistoryType,
   WriteReviewType,
 } from "./review.type";
 import { ApiResponseFormat } from "./api.type";
 import instance from "./instance";
 
 // 작성한 리뷰 전체보기 api
-export const getUserReviews = async (): Promise<{
+export const getUserReviews = async ({
+  size,
+  lastId,
+}: {
+  size: number;
+  lastId?: number;
+}): Promise<{
   reviews: UserReviewsType[];
+  hasNext: boolean;
 }> => {
   try {
     const response = await instance.get<
-      ApiResponseFormat<{ reviews: UserReviewsType[] }>
-    >("/users/reviews");
+      ApiResponseFormat<{ reviews: UserReviewsType[]; hasNext: boolean }>
+    >("/users/reviews", {
+      params: { size, lastId },
+    });
     return response.data.data;
   } catch (error) {
     throw error;
@@ -63,6 +74,21 @@ export const writingReview = async (
       reviewData
     );
     return response.data;
+  } catch (error) {
+    console.error("리뷰 작성 실패:", error);
+    throw error;
+  }
+};
+
+//리뷰 작성 가능한 산책로 이용기록 보기
+export const writeableReviewRecord = async (
+  walkwayId: number
+): Promise<walkwayHistoryType[]> => {
+  try {
+    const { data } = await instance.get<{ data: walkwayHistoryResponse }>(
+      `/walkways/${walkwayId}/history`
+    );
+    return data.data.walkwayHistories ?? [];
   } catch (error) {
     throw error;
   }

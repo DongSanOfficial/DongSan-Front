@@ -12,6 +12,8 @@ import PathDetails from "../pages/detail";
 import SplashScreen from "src/components/SplashScreen";
 import Splash from "src/pages/splash";
 import NewWay from "../pages/newway";
+import ReviewableHistory from "../pages/mypage/ReviewableHistory";
+import Guide from "../pages/guide";
 import Test from "../pages/test";
 
 interface RouteConfig {
@@ -59,6 +61,10 @@ const routes: RouteConfig[] = [
     component: TrailLikeListPage,
   },
   {
+    path: "/mypage/ReviewableWalkway",
+    component: ReviewableHistory,
+  },
+  {
     path: "/mypage/ReviewList",
     component: TrailReviewPage,
   },
@@ -85,6 +91,10 @@ const routes: RouteConfig[] = [
   {
     path: "/test",
     component: Test,
+  },
+  {
+    path: "/guide",
+    component: Guide,
   },
 ];
 

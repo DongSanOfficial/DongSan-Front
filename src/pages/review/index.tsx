@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { theme } from "src/styles/colors/theme";
 import { ReactComponent as StarIcon } from "../../assets/svg/ReviewStar.svg";
@@ -115,7 +115,7 @@ const ReviewPage = () => {
       alert("산책로 ID가 없습니다.");
       return;
     }
-    
+
     if (!walkwayHistoryId) {
       alert("산책 기록을 찾을 수 없습니다.");
       return;
@@ -143,6 +143,9 @@ const ReviewPage = () => {
       }
     }
   };
+  useEffect(() => {
+    console.log("Location State:", location.state);
+  }, [location.state]);
 
   return (
     <>

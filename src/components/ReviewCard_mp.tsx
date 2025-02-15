@@ -1,11 +1,11 @@
+import { UserReviewsType } from "@/apis/review.type";
 import { FaStar } from "react-icons/fa";
 import styled from "styled-components";
 
 interface ReviewCardProps {
-  trailName: string;
-  date: string;
-  content: string;
-  rating: number;
+  review: UserReviewsType;
+  size?: number;
+  onClick?: (reviewId: number) => void;
 }
 const ReviewItems = styled.div`
   flex: 0 0 auto;
@@ -38,31 +38,29 @@ const ReviewContents = styled.div`
   font-weight: 600;
   padding: 5px 15px;
 `;
-const ReviewCard: React.FC<ReviewCardProps> = ({
-  trailName,
-  date,
-  content,
-  rating,
-}) => (
-  <ReviewItems>
-    <ReviewTitle>
-      <TrailName>| {trailName}</TrailName>
-      <div
-        style={{
-          fontSize: "12px",
-          fontFamily: "Pretendard",
-          fontWeight: "600",
-        }}
-      >
-        {date}
-      </div>
-    </ReviewTitle>
-    <ReviewStars>
-      {Array.from({ length: rating }).map((_, index) => (
-        <FaStar key={index} />
-      ))}
-    </ReviewStars>
-    <ReviewContents>{content}</ReviewContents>
-  </ReviewItems>
-);
+const ReviewCard = ({ review, onClick }: ReviewCardProps) => {
+  const formattedDate = review.date.split("T")[0];
+  return (
+    <ReviewItems onClick={() => onClick?.(review.walkwayId)}>
+      <ReviewTitle>
+        <TrailName>| {review.walkwayName}</TrailName>
+        <div
+          style={{
+            fontSize: "12px",
+            fontFamily: "Pretendard",
+            fontWeight: "600",
+          }}
+        >
+          {formattedDate}
+        </div>
+      </ReviewTitle>
+      <ReviewStars>
+        {Array.from({ length: review.rating }).map((_, index) => (
+          <FaStar key={index} />
+        ))}
+      </ReviewStars>
+      <ReviewContents>{review.content}</ReviewContents>
+    </ReviewItems>
+  );
+};
 export default ReviewCard;

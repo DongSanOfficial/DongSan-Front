@@ -167,7 +167,6 @@ const RatingScore = styled.span`
   color: ${theme.Gray700};
 `;
 
-
 const StyledHeart = styled(HeartIcon)<{ $isActive: boolean }>`
   width: 15px;
   height: 15px;
@@ -200,7 +199,6 @@ const ButtonContainer = styled.div`
   flex-direction: column;
   width: 100%;
 `;
-
 
 interface PathDetailsProps {
   isMyPath?: boolean;
@@ -306,7 +304,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
     if (location.state?.historyId && location.state?.canReview !== undefined) {
       setWalkwayHistory({
         historyId: location.state.historyId,
-        canReview: location.state.canReview
+        canReview: location.state.canReview,
       });
     }
   }, [location.state]);
@@ -314,7 +312,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
   const handleReviewClick = () => {
     if (walkwayHistory.historyId) {
       navigate(`/main/review/${walkwayId}`, {
-        state: { walkwayHistoryId: walkwayHistory.historyId }
+        state: { walkwayHistoryId: walkwayHistory.historyId },
       });
     }
   };
@@ -325,7 +323,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
     } else if (isMyPath) {
       navigate("/mypage/TrailList"); // 전체보기 페이지로 이동
     } else {
-      navigate(-1); // 기본 뒤로가기
+      navigate("/main"); // 메인으로
     }
   };
 
@@ -357,7 +355,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
             <TrailInfo
               duration={walkwayDetail.time}
               distance={walkwayDetail.distance}
-              isRegistration={true} 
+              isRegistration={true}
             />
           </PathInfoContainer>
         </HeaderContainer>

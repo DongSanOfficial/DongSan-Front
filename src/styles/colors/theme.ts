@@ -7,6 +7,8 @@ export const theme = {
     KakaoBtnText: '#333B58',
     Naver: '#03C75A',
     Following: '#FBBC05',
+    FinishFlag: '#FC8E5C',
+    StartFlag: '#A6BA59',
 
     
     Gray900: '#191F28',

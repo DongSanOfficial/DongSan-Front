@@ -12,6 +12,8 @@ import { theme } from "src/styles/colors/theme";
 import { Walkway, SortOption } from "../../apis/walkway.type";
 import { searchWalkways, getWalkwayDetail } from "../../apis/walkway";
 import { ApiErrorResponse } from "src/apis/api.type";
+import GuideButton from "src/components/button/GuideButton";
+import { useNavigate } from "react-router-dom";
 
 const MainContainer = styled.div`
   position: relative;
@@ -25,7 +27,11 @@ const SearchBarContainer = styled.div`
   top: 20px;
   transform: translateX(-50%);
   width: 90%;
+  max-width: 400px;
   z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 `;
 
 const BottomSheetContainer = styled.div`
@@ -77,6 +83,8 @@ interface Location {
 }
 
 function Main() {
+  const navigate = useNavigate();
+
   // 바텀시트 상태
   const [isOpen, setIsOpen] = useState(false);
   const [bottomSheetHeight, setBottomSheetHeight] = useState("23vh");
@@ -125,6 +133,7 @@ function Main() {
     try {
       setLoading(true);
       setError(null);
+      console.log("🔍 산책로 요청 시 lastId:", reset ? null : lastId);
 
       const response = await searchWalkways({
         sort,
@@ -139,11 +148,14 @@ function Main() {
         reset ? response.walkways : [...prev, ...response.walkways]
       );
       setHasMore(response.hasNext);
+
       if (response.walkways.length > 0) {
-        setLastId(response.walkways[response.walkways.length - 1]?.walkwayId);
+        const newLastId =
+          response.walkways[response.walkways.length - 1]?.walkwayId;
+        console.log("📌 응답에서 추출한 새로운 lastId:", newLastId);
+        setLastId(newLastId);
       }
 
-      // 좋아요 상태 초기화
       if (reset) {
         const newLikedPaths = Object.fromEntries(
           response.walkways.map((walkway) => [
@@ -259,6 +271,7 @@ function Main() {
         name: "현재 위치",
       });
       setSelectedPath([]); // 경로 초기화
+      setSearchValue("");
     } catch (error) {
       console.error("현재 위치 기반 산책로 조회 실패:", error);
     }
@@ -267,14 +280,16 @@ function Main() {
   const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
     const { scrollTop, clientHeight, scrollHeight } = event.currentTarget;
     if (scrollHeight - scrollTop <= clientHeight * 1.5 && hasMore && !loading) {
-      fetchWalkways(
-        selectedLocation!.latitude,
-        selectedLocation!.longitude,
-        sortOption
-      );
+      console.log("👀 스크롤이 하단에 도달했을 때의 lastId:", lastId);
+      if (selectedLocation) {
+        fetchWalkways(
+          selectedLocation.latitude,
+          selectedLocation.longitude,
+          sortOption
+        );
+      }
     }
   };
-
   /**
    * 좋아요 클릭 처리
    */
@@ -343,10 +358,12 @@ function Main() {
     <>
       <MainContainer>
         <SearchBarContainer>
+          <GuideButton onClick={()=> navigate('/guide')} />
           <SearchBar
             value={searchValue}
             onChange={handleSearchChange}
             onSearch={handleSearch}
+            onOutsideClick={() => setSearchResults([])}
           />
           <SearchResults
             results={searchResults}
