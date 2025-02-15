@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import TrailReviewCard from "../../components/TrailReviewCard";
 import { UserReviewsType } from "src/apis/review.type";
@@ -27,32 +27,73 @@ const List = styled.div`
 function TrailReviewPage() {
   const navigate = useNavigate();
   const [reviews, setReviews] = useState<UserReviewsType[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasNext, setHasNext] = useState(true);
+  const lastIdRef = useRef<number | undefined>(undefined);
+  const observer = useRef<IntersectionObserver>();
+
+  const loadMoreReviews = useCallback(async () => {
+    if (loading || !hasNext) return;
+
+    try {
+      setLoading(true);
+      console.log("🔍 리뷰 요청 시 lastId:", lastIdRef.current);
+
+      const response = await getUserReviews({
+        size: 10,
+        lastId: lastIdRef.current,
+      });
+
+      setReviews((prev) => [...prev, ...response.reviews]);
+      setHasNext(response.hasNext);
+
+      if (response.reviews.length > 0) {
+        const newLastId =
+          response.reviews[response.reviews.length - 1].reviewId;
+        console.log("📌 응답에서 추출한 새로운 lastId:", newLastId);
+        lastIdRef.current = newLastId;
+      }
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : "리뷰 조회에 실패했습니다."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [loading, hasNext]);
+
+  // ✅ 마지막 리뷰 요소 감지해서 자동 로딩
+  const lastReviewElementRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (loading) return;
+
+      if (observer.current) observer.current.disconnect();
+
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasNext) {
+          console.log(
+            "👀 스크롤이 마지막에 도달했을 때의 lastId:",
+            lastIdRef.current
+          );
+          loadMoreReviews();
+        }
+      });
+
+      if (node) observer.current.observe(node);
+    },
+    [loading, hasNext, loadMoreReviews]
+  );
 
   useEffect(() => {
-    const fetchUserReviews = async () => {
-      try {
-        setLoading(true);
-        const response = await getUserReviews({ size: 10 });
-        console.log(response);
-        setReviews(response.reviews);
-        setError(null);
-      } catch (error) {
-        setError("리뷰를 가져오는 중 문제가 발생했습니다.");
-      } finally {
-        setLoading(false);
-      }
+    loadMoreReviews();
+    return () => {
+      if (observer.current) observer.current.disconnect();
     };
-    fetchUserReviews();
   }, []);
-
-  if (loading) return <LoadingSpinner />;
-  if (error) return <div>{error}</div>;
-
   return (
     <>
-      <AppBar onBack={() => navigate(-1)} title="내 산책로" />
+      <AppBar onBack={() => navigate(-1)} title="내가 작성한 리뷰" />
       <Wrapper>
         <List>
           {reviews.map((review) => (
