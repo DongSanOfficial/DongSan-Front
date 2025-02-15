@@ -1,5 +1,7 @@
+import { SaveToBookmark } from "src/apis/bookmark";
 import React, { useState } from "react";
 import styled from "styled-components";
+import { useParams } from "react-router-dom";
 
 const Container = styled.div`
   position: relative;
@@ -148,6 +150,7 @@ export const BookmarkContent = () => {
   const [newBookmarkName, setNewBookmarkName] = useState("");
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [selectedBookmark, setSelectedBookmark] = useState<number | null>(null);
+  const { walkwayId } = useParams<{ walkwayId: string }>();
 
   const handleCreateSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -162,12 +165,21 @@ export const BookmarkContent = () => {
     }
   };
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
     if (selectedBookmark) {
       console.log(
         "Selected bookmark:",
         bookmarks.find((b) => b.id === selectedBookmark)
       );
+      try {
+        await SaveToBookmark({
+          bookmarkId: selectedBookmark,
+          walkwayId: Number(walkwayId),
+        });
+        alert("산책로가 북마크에 저장됨");
+      } catch (error) {
+        console.log("산책로 저장 에러: ", error);
+      }
     }
   };
 
