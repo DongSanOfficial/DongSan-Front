@@ -255,7 +255,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
 
       try {
         await toggleLike({
-          walkwayId,
+          walkwayId: +walkwayId, // "+" 연산자를 사용하여 바로 숫자로 변환
           isLiked: walkwayDetail.isLiked, // 기존 상태 전달
         });
       } catch (error) {

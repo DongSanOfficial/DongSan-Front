@@ -1,3 +1,3 @@
 export interface likedWalkwayType {
-  walkwayId: string;
+  walkwayId: number;
 }
