@@ -24,9 +24,7 @@ export default function Test() {
         minHeight="20vh"
       >
         {/* BottomSheet 내부에 표시할 컨텐츠 */}
-        <div>
-          <BookmarkContent />
-        </div>
+        <div>{/* <BookmarkContent /> */}</div>
       </BottomSheetStorage>
     </div>
   );

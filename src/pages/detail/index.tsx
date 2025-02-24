@@ -220,6 +220,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
     canReview?: boolean;
   }>({});
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+  const [isBottomSheetVoid, setIsBottomSheetVoid] = useState(false);
 
   useEffect(() => {
     const fetchWalkwayDetail = async () => {
@@ -262,6 +263,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
       });
     }
     // TODO: API 북마크
+    setIsBottomSheetOpen(false);
   };
 
   const goToReviews = (): void => {
@@ -331,11 +333,29 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
   };
 
   const handleBottomSheetClose = () => {
-    setIsBottomSheetOpen(false);
+    if (isBottomSheetOpen) {
+      setIsBottomSheetOpen(false);
+    } else {
+      setIsBottomSheetVoid(false);
+    }
   };
 
   const handleBottomSheetOpen = () => {
     setIsBottomSheetOpen(true);
+    setIsBottomSheetVoid(true);
+  };
+  const handleBookmarkClick = () => {
+    if (walkwayDetail) {
+      setWalkwayDetail({
+        ...walkwayDetail,
+        marked: !walkwayDetail.marked,
+      });
+    }
+
+    if (!walkwayDetail?.marked) {
+      setIsBottomSheetOpen(true);
+      setIsBottomSheetVoid(true);
+    }
   };
 
   if (loading) return <div>로딩 중...</div>;
@@ -406,10 +426,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
               </LeftIcon>
               <BookmarkButton
                 $isActive={walkwayDetail.marked}
-                onClick={() => {
-                  toggleBookmark();
-                  handleBottomSheetOpen();
-                }}
+                onClick={handleBookmarkClick}
               >
                 {walkwayDetail.marked ? (
                   <BsBookmarkFill size={20} />
@@ -442,17 +459,32 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
         </ButtonContainer>
       </PageWrapper>
       <BottomNavigation />
-      <BottomSheetStorage
-        isOpen={isBottomSheetOpen}
-        onClose={handleBottomSheetClose}
-        onOpen={handleBottomSheetOpen}
-        maxHeight="70vh"
-        minHeight="20vh"
-      >
-        <div>
-          <BookmarkContent />
-        </div>
-      </BottomSheetStorage>
+      {isBottomSheetVoid && (
+        <BottomSheetStorage
+          isOpen={isBottomSheetOpen}
+          onClose={handleBottomSheetClose}
+          onOpen={handleBottomSheetOpen}
+          maxHeight="70vh"
+          minHeight="20vh"
+        >
+          <div>
+            <BookmarkContent
+              onConfirm={() => {
+                setIsBottomSheetOpen(false);
+              }}
+              onCancel={() => {
+                if (walkwayDetail) {
+                  setWalkwayDetail({
+                    ...walkwayDetail,
+                    marked: false,
+                  });
+                }
+                setIsBottomSheetOpen(false);
+              }}
+            />
+          </div>
+        </BottomSheetStorage>
+      )}
     </>
   );
 }

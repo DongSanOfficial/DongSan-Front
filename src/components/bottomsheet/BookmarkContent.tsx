@@ -144,8 +144,15 @@ interface Bookmark {
   id: number;
   name: string;
 }
+interface BookmarkContentProps {
+  onConfirm: () => void;
+  onCancel: () => void;
+}
 
-export const BookmarkContent = () => {
+export const BookmarkContent = ({
+  onConfirm,
+  onCancel,
+}: BookmarkContentProps) => {
   const [isCreating, setIsCreating] = useState(false);
   const [newBookmarkName, setNewBookmarkName] = useState("");
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
@@ -176,6 +183,7 @@ export const BookmarkContent = () => {
           bookmarkId: selectedBookmark,
           walkwayId: Number(walkwayId),
         });
+        onConfirm();
         alert("산책로가 북마크에 저장됨");
       } catch (error) {
         console.log("산책로 저장 에러: ", error);
@@ -229,7 +237,8 @@ export const BookmarkContent = () => {
                 <CharCount>{newBookmarkName.length} / 15</CharCount>
               </InputWrapper>
               <ButtonWrapper>
-                <Button onClick={() => setIsCreating(false)}>취소</Button>
+                {/* <Button onClick={() => setIsCreating(false)}>취소</Button> */}
+                <Button onClick={onCancel}>취소</Button>
                 <Button $primary type="submit">
                   + 만들기
                 </Button>
