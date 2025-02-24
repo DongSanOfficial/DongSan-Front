@@ -14,6 +14,8 @@ import { WalkwayDetail } from "src/apis/walkway.type";
 import { getWalkwayDetail } from "src/apis/walkway";
 import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
 import StarCount from "src/components/review/starCount";
+import { BottomSheetStorage } from "../../components/bottomsheet/BottomSheetStorage";
+import { BookmarkContent } from "../../components/bottomsheet/BookmarkContent";
 
 // 레이아웃 관련
 const PageWrapper = styled.div`
@@ -217,6 +219,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
     historyId?: number;
     canReview?: boolean;
   }>({});
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
 
   useEffect(() => {
     const fetchWalkwayDetail = async () => {
@@ -327,6 +330,14 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
     }
   };
 
+  const handleBottomSheetClose = () => {
+    setIsBottomSheetOpen(false);
+  };
+
+  const handleBottomSheetOpen = () => {
+    setIsBottomSheetOpen(true);
+  };
+
   if (loading) return <div>로딩 중...</div>;
   if (error) return <div>{error}</div>;
   if (!walkwayDetail) return null;
@@ -395,7 +406,10 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
               </LeftIcon>
               <BookmarkButton
                 $isActive={walkwayDetail.marked}
-                onClick={toggleBookmark}
+                onClick={() => {
+                  toggleBookmark();
+                  handleBottomSheetOpen();
+                }}
               >
                 {walkwayDetail.marked ? (
                   <BsBookmarkFill size={20} />
@@ -428,6 +442,17 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
         </ButtonContainer>
       </PageWrapper>
       <BottomNavigation />
+      <BottomSheetStorage
+        isOpen={isBottomSheetOpen}
+        onClose={handleBottomSheetClose}
+        onOpen={handleBottomSheetOpen}
+        maxHeight="70vh"
+        minHeight="20vh"
+      >
+        <div>
+          <BookmarkContent />
+        </div>
+      </BottomSheetStorage>
     </>
   );
 }

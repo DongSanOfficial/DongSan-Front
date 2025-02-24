@@ -127,7 +127,7 @@ const RadioInput = styled.input`
 
 const BottomButtons = styled.div`
   position: fixed;
-  bottom: 0;
+  bottom: 70px;
   left: 0;
   right: 0;
   margin: 0 auto;
