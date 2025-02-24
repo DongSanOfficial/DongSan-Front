@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { ReactComponent as SplashLogo } from "../../assets/svg/SplashLogo.svg";
 import LoginButton from "../../components/button/LoginButton";
+import GetTokenButton from "src/components/button/GetTokenButton";
 
 const API_BASE_URL = process.env.REACT_APP_BASE_URL;
 
@@ -58,6 +59,8 @@ export default function SignIn() {
             variant="naverLogin"
             to={`${API_BASE_URL}/oauth2/authorization/naver`}
           />
+          {/* 개발 환경에서만 토큰발급 버튼이 보임 */}
+          {process.env.NODE_ENV === "development" && <GetTokenButton />}
         </ButtonContainer>
       </Content>
     </Container>
