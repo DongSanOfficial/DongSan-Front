@@ -33,8 +33,8 @@ interface PathData {
   courseImageId: number;
 }
 
-// 산책중단 버튼 클릭시 팜업 모달 | 백버튼 클릭시 팝업하는 모달
-type ModalType = "stop" | "back" | null;
+// 산책완료 버튼 클릭시 팜업 모달 | 백버튼 클릭시 팝업하는 모달 | 조건 미충족 시 표시되는 모달
+type ModalType = "done" | "back" | "stop" | null;
 
 const Container = styled.div`
   position: relative;
@@ -178,11 +178,11 @@ export default function NewWay() {
   const handleStopRequest = () => {
     if (mode === "create") {
       if (elapsedTime < 600 || distances <= 200) {
-        showToast("10분 이상, 200m 이상 산책해주세요.", "error");
+        setModalType("stop");
         return;
       }
     }
-    setModalType("stop");
+    setModalType("done");
   };
 
   // 산책 조건을 충족하면 등록 가능 토스트 팝업
@@ -207,6 +207,13 @@ export default function NewWay() {
 
   const handleModalConfirm = async () => {
     if (modalType === "stop") {
+      setIsWalking(false);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+      navigate("/main");
+    } else if (modalType === "done") {
       setIsWalking(false);
 
       if (timerRef.current) {
@@ -285,11 +292,18 @@ export default function NewWay() {
       case "stop":
         return {
           message:
+            "10분 이상, 200m 이상 산책하지 않은 경우, 산책 정보가 저장되지 않습니다. \n산책을 중단하시겠습니까?",
+          cancelText: "취소",
+          confirmText: "홈으로",
+        };
+      case "done":
+        return {
+          message:
             mode === "create"
-              ? "산책을 중단하시겠습니까?"
-              : "따라가기를 중단하시겠습니까?",
-          cancelText: mode === "create" ? "계속하기" : "계속 따라가기",
-          confirmText: "중단하기",
+              ? "산책로를 등록하시겠습니까?"
+              : "이용하기를 중단하시겠습니까?",
+          cancelText: "취소",
+          confirmText: mode === "create" ? "등록" : "중단",
         };
       case "back":
         return {
@@ -364,7 +378,7 @@ export default function NewWay() {
     <>
       <AppBar
         onBack={handleBackClick}
-        title={mode === "create" ? "산책로 등록" : "산책로 따라걷기"}
+        title={mode === "create" ? "산책로 등록" : "산책로 이용하기"}
       />
       <Container>
         <InfoContainer>
@@ -393,8 +407,8 @@ export default function NewWay() {
 
         <ButtonContainer>
           <SmallButton
-            primaryText={mode === "create" ? "산책 시작" : "따라걷기"}
-            secondaryText={mode === "create" ? "산책 중단" : "그만하기"}
+            primaryText={mode === "create" ? "산책 시작" : "산책로 이용"}
+            secondaryText={mode === "create" ? "산책 완료" : "이용 완료"}
             isWalking={isWalking}
             onClick={isWalking ? handleStopRequest : handleStartWalking}
           />
@@ -404,6 +418,8 @@ export default function NewWay() {
           isOpen={modalType !== null}
           onClose={handleModalClose}
           onConfirm={handleModalConfirm}
+          modalType={modalType || "default"}
+          mode={mode}
           {...getModalType(modalType)}
         />
       </Container>
