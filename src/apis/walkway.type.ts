@@ -48,7 +48,7 @@ export interface WalkwayDetail {
   courseImageUrl: string;
   memo: string;
   rating: number;
-  isLike: boolean;
+  isLiked: boolean;
   reviewCount: number;
   hashtags: string[];
   accessLevel: "PRIVATE" | "PUBLIC";
