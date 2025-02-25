@@ -14,6 +14,7 @@ import { searchWalkways, getWalkwayDetail } from "../../apis/walkway";
 import { ApiErrorResponse } from "src/apis/api.type";
 import GuideButton from "src/components/button/GuideButton";
 import { useNavigate } from "react-router-dom";
+import { toggleLike } from "src/apis/likedWalkway";
 
 const MainContainer = styled.div`
   position: relative;
@@ -293,15 +294,27 @@ function Main() {
   /**
    * 좋아요 클릭 처리
    */
-  const handleLikeClick = (id: number) => {
-    setLikedPaths((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-    setLikeCounts((prev) => ({
-      ...prev,
-      [id]: prev[id] + (likedPaths[id] ? -1 : 1),
-    }));
+  const handleLikeClick = async (id: number) => {
+    try {
+      const isLiked = likedPaths[id]; // 현재 좋아요 상태
+
+      const response = await toggleLike({
+        walkwayId: id,
+        isLiked: isLiked,
+      });
+      console.log(response);
+
+      // likedPaths와 likeCounts를 이전 상태 기반으로 업데이트
+      setLikedPaths((prev) => {
+        return { ...prev, [id]: !prev[id] };
+      });
+
+      setLikeCounts((prev) => {
+        return { ...prev, [id]: prev[id] + (likedPaths[id] ? -1 : 1) };
+      });
+    } catch (error) {
+      console.log("좋아요 처리실패: ", error);
+    }
   };
 
   /**
@@ -358,7 +371,7 @@ function Main() {
     <>
       <MainContainer>
         <SearchBarContainer>
-          <GuideButton onClick={()=> navigate('/guide')} />
+          <GuideButton onClick={() => navigate("/guide")} />
           <SearchBar
             value={searchValue}
             onChange={handleSearchChange}
@@ -421,7 +434,7 @@ function Main() {
                     distance={`${walkway.distance} km`}
                     starCount={walkway.rating}
                     reviewCount={walkway.reviewCount}
-                    isLiked={walkway.isLike}
+                    isLiked={likedPaths[walkway.walkwayId] || false}
                     onLikeClick={() => handleLikeClick(walkway.walkwayId)}
                     onClick={() =>
                       handlePathClick(

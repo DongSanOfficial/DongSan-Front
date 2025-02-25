@@ -16,6 +16,7 @@ import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
 import StarCount from "src/components/review/starCount";
 import { BottomSheetStorage } from "../../components/bottomsheet/BottomSheetStorage";
 import { BookmarkContent } from "../../components/bottomsheet/BookmarkContent";
+import { toggleLike } from "src/apis/likedWalkway";
 
 // 레이아웃 관련
 const PageWrapper = styled.div`
@@ -220,6 +221,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
     canReview?: boolean;
   }>({});
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+  const [isBottomSheetVoid, setIsBottomSheetVoid] = useState(false);
 
   useEffect(() => {
     const fetchWalkwayDetail = async () => {
@@ -243,25 +245,44 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
     }
   }, [walkwayId]);
 
-  const toggleHeart = (): void => {
-    if (walkwayDetail) {
-      setWalkwayDetail({
+  const toggleHeart = async (): Promise<void> => {
+    if (walkwayDetail && walkwayId) {
+      const updatedDetail = {
         ...walkwayDetail,
-        isLike: !walkwayDetail.isLike,
-        likeCount: walkwayDetail.likeCount + (walkwayDetail.isLike ? -1 : 1),
-      });
+        isLiked: !walkwayDetail.isLiked,
+        likeCount: walkwayDetail.likeCount + (walkwayDetail.isLiked ? -1 : 1),
+      };
+      setWalkwayDetail(updatedDetail);
+
+      try {
+        await toggleLike({
+          walkwayId: +walkwayId, // "+" 연산자를 사용하여 바로 숫자로 변환
+          isLiked: walkwayDetail.isLiked, // 기존 상태 전달
+        });
+      } catch (error) {
+        console.error("좋아요 상태 변경 실패:", error);
+        // 3. 실패 시 상태 롤백
+        setWalkwayDetail(walkwayDetail);
+      }
     }
-    // TODO: API 호출로 좋아요 상태 업데이트
   };
 
   const toggleBookmark = () => {
     if (walkwayDetail) {
+      const newMarkedState = !walkwayDetail.marked;
+
       setWalkwayDetail({
         ...walkwayDetail,
-        marked: !walkwayDetail.marked,
+        marked: newMarkedState,
       });
+
+      // 북마크가 활성화될 때만 바텀시트 열기
+      if (newMarkedState) {
+        handleBottomSheetOpen();
+      }
     }
     // TODO: API 북마크
+    setIsBottomSheetOpen(false);
   };
 
   const goToReviews = (): void => {
@@ -331,11 +352,29 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
   };
 
   const handleBottomSheetClose = () => {
-    setIsBottomSheetOpen(false);
+    if (isBottomSheetOpen) {
+      setIsBottomSheetOpen(false);
+    } else {
+      setIsBottomSheetVoid(false);
+    }
   };
 
   const handleBottomSheetOpen = () => {
     setIsBottomSheetOpen(true);
+    setIsBottomSheetVoid(true);
+  };
+  const handleBookmarkClick = () => {
+    if (walkwayDetail) {
+      setWalkwayDetail({
+        ...walkwayDetail,
+        marked: !walkwayDetail.marked,
+      });
+    }
+
+    if (!walkwayDetail?.marked) {
+      setIsBottomSheetOpen(true);
+      setIsBottomSheetVoid(true);
+    }
   };
 
   if (loading) return <div>로딩 중...</div>;
@@ -384,7 +423,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
               <LeftIcon>
                 <ReactionButton>
                   <StyledHeart
-                    $isActive={walkwayDetail.isLike}
+                    $isActive={walkwayDetail.isLiked}
                     onClick={toggleHeart}
                   />
                   {walkwayDetail.likeCount}
@@ -406,10 +445,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
               </LeftIcon>
               <BookmarkButton
                 $isActive={walkwayDetail.marked}
-                onClick={() => {
-                  toggleBookmark();
-                  handleBottomSheetOpen();
-                }}
+                onClick={toggleBookmark}
               >
                 {walkwayDetail.marked ? (
                   <BsBookmarkFill size={20} />
@@ -446,11 +482,11 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
         isOpen={isBottomSheetOpen}
         onClose={handleBottomSheetClose}
         onOpen={handleBottomSheetOpen}
-        maxHeight="70vh"
-        minHeight="20vh"
+        maxHeight="50vh"
+        minHeight="0vh"
       >
         <div>
-          <BookmarkContent />
+          <BookmarkContent onComplete={handleBottomSheetClose} />
         </div>
       </BottomSheetStorage>
     </>

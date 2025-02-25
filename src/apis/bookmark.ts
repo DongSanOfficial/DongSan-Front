@@ -1,9 +1,27 @@
 import { ApiResponseFormat } from "./api.type";
-import { addToBookmark } from "./bookmark.type";
+import {
+  AddBookmarkRequest,
+  AddBookmarkResponse,
+  addToBookmark,
+} from "./bookmark.type";
 import instance from "./instance";
 
+//*/ 북마크 생성 api
+export const AddToBookmark = async (
+  params: AddBookmarkRequest
+): Promise<AddBookmarkResponse> => {
+  try {
+    const response = await instance.post<
+      ApiResponseFormat<AddBookmarkResponse>
+    >(`/bookmarks`, params);
+    return response.data.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const SaveToBookmark = async ({
-  //북마크에 산책로를 추가 api
+  //북마크에 산책로를 추가 api(북마크 저장)
   bookmarkId,
   walkwayId,
 }: {

@@ -1,7 +1,7 @@
-import { SaveToBookmark } from "src/apis/bookmark";
 import React, { useState } from "react";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
+import { AddToBookmark, SaveToBookmark } from "../../apis/bookmark";
 
 const Container = styled.div`
   position: relative;
@@ -139,34 +139,56 @@ const BottomButtons = styled.div`
   align-items: center;
   z-index: 100;
 `;
+const CompleteButton = styled(Button)`
+  min-width: 80px;
+  justify-content: center;
+`;
 
 interface Bookmark {
   id: number;
   name: string;
 }
+interface BookmarkContentProps {
+  onComplete?: () => void;
+}
 
-export const BookmarkContent = () => {
+export const BookmarkContent: React.FC<BookmarkContentProps> = ({
+  onComplete,
+}) => {
   const [isCreating, setIsCreating] = useState(false);
   const [newBookmarkName, setNewBookmarkName] = useState("");
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [selectedBookmark, setSelectedBookmark] = useState<number | null>(null);
   const { walkwayId } = useParams<{ walkwayId: string }>();
 
-  const handleCreateSubmit = (e: React.FormEvent) => {
+  const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newBookmarkName.trim() && newBookmarkName.length <= 15) {
-      const newBookmark: Bookmark = {
-        id: Date.now(),
-        name: newBookmarkName.trim(),
-      };
-      setBookmarks((prevBookmarks) => [...prevBookmarks, newBookmark]);
-      setNewBookmarkName("");
-      setIsCreating(false);
+      try {
+        // API 호출로 북마크 생성
+        const response = await AddToBookmark({
+          name: newBookmarkName.trim(),
+        });
+
+        // API 응답에서 받은 bookmarkId로 북마크 생성
+        const newBookmark: Bookmark = {
+          id: response.bookmarkId,
+          name: newBookmarkName.trim(),
+        };
+
+        setBookmarks((prevBookmarks) => [...prevBookmarks, newBookmark]);
+        setSelectedBookmark(response.bookmarkId); // 새로 생성한 북마크 자동 선택
+        setNewBookmarkName("");
+        setIsCreating(false);
+      } catch (error) {
+        console.error("북마크 생성 에러:", error);
+        alert("북마크 생성에 실패했습니다.");
+      }
     }
   };
 
   const handleComplete = async () => {
-    if (selectedBookmark) {
+    if (selectedBookmark !== null) {
       console.log(
         "Selected bookmark:",
         bookmarks.find((b) => b.id === selectedBookmark)
@@ -176,7 +198,11 @@ export const BookmarkContent = () => {
           bookmarkId: selectedBookmark,
           walkwayId: Number(walkwayId),
         });
+        // onConfirm();
         alert("산책로가 북마크에 저장됨");
+        if (onComplete) {
+          onComplete();
+        }
       } catch (error) {
         console.log("산책로 저장 에러: ", error);
       }
@@ -205,9 +231,9 @@ export const BookmarkContent = () => {
       <BottomButtons>
         <div>
           {selectedBookmark && (
-            <Button $primary onClick={handleComplete}>
+            <CompleteButton $primary onClick={handleComplete}>
               완료
-            </Button>
+            </CompleteButton>
           )}
         </div>
         <div>
@@ -229,7 +255,6 @@ export const BookmarkContent = () => {
                 <CharCount>{newBookmarkName.length} / 15</CharCount>
               </InputWrapper>
               <ButtonWrapper>
-                <Button onClick={() => setIsCreating(false)}>취소</Button>
                 <Button $primary type="submit">
                   + 만들기
                 </Button>
