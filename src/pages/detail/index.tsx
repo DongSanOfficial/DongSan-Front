@@ -221,6 +221,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
     canReview?: boolean;
   }>({});
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+  const [isBottomSheetVoid, setIsBottomSheetVoid] = useState(false);
 
   useEffect(() => {
     const fetchWalkwayDetail = async () => {
@@ -266,14 +267,20 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
     }
   };
 
-  const toggleBookmark = () => {
+  const handleBookmarkClick = () => {
     if (walkwayDetail) {
+      const currentMarkedState = walkwayDetail.marked;
+      const newMarkedState = !currentMarkedState;
+
       setWalkwayDetail({
         ...walkwayDetail,
-        marked: !walkwayDetail.marked,
+        marked: newMarkedState,
       });
+
+      if (newMarkedState) {
+        setIsBottomSheetOpen(true);
+      }
     }
-    // TODO: API 북마크
   };
 
   const goToReviews = (): void => {
@@ -418,10 +425,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
               </LeftIcon>
               <BookmarkButton
                 $isActive={walkwayDetail.marked}
-                onClick={() => {
-                  toggleBookmark();
-                  handleBottomSheetOpen();
-                }}
+                onClick={handleBookmarkClick}
               >
                 {walkwayDetail.marked ? (
                   <BsBookmarkFill size={20} />
@@ -444,8 +448,6 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
           <EditButton onClick={isMyPath ? handleEditClick : handleWalkClick}>
             {isMyPath ? "수정하기" : "이용하기"}
           </EditButton>
-          {/* 테스트시
-          {walkwayHistory.canReview === false && ( */}
           {walkwayHistory.canReview && (
             <ReviewButton onClick={handleReviewClick}>
               리뷰 작성하기
@@ -458,11 +460,11 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
         isOpen={isBottomSheetOpen}
         onClose={handleBottomSheetClose}
         onOpen={handleBottomSheetOpen}
-        maxHeight="70vh"
-        minHeight="20vh"
+        maxHeight="50vh"
+        minHeight="0vh"
       >
         <div>
-          <BookmarkContent />
+          <BookmarkContent onComplete={handleBottomSheetClose} />
         </div>
       </BottomSheetStorage>
     </>
