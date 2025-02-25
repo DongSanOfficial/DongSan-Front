@@ -257,10 +257,17 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
 
   const toggleBookmark = () => {
     if (walkwayDetail) {
+      const newMarkedState = !walkwayDetail.marked;
+
       setWalkwayDetail({
         ...walkwayDetail,
-        marked: !walkwayDetail.marked,
+        marked: newMarkedState,
       });
+
+      // 북마크가 활성화될 때만 바텀시트 열기
+      if (newMarkedState) {
+        handleBottomSheetOpen();
+      }
     }
     // TODO: API 북마크
     setIsBottomSheetOpen(false);
@@ -426,7 +433,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
               </LeftIcon>
               <BookmarkButton
                 $isActive={walkwayDetail.marked}
-                onClick={handleBookmarkClick}
+                onClick={toggleBookmark}
               >
                 {walkwayDetail.marked ? (
                   <BsBookmarkFill size={20} />
@@ -459,32 +466,17 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
         </ButtonContainer>
       </PageWrapper>
       <BottomNavigation />
-      {isBottomSheetVoid && (
-        <BottomSheetStorage
-          isOpen={isBottomSheetOpen}
-          onClose={handleBottomSheetClose}
-          onOpen={handleBottomSheetOpen}
-          maxHeight="70vh"
-          minHeight="20vh"
-        >
-          <div>
-            <BookmarkContent
-              onConfirm={() => {
-                setIsBottomSheetOpen(false);
-              }}
-              onCancel={() => {
-                if (walkwayDetail) {
-                  setWalkwayDetail({
-                    ...walkwayDetail,
-                    marked: false,
-                  });
-                }
-                setIsBottomSheetOpen(false);
-              }}
-            />
-          </div>
-        </BottomSheetStorage>
-      )}
+      <BottomSheetStorage
+        isOpen={isBottomSheetOpen}
+        onClose={handleBottomSheetClose}
+        onOpen={handleBottomSheetOpen}
+        maxHeight="50vh"
+        minHeight="0vh"
+      >
+        <div>
+          <BookmarkContent onComplete={handleBottomSheetClose} />
+        </div>
+      </BottomSheetStorage>
     </>
   );
 }
