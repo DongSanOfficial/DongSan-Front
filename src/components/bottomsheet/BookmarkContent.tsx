@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import { AddToBookmark, SaveToBookmark } from "../../apis/bookmark";
+import { AiOutlinePlus } from "react-icons/ai";
 
 const Container = styled.div`
   position: relative;
   height: 100%;
-  padding: 20px 20px 80px;
+  padding: 20px 20px 130px;
   box-sizing: border-box;
 `;
 
@@ -24,9 +25,8 @@ const Divider = styled.hr`
 `;
 
 const BookmarkForm = styled.form`
-  border-radius: 8px;
-  padding: 20px;
-  //   margin-top: 16px;
+  padding: 0;
+  margin-top: 20px;
 `;
 
 const Label = styled.label`
@@ -46,8 +46,8 @@ const InputWrapper = styled.div`
 const Input = styled.input`
   width: 100%;
   padding: 10px 40px 10px 12px;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
+  border: none;
+  border-bottom: 1px solid #e0e0e0;
   font-size: 14px;
   box-sizing: border-box;
   transition: border-color 0.2s;
@@ -73,16 +73,16 @@ const CharCount = styled.span`
 
 const ButtonWrapper = styled.div`
   display: flex;
-  justify-content: space-between;
-  gap: 8px;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
 `;
 
 const Button = styled.button<{ $primary?: boolean }>`
-  padding: 10px 16px;
+  padding: ${(props) => (props.$primary ? "10px 16px" : "10px 10px")};
   border: none;
-  border-radius: 40px;
-  background-color: ${(props) => (props.$primary ? "#167258" : "#f5f5f5")};
-  color: ${(props) => (props.$primary ? "white" : "#333")};
+  background-color: ${(props) => (props.$primary ? "#167258" : "transparent")};
+  color: ${(props) => (props.$primary ? "white" : "#167258")};
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -90,6 +90,7 @@ const Button = styled.button<{ $primary?: boolean }>`
   align-items: center;
   gap: 6px;
   transition: all 0.2s;
+  border-radius: ${(props) => (props.$primary ? "20px" : "0")};
 
   &:disabled {
     background-color: #e0e0e0;
@@ -101,28 +102,35 @@ const Button = styled.button<{ $primary?: boolean }>`
 const RadioGroup = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 12px;
   margin: 20px 0;
+  max-height: 300px;
+  overflow-y: auto;
+  min-height: 120px;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #d9d9d9;
+    border-radius: 4px;
+  }
 `;
 
 const RadioLabel = styled.label`
   display: flex;
   align-items: center;
-  padding: 12px;
+  padding: 12px 0;
   cursor: pointer;
-  border-radius: 6px;
-  transition: background-color 0.2s;
+  border-bottom: 1px solid #f5f5f5;
 `;
 
 const RadioInput = styled.input`
   margin-right: 12px;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   cursor: pointer;
-
-  &:checked {
-    accent-color: #167258;
-  }
+  accent-color: #167258;
 `;
 
 const BottomButtons = styled.div`
@@ -135,19 +143,48 @@ const BottomButtons = styled.div`
   padding: 16px 20px;
   border-top: 1px solid #eaeaea;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: center;
   z-index: 100;
 `;
+
 const CompleteButton = styled(Button)`
-  min-width: 80px;
+  padding: 10px 30px;
+  background-color: #167258;
+  color: white;
+  border-radius: 20px;
+  font-weight: bold;
+  min-width: 120px;
   justify-content: center;
+`;
+
+const AddBookmarkButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #167258;
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+  margin-top: 10px;
+`;
+
+const EmptyBookmarks = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 120px;
+  color: #aaa;
+  font-size: 14px;
 `;
 
 interface Bookmark {
   id: number;
   name: string;
 }
+
 interface BookmarkContentProps {
   onComplete?: () => void;
 }
@@ -157,9 +194,15 @@ export const BookmarkContent: React.FC<BookmarkContentProps> = ({
 }) => {
   const [isCreating, setIsCreating] = useState(false);
   const [newBookmarkName, setNewBookmarkName] = useState("");
-  const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
+  const [bookmarks, setBookmarks] = useState<Bookmark[]>([
+    { id: 1, name: "밤에 걷기 좋은 산책로 목록1" },
+    { id: 2, name: "밤에 걷기 좋은 산책로 목록2" },
+  ]);
   const [selectedBookmark, setSelectedBookmark] = useState<number | null>(null);
   const { walkwayId } = useParams<{ walkwayId: string }>();
+
+  // 북마크 목록이 비어있는지 확인
+  const isEmptyBookmarks = bookmarks.length === 0;
 
   const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -189,16 +232,11 @@ export const BookmarkContent: React.FC<BookmarkContentProps> = ({
 
   const handleComplete = async () => {
     if (selectedBookmark !== null) {
-      console.log(
-        "Selected bookmark:",
-        bookmarks.find((b) => b.id === selectedBookmark)
-      );
       try {
         await SaveToBookmark({
           bookmarkId: selectedBookmark,
           walkwayId: Number(walkwayId),
         });
-        // onConfirm();
         alert("산책로가 북마크에 저장됨");
         if (onComplete) {
           onComplete();
@@ -214,55 +252,62 @@ export const BookmarkContent: React.FC<BookmarkContentProps> = ({
       <Title>산책로 저장</Title>
       <Divider />
 
-      <RadioGroup>
-        {bookmarks.map((bookmark) => (
-          <RadioLabel key={bookmark.id}>
-            <RadioInput
-              type="radio"
-              name="bookmark"
-              checked={selectedBookmark === bookmark.id}
-              onChange={() => setSelectedBookmark(bookmark.id)}
-            />
-            {bookmark.name}
-          </RadioLabel>
-        ))}
-      </RadioGroup>
+      {!isCreating ? (
+        <>
+          <RadioGroup>
+            {isEmptyBookmarks ? (
+              <EmptyBookmarks>저장된 목록이 없습니다.</EmptyBookmarks>
+            ) : (
+              bookmarks.map((bookmark) => (
+                <RadioLabel key={bookmark.id}>
+                  <RadioInput
+                    type="radio"
+                    name="bookmark"
+                    checked={selectedBookmark === bookmark.id}
+                    onChange={() => setSelectedBookmark(bookmark.id)}
+                  />
+                  {bookmark.name}
+                </RadioLabel>
+              ))
+            )}
+          </RadioGroup>
 
-      <BottomButtons>
-        <div>
-          {selectedBookmark && (
-            <CompleteButton $primary onClick={handleComplete}>
-              완료
-            </CompleteButton>
-          )}
-        </div>
-        <div>
-          {!isCreating ? (
-            <Button onClick={() => setIsCreating(true)}>
-              + 새 산책로 목록 등록하기
+          <AddBookmarkButton onClick={() => setIsCreating(true)}>
+            <AiOutlinePlus /> 새 산책로 목록 등록하기
+          </AddBookmarkButton>
+
+          <BottomButtons>
+            {selectedBookmark && (
+              <CompleteButton $primary onClick={handleComplete}>
+                완료
+              </CompleteButton>
+            )}
+          </BottomButtons>
+        </>
+      ) : (
+        <BookmarkForm onSubmit={handleCreateSubmit}>
+          <Label>이름</Label>
+          <InputWrapper>
+            <Input
+              type="text"
+              value={newBookmarkName}
+              onChange={(e) => setNewBookmarkName(e.target.value)}
+              maxLength={15}
+              placeholder="새 산책로 이름을 작성하세요."
+              autoFocus
+            />
+            <CharCount>{newBookmarkName.length} / 15</CharCount>
+          </InputWrapper>
+          <ButtonWrapper>
+            <Button type="button" onClick={() => setIsCreating(false)}>
+              취소
             </Button>
-          ) : (
-            <BookmarkForm onSubmit={handleCreateSubmit}>
-              <Label>이름</Label>
-              <InputWrapper>
-                <Input
-                  type="text"
-                  value={newBookmarkName}
-                  onChange={(e) => setNewBookmarkName(e.target.value)}
-                  maxLength={15}
-                  placeholder="새 산책로 이름을 작성하세요."
-                />
-                <CharCount>{newBookmarkName.length} / 15</CharCount>
-              </InputWrapper>
-              <ButtonWrapper>
-                <Button $primary type="submit">
-                  + 만들기
-                </Button>
-              </ButtonWrapper>
-            </BookmarkForm>
-          )}
-        </div>
-      </BottomButtons>
+            <Button $primary type="submit">
+              + 만들기
+            </Button>
+          </ButtonWrapper>
+        </BookmarkForm>
+      )}
     </Container>
   );
 };
