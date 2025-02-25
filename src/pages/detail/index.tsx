@@ -267,22 +267,20 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
     }
   };
 
-  const toggleBookmark = () => {
+  const handleBookmarkClick = () => {
     if (walkwayDetail) {
-      const newMarkedState = !walkwayDetail.marked;
+      const currentMarkedState = walkwayDetail.marked;
+      const newMarkedState = !currentMarkedState;
 
       setWalkwayDetail({
         ...walkwayDetail,
         marked: newMarkedState,
       });
 
-      // 북마크가 활성화될 때만 바텀시트 열기
       if (newMarkedState) {
-        handleBottomSheetOpen();
+        setIsBottomSheetOpen(true);
       }
     }
-    // TODO: API 북마크
-    setIsBottomSheetOpen(false);
   };
 
   const goToReviews = (): void => {
@@ -352,29 +350,11 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
   };
 
   const handleBottomSheetClose = () => {
-    if (isBottomSheetOpen) {
-      setIsBottomSheetOpen(false);
-    } else {
-      setIsBottomSheetVoid(false);
-    }
+    setIsBottomSheetOpen(false);
   };
 
   const handleBottomSheetOpen = () => {
     setIsBottomSheetOpen(true);
-    setIsBottomSheetVoid(true);
-  };
-  const handleBookmarkClick = () => {
-    if (walkwayDetail) {
-      setWalkwayDetail({
-        ...walkwayDetail,
-        marked: !walkwayDetail.marked,
-      });
-    }
-
-    if (!walkwayDetail?.marked) {
-      setIsBottomSheetOpen(true);
-      setIsBottomSheetVoid(true);
-    }
   };
 
   if (loading) return <div>로딩 중...</div>;
@@ -445,7 +425,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
               </LeftIcon>
               <BookmarkButton
                 $isActive={walkwayDetail.marked}
-                onClick={toggleBookmark}
+                onClick={handleBookmarkClick}
               >
                 {walkwayDetail.marked ? (
                   <BsBookmarkFill size={20} />
@@ -468,8 +448,6 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
           <EditButton onClick={isMyPath ? handleEditClick : handleWalkClick}>
             {isMyPath ? "수정하기" : "이용하기"}
           </EditButton>
-          {/* 테스트시
-          {walkwayHistory.canReview === false && ( */}
           {walkwayHistory.canReview && (
             <ReviewButton onClick={handleReviewClick}>
               리뷰 작성하기
