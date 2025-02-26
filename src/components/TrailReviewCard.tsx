@@ -14,11 +14,12 @@ interface ReviewCardProps {
 const ReviewItems = styled.div`
   flex: 0 0 auto;
   width: 350px;
-  height: 142px;
+  height: auto;
   background: #ffffff;
   // box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
   border-radius: 20px;
   margin-left: 7px;
+  padding-bottom: 1rem;
   color: #054630;
 `;
 const ReviewTitle = styled.div`
@@ -54,7 +55,6 @@ const TrailReviewCard: React.FC<ReviewCardProps> = ({
   content,
   rating,
   period,
-  walkwayId,
   onClick,
 }) => {
   const formattedDate = new Date(date).toLocaleDateString("ko-KR");
