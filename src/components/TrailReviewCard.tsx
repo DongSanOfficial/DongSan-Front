@@ -8,6 +8,8 @@ interface ReviewCardProps {
   content: string;
   rating: number;
   period?: string;
+  walkwayId?: number;
+  onClick?: () => void;
 }
 const ReviewItems = styled.div`
   flex: 0 0 auto;
@@ -52,11 +54,13 @@ const TrailReviewCard: React.FC<ReviewCardProps> = ({
   content,
   rating,
   period,
+  walkwayId,
+  onClick,
 }) => {
   const formattedDate = new Date(date).toLocaleDateString("ko-KR");
 
   return (
-    <ReviewItems>
+    <ReviewItems onClick={onClick}>
       <ReviewTitle>
         <TrailName>| {trailName}</TrailName>
         <div
