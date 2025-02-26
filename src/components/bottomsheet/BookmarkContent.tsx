@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import { AddToBookmark, SaveToBookmark } from "../../apis/bookmark";
 import { AiOutlinePlus } from "react-icons/ai";
+import { useToast } from "src/hooks/useToast";
 
 const Container = styled.div`
   position: relative;
@@ -192,6 +193,7 @@ interface BookmarkContentProps {
 export const BookmarkContent: React.FC<BookmarkContentProps> = ({
   onComplete,
 }) => {
+  const { showToast } = useToast();
   const [isCreating, setIsCreating] = useState(false);
   const [newBookmarkName, setNewBookmarkName] = useState("");
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([
@@ -237,12 +239,12 @@ export const BookmarkContent: React.FC<BookmarkContentProps> = ({
           bookmarkId: selectedBookmark,
           walkwayId: Number(walkwayId),
         });
-        alert("산책로가 북마크에 저장됨");
+        showToast("산책로가 저장되었습니다.", "success");
         if (onComplete) {
           onComplete();
         }
       } catch (error) {
-        console.log("산책로 저장 에러: ", error);
+        showToast("잠시 후 다시 시도해주세요.", "error");
       }
     }
   };
