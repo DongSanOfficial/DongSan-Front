@@ -3,7 +3,9 @@ import {
   AddBookmarkRequest,
   AddBookmarkResponse,
   addToBookmark,
+  deleteBookmarkRequest,
   getBookmarkResponse,
+  putBookmarkRequest,
 } from "./bookmark.type";
 import instance from "./instance";
 
@@ -79,6 +81,42 @@ export const RemoveToBookmark = async ({
     const response = await instance.delete<ApiResponseFormat<{}>>(
       `/bookmarks/${bookmarkId}/walkways/${walkwayId}`
     );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+//북마크 수정
+
+export const putBookmarkName = async ({
+  bookmarkId,
+  name,
+}: {
+  bookmarkId: number;
+  name: string;
+}): Promise<{}> => {
+  try {
+    const response = await instance.put<ApiResponseFormat<putBookmarkRequest>>(
+      `/bookmarks/${bookmarkId}`
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+//북마크 삭제
+
+export const deleteBookmarkName = async ({
+  bookmarkId,
+}: {
+  bookmarkId: number;
+}): Promise<{}> => {
+  try {
+    const response = await instance.delete<
+      ApiResponseFormat<deleteBookmarkRequest>
+    >(`/bookmarks/${bookmarkId}`);
     return response;
   } catch (error) {
     throw error;

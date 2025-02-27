@@ -21,3 +21,11 @@ export interface getBookmarkResponse {
   }[];
   hasNext: boolean;
 }
+//북마크 수정
+export interface putBookmarkRequest {
+  name: string;
+}
+//북마크 삭제
+export interface deleteBookmarkRequest {
+  bookmarkId: number;
+}
