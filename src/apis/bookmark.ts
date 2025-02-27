@@ -98,27 +98,33 @@ export const putBookmarkName = async ({
 }): Promise<{}> => {
   try {
     const response = await instance.put<ApiResponseFormat<putBookmarkRequest>>(
-      `/bookmarks/${bookmarkId}`
+      `/bookmarks/${bookmarkId}`,
+      { name }
     );
+    console.log("북마크 아이디 : ", bookmarkId);
     return response;
   } catch (error) {
     throw error;
   }
 };
 
-//북마크 삭제
-
+// 북마크 삭제
 export const deleteBookmarkName = async ({
   bookmarkId,
 }: {
   bookmarkId: number;
 }): Promise<{}> => {
+  console.log("deleteBookmarkName 함수 시작, bookmarkId:", bookmarkId);
   try {
-    const response = await instance.delete<
-      ApiResponseFormat<deleteBookmarkRequest>
-    >(`/bookmarks/${bookmarkId}`);
+    console.log("API 호출 시도");
+    const response = await instance.delete<ApiResponseFormat<{}>>(
+      `/bookmarks/${bookmarkId}`
+    );
+
+    console.log("북마크 삭제 성공:", response);
     return response;
   } catch (error) {
+    console.error("북마크 삭제 에러 상세:", error);
     throw error;
   }
 };

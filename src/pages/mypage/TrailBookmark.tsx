@@ -2,7 +2,7 @@ import React, { useState, FunctionComponent, SVGProps } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { MdMoreHoriz } from "react-icons/md";
-import { putBookmarkName, deleteBookmarkName } from "../../apis/bookmark"; // API import
+import { putBookmarkName, deleteBookmarkName } from "../../apis/bookmark";
 
 const List = styled.div`
   display: flex;
@@ -167,14 +167,17 @@ const TrailBookmark: React.FC<TrailBookmarkProps> = ({
 
     try {
       setIsLoading(true);
+      console.log("수정 시도:", bookmarkId);
       await putBookmarkName({
         bookmarkId,
         name: newBookmarkName.trim(),
       });
 
+      // 업데이트 성공 처리
       alert("북마크 이름이 변경되었습니다.");
       setIsEditModalOpen(false);
 
+      // 부모 컴포넌트에 업데이트 알림
       if (onUpdate) {
         onUpdate();
       }
@@ -189,17 +192,15 @@ const TrailBookmark: React.FC<TrailBookmarkProps> = ({
   // 북마크 삭제 처리
   const handleDeleteBookmark = async () => {
     if (!bookmarkId) return;
-
     try {
       setIsLoading(true);
+      console.log("삭제 시도:", bookmarkId);
       await deleteBookmarkName({
         bookmarkId,
       });
-
-      // 삭제 성공 처리
+      console.log("삭제 성공!");
       alert("북마크가 삭제되었습니다.");
       setIsDeleteModalOpen(false);
-
       if (onUpdate) {
         onUpdate();
       }
