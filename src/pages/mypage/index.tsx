@@ -205,7 +205,7 @@ function MyPage() {
 
   const handleReviewClick = useCallback(
     (walkwayId: number) => {
-      navigate(`/main/review/${walkwayId}/content`, {
+      navigate(`/main/recommend/detail/${walkwayId}`, {
         state: { from: "mypage" },
       });
     },

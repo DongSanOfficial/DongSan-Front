@@ -17,6 +17,7 @@ import StarCount from "src/components/review/starCount";
 import { BottomSheetStorage } from "../../components/bottomsheet/BottomSheetStorage";
 import { BookmarkContent } from "../../components/bottomsheet/BookmarkContent";
 import { toggleLike } from "src/apis/likedWalkway";
+import LoadingSpinner from "src/components/loading/LoadingSpinner";
 
 // 레이아웃 관련
 const PageWrapper = styled.div`
@@ -267,7 +268,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
     }
   };
 
-  const handleBookmarkClick = () => {
+  const handleBookmarkClick = async () => {
     if (walkwayDetail) {
       const currentMarkedState = walkwayDetail.marked;
       const newMarkedState = !currentMarkedState;
@@ -357,7 +358,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
     setIsBottomSheetOpen(true);
   };
 
-  if (loading) return <div>로딩 중...</div>;
+  if (loading) return <LoadingSpinner />;
   if (error) return <div>{error}</div>;
   if (!walkwayDetail) return null;
 
