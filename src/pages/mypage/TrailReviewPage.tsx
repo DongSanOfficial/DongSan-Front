@@ -104,6 +104,10 @@ function TrailReviewPage() {
                 date={review.date}
                 content={review.content}
                 rating={review.rating}
+                walkwayId={review.walkwayId}
+                onClick={() =>
+                  navigate(`/main/recommend/detail/${review.walkwayId}`)
+                }
               />
               <hr />
             </div>
