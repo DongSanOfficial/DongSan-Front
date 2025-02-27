@@ -17,13 +17,10 @@ import instance from "src/apis/instance";
 import { theme } from "src/styles/colors/theme";
 import { useToast } from "src/hooks/useToast";
 import { UserReviewsType, walkwayHistoryType } from "src/apis/review.type";
-import {
-  getReviewRecord,
-  getUserReviews,
-  writeableReviewRecord,
-} from "src/apis/review";
+import { getReviewRecord, getUserReviews } from "src/apis/review";
 import HistoryCard from "src/components/HistoryCard_mp";
 import LoadingSpinner from "src/components/loading/LoadingSpinner";
+import { getBookmark } from "../../apis/bookmark";
 
 const Wrapper = styled.div`
   display: flex;
@@ -123,23 +120,12 @@ const Items = styled.div`
   }
 `;
 
-const trailsBookmarks = [
-  {
-    icon: Favorite,
-    path: "/mypage/TrailLikeList?type=favorites",
-    title: "내가 좋아하는 산책로",
-  },
-  {
-    icon: BookMark,
-    path: "/mypage/TrailLikeList?type=bookmarks",
-    title: "북마크 이름",
-  },
-  {
-    icon: BookMark,
-    path: "/mypage/TrailLikeList?type=bookmarks",
-    title: "북마크 이름22",
-  },
-];
+// API 응답 타입에 맞게 Bookmark 인터페이스 수정
+interface Bookmark {
+  bookmarkId: number; // id -> bookmarkId로 변경
+  name: string;
+  marked?: boolean;
+}
 
 function MyPage() {
   const navigate = useNavigate();
@@ -153,6 +139,27 @@ function MyPage() {
   const [previewHistory, setPreviewHistory] = useState<walkwayHistoryType[]>(
     []
   );
+  const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
+
+  // 북마크 가져오는 함수
+  const fetchBookmarks = async () => {
+    try {
+      // 첫 번째 산책로 ID를 사용하거나 기본값 설정
+      const defaultWalkwayId =
+        previewTrails.length > 0 ? previewTrails[0].walkwayId : 1;
+
+      const response = await getBookmark({
+        walkwayId: defaultWalkwayId,
+        size: 10,
+      });
+
+      console.log("북마크 조회 결과:", response);
+      setBookmarks(response.bookmarks || []);
+    } catch (error) {
+      console.error("북마크 조회 에러:", error);
+      setBookmarks([]);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -173,7 +180,7 @@ function MyPage() {
         setError(null);
       } catch (err) {
         setError("데이터를 불러오는데 실패했습니다.");
-        setPreviewHistory([]); // 에러 발생 시 빈 배열로 초기화
+        setPreviewHistory([]);
         setReviews([]);
       } finally {
         setIsLoading(false);
@@ -183,21 +190,33 @@ function MyPage() {
     fetchData();
   }, []);
 
+  // previewTrails가 로드된 후 북마크 데이터 가져오기
+  useEffect(() => {
+    if (previewTrails.length > 0) {
+      fetchBookmarks();
+    }
+  }, [previewTrails]);
+
+  const handleBookmarkClick = useCallback(
+    (bookmarkId: number) => {
+      navigate(`/mypage/TrailLikeList?type=bookmarks&bookmarkId=${bookmarkId}`);
+    },
+    [navigate]
+  );
+
   const handleCardClick = useCallback(
     (walkwayId: number) => {
       navigate(`/mypage/myregister/${walkwayId}`, {
-        //프리뷰를 클릭해서 단건 조회 페이지로 이동했을 시,
-        //단건 조회 페이지에서 백버튼 네이게이션은 다시 마이페이지로
-        //하기 위해서 state 전달
         state: { from: "mypage" },
       });
     },
     [navigate]
   );
+
   const handleHistoryClick = useCallback(
     (walkwayHistory: walkwayHistoryType) => {
       navigate(`/main/review/${walkwayHistory.walkwayId}`, {
-        state: { walkwayHistoryId: walkwayHistory.walkwayHistoryId }, // ✅ 올바르게 전달
+        state: { walkwayHistoryId: walkwayHistory.walkwayHistoryId },
       });
     },
     [navigate]
@@ -211,6 +230,7 @@ function MyPage() {
     },
     [navigate]
   );
+
   const handleLogout = async () => {
     try {
       await instance.delete("/auth/logout");
@@ -265,12 +285,22 @@ function MyPage() {
         </div>
         <div>
           <Title>내가 "찜"한 산책로 조회</Title>
-          {trailsBookmarks.map((trail, index) => (
+          {/* 좋아하는 산책로 */}
+          <TrailBookmark
+            icon={Favorite}
+            path="/mypage/TrailLikeList?type=favorites"
+            title="내가 좋아하는 산책로"
+          />
+
+          {/* API에서 가져온 북마크 데이터 표시 */}
+          {bookmarks.map((bookmark) => (
             <TrailBookmark
-              key={index}
-              icon={trail.icon}
-              path={trail.path}
-              title={trail.title}
+              key={bookmark.bookmarkId}
+              icon={BookMark}
+              path={`/mypage/TrailLikeList?type=bookmarks&bookmarkId=${bookmark.bookmarkId}`}
+              title={bookmark.name}
+              onClick={() => handleBookmarkClick(bookmark.bookmarkId)}
+              bookmarkId={bookmark.bookmarkId} // bookmarkId prop 추가
             />
           ))}
           <Line />

@@ -1,5 +1,3 @@
-// src/components/TrailBookmark.tsx
-
 import React, { useState, FunctionComponent, SVGProps } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
@@ -56,28 +54,83 @@ const OptionItem = styled.div`
   }
 `;
 
+// Link 대신 사용할 수 있는 클릭 가능한 컨테이너
+const ClickableContainer = styled.div`
+  cursor: pointer;
+`;
+
 interface TrailBookmarkProps {
   icon: FunctionComponent<SVGProps<SVGSVGElement>>;
   path: string;
   title: string;
+  onClick?: () => void; // 클릭 이벤트 핸들러 추가
+  bookmarkId?: number; // 북마크 ID 추가 (수정/삭제용)
 }
 
 const TrailBookmark: React.FC<TrailBookmarkProps> = ({
   icon: Icon,
   path,
   title,
+  onClick,
+  bookmarkId,
 }) => {
   const [isVisible, setIsVisible] = useState(false);
 
-  const toggleOptionsMenu = () => {
+  const toggleOptionsMenu = (e: React.MouseEvent) => {
+    e.stopPropagation(); // 이벤트 버블링 방지
     setIsVisible(!isVisible);
   };
 
-  const handleAction = (action: string) => {
-    alert(`${action}`);
+  const handleAction = (action: string, e: React.MouseEvent) => {
+    e.stopPropagation(); // 이벤트 버블링 방지
+
+    if (action === "이름 수정") {
+      // 이름 수정 로직
+      if (bookmarkId) {
+        alert(`북마크 ID: ${bookmarkId} 이름 수정`);
+      } else {
+        alert("이름 수정");
+      }
+    } else if (action === "삭제") {
+      // 삭제 로직
+      if (bookmarkId) {
+        alert(`북마크 ID: ${bookmarkId} 삭제`);
+      } else {
+        alert("삭제");
+      }
+    }
+
     setIsVisible(false);
   };
 
+  // onClick 핸들러가 제공되면 그것을 사용하고, 아니면 Link를 사용
+  if (onClick) {
+    return (
+      <List>
+        <ClickableContainer onClick={onClick}>
+          <ListItem>
+            <IconWrapper>
+              <Icon />
+            </IconWrapper>
+            <div>{title}</div>
+          </ListItem>
+        </ClickableContainer>
+        <IconWrapperBtn onClick={toggleOptionsMenu}>
+          <MdMoreHoriz size={24} />
+          <OptionsMenu isVisible={isVisible}>
+            <OptionItem onClick={(e) => handleAction("이름 수정", e)}>
+              이름 수정
+            </OptionItem>
+            <OptionItem onClick={(e) => handleAction("삭제", e)}>
+              삭제
+            </OptionItem>
+          </OptionsMenu>
+        </IconWrapperBtn>
+      </List>
+    );
+  }
+
+  // 기존 Link 사용 방식 (onClick이 없을 경우)
   return (
     <List>
       <Link to={path}>
@@ -91,10 +144,10 @@ const TrailBookmark: React.FC<TrailBookmarkProps> = ({
       <IconWrapperBtn onClick={toggleOptionsMenu}>
         <MdMoreHoriz size={24} />
         <OptionsMenu isVisible={isVisible}>
-          <OptionItem onClick={() => handleAction("이름 수정")}>
+          <OptionItem onClick={(e) => handleAction("이름 수정", e)}>
             이름 수정
           </OptionItem>
-          <OptionItem onClick={() => handleAction("삭제")}>삭제</OptionItem>
+          <OptionItem onClick={(e) => handleAction("삭제", e)}>삭제</OptionItem>
         </OptionsMenu>
       </IconWrapperBtn>
     </List>
