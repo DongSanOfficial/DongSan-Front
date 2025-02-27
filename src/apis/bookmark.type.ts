@@ -11,3 +11,13 @@ export interface AddBookmarkRequest {
 export interface AddBookmarkResponse {
   bookmarkId: number;
 }
+
+//북마크 조회 리스폰스
+export interface getBookmarkResponse {
+  bookmarks: {
+    bookmarkId: number;
+    name: string;
+    marked: boolean;
+  }[];
+  hasNext: boolean;
+}

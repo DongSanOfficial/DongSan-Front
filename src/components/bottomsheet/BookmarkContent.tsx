@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
-import { AddToBookmark, SaveToBookmark } from "../../apis/bookmark";
+import {
+  AddToBookmark,
+  getBookmark,
+  SaveToBookmark,
+} from "../../apis/bookmark";
 import { AiOutlinePlus } from "react-icons/ai";
 import { useToast } from "src/hooks/useToast";
 
@@ -28,6 +32,9 @@ const Divider = styled.hr`
 const BookmarkForm = styled.form`
   padding: 0;
   margin-top: 20px;
+  height: calc(100% - 120px);
+  display: flex;
+  flex-direction: column;
 `;
 
 const Label = styled.label`
@@ -76,7 +83,8 @@ const ButtonWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  margin-top: 10px;
+  margin-top: auto;
+  padding-bottom: 20px;
 `;
 
 const Button = styled.button<{ $primary?: boolean }>`
@@ -100,11 +108,18 @@ const Button = styled.button<{ $primary?: boolean }>`
   }
 `;
 
-const RadioGroup = styled.div`
+const CheckboxGroupContainer = styled.div`
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+`;
+
+const CheckboxGroup = styled.div`
   display: flex;
   flex-direction: column;
   margin: 20px 0;
-  max-height: 300px;
+  max-height: 240px;
   overflow-y: auto;
   min-height: 120px;
 
@@ -118,20 +133,53 @@ const RadioGroup = styled.div`
   }
 `;
 
-const RadioLabel = styled.label`
+const CheckboxLabel = styled.label`
   display: flex;
   align-items: center;
   padding: 12px 0;
   cursor: pointer;
   border-bottom: 1px solid #f5f5f5;
+  position: relative;
 `;
 
-const RadioInput = styled.input`
-  margin-right: 12px;
-  width: 20px;
-  height: 20px;
+const CheckboxInput = styled.input`
+  position: absolute;
+  opacity: 0;
   cursor: pointer;
-  accent-color: #167258;
+  height: 0;
+  width: 0;
+
+  &:checked + span {
+    background-color: #167258;
+    border-color: #167258;
+  }
+
+  &:checked + span:after {
+    display: block;
+  }
+`;
+
+const CustomCheckbox = styled.span`
+  position: relative;
+  height: 20px;
+  width: 20px;
+  margin-right: 12px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+
+  &:after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 6px;
+    top: 3px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
 `;
 
 const BottomButtons = styled.div`
@@ -181,9 +229,28 @@ const EmptyBookmarks = styled.div`
   font-size: 14px;
 `;
 
+const FormBottom = styled.div`
+  position: fixed;
+  bottom: 70px;
+  left: 0;
+  right: 0;
+  background-color: white;
+  padding: 16px 20px;
+  border-top: 1px solid #eaeaea;
+  display: flex;
+  justify-content: space-between;
+`;
+
+const SelectedCount = styled.span`
+  font-size: 14px;
+  color: #167258;
+  margin-left: 8px;
+`;
+
 interface Bookmark {
   id: number;
   name: string;
+  marked?: boolean;
 }
 
 interface BookmarkContentProps {
@@ -196,33 +263,37 @@ export const BookmarkContent: React.FC<BookmarkContentProps> = ({
   const { showToast } = useToast();
   const [isCreating, setIsCreating] = useState(false);
   const [newBookmarkName, setNewBookmarkName] = useState("");
-  const [bookmarks, setBookmarks] = useState<Bookmark[]>([
-    { id: 1, name: "밤에 걷기 좋은 산책로 목록1" },
-    { id: 2, name: "밤에 걷기 좋은 산책로 목록2" },
-  ]);
-  const [selectedBookmark, setSelectedBookmark] = useState<number | null>(null);
+  const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
+  const [selectedBookmarks, setSelectedBookmarks] = useState<number[]>([]);
   const { walkwayId } = useParams<{ walkwayId: string }>();
 
-  // 북마크 목록이 비어있는지 확인
   const isEmptyBookmarks = bookmarks.length === 0;
+
+  const toggleBookmarkSelection = (bookmarkId: number) => {
+    setSelectedBookmarks((prev) => {
+      if (prev.includes(bookmarkId)) {
+        return prev.filter((id) => id !== bookmarkId);
+      } else {
+        return [...prev, bookmarkId];
+      }
+    });
+  };
 
   const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newBookmarkName.trim() && newBookmarkName.length <= 15) {
       try {
-        // API 호출로 북마크 생성
         const response = await AddToBookmark({
           name: newBookmarkName.trim(),
         });
 
-        // API 응답에서 받은 bookmarkId로 북마크 생성
         const newBookmark: Bookmark = {
           id: response.bookmarkId,
           name: newBookmarkName.trim(),
         };
 
         setBookmarks((prevBookmarks) => [...prevBookmarks, newBookmark]);
-        setSelectedBookmark(response.bookmarkId); // 새로 생성한 북마크 자동 선택
+        setSelectedBookmarks((prev) => [...prev, response.bookmarkId]);
         setNewBookmarkName("");
         setIsCreating(false);
       } catch (error) {
@@ -233,12 +304,16 @@ export const BookmarkContent: React.FC<BookmarkContentProps> = ({
   };
 
   const handleComplete = async () => {
-    if (selectedBookmark !== null) {
+    if (selectedBookmarks.length > 0) {
       try {
-        await SaveToBookmark({
-          bookmarkId: selectedBookmark,
-          walkwayId: Number(walkwayId),
-        });
+        const savePromises = selectedBookmarks.map((bookmarkId) =>
+          SaveToBookmark({
+            bookmarkId: bookmarkId,
+            walkwayId: Number(walkwayId),
+          })
+        );
+
+        await Promise.all(savePromises);
         showToast("산책로가 저장되었습니다.", "success");
         if (onComplete) {
           onComplete();
@@ -249,6 +324,43 @@ export const BookmarkContent: React.FC<BookmarkContentProps> = ({
     }
   };
 
+  useEffect(() => {
+    const fetchBookmarks = async () => {
+      if (!walkwayId) return;
+
+      console.log("북마크 조회 시작 - walkwayId:", walkwayId);
+
+      try {
+        const response = await getBookmark({
+          walkwayId: Number(walkwayId),
+          size: 10,
+        });
+
+        console.log("북마크 조회 결과:", response);
+
+        const formattedBookmarks = response.bookmarks.map((bookmark) => ({
+          id: bookmark.bookmarkId,
+          name: bookmark.name,
+          marked: bookmark.marked,
+        }));
+
+        setBookmarks(formattedBookmarks);
+
+        const markedBookmarkIds = response.bookmarks
+          .filter((bookmark) => bookmark.marked)
+          .map((bookmark) => bookmark.bookmarkId);
+
+        if (markedBookmarkIds.length > 0) {
+          setSelectedBookmarks(markedBookmarkIds);
+        }
+      } catch (error) {
+        console.error("북마크 조회 에러:", error);
+      }
+    };
+
+    fetchBookmarks();
+  }, [walkwayId]);
+
   return (
     <Container>
       <Title>산책로 저장</Title>
@@ -256,59 +368,72 @@ export const BookmarkContent: React.FC<BookmarkContentProps> = ({
 
       {!isCreating ? (
         <>
-          <RadioGroup>
-            {isEmptyBookmarks ? (
-              <EmptyBookmarks>저장된 목록이 없습니다.</EmptyBookmarks>
-            ) : (
-              bookmarks.map((bookmark) => (
-                <RadioLabel key={bookmark.id}>
-                  <RadioInput
-                    type="radio"
-                    name="bookmark"
-                    checked={selectedBookmark === bookmark.id}
-                    onChange={() => setSelectedBookmark(bookmark.id)}
-                  />
-                  {bookmark.name}
-                </RadioLabel>
-              ))
-            )}
-          </RadioGroup>
+          <CheckboxGroupContainer>
+            <CheckboxGroup>
+              {isEmptyBookmarks ? (
+                <EmptyBookmarks>저장된 목록이 없습니다.</EmptyBookmarks>
+              ) : (
+                bookmarks.map((bookmark) => (
+                  <CheckboxLabel key={bookmark.id}>
+                    <CheckboxInput
+                      type="checkbox"
+                      name="bookmark"
+                      checked={selectedBookmarks.includes(bookmark.id)}
+                      onChange={() => toggleBookmarkSelection(bookmark.id)}
+                    />
+                    <CustomCheckbox />
+                    {bookmark.name}
+                  </CheckboxLabel>
+                ))
+              )}
+            </CheckboxGroup>
+          </CheckboxGroupContainer>
 
           <AddBookmarkButton onClick={() => setIsCreating(true)}>
             <AiOutlinePlus /> 새 산책로 목록 등록하기
+            {selectedBookmarks.length > 0 && (
+              <SelectedCount>
+                ({selectedBookmarks.length}개 선택됨)
+              </SelectedCount>
+            )}
           </AddBookmarkButton>
 
           <BottomButtons>
-            {selectedBookmark && (
+            {selectedBookmarks.length > 0 && (
               <CompleteButton $primary onClick={handleComplete}>
-                완료
+                {selectedBookmarks.length > 1
+                  ? `${selectedBookmarks.length}개 저장`
+                  : "저장하기"}
               </CompleteButton>
             )}
           </BottomButtons>
         </>
       ) : (
-        <BookmarkForm onSubmit={handleCreateSubmit}>
-          <Label>이름</Label>
-          <InputWrapper>
-            <Input
-              type="text"
-              value={newBookmarkName}
-              onChange={(e) => setNewBookmarkName(e.target.value)}
-              maxLength={15}
-              placeholder="새 산책로 이름을 작성하세요."
-              autoFocus
-            />
-            <CharCount>{newBookmarkName.length} / 15</CharCount>
-          </InputWrapper>
-          <ButtonWrapper>
+        <>
+          <BookmarkForm onSubmit={handleCreateSubmit}>
+            <Label>이름</Label>
+            <InputWrapper>
+              <Input
+                type="text"
+                value={newBookmarkName}
+                onChange={(e) => setNewBookmarkName(e.target.value)}
+                maxLength={15}
+                placeholder="새 산책로 이름을 작성하세요."
+                autoFocus
+              />
+              <CharCount>{newBookmarkName.length} / 15</CharCount>
+            </InputWrapper>
+          </BookmarkForm>
+
+          <FormBottom>
             <Button type="button" onClick={() => setIsCreating(false)}>
               취소
             </Button>
-            <Button $primary type="submit">
+            <Button $primary onClick={handleCreateSubmit}>
               + 만들기
             </Button>
-          </ButtonWrapper>
-        </BookmarkForm>
+          </FormBottom>
+        </>
       )}
     </Container>
   );
