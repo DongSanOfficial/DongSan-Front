@@ -146,28 +146,28 @@ function Main() {
       });
 
       setWalkways((prev) =>
-        reset ? response.walkways : [...prev, ...response.walkways]
+        reset ? response.data : [...prev, ...response.data]
       );
       setHasMore(response.hasNext);
 
-      if (response.walkways.length > 0) {
+      if (response.data.length > 0) {
         const newLastId =
-          response.walkways[response.walkways.length - 1]?.walkwayId;
+          response.data[response.data.length - 1]?.walkwayId;
         console.log("📌 응답에서 추출한 새로운 lastId:", newLastId);
         setLastId(newLastId);
       }
 
       if (reset) {
         const newLikedPaths = Object.fromEntries(
-          response.walkways.map((walkway) => [
-            walkway.walkwayId,
-            walkway.isLike,
+          response.data.map((data) => [
+            data.walkwayId,
+            data.isLike,
           ])
         );
         const newLikeCounts = Object.fromEntries(
-          response.walkways.map((walkway) => [
-            walkway.walkwayId,
-            walkway.likeCount,
+          response.data.map((data) => [
+            data.walkwayId,
+            data.likeCount,
           ])
         );
         setLikedPaths(newLikedPaths);

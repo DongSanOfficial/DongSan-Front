@@ -18,7 +18,7 @@ export default function Splash() {
         console.log("스플래시 화면에서 받아온 현재 위치:", location);
 
         const response = await instance.post("/dev/token/expired");
-        const { accessTokenExpired, refreshTokenExpired } = response.data.data;
+        const { accessTokenExpired, refreshTokenExpired } = response.data;
 
         if (!accessTokenExpired && !refreshTokenExpired) {
           setTimeout(() => navigate("/navigation"), 2000);

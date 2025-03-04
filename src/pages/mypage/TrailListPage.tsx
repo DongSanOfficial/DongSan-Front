@@ -25,11 +25,6 @@ const List = styled.div`
   gap: 16px;
 `;
 
-// const LoadingSpinner = styled.div`
-//   text-align: center;
-//   padding: 20px;
-// `;
-
 const ErrorMessage = styled.div`
   color: red;
   text-align: center;
@@ -57,12 +52,12 @@ function TrailListPage() {
         lastId: lastIdRef.current,
       });
 
-      setTrails((prev) => [...prev, ...response.walkways]);
+      setTrails((prev) => [...prev, ...response.data]);
       setHasNext(response.hasNext);
 
-      if (response.walkways.length > 0) {
+      if (response.data.length > 0) {
         const newLastId =
-          response.walkways[response.walkways.length - 1].walkwayId;
+          response.data[response.data.length - 1].walkwayId;
         console.log("📌 응답에서 추출한 새로운 lastId:", newLastId);
         lastIdRef.current = newLastId;
       }
@@ -104,7 +99,7 @@ function TrailListPage() {
         observer.current.disconnect();
       }
     };
-  }, []);
+  }, [loadTrails]);
 
   const handleCardClick = useCallback(
     (walkwayId: number) => {

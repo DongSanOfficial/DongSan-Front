@@ -1,4 +1,3 @@
-import { ApiResponseFormat } from "./api.type";
 import instance from "./instance";
 import { likedWalkwayType } from "./likedWalkway.type";
 
@@ -10,10 +9,10 @@ export const toggleLike = async ({
 }): Promise<{}> => {
   try {
     const response = isLiked //하트에 따라 처리
-      ? await instance.delete<ApiResponseFormat<{}>>( //산책로 좋아요 취소 api
+      ? await instance.delete( //산책로 좋아요 취소 api
           `/walkways/${walkwayId}/likes`
         )
-      : await instance.post<ApiResponseFormat<{}>>( //산책로 좋아요 선택 api
+      : await instance.post( //산책로 좋아요 선택 api
           `/walkways/${walkwayId}/likes`
         );
     return response;
