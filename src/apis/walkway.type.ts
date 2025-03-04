@@ -1,5 +1,3 @@
-import { ApiResponseFormat } from "src/apis/api.type";
-
 export interface Location {
   latitude: number;
   longitude: number;
@@ -21,7 +19,7 @@ export interface Walkway {
 }
 
 export interface WalkwaysResponse {
-  walkways: Walkway[];
+  data: Walkway[];
   hasNext: boolean;
 }
 
@@ -35,8 +33,6 @@ export interface WalkwayParams {
 }
 
 export type SortOption = "liked" | "rating";
-
-export type WalkwaysApiResponse = ApiResponseFormat<WalkwaysResponse>;
 
 // 디테일 조회 타입
 export interface WalkwayDetail {
@@ -57,7 +53,6 @@ export interface WalkwayDetail {
   course: Location[];
 }
 
-export type WalkwayDetailResponse = ApiResponseFormat<WalkwayDetail>;
 
 // 등록 타입
 export interface CreateWalkwayType {
@@ -104,11 +99,10 @@ export interface FetchWalkwaysOptions {
 }
 
 export interface MyWalkwaysResponse {
-  walkways: Trail[];
+  data: Trail[];
   hasNext: boolean;
 }
 
-export type MyWalkwaysApiResponse = ApiResponseFormat<MyWalkwaysResponse>;
 
 // 이용한 산책로 내역
 export interface WalkwayHistoryResponse {

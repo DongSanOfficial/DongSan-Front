@@ -15,14 +15,15 @@ export const instance = axios.create({
 instance.interceptors.response.use(
   (response: AxiosResponse) => response,
   async (error: AxiosError) => {
-    const errorData = error.response?.data as ApiErrorResponse;
+    if (error.response) {
+    const errorData = error.response.data as ApiErrorResponse;
     if (errorData?.code === "AUTH-01") {
       window.location.href = "/signin";
-      return Promise.reject(error);
     }
 
     return Promise.reject(error);
   }
+}
 );
 
 export default instance;

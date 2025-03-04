@@ -1,4 +1,3 @@
-import { ApiResponseFormat } from "./api.type";
 import {
   AddBookmarkRequest,
   AddBookmarkResponse,
@@ -11,10 +10,10 @@ export const AddToBookmark = async (
   params: AddBookmarkRequest
 ): Promise<AddBookmarkResponse> => {
   try {
-    const response = await instance.post<
-      ApiResponseFormat<AddBookmarkResponse>
-    >(`/bookmarks`, params);
-    return response.data.data;
+    const response = await instance.post
+      <AddBookmarkResponse>
+    (`/bookmarks`, params);
+    return response.data;
   } catch (error) {
     throw error;
   }
@@ -29,11 +28,11 @@ export const SaveToBookmark = async ({
   walkwayId: number;
 }): Promise<addToBookmark> => {
   try {
-    const response = await instance.post<ApiResponseFormat<addToBookmark>>(
+    const response = await instance.post<addToBookmark>(
       `/bookmarks/${bookmarkId}/walkways`,
       { walkwayId }
     );
-    return response.data.data;
+    return response.data;
   } catch (error) {
     throw error;
   }
@@ -48,7 +47,7 @@ export const RemoveToBookmark = async ({
   walkwayId: number;
 }): Promise<{}> => {
   try {
-    const response = await instance.delete<ApiResponseFormat<{}>>(
+    const response = await instance.delete(
       `/bookmarks/${bookmarkId}/walkways/${walkwayId}`
     );
     return response;

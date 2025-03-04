@@ -52,5 +52,5 @@ export interface walkwayHistoryType {
 }
 
 export interface walkwayHistoryResponse {
-  walkwayHistories: walkwayHistoryType[];
+  data: walkwayHistoryType[];
 }

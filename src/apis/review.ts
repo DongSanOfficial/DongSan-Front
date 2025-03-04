@@ -6,7 +6,6 @@ import {
   walkwayHistoryType,
   WriteReviewType,
 } from "./review.type";
-import { ApiResponseFormat } from "./api.type";
 import instance from "./instance";
 
 // 작성한 리뷰 전체보기 api
@@ -17,16 +16,16 @@ export const getUserReviews = async ({
   size: number;
   lastId?: number;
 }): Promise<{
-  reviews: UserReviewsType[];
+  data: UserReviewsType[];
   hasNext: boolean;
 }> => {
   try {
-    const response = await instance.get<
-      ApiResponseFormat<{ reviews: UserReviewsType[]; hasNext: boolean }>
-    >("/users/reviews", {
+    const response = await instance.get
+      <{ data: UserReviewsType[]; hasNext: boolean }>
+    ("/users/reviews", {
       params: { size, lastId },
     });
-    return response.data.data;
+    return response.data;
   } catch (error) {
     throw error;
   }
@@ -37,10 +36,10 @@ export const showReviewRating = async (
   walkwayId: string
 ): Promise<ReviewRatingType> => {
   try {
-    const response = await instance.get<ApiResponseFormat<ReviewRatingType>>(
+    const response = await instance.get<ReviewRatingType>(
       `/walkways/${walkwayId}/review/rating`
     );
-    return response.data.data;
+    return response.data;
   } catch (error) {
     throw error;
   }
@@ -54,10 +53,10 @@ export const showReviewContent = async (
   reviews: ReviewContentType[];
 }> => {
   try {
-    const response = await instance.get<
-      ApiResponseFormat<{ reviews: ReviewContentType[] }>
+    const response = await instance.get
+    <{ reviews: ReviewContentType[] }
     >(`/walkways/${walkwayId}/review/content?sort=${sort}`);
-    return response.data.data;
+    return response.data;
   } catch (error) {
     throw error;
   }
@@ -85,10 +84,10 @@ export const writeableReviewRecord = async (
   walkwayId: number
 ): Promise<walkwayHistoryType[]> => {
   try {
-    const { data } = await instance.get<{ data: walkwayHistoryResponse }>(
+    const response = await instance.get<{ data: walkwayHistoryResponse }>(
       `/walkways/${walkwayId}/history`
     );
-    return data.data.walkwayHistories ?? [];
+    return response.data.data.data;
   } catch (error) {
     throw error;
   }
@@ -102,17 +101,15 @@ export const getReviewRecord = async ({
   size: number;
   lastId?: number;
 }): Promise<{
-  walkwayHistories: walkwayHistoryType[];
+  data: walkwayHistoryType[];
 }> => {
   try {
-    const response = await instance.get<
-      ApiResponseFormat<{
-        walkwayHistories: walkwayHistoryType[];
-      }>
-    >("/users/walkways/history", {
+    const response = await instance.get<{
+      data: walkwayHistoryType[];
+    }>("/users/walkways/history", {
       params: { size, lastId },
     });
-    return response.data.data;
+    return response.data;
   } catch (error) {
     throw error;
   }

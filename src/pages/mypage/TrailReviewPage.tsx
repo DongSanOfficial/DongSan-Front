@@ -45,12 +45,12 @@ function TrailReviewPage() {
         lastId: lastIdRef.current,
       });
 
-      setReviews((prev) => [...prev, ...response.reviews]);
+      setReviews((prev) => [...prev, ...response.data]);
       setHasNext(response.hasNext);
 
-      if (response.reviews.length > 0) {
+      if (response.data.length > 0) {
         const newLastId =
-          response.reviews[response.reviews.length - 1].reviewId;
+          response.data[response.data.length - 1].reviewId;
         console.log("📌 응답에서 추출한 새로운 lastId:", newLastId);
         lastIdRef.current = newLastId;
       }
