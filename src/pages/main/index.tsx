@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent } from "react";
+import React, { useState, ChangeEvent, useEffect } from "react";
 import styled from "styled-components";
 import { AxiosError } from "axios";
 import { MainMap } from "../../components/map/MainMap";
@@ -15,6 +15,7 @@ import { ApiErrorResponse } from "src/apis/api.type";
 import GuideButton from "src/components/button/GuideButton";
 import { useNavigate } from "react-router-dom";
 import { toggleLike } from "src/apis/likedWalkway";
+import { useLocationStore } from "../../store/useLocationStore";
 
 const MainContainer = styled.div`
   position: relative;
@@ -85,6 +86,7 @@ interface Location {
 
 function Main() {
   const navigate = useNavigate();
+  const { currentLocation, getCurrentLocation } = useLocationStore();
 
   // 바텀시트 상태
   const [isOpen, setIsOpen] = useState(false);
@@ -123,6 +125,29 @@ function Main() {
   );
 
   /**
+   * 컴포넌트 마운트 시 현재 위치 가져오기
+   */
+  useEffect(() => {
+    const initializeLocation = async () => {
+      try {
+        const location = await getCurrentLocation();
+        if (location && !selectedLocation) {
+          await fetchWalkways(location.lat, location.lng, sortOption, true);
+          setSelectedLocation({
+            latitude: location.lat,
+            longitude: location.lng,
+            name: "현재 위치",
+          });
+        }
+      } catch (error) {
+        console.error("위치 정보 초기화 실패:", error);
+      }
+    };
+
+    initializeLocation();
+  }, []);
+
+  /**
    * 산책로 검색 api 연동
    */
   const fetchWalkways = async (
@@ -151,24 +176,17 @@ function Main() {
       setHasMore(response.hasNext);
 
       if (response.data.length > 0) {
-        const newLastId =
-          response.data[response.data.length - 1]?.walkwayId;
+        const newLastId = response.data[response.data.length - 1]?.walkwayId;
         console.log("📌 응답에서 추출한 새로운 lastId:", newLastId);
         setLastId(newLastId);
       }
 
       if (reset) {
         const newLikedPaths = Object.fromEntries(
-          response.data.map((data) => [
-            data.walkwayId,
-            data.isLike,
-          ])
+          response.data.map((data) => [data.walkwayId, data.isLike])
         );
         const newLikeCounts = Object.fromEntries(
-          response.data.map((data) => [
-            data.walkwayId,
-            data.likeCount,
-          ])
+          response.data.map((data) => [data.walkwayId, data.likeCount])
         );
         setLikedPaths(newLikedPaths);
         setLikeCounts(newLikeCounts);
