@@ -49,8 +49,7 @@ function TrailReviewPage() {
       setHasNext(response.hasNext);
 
       if (response.data.length > 0) {
-        const newLastId =
-          response.data[response.data.length - 1].reviewId;
+        const newLastId = response.data[response.data.length - 1].reviewId;
         console.log("📌 응답에서 추출한 새로운 lastId:", newLastId);
         lastIdRef.current = newLastId;
       }
