@@ -20,9 +20,10 @@ export const getUserReviews = async ({
   hasNext: boolean;
 }> => {
   try {
-    const response = await instance.get
-      <{ data: UserReviewsType[]; hasNext: boolean }>
-    ("/users/reviews", {
+    const response = await instance.get<{
+      data: UserReviewsType[];
+      hasNext: boolean;
+    }>("/users/reviews", {
       params: { size, lastId },
     });
     return response.data;
@@ -49,14 +50,17 @@ export const showReviewRating = async (
 export const showReviewContent = async (
   walkwayId: string,
   sort: string
-): Promise<{
-  reviews: ReviewContentType[];
-}> => {
+): Promise<{ reviews: ReviewContentType[]; hasNext: boolean }> => {
   try {
-    const response = await instance.get
-    <{ reviews: ReviewContentType[] }
-    >(`/walkways/${walkwayId}/review/content?sort=${sort}`);
-    return response.data;
+    const response = await instance.get<{
+      data: ReviewContentType[];
+      hasNext: boolean;
+    }>(`/walkways/${walkwayId}/review/content?sort=${sort}`);
+
+    return {
+      reviews: response.data.data, // 'data' 속성에서 리뷰 배열 추출
+      hasNext: response.data.hasNext, // 페이지네이션 여부 반환
+    };
   } catch (error) {
     throw error;
   }

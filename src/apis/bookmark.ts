@@ -11,9 +11,10 @@ export const AddToBookmark = async (
   params: AddBookmarkRequest
 ): Promise<AddBookmarkResponse> => {
   try {
-    const response = await instance.post
-      <AddBookmarkResponse>
-    (`/bookmarks`, params);
+    const response = await instance.post<AddBookmarkResponse>(
+      `/bookmarks`,
+      params
+    );
     return response.data;
   } catch (error) {
     throw error;
@@ -30,7 +31,7 @@ export const getBookmark = async ({
   size: number;
 }): Promise<getBookmarkResponse> => {
   try {
-    const response = await instance.get<ApiResponseFormat<getBookmarkResponse>>(
+    const response = await instance.get<getBookmarkResponse>(
       `/walkways/${walkwayId}/bookmarks`,
       {
         params: {
@@ -40,7 +41,7 @@ export const getBookmark = async ({
       }
     );
     console.log("walkwayId:", walkwayId);
-    return response.data.data;
+    return response.data;
   } catch (error) {
     console.error("북마크 조회함수 에러:", error);
     throw error;

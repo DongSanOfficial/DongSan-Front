@@ -223,7 +223,7 @@ const ReviewCheck = () => {
         {error && <div>{error}</div>}
         {!loading &&
           !error &&
-          reviews.map((review) => (
+          reviews?.map((review) => (
             <div key={review.reviewId}>
               <TrailReviewCard
                 trailName={review.nickname}
