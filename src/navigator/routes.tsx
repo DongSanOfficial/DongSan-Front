@@ -1,7 +1,6 @@
 import Main from "../pages/main";
 import MyPage from "../pages/mypage";
 import TrailListPage from "../pages/mypage/TrailListPage";
-import TrailLikeListPage from "../pages/mypage/TrailListLikePage";
 import SignIn from "../pages/signin";
 import Registration from "../pages/newway/registration";
 import ReviewPage from "../pages/review";
@@ -56,10 +55,6 @@ const routes: RouteConfig[] = [
   {
     path: "/mypage/myregister/:walkwayId",
     component: () => <PathDetails isMyPath={true} />,
-  },
-  {
-    path: "/mypage/TrailLikeList",
-    component: TrailLikeListPage,
   },
   {
     path: "/mypage/ReviewableWalkway",
