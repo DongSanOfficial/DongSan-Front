@@ -4,9 +4,8 @@ import { likedWalkwayType } from "./likedWalkway.type";
 export const toggleLike = async ({
   walkwayId,
   isLiked,
-}: likedWalkwayType & {
-  isLiked: boolean;
-}): Promise<{}> => {
+}: likedWalkwayType
+): Promise<{}> => {
   try {
     const response = isLiked //하트에 따라 처리
       ? await instance.delete( //산책로 좋아요 취소 api

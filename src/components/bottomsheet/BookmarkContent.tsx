@@ -79,14 +79,6 @@ const CharCount = styled.span`
   color: #888;
 `;
 
-const ButtonWrapper = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: auto;
-  padding-bottom: 20px;
-`;
-
 const Button = styled.button<{ $primary?: boolean }>`
   padding: ${(props) => (props.$primary ? "10px 16px" : "10px 10px")};
   border: none;
@@ -338,7 +330,7 @@ export const BookmarkContent: React.FC<BookmarkContentProps> = ({
 
         console.log("북마크 조회 결과:", response);
 
-        const formattedBookmarks = response.bookmarks.map((bookmark) => ({
+        const formattedBookmarks = response.data.map((bookmark) => ({
           id: bookmark.bookmarkId,
           name: bookmark.name,
           marked: bookmark.marked,
@@ -346,9 +338,9 @@ export const BookmarkContent: React.FC<BookmarkContentProps> = ({
 
         setBookmarks(formattedBookmarks);
 
-        const markedBookmarkIds = response.bookmarks
-          .filter((bookmark) => bookmark.marked)
-          .map((bookmark) => bookmark.bookmarkId);
+        const markedBookmarkIds = response.data
+          .filter((data) => data.marked)
+          .map((data) => data.bookmarkId);
 
         if (markedBookmarkIds.length > 0) {
           setSelectedBookmarks(markedBookmarkIds);

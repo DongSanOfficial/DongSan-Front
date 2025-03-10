@@ -11,7 +11,7 @@ import { getUserProfile } from "../../apis/auth";
 import { UserProfileType } from "../../apis/auth.type";
 import BottomNavigation from "src/components/bottomNavigation";
 import AppBar from "src/components/appBar";
-import { getMyWalkways } from "src/apis/walkway";
+// import { getMyWalkways } from "src/apis/walkway";
 import { Trail } from "src/apis/walkway.type";
 import instance from "src/apis/instance";
 import { theme } from "src/styles/colors/theme";
@@ -141,12 +141,9 @@ function MyPage() {
   );
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
 
-  // 북마크 가져오는 함수
   const fetchBookmarks = async () => {
     try {
-      // 첫 번째 산책로 ID를 사용하거나 기본값 설정
-      const defaultWalkwayId =
-        previewTrails.length > 0 ? previewTrails[0].walkwayId : 1;
+      const defaultWalkwayId = 1;
 
       const response = await getBookmark({
         walkwayId: defaultWalkwayId,
@@ -154,7 +151,7 @@ function MyPage() {
       });
 
       console.log("북마크 조회 결과:", response);
-      setBookmarks(response.bookmarks || []);
+      setBookmarks(response.data || []);
     } catch (error) {
       console.error("북마크 조회 에러:", error);
       setBookmarks([]);
@@ -165,18 +162,19 @@ function MyPage() {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const [profile, walkwaysResponse, historyReview, userReviews] =
-          await Promise.all([
-            getUserProfile(),
-            getMyWalkways({ preview: true }),
-            getReviewRecord({ size: 3 }),
-            getUserReviews({ size: 3 }),
-          ]);
+        // const [profile, walkwaysResponse, historyReview, userReviews] =
+        const [profile, historyReview, userReviews] = await Promise.all([
+          getUserProfile(),
+          // getMyWalkways({ preview: true }),
+          getReviewRecord({ size: 3 }),
+          getUserReviews({ size: 3 }),
+        ]);
 
         setUserProfile(profile);
-        setPreviewTrails(walkwaysResponse.data);
         setPreviewHistory(historyReview.data ?? []);
         setReviews(userReviews.data || []);
+        fetchBookmarks();
+
         setError(null);
       } catch (err) {
         setError("데이터를 불러오는데 실패했습니다.");
@@ -190,16 +188,9 @@ function MyPage() {
     fetchData();
   }, []);
 
-  // previewTrails가 로드된 후 북마크 데이터 가져오기
-  useEffect(() => {
-    if (previewTrails.length > 0) {
-      fetchBookmarks();
-    }
-  }, [previewTrails]);
-
   const handleBookmarkClick = useCallback(
     (bookmarkId: number) => {
-      navigate(`/mypage/TrailLikeList?type=bookmarks&bookmarkId=${bookmarkId}`);
+      navigate(`/mypage/TrailList?type=bookmarks&bookmarkId=${bookmarkId}`);
     },
     [navigate]
   );
@@ -284,25 +275,28 @@ function MyPage() {
           <Line />
         </div>
         <div>
-          <Title>내가 "찜"한 산책로 조회</Title>
+          <Title>내가 찜한 산책로 조회</Title>
           {/* 좋아하는 산책로 */}
           <TrailBookmark
             icon={Favorite}
-            path="/mypage/TrailLikeList?type=favorites"
+            path="/mypage/TrailList?type=favorites"
             title="내가 좋아하는 산책로"
           />
 
-          {/* API에서 가져온 북마크 데이터 표시 */}
-          {bookmarks.map((bookmark) => (
-            <TrailBookmark
-              key={bookmark.bookmarkId}
-              icon={BookMark}
-              path={`/mypage/TrailLikeList?type=bookmarks&bookmarkId=${bookmark.bookmarkId}`}
-              title={bookmark.name}
-              onClick={() => handleBookmarkClick(bookmark.bookmarkId)}
-              bookmarkId={bookmark.bookmarkId} // bookmarkId prop 추가
-            />
-          ))}
+          {bookmarks && bookmarks.length > 0 ? (
+            bookmarks.map((bookmark) => (
+              <TrailBookmark
+                key={bookmark.bookmarkId}
+                icon={BookMark}
+                path={`/mypage/TrailList?type=bookmarks&bookmarkId=${bookmark.bookmarkId}`}
+                title={bookmark.name || "이름 없는 북마크"}
+                onClick={() => handleBookmarkClick(bookmark.bookmarkId)}
+                bookmarkId={bookmark.bookmarkId}
+              />
+            ))
+          ) : (
+            <div>북마크가 없습니다.</div>
+          )}
           <Line />
         </div>
 
