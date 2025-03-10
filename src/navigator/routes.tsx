@@ -15,6 +15,7 @@ import NewWay from "../pages/newway";
 import ReviewableHistory from "../pages/mypage/ReviewableHistory";
 import Guide from "../pages/guide";
 import Test from "../pages/test";
+import LocationAcceptance from "../pages/error/locationAcceptance";
 
 interface RouteConfig {
   path: string;
@@ -96,6 +97,10 @@ const routes: RouteConfig[] = [
     path: "/guide",
     component: Guide,
   },
+  {
+    path: "/locationAcceptance",
+    component: LocationAcceptance,
+  }
 ];
 
 export default routes;

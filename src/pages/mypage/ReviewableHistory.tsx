@@ -56,13 +56,13 @@ function ReviewableHistory() {
       });
       setReviews((prevReviews) => [
         ...prevReviews,
-        ...response.walkwayHistories,
+        ...response.data,
       ]);
 
-      if (response.walkwayHistories.length > 0) {
+      if (response.data.length > 0) {
         lastIdRef.current =
-          response.walkwayHistories[
-            response.walkwayHistories.length - 1
+          response.data[
+            response.data.length - 1
           ].walkwayId;
       }
       //setHasNext(response.hasNext);

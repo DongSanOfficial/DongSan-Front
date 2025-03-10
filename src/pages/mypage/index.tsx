@@ -174,9 +174,9 @@ function MyPage() {
           ]);
 
         setUserProfile(profile);
-        setPreviewTrails(walkwaysResponse.walkways);
-        setPreviewHistory(historyReview.walkwayHistories ?? []);
-        setReviews(userReviews.reviews || []);
+        setPreviewTrails(walkwaysResponse.data);
+        setPreviewHistory(historyReview.data ?? []);
+        setReviews(userReviews.data || []);
         setError(null);
       } catch (err) {
         setError("데이터를 불러오는데 실패했습니다.");
@@ -314,11 +314,11 @@ function MyPage() {
             </Button>
           </SeeAll>
           <Items>
-            {previewHistory.map((history) => (
+            {previewHistory.map((data) => (
               <HistoryCard
-                key={history.walkwayId}
-                history={history}
-                onClick={() => handleHistoryClick(history)}
+                key={data.walkwayId}
+                history={data}
+                onClick={() => handleHistoryClick(data)}
               />
             ))}
           </Items>

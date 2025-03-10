@@ -1,16 +1,15 @@
 import instance from "src/apis/instance";
 import {
   WalkwayParams,
-  WalkwaysApiResponse,
-  WalkwayDetailResponse,
   CreateWalkwayType,
   UpdateWalkwayType,
   MyWalkwaysResponse,
-  MyWalkwaysApiResponse,
   FetchWalkwaysOptions,
   WalkwayHistoryResponse,
+  WalkwaysResponse,
+  WalkwayDetail,
 } from "./walkway.type";
-import { ApiErrorResponse, ApiResponseFormat } from "src/apis/api.type";
+import { ApiErrorResponse } from "src/apis/api.type";
 import { AxiosError } from "axios";
 
 /**
@@ -18,7 +17,7 @@ import { AxiosError } from "axios";
  */
 export const searchWalkways = async (params: WalkwayParams) => {
   try {
-    const { data: response } = await instance.get<WalkwaysApiResponse>(
+    const { data: response } = await instance.get<WalkwaysResponse>(
       "/walkways",
       {
         params: {
@@ -32,11 +31,7 @@ export const searchWalkways = async (params: WalkwayParams) => {
       }
     );
 
-    if (!response.isSuccess) {
-      throw new Error(response.message);
-    }
-
-    return response.data;
+    return response;
   } catch (error) {
     const axiosError = error as AxiosError<ApiErrorResponse>;
     throw new Error(
@@ -50,15 +45,11 @@ export const searchWalkways = async (params: WalkwayParams) => {
  */
 export const getWalkwayDetail = async (walkwayId: number) => {
   try {
-    const { data: response } = await instance.get<WalkwayDetailResponse>(
+    const { data: response } = await instance.get<WalkwayDetail>(
       `/walkways/${walkwayId}`
     );
 
-    if (!response.isSuccess) {
-      throw new Error(response.message);
-    }
-
-    return response.data;
+    return response;
   } catch (error) {
     const axiosError = error as AxiosError<ApiErrorResponse>;
     throw new Error(
@@ -75,19 +66,15 @@ export const uploadCourseImage = async (courseImage: File) => {
     const formData = new FormData();
     formData.append("courseImage", courseImage);
 
-    const { data: response } = await instance.post<
-      ApiResponseFormat<{ courseImageId: number }>
-    >("/walkways/image", formData, {
+    const { data: response } = await instance.post
+      <{ courseImageId: number }>
+    ("/walkways/image", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     });
 
-    if (!response.isSuccess) {
-      throw new Error(response.message);
-    }
-
-    return response.data.courseImageId;
+    return response.courseImageId;
   } catch (error) {
     const axiosError = error as AxiosError<ApiErrorResponse>;
     throw new Error(
@@ -101,15 +88,9 @@ export const uploadCourseImage = async (courseImage: File) => {
  */
 export const createWalkway = async (walkwayData: CreateWalkwayType) => {
   try {
-    const { data: response } = await instance.post<
-      ApiResponseFormat<{ walkwayId: number }>
-    >("/walkways", walkwayData);
-
-    if (!response.isSuccess) {
-      throw new Error(response.message);
-    }
-
-    return response.data.walkwayId;
+    const { data: response } = await instance.post<{ walkwayId: number }>
+    ("/walkways", walkwayData);
+    return response.walkwayId;
   } catch (error) {
     const axiosError = error as AxiosError<ApiErrorResponse>;
     throw new Error(
@@ -126,22 +107,11 @@ export const updateWalkway = async (
   walkwayData: UpdateWalkwayType
 ) => {
   try {
-    const response = await instance.put<ApiResponseFormat<number>>(
+    const response = await instance.put<number>(
       `/walkways/${walkwayId}`,
       walkwayData
     );
-
-    // 204 응답은 성공으로 처리
-    if (response.status === 204) {
-      return true;
-    }
-
-    // 200 응답 처리
-    if (!response.data.isSuccess) {
-      throw new Error(response.data.message);
-    }
-
-    return response.data.data;
+    return response.data;
   } catch (error) {
     const axiosError = error as AxiosError<ApiErrorResponse>;
     throw new Error(
@@ -159,7 +129,7 @@ export const getMyWalkways = async ({
   preview = false,
 }: FetchWalkwaysOptions = {}): Promise<MyWalkwaysResponse> => {
   try {
-    const { data: response } = await instance.get<MyWalkwaysApiResponse>(
+    const { data: response } = await instance.get<MyWalkwaysResponse>(
       "/users/walkways/upload",
       {
         params: {
@@ -169,11 +139,7 @@ export const getMyWalkways = async ({
       }
     );
 
-    if (!response.isSuccess) {
-      throw new Error(response.message);
-    }
-
-    return response.data;
+    return response;
   } catch (error) {
     const axiosError = error as AxiosError<ApiErrorResponse>;
     throw new Error(
@@ -195,15 +161,11 @@ export const createWalkwayHistory = async (
   historyData: { time: number; distance: number }
 ) => {
   try {
-    const { data: response } = await instance.post<
-      ApiResponseFormat<WalkwayHistoryResponse>
-    >(`/walkways/${walkwayId}/history`, historyData);
+    const { data: response } = await instance.post
+      <WalkwayHistoryResponse>
+    (`/walkways/${walkwayId}/history`, historyData);
 
-    if (!response.isSuccess) {
-      throw new Error(response.message);
-    }
-
-    return response.data;
+    return response;
   } catch (error) {
     const axiosError = error as AxiosError<ApiErrorResponse>;
     throw new Error(

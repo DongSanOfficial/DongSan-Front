@@ -9,6 +9,10 @@ export const theme = {
     Following: '#FBBC05',
     FinishFlag: '#FC8E5C',
     StartFlag: '#A6BA59',
+    LocationAcceptIconBg: '#fee2e2',
+    LocationAcceptIcon: '#ef4444',
+    WarningTextBg: '#fef2f2',
+    WarningHighlight: '#b91c1c',
 
     
     Gray900: '#191F28',
