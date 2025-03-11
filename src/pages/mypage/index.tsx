@@ -11,7 +11,7 @@ import { getUserProfile } from "../../apis/auth";
 import { UserProfileType } from "../../apis/auth.type";
 import BottomNavigation from "src/components/bottomNavigation";
 import AppBar from "src/components/appBar";
-// import { getMyWalkways } from "src/apis/walkway";
+import { getMyWalkways } from "src/apis/walkway";
 import { Trail } from "src/apis/walkway.type";
 import instance from "src/apis/instance";
 import { theme } from "src/styles/colors/theme";
@@ -162,15 +162,14 @@ function MyPage() {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        // const [profile, walkwaysResponse, historyReview, userReviews] =
-        const [profile, historyReview, userReviews] = await Promise.all([
+        const [profile, walkwaysResponse, historyReview, userReviews] = await Promise.all([
           getUserProfile(),
-          // getMyWalkways({ preview: true }),
+          getMyWalkways({ preview: true }),
           getReviewRecord({ size: 3 }),
           getUserReviews({ size: 3 }),
         ]);
-
         setUserProfile(profile);
+        setPreviewTrails(walkwaysResponse.data);
         setPreviewHistory(historyReview.data ?? []);
         setReviews(userReviews.data || []);
         fetchBookmarks();
