@@ -30,6 +30,7 @@
     "start_url": ".",
     "display": "standalone",
     "background_color": "#ffffff",
-    "description": "동산과 함께 산책해요"
+    "description": "동산과 함께 산책해요",
+    "permissions": ["geolocation"]
   }
   
