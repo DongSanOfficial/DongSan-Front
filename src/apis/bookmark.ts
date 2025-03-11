@@ -1,25 +1,33 @@
+import instance from "./instance";
+import { AxiosError } from "axios";
+import { ApiErrorResponse } from "./api.type";
 import {
   AddBookmarkRequest,
   AddBookmarkResponse,
-  addToBookmark,
   getBookmarkResponse,
+  addToBookmark,
+  putBookmarkRequest,
 } from "./bookmark.type";
-import instance from "./instance";
+import { BookmarkWalkwaysResponse, WalkwayListResponse } from "./walkway.type";
 
 // 북마크 생성 api
 export const AddToBookmark = async (
   params: AddBookmarkRequest
 ): Promise<AddBookmarkResponse> => {
   try {
-    const response = await instance.post<AddBookmarkResponse>(
+    const { data: response } = await instance.post<AddBookmarkResponse>(
       `/bookmarks`,
       params
     );
-    return response.data;
+    return response;
   } catch (error) {
-    throw error;
+    const axiosError = error as AxiosError<ApiErrorResponse>;
+    throw new Error(
+      axiosError.response?.data?.message || "북마크 생성에 실패했습니다."
+    );
   }
 };
+
 // 북마크 조회 api
 export const getBookmark = async ({
   walkwayId,
@@ -31,25 +39,26 @@ export const getBookmark = async ({
   size: number;
 }): Promise<getBookmarkResponse> => {
   try {
-    const response = await instance.get<getBookmarkResponse>(
+    const { data: response } = await instance.get<getBookmarkResponse>(
       `/walkways/${walkwayId}/bookmarks`,
       {
         params: {
-          lastId: lastId,
-          size: size,
+          lastId,
+          size,
         },
       }
     );
-    console.log("walkwayId:", walkwayId);
-    return response.data;
+    return response;
   } catch (error) {
-    console.error("북마크 조회함수 에러:", error);
-    throw error;
+    const axiosError = error as AxiosError<ApiErrorResponse>;
+    throw new Error(
+      axiosError.response?.data?.message || "북마크 목록 조회에 실패했습니다."
+    );
   }
 };
 
+// 북마크에 산책로를 추가 api
 export const SaveToBookmark = async ({
-  //북마크에 산책로를 추가 api(북마크 저장)
   bookmarkId,
   walkwayId,
 }: {
@@ -57,30 +66,101 @@ export const SaveToBookmark = async ({
   walkwayId: number;
 }): Promise<addToBookmark> => {
   try {
-    const response = await instance.post<addToBookmark>(
+    const { data: response } = await instance.post<addToBookmark>(
       `/bookmarks/${bookmarkId}/walkways`,
       { walkwayId }
     );
-    return response.data;
+    return response;
   } catch (error) {
-    throw error;
+    const axiosError = error as AxiosError<ApiErrorResponse>;
+    throw new Error(
+      axiosError.response?.data?.message ||
+        "북마크에 산책로 추가에 실패했습니다."
+    );
   }
 };
 
+// 북마크에 산책로를 제거 api
 export const RemoveToBookmark = async ({
-  //북마크에 산책로를 제거 api
   bookmarkId,
   walkwayId,
 }: {
   bookmarkId: number;
   walkwayId: number;
-}): Promise<{}> => {
+}): Promise<void> => {
   try {
-    const response = await instance.delete(
-      `/bookmarks/${bookmarkId}/walkways/${walkwayId}`
+    await instance.delete(`/bookmarks/${bookmarkId}/walkways/${walkwayId}`);
+  } catch (error) {
+    const axiosError = error as AxiosError<ApiErrorResponse>;
+    throw new Error(
+      axiosError.response?.data?.message ||
+        "북마크에서 산책로 제거에 실패했습니다."
+    );
+  }
+};
+
+// 북마크 수정 api
+export const putBookmarkName = async ({
+  bookmarkId,
+  name,
+}: {
+  bookmarkId: number;
+  name: string;
+}): Promise<void> => {
+  try {
+    await instance.put<putBookmarkRequest>(`/bookmarks/${bookmarkId}`, {
+      name,
+    });
+  } catch (error) {
+    const axiosError = error as AxiosError<ApiErrorResponse>;
+    throw new Error(
+      axiosError.response?.data?.message || "북마크 이름 수정에 실패했습니다."
+    );
+  }
+};
+
+// 북마크 삭제 api
+export const deleteBookmarkName = async ({
+  bookmarkId,
+}: {
+  bookmarkId: number;
+}): Promise<void> => {
+  try {
+    await instance.delete(`/bookmarks/${bookmarkId}`);
+  } catch (error) {
+    const axiosError = error as AxiosError<ApiErrorResponse>;
+    throw new Error(
+      axiosError.response?.data?.message || "북마크 삭제에 실패했습니다."
+    );
+  }
+};
+
+// 북마크에 저장된 산책로 조회 api
+export const getBookmarkedWalkways = async ({
+  bookmarkId,
+  size = 10,
+  lastId,
+}: {
+  bookmarkId: number;
+  size?: number;
+  lastId?: number;
+}): Promise<WalkwayListResponse> => {
+  try {
+    const { data: response } = await instance.get<BookmarkWalkwaysResponse>(
+      `/bookmarks/${bookmarkId}/walkways`,
+      {
+        params: {
+          lastId,
+          size,
+        },
+      }
     );
     return response;
   } catch (error) {
-    throw error;
+    const axiosError = error as AxiosError<ApiErrorResponse>;
+    throw new Error(
+      axiosError.response?.data?.message ||
+        "북마크된 산책로 조회에 실패했습니다."
+    );
   }
 };

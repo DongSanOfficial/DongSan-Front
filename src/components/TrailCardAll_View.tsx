@@ -1,47 +1,45 @@
 import React from "react";
 import styled from "styled-components";
-import { Trail } from "../apis/walkway.type";
 import CourseImage from "./map/CourseImage";
 import StarCount from "./review/starCount";
 
 const TrailContents = styled.div`
-  flex: 0 0 auto;
-  width: calc(100dvw - 50px);
-  max-width: 400px;
-  height: 100%;
+  width: 100%;
   background: #ffffff;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
   border-radius: 10px;
   display: flex;
   align-items: center;
-  text-align: center;
   cursor: pointer;
   transition: transform 0.2s ease;
+  box-sizing: border-box;
 
   &:hover {
     transform: translateY(-2px);
   }
 `;
 
+const ImageContainer = styled.div`
+  flex: 0 0 auto;
+  padding: 10px;
+`;
+
 const MytrailInfo = styled.div`
   display: flex;
   flex-direction: column;
-  width: 60%;
-  padding-right: 10px;
+  flex: 1;
+  padding: 10px 10px 10px 0;
+  min-width: 0;
 `;
 
 const MytrailHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
   color: #054630;
   font-size: 18px;
   font-weight: 600;
-`;
-
-const MytrailContent = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  font-size: 14px;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const Mytrailhashtag = styled.div`
@@ -49,6 +47,7 @@ const Mytrailhashtag = styled.div`
   flex-wrap: wrap;
   gap: 4px;
   font-size: 12px;
+  margin-bottom: 4px;
 `;
 
 const MytrailSubContent = styled.div`
@@ -56,28 +55,50 @@ const MytrailSubContent = styled.div`
   align-items: center;
   gap: 4px;
   font-size: 12px;
+  margin-bottom: 4px;
 `;
 
 const MytrailLength = styled.div`
   font-size: 35px;
   font-family: "Lalezar";
+  text-align: right;
 `;
 
 interface TrailCardProps {
-  trail: Trail;
+  trail: {
+    walkwayId: number;
+    name: string;
+    distance: number;
+    courseImageUrl: string;
+    hashtags: string[];
+    rating: number;
+    reviewCount: number;
+    time?: number;
+    memo?: string;
+    likeCount?: number;
+    date?: string;
+  };
   onClick?: (walkwayId: number) => void;
 }
 
 function TrailCardAll({ trail, onClick }: TrailCardProps) {
+  const getRating = () => {
+    return typeof trail.rating === 'number' ? trail.rating : 0;
+  };
+
+  const getReviewCount = () => {
+    return typeof trail.reviewCount === 'number' ? trail.reviewCount : 0;
+  };
+
   return (
     <TrailContents onClick={() => onClick?.(trail.walkwayId)}>
-      <div style={{ padding: "10px" }}>
+      <ImageContainer>
         <CourseImage
           src={trail.courseImageUrl}
           alt="산책로 이미지"
           size="100px"
         />
-      </div>
+      </ImageContainer>
       <MytrailInfo>
         <MytrailHeader>{trail.name}</MytrailHeader>
         <Mytrailhashtag>
@@ -86,13 +107,11 @@ function TrailCardAll({ trail, onClick }: TrailCardProps) {
           ))}
         </Mytrailhashtag>
         <MytrailSubContent>
-          <span>{trail.rating.toFixed(1)}</span>
-          <StarCount rating={trail.rating} size={12} />
-          <span>리뷰 {trail.reviewCount.toLocaleString()}개</span>
+          <span>{getRating().toFixed(1)}</span>
+          <StarCount rating={getRating()} size={12} />
+          <span>리뷰 {getReviewCount().toLocaleString()}개</span>
         </MytrailSubContent>
-        <MytrailContent>
-          <MytrailLength>{trail.distance}km</MytrailLength>
-        </MytrailContent>
+        <MytrailLength>{trail.distance}km</MytrailLength>
       </MytrailInfo>
     </TrailContents>
   );

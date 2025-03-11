@@ -8,6 +8,7 @@ import {
   WalkwayHistoryResponse,
   WalkwaysResponse,
   WalkwayDetail,
+  WalkwayListResponse,
 } from "./walkway.type";
 import { ApiErrorResponse } from "src/apis/api.type";
 import { AxiosError } from "axios";
@@ -127,7 +128,7 @@ export const getMyWalkways = async ({
   size = 10,
   lastId,
   preview = false,
-}: FetchWalkwaysOptions = {}): Promise<MyWalkwaysResponse> => {
+}: FetchWalkwaysOptions = {}): Promise<WalkwayListResponse> => {
   try {
     const { data: response } = await instance.get<MyWalkwaysResponse>(
       "/users/walkways/upload",
@@ -144,6 +145,35 @@ export const getMyWalkways = async ({
     const axiosError = error as AxiosError<ApiErrorResponse>;
     throw new Error(
       axiosError.response?.data?.message || "등록한 산책로 조회에 실패했습니다."
+    );
+  }
+};
+
+/**
+ * 좋아요한 산책로 조회 API 호출
+ */
+export const getLikedWalkways = async ({
+  size = 10,
+  lastId,
+}: {
+  size?: number;
+  lastId?: number;
+}): Promise<WalkwayListResponse> => {
+  try {
+    const { data: response } = await instance.get<MyWalkwaysResponse>(
+      "/users/walkways/like",
+      {
+        params: {
+          size,
+          lastId,
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    const axiosError = error as AxiosError<ApiErrorResponse>;
+    throw new Error(
+      axiosError.response?.data?.message || "좋아요한 산책로 조회에 실패했습니다."
     );
   }
 };
