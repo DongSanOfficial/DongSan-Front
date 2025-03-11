@@ -4,6 +4,8 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import { CookiesProvider } from "react-cookie";
 import { ToastProvider } from "./context/ToastContext";
+import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
+
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -17,3 +19,4 @@ root.render(
     </BrowserRouter>
   </CookiesProvider>
 );
+serviceWorkerRegistration.register();

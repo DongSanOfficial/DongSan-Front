@@ -4,7 +4,8 @@
     "lib": [
       "dom",
       "dom.iterable",
-      "esnext"
+      "esnext",
+      "webworker"
     ],
     "baseUrl": ".",
     "paths": {
@@ -26,6 +27,6 @@
     "typeRoots": ["./node_modules/@types", "./src/type_declaration"],
   },
   "include": [
-    "src",
+    "src", "src/service-worker.ts",
   ]
 }

@@ -1,0 +1,35 @@
+{
+    "name": "동산",
+    "short_name": "동산", 
+    "icons": [
+      {
+        "src": "any-dongsan192.png",
+        "type": "image/png",
+        "sizes": "192x192",
+        "purpose": "any"
+      },
+      {
+        "src": "any-dongsan512.png",
+        "type": "image/png",
+        "sizes": "512x512",
+        "purpose": "any"
+      },
+      {
+        "src": "maskable-dongsan192.png",
+        "type": "image/png",
+        "sizes": "192x192",
+        "purpose": "maskable"
+      },
+      {
+        "src": "maskable-dongsan512.png",
+        "type": "image/png",
+        "sizes": "512x512",
+        "purpose": "maskable"
+      }
+    ],
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "description": "동산과 함께 산책해요"
+  }
+  
