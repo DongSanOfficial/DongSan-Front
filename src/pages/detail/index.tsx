@@ -222,25 +222,24 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
     canReview?: boolean;
   }>({});
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
-  const [isBottomSheetVoid, setIsBottomSheetVoid] = useState(false);
+
+  const fetchWalkwayDetail = async () => {
+    try {
+      setLoading(true);
+      const data = await getWalkwayDetail(Number(walkwayId));
+      setWalkwayDetail(data);
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("산책로 정보를 불러오는데 실패했습니다.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchWalkwayDetail = async () => {
-      try {
-        setLoading(true);
-        const data = await getWalkwayDetail(Number(walkwayId));
-        setWalkwayDetail(data);
-      } catch (error) {
-        if (error instanceof Error) {
-          setError(error.message);
-        } else {
-          setError("산책로 정보를 불러오는데 실패했습니다.");
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
     if (walkwayId) {
       fetchWalkwayDetail();
     }
@@ -268,28 +267,10 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
     }
   };
 
-  const handleBookmarkClick = async () => {
-    if (walkwayDetail) {
-      const currentMarkedState = walkwayDetail.marked;
-      const newMarkedState = !currentMarkedState;
-
-      setWalkwayDetail({
-        ...walkwayDetail,
-        marked: newMarkedState,
-      });
-
-      try {
-        setIsBottomSheetOpen(true);
-      } catch (error) {
-        console.error("북마크 추가 실패:", error);
-
-        // ❌ API 요청 실패 시 원래 상태로 롤백
-        setWalkwayDetail(
-          (prev) => prev && { ...prev, marked: currentMarkedState }
-        );
-      }
-    }
+  const handleBookmarkClick = () => {
+    setIsBottomSheetOpen(true);
   };
+
   const goToReviews = (): void => {
     navigate(`/main/review/${walkwayId}/content`);
     // TODO: API 리뷰 페이지 이동 업데이트
@@ -358,6 +339,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
 
   const handleBottomSheetClose = () => {
     setIsBottomSheetOpen(false);
+    fetchWalkwayDetail(); // 바텀시트가 닫힐 때 API 호출
   };
 
   const handleBottomSheetOpen = () => {
