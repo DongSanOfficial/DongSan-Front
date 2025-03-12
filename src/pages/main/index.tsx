@@ -394,11 +394,11 @@ function Main() {
             value={searchValue}
             onChange={handleSearchChange}
             onSearch={handleSearch}
-            onOutsideClick={() => setSearchResults([])}
           />
           <SearchResults
             results={searchResults}
             onSelect={handleResultSelect}
+            onOutsideClick={() => setSearchResults([])}
           />
         </SearchBarContainer>
 

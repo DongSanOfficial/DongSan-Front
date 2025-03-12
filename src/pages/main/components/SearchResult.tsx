@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import styled from "styled-components";
 import { theme } from "../../../styles/colors/theme";
 
@@ -57,6 +57,7 @@ interface SearchResultsProps {
   results: SearchResult[];
   /** 결과 선택 핸들러 */
   onSelect: (result: SearchResult) => void;
+  onOutsideClick?: () => void;
 }
 
 /**
@@ -64,13 +65,36 @@ interface SearchResultsProps {
  * @param props - SearchResultsProps
  * @returns 검색 결과 목록 또는 null
  */
-const SearchResults = ({ results, onSelect }: SearchResultsProps) => {
+const SearchResults = ({ results, onSelect, onOutsideClick }: SearchResultsProps) => {
+  const resultsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (resultsRef.current && !resultsRef.current.contains(event.target as Node)) {
+        if (results.length > 0) {
+          onOutsideClick?.();
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [results, onOutsideClick]);
+
   if (results.length === 0) return null;
 
   return (
-    <ResultsContainer>
+    <ResultsContainer ref={resultsRef}>
       {results.map((result, index) => (
-        <ResultItem key={index} onClick={() => onSelect(result)}>
+        <ResultItem 
+          key={index} 
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelect(result);
+          }}
+        >
           <PlaceName>{result.placeName}</PlaceName>
           <Address>{result.address}</Address>
         </ResultItem>
