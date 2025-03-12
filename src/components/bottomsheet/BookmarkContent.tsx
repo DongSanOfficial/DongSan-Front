@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import {
   AddToBookmark,
   getBookmark,
+  RemoveToBookmark,
   SaveToBookmark,
 } from "../../apis/bookmark";
 import { AiOutlinePlus } from "react-icons/ai";
@@ -261,14 +262,42 @@ export const BookmarkContent: React.FC<BookmarkContentProps> = ({
 
   const isEmptyBookmarks = bookmarks.length === 0;
 
-  const toggleBookmarkSelection = (bookmarkId: number) => {
-    setSelectedBookmarks((prev) => {
-      if (prev.includes(bookmarkId)) {
-        return prev.filter((id) => id !== bookmarkId);
+  const toggleBookmarkSelection = async (
+    bookmarkId: number,
+    checked: boolean
+  ) => {
+    try {
+      if (checked) {
+        // ✅ 체크 추가 (북마크 저장)
+        await SaveToBookmark({
+          bookmarkId: bookmarkId,
+          walkwayId: Number(walkwayId),
+        });
+        showToast("북마크에 저장되었습니다.", "success");
+        setSelectedBookmarks((prev) => [...prev, bookmarkId]);
+        setBookmarks((prevBookmarks) =>
+          prevBookmarks.map((bookmark) =>
+            bookmark.id === bookmarkId
+              ? { ...bookmark, marked: true }
+              : bookmark
+          )
+        );
       } else {
-        return [...prev, bookmarkId];
+        // ✅ 체크 해제 (북마크 삭제)
+        await RemoveToBookmark({ bookmarkId, walkwayId: Number(walkwayId) });
+        showToast("북마크에서 제거되었습니다.", "success");
+        setSelectedBookmarks((prev) => prev.filter((id) => id !== bookmarkId));
+        setBookmarks((prevBookmarks) =>
+          prevBookmarks.map((bookmark) =>
+            bookmark.id === bookmarkId
+              ? { ...bookmark, marked: false }
+              : bookmark
+          )
+        );
       }
-    });
+    } catch (error: any) {
+      showToast(error.message, "error");
+    }
   };
 
   const handleCreateSubmit = async (e: React.FormEvent) => {
@@ -285,33 +314,12 @@ export const BookmarkContent: React.FC<BookmarkContentProps> = ({
         };
 
         setBookmarks((prevBookmarks) => [...prevBookmarks, newBookmark]);
-        setSelectedBookmarks((prev) => [...prev, response.bookmarkId]);
+        //setSelectedBookmarks((prev) => [...prev, response.bookmarkId]);
         setNewBookmarkName("");
         setIsCreating(false);
       } catch (error) {
         console.error("북마크 생성 에러:", error);
         alert("북마크 생성에 실패했습니다.");
-      }
-    }
-  };
-
-  const handleComplete = async () => {
-    if (selectedBookmarks.length > 0) {
-      try {
-        const savePromises = selectedBookmarks.map((bookmarkId) =>
-          SaveToBookmark({
-            bookmarkId: bookmarkId,
-            walkwayId: Number(walkwayId),
-          })
-        );
-
-        await Promise.all(savePromises);
-        showToast("산책로가 저장되었습니다.", "success");
-        if (onComplete) {
-          onComplete();
-        }
-      } catch (error) {
-        showToast("잠시 후 다시 시도해주세요.", "error");
       }
     }
   };
@@ -371,7 +379,9 @@ export const BookmarkContent: React.FC<BookmarkContentProps> = ({
                       type="checkbox"
                       name="bookmark"
                       checked={selectedBookmarks.includes(bookmark.id)}
-                      onChange={() => toggleBookmarkSelection(bookmark.id)}
+                      onChange={(e) =>
+                        toggleBookmarkSelection(bookmark.id, e.target.checked)
+                      }
                     />
                     <CustomCheckbox />
                     {bookmark.name}
@@ -390,15 +400,7 @@ export const BookmarkContent: React.FC<BookmarkContentProps> = ({
             )}
           </AddBookmarkButton>
 
-          <BottomButtons>
-            {selectedBookmarks.length > 0 && (
-              <CompleteButton $primary onClick={handleComplete}>
-                {selectedBookmarks.length > 1
-                  ? `${selectedBookmarks.length}개 저장`
-                  : "저장하기"}
-              </CompleteButton>
-            )}
-          </BottomButtons>
+          {/* 저장 버튼 삭제 */}
         </>
       ) : (
         <>

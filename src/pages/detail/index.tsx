@@ -278,12 +278,18 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
         marked: newMarkedState,
       });
 
-      if (newMarkedState) {
+      try {
         setIsBottomSheetOpen(true);
+      } catch (error) {
+        console.error("북마크 추가 실패:", error);
+
+        // ❌ API 요청 실패 시 원래 상태로 롤백
+        setWalkwayDetail(
+          (prev) => prev && { ...prev, marked: currentMarkedState }
+        );
       }
     }
   };
-
   const goToReviews = (): void => {
     navigate(`/main/review/${walkwayId}/content`);
     // TODO: API 리뷰 페이지 이동 업데이트
