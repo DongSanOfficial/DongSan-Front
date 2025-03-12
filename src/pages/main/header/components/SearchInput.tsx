@@ -44,7 +44,6 @@ interface SearchBarProps {
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onSearch: () => void;
   className?: string;
-  onOutsideClick?: () => void;  // 외부 클릭 핸들러 추가
 }
 
 const SearchBar = ({
@@ -53,22 +52,9 @@ const SearchBar = ({
   value,
   onSearch,
   className,
-  onOutsideClick
 }: SearchBarProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        onOutsideClick?.();
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [onOutsideClick]);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
