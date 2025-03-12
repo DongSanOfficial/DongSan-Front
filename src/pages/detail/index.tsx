@@ -222,25 +222,24 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
     canReview?: boolean;
   }>({});
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
-  const [isBottomSheetVoid, setIsBottomSheetVoid] = useState(false);
+
+  const fetchWalkwayDetail = async () => {
+    try {
+      setLoading(true);
+      const data = await getWalkwayDetail(Number(walkwayId));
+      setWalkwayDetail(data);
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("산책로 정보를 불러오는데 실패했습니다.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchWalkwayDetail = async () => {
-      try {
-        setLoading(true);
-        const data = await getWalkwayDetail(Number(walkwayId));
-        setWalkwayDetail(data);
-      } catch (error) {
-        if (error instanceof Error) {
-          setError(error.message);
-        } else {
-          setError("산책로 정보를 불러오는데 실패했습니다.");
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
     if (walkwayId) {
       fetchWalkwayDetail();
     }
@@ -268,20 +267,8 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
     }
   };
 
-  const handleBookmarkClick = async () => {
-    if (walkwayDetail) {
-      const currentMarkedState = walkwayDetail.marked;
-      const newMarkedState = !currentMarkedState;
-
-      setWalkwayDetail({
-        ...walkwayDetail,
-        marked: newMarkedState,
-      });
-
-      if (newMarkedState) {
-        setIsBottomSheetOpen(true);
-      }
-    }
+  const handleBookmarkClick = () => {
+    setIsBottomSheetOpen(true);
   };
 
   const goToReviews = (): void => {
@@ -352,6 +339,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
 
   const handleBottomSheetClose = () => {
     setIsBottomSheetOpen(false);
+    fetchWalkwayDetail(); // 바텀시트가 닫힐 때 API 호출
   };
 
   const handleBottomSheetOpen = () => {
