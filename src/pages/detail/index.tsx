@@ -273,7 +273,6 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
 
   const goToReviews = (): void => {
     navigate(`/main/review/${walkwayId}/content`);
-    // TODO: API 리뷰 페이지 이동 업데이트
   };
 
   const handleEditClick = () => {
@@ -329,7 +328,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
 
   const handleBack = () => {
     if (location.state?.from === "mypage") {
-      navigate("/mypage"); // 마이페이지로 직접 이동
+      navigate("/mypage");
     } else if (isMyPath) {
       navigate("/mypage/TrailList"); // 전체보기 페이지로 이동
     } else {
@@ -339,12 +338,8 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
 
   const handleBottomSheetClose = () => {
     setIsBottomSheetOpen(false);
-    fetchWalkwayDetail(); // 바텀시트가 닫힐 때 API 호출
   };
 
-  const handleBottomSheetOpen = () => {
-    setIsBottomSheetOpen(true);
-  };
 
   if (loading) return <LoadingSpinner />;
   if (error) return <div>{error}</div>;
@@ -396,7 +391,6 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
                     onClick={toggleHeart}
                   />
                   {walkwayDetail.likeCount}
-                  {/* 서버 디비에 좋아요 수 추가되면 필드명 반영하기 */}
                 </ReactionButton>
                 <RatingContainer>
                   <RatingGroup>
@@ -448,12 +442,14 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
       <BottomSheet
         isOpen={isBottomSheetOpen}
         onClose={handleBottomSheetClose}
-        onOpen={handleBottomSheetOpen}
+        onOpen={() => setIsBottomSheetOpen(true)}
         maxHeight="50vh"
         minHeight="0vh"
       >
         <div>
-          <BookmarkContent onComplete={handleBottomSheetClose} />
+          <BookmarkContent
+            onComplete={() => setIsBottomSheetOpen(false)}
+          />
         </div>
       </BottomSheet>
     </>
