@@ -22,6 +22,14 @@ export const AddToBookmark = async (
     return response;
   } catch (error) {
     const axiosError = error as AxiosError<ApiErrorResponse>;
+    
+    // 중복된 북마크 이름인 경우 에러 메시지 반환
+    if (axiosError.response?.data?.code === "BOOKMARK-02") {
+      throw new Error(
+        "이름이 같은 북마크가 이미 존재합니다."
+      );
+    }
+    
     throw new Error(
       axiosError.response?.data?.message || "북마크 생성에 실패했습니다."
     );
@@ -113,6 +121,14 @@ export const putBookmarkName = async ({
     });
   } catch (error) {
     const axiosError = error as AxiosError<ApiErrorResponse>;
+    
+    // 중복된 북마크 이름인 경우 에러 메시지 반환
+    if (axiosError.response?.data?.code === "BOOKMARK-02") {
+      throw new Error(
+        "이름이 같은 북마크가 이미 존재합니다."
+      );
+    }
+    
     throw new Error(
       axiosError.response?.data?.message || "북마크 이름 수정에 실패했습니다."
     );

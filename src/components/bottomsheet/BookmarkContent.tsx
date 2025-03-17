@@ -175,30 +175,6 @@ const CustomCheckbox = styled.span`
   }
 `;
 
-const BottomButtons = styled.div`
-  position: fixed;
-  bottom: 70px;
-  left: 0;
-  right: 0;
-  margin: 0 auto;
-  background-color: white;
-  padding: 16px 20px;
-  border-top: 1px solid #eaeaea;
-  display: flex;
-  justify-content: center;
-  z-index: 100;
-`;
-
-const CompleteButton = styled(Button)`
-  padding: 10px 30px;
-  background-color: #167258;
-  color: white;
-  border-radius: 20px;
-  font-weight: bold;
-  min-width: 120px;
-  justify-content: center;
-`;
-
 const AddBookmarkButton = styled.button`
   display: flex;
   align-items: center;
@@ -250,9 +226,9 @@ interface BookmarkContentProps {
   onComplete?: () => void;
 }
 
-export const BookmarkContent: React.FC<BookmarkContentProps> = ({
+export const BookmarkContent = ({
   onComplete,
-}) => {
+}: BookmarkContentProps) => {
   const { showToast } = useToast();
   const [isCreating, setIsCreating] = useState(false);
   const [newBookmarkName, setNewBookmarkName] = useState("");
@@ -262,13 +238,20 @@ export const BookmarkContent: React.FC<BookmarkContentProps> = ({
 
   const isEmptyBookmarks = bookmarks.length === 0;
 
+  // 이름 중복 체크 함수
+  const checkDuplicateName = (name: string): boolean => {
+    return bookmarks.some(
+      (bookmark) =>
+        bookmark.name.trim().toLowerCase() === name.trim().toLowerCase()
+    );
+  };
+
   const toggleBookmarkSelection = async (
     bookmarkId: number,
     checked: boolean
   ) => {
     try {
       if (checked) {
-        // ✅ 체크 추가 (북마크 저장)
         await SaveToBookmark({
           bookmarkId: bookmarkId,
           walkwayId: Number(walkwayId),
@@ -283,7 +266,6 @@ export const BookmarkContent: React.FC<BookmarkContentProps> = ({
           )
         );
       } else {
-        // ✅ 체크 해제 (북마크 삭제)
         await RemoveToBookmark({ bookmarkId, walkwayId: Number(walkwayId) });
         showToast("북마크에서 제거되었습니다.", "success");
         setSelectedBookmarks((prev) => prev.filter((id) => id !== bookmarkId));
@@ -302,42 +284,61 @@ export const BookmarkContent: React.FC<BookmarkContentProps> = ({
 
   const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newBookmarkName.trim() && newBookmarkName.length <= 15) {
-      try {
-        const response = await AddToBookmark({
-          name: newBookmarkName.trim(),
-        });
+    const trimmedName = newBookmarkName.trim();
 
-        const newBookmark: Bookmark = {
-          id: response.bookmarkId,
-          name: newBookmarkName.trim(),
-        };
+    if (!trimmedName) {
+      showToast("북마크 이름을 입력해주세요.", "error");
+      return;
+    }
 
-        setBookmarks((prevBookmarks) => [...prevBookmarks, newBookmark]);
-        //setSelectedBookmarks((prev) => [...prev, response.bookmarkId]);
-        setNewBookmarkName("");
-        setIsCreating(false);
-      } catch (error) {
-        console.error("북마크 생성 에러:", error);
-        alert("북마크 생성에 실패했습니다.");
+    if (trimmedName.length > 15) {
+      showToast("북마크 이름은 15자 이내로 입력해주세요.", "error");
+      return;
+    }
+
+    if (checkDuplicateName(trimmedName)) {
+      showToast("해당 이름의 북마크가 이미 존재합니다.", "error");
+      return;
+    }
+
+    try {
+      const response = await AddToBookmark({
+        name: trimmedName,
+      });
+
+      const newBookmark: Bookmark = {
+        id: response.bookmarkId,
+        name: trimmedName,
+      };
+
+      setBookmarks((prevBookmarks) => [...prevBookmarks, newBookmark]);
+      setNewBookmarkName("");
+      setIsCreating(false);
+      showToast("새 북마크가 생성되었습니다.", "success");
+    } catch (error: any) {
+      console.error("북마크 생성 에러:", error);
+
+      if (
+        error.message &&
+        (error.message.includes("이름이 같은 북마크가") ||
+          error.message.includes("BOOKMARK-02"))
+      ) {
+        showToast("해당 이름의 북마크가 이미 존재합니다.", "error");
+      } else {
+        showToast("잠시후 다시 시도해주세요.", "error");
       }
     }
   };
 
+
   useEffect(() => {
     const fetchBookmarks = async () => {
       if (!walkwayId) return;
-
-      console.log("북마크 조회 시작 - walkwayId:", walkwayId);
-
       try {
         const response = await getBookmark({
           walkwayId: Number(walkwayId),
           size: 10,
         });
-
-        console.log("북마크 조회 결과:", response);
-
         const formattedBookmarks = response.data.map((bookmark) => ({
           id: bookmark.bookmarkId,
           name: bookmark.name,
@@ -399,8 +400,6 @@ export const BookmarkContent: React.FC<BookmarkContentProps> = ({
               </SelectedCount>
             )}
           </AddBookmarkButton>
-
-          {/* 저장 버튼 삭제 */}
         </>
       ) : (
         <>
@@ -420,10 +419,20 @@ export const BookmarkContent: React.FC<BookmarkContentProps> = ({
           </BookmarkForm>
 
           <FormBottom>
-            <Button type="button" onClick={() => setIsCreating(false)}>
+            <Button
+              type="button"
+              onClick={() => {
+                setIsCreating(false);
+                setNewBookmarkName("");
+              }}
+            >
               취소
             </Button>
-            <Button $primary onClick={handleCreateSubmit}>
+            <Button
+              $primary
+              onClick={handleCreateSubmit}
+              disabled={!newBookmarkName.trim() || newBookmarkName.length > 15}
+            >
               + 만들기
             </Button>
           </FormBottom>
