@@ -140,6 +140,7 @@ function MyPage() {
     []
   );
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
+  const [refreshBookmarks, setRefreshBookmarks] = useState(0);
 
   const fetchBookmarks = async () => {
     try {
@@ -172,7 +173,8 @@ function MyPage() {
         setPreviewTrails(walkwaysResponse.data);
         setPreviewHistory(historyReview.data ?? []);
         setReviews(userReviews.data || []);
-        fetchBookmarks();
+        
+        await fetchBookmarks();
 
         setError(null);
       } catch (err) {
@@ -185,6 +187,16 @@ function MyPage() {
     };
 
     fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (refreshBookmarks > 0) {
+      fetchBookmarks();
+    }
+  }, [refreshBookmarks]);
+
+  const handleBookmarkUpdate = useCallback(() => {
+    setRefreshBookmarks(prev => prev + 1);
   }, []);
 
   const handleBookmarkClick = useCallback(
@@ -291,6 +303,7 @@ function MyPage() {
                 title={bookmark.name || "이름 없는 북마크"}
                 onClick={() => handleBookmarkClick(bookmark.bookmarkId)}
                 bookmarkId={bookmark.bookmarkId}
+                onUpdate={handleBookmarkUpdate}
               />
             ))
           )}

@@ -139,6 +139,7 @@ const TrailBookmark: React.FC<TrailBookmarkProps> = ({
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [newBookmarkName, setNewBookmarkName] = useState(title);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentTitle, setCurrentTitle] = useState(title);
 
   const toggleOptionsMenu = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -150,7 +151,7 @@ const TrailBookmark: React.FC<TrailBookmarkProps> = ({
 
     if (action === "이름 수정") {
       if (bookmarkId) {
-        setNewBookmarkName(title);
+        setNewBookmarkName(currentTitle);
         setIsEditModalOpen(true);
       }
     } else if (action === "삭제") {
@@ -168,22 +169,20 @@ const TrailBookmark: React.FC<TrailBookmarkProps> = ({
     try {
       setIsLoading(true);
       console.log("수정 시도:", bookmarkId);
+      setCurrentTitle(newBookmarkName.trim());
+      
       await putBookmarkName({
         bookmarkId,
         name: newBookmarkName.trim(),
       });
-
-      // 업데이트 성공 처리
-      alert("북마크 이름이 변경되었습니다.");
       setIsEditModalOpen(false);
-
       // 부모 컴포넌트에 업데이트 알림
       if (onUpdate) {
         onUpdate();
       }
     } catch (error) {
       console.error("북마크 이름 수정 에러:", error);
-      alert("북마크 이름 변경에 실패했습니다.");
+      setCurrentTitle(title);
     } finally {
       setIsLoading(false);
     }
@@ -195,18 +194,19 @@ const TrailBookmark: React.FC<TrailBookmarkProps> = ({
     try {
       setIsLoading(true);
       console.log("삭제 시도:", bookmarkId);
+      
       await deleteBookmarkName({
         bookmarkId,
       });
+      
       console.log("삭제 성공!");
-      alert("북마크가 삭제되었습니다.");
       setIsDeleteModalOpen(false);
+      
       if (onUpdate) {
         onUpdate();
       }
     } catch (error) {
       console.error("북마크 삭제 에러:", error);
-      alert("북마크 삭제에 실패했습니다.");
     } finally {
       setIsLoading(false);
     }
@@ -277,7 +277,7 @@ const TrailBookmark: React.FC<TrailBookmarkProps> = ({
               <IconWrapper>
                 <Icon />
               </IconWrapper>
-              <div>{title}</div>
+              <div>{currentTitle}</div> 
             </ListItem>
           </ClickableContainer>
         ) : (
@@ -286,13 +286,13 @@ const TrailBookmark: React.FC<TrailBookmarkProps> = ({
               <IconWrapper>
                 <Icon />
               </IconWrapper>
-              <div>{title}</div>
+              <div>{currentTitle}</div> 
             </ListItem>
           </Link>
         )}
 
         {/* 좋아하는 산책로는 수정/삭제 옵션 없음 */}
-        {title !== "내가 좋아하는 산책로" && (
+        {currentTitle !== "내가 좋아하는 산책로" && (
           <IconWrapperBtn onClick={toggleOptionsMenu}>
             <MdMoreHoriz size={24} />
             <OptionsMenu isVisible={isVisible}>
