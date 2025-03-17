@@ -105,6 +105,7 @@ export default function NewWay() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const lastLocationRef = useRef<Location | null>(null);
   const startTimeRef = useRef<Date | null>(null);
+  const toastShownRef = useRef(false);
 
   const geolocationOptions = {
     enableHighAccuracy: true,
@@ -191,9 +192,11 @@ export default function NewWay() {
       mode === "create" &&
       isWalking &&
       elapsedTime >= 600 &&
-      distances > 200
+      distances > 200 &&
+      !toastShownRef.current
     ) {
       showToast("이제 산책로를 등록할 수 있어요!", "success");
+      toastShownRef.current = true;
     }
   }, [mode, isWalking, elapsedTime, distances, showToast]);
 
