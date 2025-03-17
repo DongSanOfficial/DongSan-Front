@@ -282,7 +282,7 @@ function MyPage() {
             title="내가 좋아하는 산책로"
           />
 
-          {bookmarks && bookmarks.length > 0 ? (
+          {bookmarks && bookmarks.length > 0 && (
             bookmarks.map((bookmark) => (
               <TrailBookmark
                 key={bookmark.bookmarkId}
@@ -293,8 +293,6 @@ function MyPage() {
                 bookmarkId={bookmark.bookmarkId}
               />
             ))
-          ) : (
-            <div>북마크가 없습니다.</div>
           )}
           <Line />
         </div>
