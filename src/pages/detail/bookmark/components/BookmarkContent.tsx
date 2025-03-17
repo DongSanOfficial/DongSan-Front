@@ -6,7 +6,7 @@ import {
   getBookmark,
   RemoveToBookmark,
   SaveToBookmark,
-} from "../../apis/bookmark";
+} from "../../../../apis/bookmark";
 import { AiOutlinePlus } from "react-icons/ai";
 import { useToast } from "src/hooks/useToast";
 

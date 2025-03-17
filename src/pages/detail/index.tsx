@@ -14,10 +14,10 @@ import { WalkwayDetail } from "src/apis/walkway.type";
 import { getWalkwayDetail } from "src/apis/walkway";
 import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
 import StarCount from "src/components/review/starCount";
-import { BottomSheetStorage } from "../../components/bottomsheet/BottomSheetStorage";
-import { BookmarkContent } from "../../components/bottomsheet/BookmarkContent";
+import { BookmarkContent } from "./bookmark/components/BookmarkContent";
 import { toggleLike } from "src/apis/likedWalkway";
 import LoadingSpinner from "src/components/loading/LoadingSpinner";
+import { BottomSheet } from "src/components/bottomsheet/BottomSheet";
 
 // 레이아웃 관련
 const PageWrapper = styled.div`
@@ -445,7 +445,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
         </ButtonContainer>
       </PageWrapper>
       <BottomNavigation />
-      <BottomSheetStorage
+      <BottomSheet
         isOpen={isBottomSheetOpen}
         onClose={handleBottomSheetClose}
         onOpen={handleBottomSheetOpen}
@@ -455,7 +455,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
         <div>
           <BookmarkContent onComplete={handleBottomSheetClose} />
         </div>
-      </BottomSheetStorage>
+      </BottomSheet>
     </>
   );
 }

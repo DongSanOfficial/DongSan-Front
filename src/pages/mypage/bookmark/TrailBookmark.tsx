@@ -2,7 +2,7 @@ import React, { useState, FunctionComponent, SVGProps } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { MdMoreHoriz } from "react-icons/md";
-import { putBookmarkName, deleteBookmarkName } from "../../apis/bookmark";
+import { putBookmarkName, deleteBookmarkName } from "../../../apis/bookmark";
 import { useToast } from "src/hooks/useToast";
 
 const List = styled.div`

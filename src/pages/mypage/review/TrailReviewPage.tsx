@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import TrailReviewCard from "../../components/TrailReviewCard";
 import { UserReviewsType } from "src/apis/review.type";
 import { getUserReviews } from "src/apis/review";
 import BottomNavigation from "src/components/bottomNavigation";
 import AppBar from "src/components/appBar";
 import { useNavigate } from "react-router-dom";
-import LoadingSpinner from "src/components/loading/LoadingSpinner";
+import TrailReviewCard from "src/components/TrailReviewCard";
 
 const Wrapper = styled.div`
   display: flex;

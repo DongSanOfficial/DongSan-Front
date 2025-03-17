@@ -6,7 +6,7 @@ import TrailCard from "src/components/TrailCard_mp";
 import ReviewCard from "src/components/ReviewCard_mp";
 import { Link, useNavigate } from "react-router-dom";
 import profileImg from "../../assets/images/profile.png";
-import TrailBookmark from "../mypage/TrailBookmark";
+import TrailBookmark from "./bookmark/TrailBookmark";
 import { getUserProfile } from "../../apis/auth";
 import { UserProfileType } from "../../apis/auth.type";
 import BottomNavigation from "src/components/bottomNavigation";

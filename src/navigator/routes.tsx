@@ -1,20 +1,19 @@
 import Main from "../pages/main";
 import MyPage from "../pages/mypage";
-import TrailListPage from "../pages/mypage/TrailListPage";
+import TrailListPage from "../pages/mypage/trailList/TrailListPage";
 import SignIn from "../pages/signin";
 import Registration from "../pages/newway/registration";
 import ReviewPage from "../pages/review";
-import TrailReviewPage from "../pages/mypage/TrailReviewPage";
 import NavigationPage from "../pages";
 import ReviewCheck from "../pages/review/ReviewCheck";
 import PathDetails from "../pages/detail";
 import SplashScreen from "src/components/SplashScreen";
 import Splash from "src/pages/splash";
 import NewWay from "../pages/newway";
-import ReviewableHistory from "../pages/mypage/ReviewableHistory";
+import ReviewableHistory from "../pages/mypage/review/ReviewableHistory";
 import Guide from "../pages/guide";
-import Test from "../pages/test";
 import LocationAcceptance from "../pages/error/locationAcceptance";
+import TrailReviewPage from "src/pages/mypage/review/TrailReviewPage";
 
 interface RouteConfig {
   path: string;
@@ -83,10 +82,6 @@ const routes: RouteConfig[] = [
   {
     path: "/main/review/:walkwayId",
     component: ReviewPage,
-  },
-  {
-    path: "/test",
-    component: Test,
   },
   {
     path: "/guide",
