@@ -218,8 +218,8 @@ function Main() {
     setSelectedPath([]); // 경로 초기화
     setSearchResults([]);
     setSearchValue(result.placeName);
-    setBottomSheetHeight("60vh");
-    setIsOpen(true);
+    setIsOpen(false);
+
 
     await fetchWalkways(
       result.location.lat,
