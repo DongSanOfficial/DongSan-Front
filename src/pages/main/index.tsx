@@ -159,8 +159,6 @@ function Main() {
     try {
       setLoading(true);
       setError(null);
-      console.log("🔍 산책로 요청 시 lastId:", reset ? null : lastId);
-
       const response = await searchWalkways({
         sort,
         latitude: lat,
@@ -177,7 +175,6 @@ function Main() {
 
       if (response.data.length > 0) {
         const newLastId = response.data[response.data.length - 1]?.walkwayId;
-        console.log("📌 응답에서 추출한 새로운 lastId:", newLastId);
         setLastId(newLastId);
       }
 
@@ -299,7 +296,6 @@ function Main() {
   const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
     const { scrollTop, clientHeight, scrollHeight } = event.currentTarget;
     if (scrollHeight - scrollTop <= clientHeight * 1.5 && hasMore && !loading) {
-      console.log("👀 스크롤이 하단에 도달했을 때의 lastId:", lastId);
       if (selectedLocation) {
         fetchWalkways(
           selectedLocation.latitude,
@@ -320,8 +316,6 @@ function Main() {
         walkwayId: id,
         isLiked: isLiked,
       });
-      console.log(response);
-
       // likedPaths와 likeCounts를 이전 상태 기반으로 업데이트
       setLikedPaths((prev) => {
         return { ...prev, [id]: !prev[id] };

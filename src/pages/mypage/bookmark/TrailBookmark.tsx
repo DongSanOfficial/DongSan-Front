@@ -170,8 +170,6 @@ const TrailBookmark: React.FC<TrailBookmarkProps> = ({
 
     try {
       setIsLoading(true);
-      console.log("수정 시도:", bookmarkId);
-
       const trimmedName = newBookmarkName.trim();
       setCurrentTitle(trimmedName);
 
@@ -211,7 +209,6 @@ const TrailBookmark: React.FC<TrailBookmarkProps> = ({
       await deleteBookmarkName({
         bookmarkId,
       });
-      console.log("삭제 성공!");
       setIsDeleteModalOpen(false);
       showToast("북마크가 삭제되었습니다.", "success");
       if (onUpdate) {

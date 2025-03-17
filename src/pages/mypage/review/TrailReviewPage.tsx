@@ -37,8 +37,6 @@ function TrailReviewPage() {
 
     try {
       setLoading(true);
-      console.log("🔍 리뷰 요청 시 lastId:", lastIdRef.current);
-
       const response = await getUserReviews({
         size: 10,
         lastId: lastIdRef.current,
@@ -49,7 +47,6 @@ function TrailReviewPage() {
 
       if (response.data.length > 0) {
         const newLastId = response.data[response.data.length - 1].reviewId;
-        console.log("📌 응답에서 추출한 새로운 lastId:", newLastId);
         lastIdRef.current = newLastId;
       }
     } catch (error) {
@@ -71,7 +68,6 @@ function TrailReviewPage() {
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && hasNext) {
           console.log(
-            "👀 스크롤이 마지막에 도달했을 때의 lastId:",
             lastIdRef.current
           );
           loadMoreReviews();
