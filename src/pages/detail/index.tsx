@@ -326,15 +326,15 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
     }
   };
 
-  const handleBack = () => {
-    if (location.state?.from === "mypage") {
-      navigate("/mypage");
-    } else if (isMyPath) {
-      navigate("/mypage/TrailList"); // 전체보기 페이지로 이동
-    } else {
-      navigate("/main"); // 메인으로
-    }
-  };
+  // const handleBack = () => {
+  //   if (location.state?.from === "mypage") {
+  //     navigate("/mypage");
+  //   } else if (isMyPath) {
+  //     navigate("/mypage/TrailList"); // 전체보기 페이지로 이동
+  //   } else {
+  //     navigate("/main"); // 메인으로
+  //   }
+  // };
 
   const handleBottomSheetClose = () => {
     setIsBottomSheetOpen(false);
@@ -347,7 +347,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
 
   return (
     <>
-      <AppBar onBack={handleBack} title={isMyPath ? "내 산책로" : "산책로"} />
+      <AppBar onBack={()=>navigate(-1)} title={isMyPath ? "내 산책로" : "산책로"} />
       <PageWrapper>
         <HeaderContainer>
           <HeaderTopBar>

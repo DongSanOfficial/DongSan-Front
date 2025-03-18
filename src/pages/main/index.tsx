@@ -370,8 +370,7 @@ function Main() {
       });
       setSelectedWalkwayId(null);
       setSelectedPath([]); // 경로 초기화
-      setBottomSheetHeight("60vh");
-      setIsOpen(true);
+      setIsOpen(false);
 
       await fetchWalkways(location.lat, location.lng, sortOption, true);
     } catch (error) {

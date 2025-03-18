@@ -251,22 +251,20 @@ export const MainMap = ({
         <Map
           center={mapCenter}
           style={{ width: "100%", height: "100%" }}
-          level={2}
+          level={3}
           onDragStart={() => setIsDragging(true)}
           onDragEnd={() => {
             setIsDragging(false);
             setShowSearchButton(true);
           }}
-          onCenterChanged={(map) => {
-            if (!center) {
+          onCenterChanged={(map) => { 
               const latlng = map.getCenter();
               const newCenter = {
                 lat: latlng.getLat(),
                 lng: latlng.getLng(),
               };
               setMapCenter(newCenter);
-              onCenterChange?.(newCenter);
-            }
+              onCenterChange?.(newCenter); 
           }}
         >
           {center && (

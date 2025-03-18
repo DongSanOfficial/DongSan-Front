@@ -31,7 +31,7 @@ const PathMap = ({ pathCoords }: PathMapProps) => {
       <Map
         center={center}
         style={{ width: "100%", height: "100%" }}
-        level={2}
+        level={3}
         draggable={true}
       >
         <Polyline
