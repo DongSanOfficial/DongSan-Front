@@ -14,10 +14,10 @@ import { WalkwayDetail } from "src/apis/walkway.type";
 import { getWalkwayDetail } from "src/apis/walkway";
 import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
 import StarCount from "src/components/review/starCount";
-import { BottomSheetStorage } from "../../components/bottomsheet/BottomSheetStorage";
-import { BookmarkContent } from "../../components/bottomsheet/BookmarkContent";
+import { BookmarkContent } from "./bookmark/components/BookmarkContent";
 import { toggleLike } from "src/apis/likedWalkway";
 import LoadingSpinner from "src/components/loading/LoadingSpinner";
+import { BottomSheet } from "src/components/bottomsheet/BottomSheet";
 
 // 레이아웃 관련
 const PageWrapper = styled.div`
@@ -273,7 +273,6 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
 
   const goToReviews = (): void => {
     navigate(`/main/review/${walkwayId}/content`);
-    // TODO: API 리뷰 페이지 이동 업데이트
   };
 
   const handleEditClick = () => {
@@ -327,24 +326,20 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
     }
   };
 
-  const handleBack = () => {
-    if (location.state?.from === "mypage") {
-      navigate("/mypage"); // 마이페이지로 직접 이동
-    } else if (isMyPath) {
-      navigate("/mypage/TrailList"); // 전체보기 페이지로 이동
-    } else {
-      navigate("/main"); // 메인으로
-    }
-  };
+  // const handleBack = () => {
+  //   if (location.state?.from === "mypage") {
+  //     navigate("/mypage");
+  //   } else if (isMyPath) {
+  //     navigate("/mypage/TrailList"); // 전체보기 페이지로 이동
+  //   } else {
+  //     navigate("/main"); // 메인으로
+  //   }
+  // };
 
   const handleBottomSheetClose = () => {
     setIsBottomSheetOpen(false);
-    fetchWalkwayDetail(); // 바텀시트가 닫힐 때 API 호출
   };
 
-  const handleBottomSheetOpen = () => {
-    setIsBottomSheetOpen(true);
-  };
 
   if (loading) return <LoadingSpinner />;
   if (error) return <div>{error}</div>;
@@ -352,7 +347,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
 
   return (
     <>
-      <AppBar onBack={handleBack} title={isMyPath ? "내 산책로" : "산책로"} />
+      <AppBar onBack={()=>navigate(-1)} title={isMyPath ? "내 산책로" : "산책로"} />
       <PageWrapper>
         <HeaderContainer>
           <HeaderTopBar>
@@ -396,7 +391,6 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
                     onClick={toggleHeart}
                   />
                   {walkwayDetail.likeCount}
-                  {/* 서버 디비에 좋아요 수 추가되면 필드명 반영하기 */}
                 </ReactionButton>
                 <RatingContainer>
                   <RatingGroup>
@@ -445,17 +439,19 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
         </ButtonContainer>
       </PageWrapper>
       <BottomNavigation />
-      <BottomSheetStorage
+      <BottomSheet
         isOpen={isBottomSheetOpen}
         onClose={handleBottomSheetClose}
-        onOpen={handleBottomSheetOpen}
+        onOpen={() => setIsBottomSheetOpen(true)}
         maxHeight="50vh"
         minHeight="0vh"
       >
         <div>
-          <BookmarkContent onComplete={handleBottomSheetClose} />
+          <BookmarkContent
+            onComplete={() => setIsBottomSheetOpen(false)}
+          />
         </div>
-      </BottomSheetStorage>
+      </BottomSheet>
     </>
   );
 }

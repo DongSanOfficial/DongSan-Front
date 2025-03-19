@@ -6,7 +6,7 @@ import TrailCard from "src/components/TrailCard_mp";
 import ReviewCard from "src/components/ReviewCard_mp";
 import { Link, useNavigate } from "react-router-dom";
 import profileImg from "../../assets/images/profile.png";
-import TrailBookmark from "../mypage/TrailBookmark";
+import TrailBookmark from "./bookmark/TrailBookmark";
 import { getUserProfile } from "../../apis/auth";
 import { UserProfileType } from "../../apis/auth.type";
 import BottomNavigation from "src/components/bottomNavigation";
@@ -140,6 +140,7 @@ function MyPage() {
     []
   );
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
+  const [refreshBookmarks, setRefreshBookmarks] = useState(0);
 
   const fetchBookmarks = async () => {
     try {
@@ -172,7 +173,8 @@ function MyPage() {
         setPreviewTrails(walkwaysResponse.data);
         setPreviewHistory(historyReview.data ?? []);
         setReviews(userReviews.data || []);
-        fetchBookmarks();
+        
+        await fetchBookmarks();
 
         setError(null);
       } catch (err) {
@@ -185,6 +187,16 @@ function MyPage() {
     };
 
     fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (refreshBookmarks > 0) {
+      fetchBookmarks();
+    }
+  }, [refreshBookmarks]);
+
+  const handleBookmarkUpdate = useCallback(() => {
+    setRefreshBookmarks(prev => prev + 1);
   }, []);
 
   const handleBookmarkClick = useCallback(
@@ -282,7 +294,7 @@ function MyPage() {
             title="내가 좋아하는 산책로"
           />
 
-          {bookmarks && bookmarks.length > 0 ? (
+          {bookmarks && bookmarks.length > 0 && (
             bookmarks.map((bookmark) => (
               <TrailBookmark
                 key={bookmark.bookmarkId}
@@ -291,10 +303,9 @@ function MyPage() {
                 title={bookmark.name || "이름 없는 북마크"}
                 onClick={() => handleBookmarkClick(bookmark.bookmarkId)}
                 bookmarkId={bookmark.bookmarkId}
+                onUpdate={handleBookmarkUpdate}
               />
             ))
-          ) : (
-            <div>북마크가 없습니다.</div>
           )}
           <Line />
         </div>

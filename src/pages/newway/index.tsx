@@ -105,6 +105,7 @@ export default function NewWay() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const lastLocationRef = useRef<Location | null>(null);
   const startTimeRef = useRef<Date | null>(null);
+  const toastShownRef = useRef(false);
 
   const geolocationOptions = {
     enableHighAccuracy: true,
@@ -191,9 +192,11 @@ export default function NewWay() {
       mode === "create" &&
       isWalking &&
       elapsedTime >= 600 &&
-      distances > 200
+      distances > 200 &&
+      !toastShownRef.current
     ) {
       showToast("이제 산책로를 등록할 수 있어요!", "success");
+      toastShownRef.current = true;
     }
   }, [mode, isWalking, elapsedTime, distances, showToast]);
 
@@ -233,8 +236,6 @@ export default function NewWay() {
 
           // 미터를 킬로미터로 변환하고 소수점 2자리까지 반올림
           const distanceInKm = Number((distances / 1000).toFixed(2));
-          console.log("산책시간, 산책거리:", elapsedTime, distanceInKm);
-
           const pathData: PathData = {
             coordinates: movingPath,
             totalDistance: distanceInKm, // km 단위로 변환하여 저장
@@ -245,7 +246,6 @@ export default function NewWay() {
             pathImage: pathImage,
             courseImageId: courseImageId,
           };
-
           navigate("/newway/registration", {
             state: { ...pathData, isEditMode: false },
           });
@@ -257,7 +257,6 @@ export default function NewWay() {
         try {
           // 미터를 킬로미터로 변환하고 소수점 2자리까지 반올림
           const distanceInKm = Number((distances / 1000).toFixed(2));
-          console.log("이용시간, 이용거리:", elapsedTime, distanceInKm);
 
           const historyResponse = await createWalkwayHistory(walkwayId, {
             time: elapsedTime,
@@ -352,7 +351,6 @@ export default function NewWay() {
     if (mode === "follow" && pathToFollow.length > 0 && userLocation) {
       const startPoint = pathToFollow[0];
       const distanceToStart = checkDistanceToStart(userLocation, startPoint);
-      console.log("distanceToStart: ", distanceToStart);
       if (distanceToStart > 50) {
         // 50미터 이상 떨어져 있으면
         showToast(

@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import TrailReviewCard from "../../components/TrailReviewCard";
 import { UserReviewsType } from "src/apis/review.type";
 import { getUserReviews } from "src/apis/review";
 import BottomNavigation from "src/components/bottomNavigation";
 import AppBar from "src/components/appBar";
 import { useNavigate } from "react-router-dom";
-import LoadingSpinner from "src/components/loading/LoadingSpinner";
+import TrailReviewCard from "src/components/TrailReviewCard";
 
 const Wrapper = styled.div`
   display: flex;
@@ -38,8 +37,6 @@ function TrailReviewPage() {
 
     try {
       setLoading(true);
-      console.log("🔍 리뷰 요청 시 lastId:", lastIdRef.current);
-
       const response = await getUserReviews({
         size: 10,
         lastId: lastIdRef.current,
@@ -50,7 +47,6 @@ function TrailReviewPage() {
 
       if (response.data.length > 0) {
         const newLastId = response.data[response.data.length - 1].reviewId;
-        console.log("📌 응답에서 추출한 새로운 lastId:", newLastId);
         lastIdRef.current = newLastId;
       }
     } catch (error) {
@@ -72,7 +68,6 @@ function TrailReviewPage() {
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && hasNext) {
           console.log(
-            "👀 스크롤이 마지막에 도달했을 때의 lastId:",
             lastIdRef.current
           );
           loadMoreReviews();

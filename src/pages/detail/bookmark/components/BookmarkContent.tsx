@@ -6,34 +6,46 @@ import {
   getBookmark,
   RemoveToBookmark,
   SaveToBookmark,
-} from "../../apis/bookmark";
+} from "../../../../apis/bookmark";
 import { AiOutlinePlus } from "react-icons/ai";
 import { useToast } from "src/hooks/useToast";
+import Divider from "src/components/Divider";
+import { theme } from "src/styles/colors/theme";
 
 const Container = styled.div`
   position: relative;
   height: 100%;
-  padding: 20px 20px 130px;
-  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+`;
+
+const FixedHeader = styled.div`
+  position: fixed;
+  top: 32px;
+  padding-top: 10px;
+  background: ${theme.White};
+  z-index: 1;
+  width: 90%;
 `;
 
 const Title = styled.h2`
   font-size: 20px;
   font-weight: 600;
   margin: 0;
-  color: #333;
+  color: ${theme.Gray800};
 `;
 
-const Divider = styled.hr`
-  border: none;
-  border-top: 1px solid #eaeaea;
-  margin: 16px 0;
+const ContentScrollArea = styled.div`
+  flex: 1;
+  overflow-y: auto;
+  padding: 60px 0 120px 0;
 `;
 
 const BookmarkForm = styled.form`
   padding: 0;
   margin-top: 20px;
-  height: calc(100% - 120px);
   display: flex;
   flex-direction: column;
 `;
@@ -41,7 +53,7 @@ const BookmarkForm = styled.form`
 const Label = styled.label`
   font-size: 15px;
   font-weight: 500;
-  color: #333;
+  color: ${theme.Gray800};
   margin-bottom: 8px;
   display: block;
 `;
@@ -56,18 +68,18 @@ const Input = styled.input`
   width: 100%;
   padding: 10px 40px 10px 12px;
   border: none;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid ${theme.Gray200};
   font-size: 14px;
   box-sizing: border-box;
   transition: border-color 0.2s;
 
   &:focus {
     outline: none;
-    border-color: #167258;
+    border-color: ${theme.Green500};
   }
 
   &::placeholder {
-    color: #aaa;
+    color: ${theme.Gray400};
   }
 `;
 
@@ -77,14 +89,15 @@ const CharCount = styled.span`
   top: 50%;
   transform: translateY(-50%);
   font-size: 12px;
-  color: #888;
+  color: ${theme.Gray500};
 `;
 
 const Button = styled.button<{ $primary?: boolean }>`
   padding: ${(props) => (props.$primary ? "10px 16px" : "10px 10px")};
   border: none;
-  background-color: ${(props) => (props.$primary ? "#167258" : "transparent")};
-  color: ${(props) => (props.$primary ? "white" : "#167258")};
+  background-color: ${(props) =>
+    props.$primary ? theme.Green500 : "transparent"};
+  color: ${(props) => (props.$primary ? theme.White : theme.Green500)};
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -95,15 +108,13 @@ const Button = styled.button<{ $primary?: boolean }>`
   border-radius: ${(props) => (props.$primary ? "20px" : "0")};
 
   &:disabled {
-    background-color: #e0e0e0;
-    color: #888;
+    background-color: ${theme.Gray200};
+    color: ${theme.Gray500};
     cursor: not-allowed;
   }
 `;
 
 const CheckboxGroupContainer = styled.div`
-  flex: 1;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
 `;
@@ -111,19 +122,6 @@ const CheckboxGroupContainer = styled.div`
 const CheckboxGroup = styled.div`
   display: flex;
   flex-direction: column;
-  margin: 20px 0;
-  max-height: 240px;
-  overflow-y: auto;
-  min-height: 120px;
-
-  &::-webkit-scrollbar {
-    width: 4px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: #d9d9d9;
-    border-radius: 4px;
-  }
 `;
 
 const CheckboxLabel = styled.label`
@@ -131,7 +129,7 @@ const CheckboxLabel = styled.label`
   align-items: center;
   padding: 12px 0;
   cursor: pointer;
-  border-bottom: 1px solid #f5f5f5;
+  border-bottom: 1px solid ${theme.Gray100};
   position: relative;
 `;
 
@@ -143,8 +141,8 @@ const CheckboxInput = styled.input`
   width: 0;
 
   &:checked + span {
-    background-color: #167258;
-    border-color: #167258;
+    background-color: ${theme.Green500};
+    border-color: ${theme.Green500};
   }
 
   &:checked + span:after {
@@ -157,8 +155,8 @@ const CustomCheckbox = styled.span`
   height: 20px;
   width: 20px;
   margin-right: 12px;
-  background-color: white;
-  border: 1px solid #ccc;
+  background-color: ${theme.White};
+  border: 1px solid ${theme.Gray300};
   border-radius: 50%;
 
   &:after {
@@ -169,48 +167,36 @@ const CustomCheckbox = styled.span`
     top: 3px;
     width: 5px;
     height: 10px;
-    border: solid white;
+    border: solid ${theme.White};
     border-width: 0 2px 2px 0;
     transform: rotate(45deg);
   }
 `;
 
-const BottomButtons = styled.div`
+const FixedBottomButtonContainer = styled.div`
   position: fixed;
   bottom: 70px;
   left: 0;
   right: 0;
-  margin: 0 auto;
-  background-color: white;
+  background-color: ${theme.White};
   padding: 16px 20px;
-  border-top: 1px solid #eaeaea;
   display: flex;
-  justify-content: center;
-  z-index: 100;
-`;
-
-const CompleteButton = styled(Button)`
-  padding: 10px 30px;
-  background-color: #167258;
-  color: white;
-  border-radius: 20px;
-  font-weight: bold;
-  min-width: 120px;
-  justify-content: center;
+  justify-content: flex-start;
+  z-index: 1;
+  border-top: 1px solid ${theme.Gray200};
 `;
 
 const AddBookmarkButton = styled.button`
   display: flex;
   align-items: center;
   gap: 4px;
-  color: #167258;
+  color: ${theme.Green500};
   background: none;
   border: none;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   padding: 0;
-  margin-top: 10px;
 `;
 
 const EmptyBookmarks = styled.div`
@@ -218,7 +204,7 @@ const EmptyBookmarks = styled.div`
   justify-content: center;
   align-items: center;
   height: 120px;
-  color: #aaa;
+  color: ${theme.Gray500};
   font-size: 14px;
 `;
 
@@ -227,16 +213,17 @@ const FormBottom = styled.div`
   bottom: 70px;
   left: 0;
   right: 0;
-  background-color: white;
+  background-color: ${theme.White};
   padding: 16px 20px;
-  border-top: 1px solid #eaeaea;
+  border-top: 1px solid ${theme.Gray200};
   display: flex;
   justify-content: space-between;
+  z-index: 1;
 `;
 
 const SelectedCount = styled.span`
   font-size: 14px;
-  color: #167258;
+  color: ${theme.Green500};
   margin-left: 8px;
 `;
 
@@ -250,9 +237,7 @@ interface BookmarkContentProps {
   onComplete?: () => void;
 }
 
-export const BookmarkContent: React.FC<BookmarkContentProps> = ({
-  onComplete,
-}) => {
+export const BookmarkContent = ({ onComplete }: BookmarkContentProps) => {
   const { showToast } = useToast();
   const [isCreating, setIsCreating] = useState(false);
   const [newBookmarkName, setNewBookmarkName] = useState("");
@@ -262,13 +247,20 @@ export const BookmarkContent: React.FC<BookmarkContentProps> = ({
 
   const isEmptyBookmarks = bookmarks.length === 0;
 
+  // 이름 중복 체크 함수
+  const checkDuplicateName = (name: string): boolean => {
+    return bookmarks.some(
+      (bookmark) =>
+        bookmark.name.trim().toLowerCase() === name.trim().toLowerCase()
+    );
+  };
+
   const toggleBookmarkSelection = async (
     bookmarkId: number,
     checked: boolean
   ) => {
     try {
       if (checked) {
-        // ✅ 체크 추가 (북마크 저장)
         await SaveToBookmark({
           bookmarkId: bookmarkId,
           walkwayId: Number(walkwayId),
@@ -283,7 +275,6 @@ export const BookmarkContent: React.FC<BookmarkContentProps> = ({
           )
         );
       } else {
-        // ✅ 체크 해제 (북마크 삭제)
         await RemoveToBookmark({ bookmarkId, walkwayId: Number(walkwayId) });
         showToast("북마크에서 제거되었습니다.", "success");
         setSelectedBookmarks((prev) => prev.filter((id) => id !== bookmarkId));
@@ -302,24 +293,48 @@ export const BookmarkContent: React.FC<BookmarkContentProps> = ({
 
   const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newBookmarkName.trim() && newBookmarkName.length <= 15) {
-      try {
-        const response = await AddToBookmark({
-          name: newBookmarkName.trim(),
-        });
+    const trimmedName = newBookmarkName.trim();
 
-        const newBookmark: Bookmark = {
-          id: response.bookmarkId,
-          name: newBookmarkName.trim(),
-        };
+    if (!trimmedName) {
+      showToast("북마크 이름을 입력해주세요.", "error");
+      return;
+    }
 
-        setBookmarks((prevBookmarks) => [...prevBookmarks, newBookmark]);
-        //setSelectedBookmarks((prev) => [...prev, response.bookmarkId]);
-        setNewBookmarkName("");
-        setIsCreating(false);
-      } catch (error) {
-        console.error("북마크 생성 에러:", error);
-        alert("북마크 생성에 실패했습니다.");
+    if (trimmedName.length > 15) {
+      showToast("북마크 이름은 15자 이내로 입력해주세요.", "error");
+      return;
+    }
+
+    if (checkDuplicateName(trimmedName)) {
+      showToast("해당 이름의 북마크가 이미 존재합니다.", "error");
+      return;
+    }
+
+    try {
+      const response = await AddToBookmark({
+        name: trimmedName,
+      });
+
+      const newBookmark: Bookmark = {
+        id: response.bookmarkId,
+        name: trimmedName,
+      };
+
+      setBookmarks((prevBookmarks) => [...prevBookmarks, newBookmark]);
+      setNewBookmarkName("");
+      setIsCreating(false);
+      showToast("새 북마크가 생성되었습니다.", "success");
+    } catch (error: any) {
+      console.error("북마크 생성 에러:", error);
+
+      if (
+        error.message &&
+        (error.message.includes("이름이 같은 북마크가") ||
+          error.message.includes("BOOKMARK-02"))
+      ) {
+        showToast("해당 이름의 북마크가 이미 존재합니다.", "error");
+      } else {
+        showToast("잠시후 다시 시도해주세요.", "error");
       }
     }
   };
@@ -327,17 +342,11 @@ export const BookmarkContent: React.FC<BookmarkContentProps> = ({
   useEffect(() => {
     const fetchBookmarks = async () => {
       if (!walkwayId) return;
-
-      console.log("북마크 조회 시작 - walkwayId:", walkwayId);
-
       try {
         const response = await getBookmark({
           walkwayId: Number(walkwayId),
           size: 10,
         });
-
-        console.log("북마크 조회 결과:", response);
-
         const formattedBookmarks = response.data.map((bookmark) => ({
           id: bookmark.bookmarkId,
           name: bookmark.name,
@@ -363,47 +372,38 @@ export const BookmarkContent: React.FC<BookmarkContentProps> = ({
 
   return (
     <Container>
-      <Title>산책로 저장</Title>
-      <Divider />
+      <FixedHeader>
+        <Title>산책로 저장</Title>
+        <Divider />
+      </FixedHeader>
 
-      {!isCreating ? (
-        <>
-          <CheckboxGroupContainer>
-            <CheckboxGroup>
-              {isEmptyBookmarks ? (
-                <EmptyBookmarks>저장된 목록이 없습니다.</EmptyBookmarks>
-              ) : (
-                bookmarks.map((bookmark) => (
-                  <CheckboxLabel key={bookmark.id}>
-                    <CheckboxInput
-                      type="checkbox"
-                      name="bookmark"
-                      checked={selectedBookmarks.includes(bookmark.id)}
-                      onChange={(e) =>
-                        toggleBookmarkSelection(bookmark.id, e.target.checked)
-                      }
-                    />
-                    <CustomCheckbox />
-                    {bookmark.name}
-                  </CheckboxLabel>
-                ))
-              )}
-            </CheckboxGroup>
-          </CheckboxGroupContainer>
-
-          <AddBookmarkButton onClick={() => setIsCreating(true)}>
-            <AiOutlinePlus /> 새 산책로 목록 등록하기
-            {selectedBookmarks.length > 0 && (
-              <SelectedCount>
-                ({selectedBookmarks.length}개 선택됨)
-              </SelectedCount>
-            )}
-          </AddBookmarkButton>
-
-          {/* 저장 버튼 삭제 */}
-        </>
-      ) : (
-        <>
+      <ContentScrollArea>
+        {!isCreating ? (
+          <>
+            <CheckboxGroupContainer>
+              <CheckboxGroup>
+                {isEmptyBookmarks ? (
+                  <EmptyBookmarks>북마크를 생성해주세요.</EmptyBookmarks>
+                ) : (
+                  bookmarks.map((bookmark) => (
+                    <CheckboxLabel key={bookmark.id}>
+                      <CheckboxInput
+                        type="checkbox"
+                        name="bookmark"
+                        checked={selectedBookmarks.includes(bookmark.id)}
+                        onChange={(e) =>
+                          toggleBookmarkSelection(bookmark.id, e.target.checked)
+                        }
+                      />
+                      <CustomCheckbox />
+                      {bookmark.name}
+                    </CheckboxLabel>
+                  ))
+                )}
+              </CheckboxGroup>
+            </CheckboxGroupContainer>
+          </>
+        ) : (
           <BookmarkForm onSubmit={handleCreateSubmit}>
             <Label>이름</Label>
             <InputWrapper>
@@ -418,16 +418,41 @@ export const BookmarkContent: React.FC<BookmarkContentProps> = ({
               <CharCount>{newBookmarkName.length} / 15</CharCount>
             </InputWrapper>
           </BookmarkForm>
+        )}
+      </ContentScrollArea>
 
-          <FormBottom>
-            <Button type="button" onClick={() => setIsCreating(false)}>
-              취소
-            </Button>
-            <Button $primary onClick={handleCreateSubmit}>
-              + 만들기
-            </Button>
-          </FormBottom>
-        </>
+      {!isCreating && (
+        <FixedBottomButtonContainer>
+          <AddBookmarkButton onClick={() => setIsCreating(true)}>
+            <AiOutlinePlus /> 새 북마크 등록하기
+            {selectedBookmarks.length > 0 && (
+              <SelectedCount>
+                ({selectedBookmarks.length}개 저장됨)
+              </SelectedCount>
+            )}
+          </AddBookmarkButton>
+        </FixedBottomButtonContainer>
+      )}
+
+      {isCreating && (
+        <FormBottom>
+          <Button
+            type="button"
+            onClick={() => {
+              setIsCreating(false);
+              setNewBookmarkName("");
+            }}
+          >
+            취소
+          </Button>
+          <Button
+            $primary
+            onClick={handleCreateSubmit}
+            disabled={!newBookmarkName.trim() || newBookmarkName.length > 15}
+          >
+            + 만들기
+          </Button>
+        </FormBottom>
       )}
     </Container>
   );

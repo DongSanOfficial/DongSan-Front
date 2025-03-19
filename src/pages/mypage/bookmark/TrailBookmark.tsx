@@ -2,7 +2,8 @@ import React, { useState, FunctionComponent, SVGProps } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { MdMoreHoriz } from "react-icons/md";
-import { putBookmarkName, deleteBookmarkName } from "../../apis/bookmark";
+import { putBookmarkName, deleteBookmarkName } from "../../../apis/bookmark";
+import { useToast } from "src/hooks/useToast";
 
 const List = styled.div`
   display: flex;
@@ -139,6 +140,8 @@ const TrailBookmark: React.FC<TrailBookmarkProps> = ({
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [newBookmarkName, setNewBookmarkName] = useState(title);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentTitle, setCurrentTitle] = useState(title);
+  const { showToast } = useToast();
 
   const toggleOptionsMenu = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -150,7 +153,7 @@ const TrailBookmark: React.FC<TrailBookmarkProps> = ({
 
     if (action === "이름 수정") {
       if (bookmarkId) {
-        setNewBookmarkName(title);
+        setNewBookmarkName(currentTitle);
         setIsEditModalOpen(true);
       }
     } else if (action === "삭제") {
@@ -167,23 +170,31 @@ const TrailBookmark: React.FC<TrailBookmarkProps> = ({
 
     try {
       setIsLoading(true);
-      console.log("수정 시도:", bookmarkId);
+      const trimmedName = newBookmarkName.trim();
+      setCurrentTitle(trimmedName);
+
       await putBookmarkName({
         bookmarkId,
-        name: newBookmarkName.trim(),
+        name: trimmedName,
       });
 
-      // 업데이트 성공 처리
-      alert("북마크 이름이 변경되었습니다.");
       setIsEditModalOpen(false);
-
-      // 부모 컴포넌트에 업데이트 알림
       if (onUpdate) {
         onUpdate();
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("북마크 이름 수정 에러:", error);
-      alert("북마크 이름 변경에 실패했습니다.");
+
+      if (
+        error.message &&
+        (error.message.includes("이름이 같은 북마크가") ||
+          error.message.includes("BOOKMARK-02"))
+      ) {
+        showToast("해당 이름의 북마크가 이미 존재합니다.", "error");
+      } else {
+        showToast("잠시후 다시 시도해주세요.", "error");
+      }
+      setCurrentTitle(title);
     } finally {
       setIsLoading(false);
     }
@@ -198,15 +209,14 @@ const TrailBookmark: React.FC<TrailBookmarkProps> = ({
       await deleteBookmarkName({
         bookmarkId,
       });
-      console.log("삭제 성공!");
-      alert("북마크가 삭제되었습니다.");
       setIsDeleteModalOpen(false);
+      showToast("북마크가 삭제되었습니다.", "success");
       if (onUpdate) {
         onUpdate();
       }
     } catch (error) {
       console.error("북마크 삭제 에러:", error);
-      alert("북마크 삭제에 실패했습니다.");
+      showToast("잠시후 다시 시도해주세요.", "error");
     } finally {
       setIsLoading(false);
     }
@@ -219,7 +229,9 @@ const TrailBookmark: React.FC<TrailBookmarkProps> = ({
         <ModalInput
           type="text"
           value={newBookmarkName}
-          onChange={(e) => setNewBookmarkName(e.target.value)}
+          onChange={(e) => {
+            setNewBookmarkName(e.target.value);
+          }}
           maxLength={15}
           placeholder="북마크 이름을 입력하세요"
           autoFocus
@@ -277,7 +289,7 @@ const TrailBookmark: React.FC<TrailBookmarkProps> = ({
               <IconWrapper>
                 <Icon />
               </IconWrapper>
-              <div>{title}</div>
+              <div>{currentTitle}</div>
             </ListItem>
           </ClickableContainer>
         ) : (
@@ -286,13 +298,13 @@ const TrailBookmark: React.FC<TrailBookmarkProps> = ({
               <IconWrapper>
                 <Icon />
               </IconWrapper>
-              <div>{title}</div>
+              <div>{currentTitle}</div>
             </ListItem>
           </Link>
         )}
 
         {/* 좋아하는 산책로는 수정/삭제 옵션 없음 */}
-        {title !== "내가 좋아하는 산책로" && (
+        {currentTitle !== "내가 좋아하는 산책로" && (
           <IconWrapperBtn onClick={toggleOptionsMenu}>
             <MdMoreHoriz size={24} />
             <OptionsMenu isVisible={isVisible}>
