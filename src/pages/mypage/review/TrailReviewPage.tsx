@@ -6,6 +6,9 @@ import BottomNavigation from "src/components/bottomNavigation";
 import AppBar from "src/components/appBar";
 import { useNavigate } from "react-router-dom";
 import TrailReviewCard from "src/components/TrailReviewCard";
+import LoadingSpinner from "src/components/loading/LoadingSpinner";
+import { MdRateReview } from "react-icons/md";
+import { theme } from "src/styles/colors/theme";
 
 const Wrapper = styled.div`
   display: flex;
@@ -23,6 +26,31 @@ const List = styled.div`
   gap: 16px;
   padding: 15px;
 `;
+
+const ErrorMessage = styled.div`
+  color: red;
+  text-align: center;
+  padding: 20px;
+`;
+
+const EmptyStateContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 70vh;
+  text-align: center;
+  padding: 0 20px;
+`;
+
+const EmptyStateMessage = styled.p`
+  font-size: 16px;
+  color: ${theme.Gray600};
+  line-height: 1.5;
+  margin: 16px 0;
+`;
+
+
 function TrailReviewPage() {
   const navigate = useNavigate();
   const [reviews, setReviews] = useState<UserReviewsType[]>([]);
@@ -87,7 +115,17 @@ function TrailReviewPage() {
     <>
       <AppBar onBack={() => navigate(-1)} title="내가 작성한 리뷰" />
       <Wrapper>
-        <List>
+      {error && <ErrorMessage>{error}</ErrorMessage>}
+
+      {!loading && reviews.length === 0 ? (
+          <EmptyStateContainer>
+            <MdRateReview size={40} color={theme.Gray400} />
+            <EmptyStateMessage>
+              아직 작성한 리뷰가 없습니다.
+            </EmptyStateMessage>
+          </EmptyStateContainer>
+        ) : (
+          <List>
           {reviews.map((review) => (
             <div>
               <TrailReviewCard
@@ -104,7 +142,12 @@ function TrailReviewPage() {
               <hr />
             </div>
           ))}
+
+          
         </List>
+        )}
+
+        {loading && <LoadingSpinner />}
       </Wrapper>
       <BottomNavigation />
     </>
