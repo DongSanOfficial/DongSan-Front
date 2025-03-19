@@ -8,6 +8,8 @@ import TrailCardAll from "src/components/TrailCardAll_View";
 import LoadingSpinner from "src/components/loading/LoadingSpinner";
 import { getReviewRecord } from "src/apis/review";
 import { walkwayHistoryType } from "src/apis/review.type";
+import { theme } from "src/styles/colors/theme";
+import { MdRateReview } from "react-icons/md";
 
 const Wrapper = styled.div`
   display: flex;
@@ -25,15 +27,44 @@ const List = styled.div`
   gap: 16px;
 `;
 
-// const LoadingSpinner = styled.div`
-//   text-align: center;
-//   padding: 20px;
-// `;
-
 const ErrorMessage = styled.div`
   color: red;
   text-align: center;
   padding: 20px;
+`;
+
+const EmptyStateContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 70vh;
+  text-align: center;
+  padding: 0 20px;
+`;
+
+const EmptyStateMessage = styled.p`
+  font-size: 16px;
+  color: ${theme.Gray600};
+  line-height: 1.5;
+  margin: 16px 0;
+`;
+
+const ExploreButton = styled.button`
+  background-color: ${theme.Green500};
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 16px;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: ${theme.Green600};
+  }
 `;
 
 function ReviewableHistory() {
@@ -54,16 +85,10 @@ function ReviewableHistory() {
         size: 10,
         lastId: lastIdRef.current,
       });
-      setReviews((prevReviews) => [
-        ...prevReviews,
-        ...response.data,
-      ]);
+      setReviews((prevReviews) => [...prevReviews, ...response.data]);
 
       if (response.data.length > 0) {
-        lastIdRef.current =
-          response.data[
-            response.data.length - 1
-          ].walkwayId;
+        lastIdRef.current = response.data[response.data.length - 1].walkwayId;
       }
       //setHasNext(response.hasNext);
     } catch (error) {
@@ -90,6 +115,11 @@ function ReviewableHistory() {
     },
     [navigate]
   );
+
+  const navigateToExplore = () => {
+    navigate("/main"); // 메인 화면이나 산책로 탐색 화면으로 이동
+  };
+
   return (
     <>
       <AppBar
@@ -98,13 +128,28 @@ function ReviewableHistory() {
       />
       <Wrapper>
         {error && <ErrorMessage>{error}</ErrorMessage>}
-        <List>
-          {reviews.map((review, index) => (
-            <div key={review.walkwayId}>
-              <TrailCardAll trail={review} onClick={handleHistoryClick} />
-            </div>
-          ))}
-        </List>
+
+        {!loading && reviews.length === 0 ? (
+          <EmptyStateContainer>
+            <MdRateReview size={40} color={theme.Gray400} />
+            <EmptyStateMessage>
+              리뷰를 작성할 수 있는 산책로가 없습니다.
+              <br />
+              산책로를 이용해보세요!
+            </EmptyStateMessage>
+            <ExploreButton onClick={navigateToExplore}>
+              산책로 탐색하기
+            </ExploreButton>
+          </EmptyStateContainer>
+        ) : (
+          <List>
+            {reviews.map((review) => (
+              <div key={review.walkwayId}>
+                <TrailCardAll trail={review} onClick={handleHistoryClick} />
+              </div>
+            ))}
+          </List>
+        )}
         {loading && <LoadingSpinner />}
       </Wrapper>
       <BottomNavigation />
