@@ -204,3 +204,16 @@ export const createWalkwayHistory = async (
   }
 };
 
+/**
+ * 산책로 삭제하기
+ */
+export const deleteWalkway = async (walkwayId: number) => {
+  try {
+    const {data: response} = await instance.delete(`/walkways/${walkwayId}`);
+    return response;
+  } catch(error) {
+    throw new Error(
+      "산책로 삭제에 실패했습니다."
+    );
+  }
+}

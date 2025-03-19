@@ -1,5 +1,5 @@
 export const theme = {
-    White: '#FFFFFF',
+    White: '#FEFEFE',
     Black: '#121212',
     Red: '#FF4646',
     Yellow: '#FACC15',
@@ -13,7 +13,6 @@ export const theme = {
     LocationAcceptIcon: '#ef4444',
     WarningTextBg: '#fef2f2',
     WarningHighlight: '#b91c1c',
-
     
     Gray900: '#191F28',
     Gray800: '#333D4B',

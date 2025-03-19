@@ -2,25 +2,19 @@ import styled from "styled-components";
 import Modal from "./Modal";
 import { theme } from "src/styles/colors/theme";
 import { ReactNode } from "react";
-import { MdWarning, MdCheckCircle, MdInfoOutline, MdDirectionsWalk } from "react-icons/md";
-
-interface ConfirmationModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onConfirm: () => void;
-  message: ReactNode;
-  cancelText?: string;
-  confirmText?: string;
-  modalType?: "stop" | "done" | "back" | "default";
-  mode?: "create" | "follow";
-}
+import {
+  MdWarning,
+  MdCheckCircle,
+  MdInfoOutline,
+  MdDirectionsWalk,
+} from "react-icons/md";
 
 const ModalContent = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 24px;
-  `;
+`;
 
 const IconContainer = styled.div`
   display: flex;
@@ -85,6 +79,17 @@ const Button = styled.button<{ isConfirm?: boolean }>`
   }
 `;
 
+interface ConfirmationModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  message: ReactNode;
+  cancelText?: string;
+  confirmText?: string;
+  modalType?: "stop" | "done" | "back" | "delete" | "default";
+  mode?: "create" | "follow";
+}
+
 const ConfirmationModal = ({
   isOpen,
   onClose,
@@ -121,6 +126,12 @@ const ConfirmationModal = ({
         return {
           icon: <MdInfoOutline size={52} color={theme.Following} />,
           iconColor: theme.Following,
+        };
+      case "delete":
+        return {
+          icon: <MdWarning size={52} color={theme.Red} />,
+          title: "산책로 삭제",
+          iconColor: theme.Red,
         };
       default:
         return {
