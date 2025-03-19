@@ -1,4 +1,3 @@
-import { theme } from "src/styles/colors/theme";
 import { FaStar } from "react-icons/fa";
 import styled from "styled-components";
 
@@ -51,27 +50,15 @@ const ReviewContents = styled.div`
 `;
 const TrailReviewCard: React.FC<ReviewCardProps> = ({
   trailName,
-  date,
   content,
   rating,
   period,
   onClick,
 }) => {
-  const formattedDate = new Date(date).toLocaleDateString("ko-KR");
-
   return (
     <ReviewItems onClick={onClick}>
       <ReviewTitle>
         <TrailName>| {trailName}</TrailName>
-        <div
-          style={{
-            fontSize: "12px",
-            fontFamily: "Pretendard",
-            fontWeight: "600",
-          }}
-        >
-          {formattedDate}
-        </div>
       </ReviewTitle>
       <ReviewStars>
         {Array.from({ length: rating }).map((_, index) => (
