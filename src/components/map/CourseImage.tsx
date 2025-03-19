@@ -13,8 +13,8 @@ interface StyledImageProps extends CourseImageProps {
 }
 
 const StyledImage = styled.div<CourseImageProps>`
-  width: ${(props) => props.size || "120px"};
-  height: ${(props) => props.size || "120px"};
+  width: ${(props) => props.size || "95px"};
+  height: ${(props) => props.size || "95px"};
   border-radius: ${(props) => props.borderRadius || "10px"};
   background-image: url(${CourseImageBackground});
   background-size: cover;

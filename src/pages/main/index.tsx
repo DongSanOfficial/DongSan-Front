@@ -16,6 +16,7 @@ import GuideButton from "src/components/button/GuideButton";
 import { useNavigate } from "react-router-dom";
 import { toggleLike } from "src/apis/likedWalkway";
 import { useLocationStore } from "../../store/useLocationStore";
+import { MdOutlineInbox } from "react-icons/md";
 
 const MainContainer = styled.div`
   position: relative;
@@ -60,13 +61,6 @@ const PathCardList = styled.div`
   flex: 1;
 `;
 
-const NoWalkwaysMessage = styled.div`
-  text-align: center;
-  padding: 2rem;
-  color: ${theme.Gray500};
-  font-size: 1rem;
-`;
-
 const ErrorMessage = styled.div`
   text-align: center;
   padding: 2rem;
@@ -77,6 +71,35 @@ const ErrorMessage = styled.div`
 const LoadingSpinner = styled.div`
   text-align: center;
   padding: 1rem;
+`;
+
+const EmptyStateContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0;
+  width: 100%;
+`;
+
+const IconWrapper = styled.div`
+  background-color: ${theme.Gray100};
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+`;
+
+const NoWalkwaysMessage = styled.p`
+  font-size: 16px;
+  color: ${theme.Gray700};
+  text-align: center;
+  line-height: 1.5;
+  margin: 0;
+  font-weight: 500;
 `;
 
 interface Location {
@@ -216,7 +239,6 @@ function Main() {
     setSearchResults([]);
     setSearchValue(result.placeName);
     setIsOpen(false);
-
 
     await fetchWalkways(
       result.location.lat,
@@ -416,7 +438,7 @@ function Main() {
 
         <BottomSheet
           isOpen={isOpen}
-          maxHeight="60vh"
+          maxHeight="80vh"
           minHeight={bottomSheetHeight}
           onClose={() => {
             setIsOpen(false);
@@ -458,9 +480,16 @@ function Main() {
                 ))
               ) : (
                 !loading && (
-                  <NoWalkwaysMessage>
-                    전방 500m 부근에 등록된 산책로가 없습니다.
-                  </NoWalkwaysMessage>
+                  <>
+                    <EmptyStateContainer>
+                      <IconWrapper>
+                        <MdOutlineInbox size={40} color={theme.Gray500} />
+                      </IconWrapper>
+                      <NoWalkwaysMessage>
+                        전방 500m 부근에 등록된 산책로가 없습니다.
+                      </NoWalkwaysMessage>
+                    </EmptyStateContainer>
+                  </>
                 )
               )}
               {loading && <LoadingSpinner />}
