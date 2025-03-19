@@ -67,9 +67,7 @@ function TrailReviewPage() {
 
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && hasNext) {
-          console.log(
-            lastIdRef.current
-          );
+          console.log(lastIdRef.current);
           loadMoreReviews();
         }
       });
