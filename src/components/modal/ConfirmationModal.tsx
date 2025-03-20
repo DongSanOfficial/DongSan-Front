@@ -104,9 +104,9 @@ const ConfirmationModal = ({
     switch (modalType) {
       case "stop":
         return {
-          icon: <MdWarning size={52} color={theme.Red} />,
+          icon: <MdWarning size={52} color={theme.Red300} />,
           title: "산책 조건 미달",
-          iconColor: theme.Red,
+          iconColor: theme.Red300,
         };
       case "done":
         if (mode === "create") {
@@ -129,9 +129,9 @@ const ConfirmationModal = ({
         };
       case "delete":
         return {
-          icon: <MdWarning size={52} color={theme.Red} />,
+          icon: <MdWarning size={52} color={theme.Red300} />,
           title: "산책로 삭제",
-          iconColor: theme.Red,
+          iconColor: theme.Red300,
         };
       default:
         return {

@@ -127,7 +127,7 @@ const ReactionButton = styled.div<ReactionButtonProps>`
 const EditButton = styled.button<{ isDelete?: boolean }>`
   background-color: ${(props) =>
     props.isDelete ? theme.White : theme.Gray400};
-  color: ${(props) => (props.isDelete ? theme.Red : theme.White)};
+  color: ${(props) => (props.isDelete ? theme.Red400 : theme.White)};
   width: 100%;
   min-height: 52px;
   box-sizing: border-box;
