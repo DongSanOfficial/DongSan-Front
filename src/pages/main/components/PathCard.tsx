@@ -7,7 +7,7 @@ import CourseImage from "src/components/map/CourseImage";
 
 const Layout = styled.div`
   width: calc(100% - 10px);
-  padding: 17px 19px 12px;
+  padding: 15px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
   border-radius: 10px;
   cursor: pointer;
@@ -93,11 +93,12 @@ const PartialStar = styled(StyledStar)<{ width: number }>`
 `;
 
 const Distance = styled.h1`
-  font-size: 38px;
+  font-size: 35px;
   font-family: "Lalezar";
   line-height: 1;
   letter-spacing: -0.05em;
   text-align: right;
+  margin-top: -30px;
 `;
 
 const StyledHeart = styled(HeartIcon)<{ $isActive: boolean }>`
@@ -164,7 +165,6 @@ export default function PathCard({
       <PathCardContainer>
         <PathContent>
           <div onClick={goDetailPage}>
-            {" "}
             <CourseImage src={pathimage} alt="산책로 이미지" />
           </div>
 
@@ -180,11 +180,12 @@ export default function PathCard({
                 </StarGroup>
               </StarContainer>
             </InfoSection>
-            <Distance>{distance}</Distance>
           </ContentWrapper>
         </PathContent>
         <StyledHeart $isActive={isLiked} onClick={handleLikeClick} />
       </PathCardContainer>
+      <Distance>{distance}</Distance>
+
     </Layout>
   );
 }
