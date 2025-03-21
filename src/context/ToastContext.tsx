@@ -1,78 +1,83 @@
-import React, { createContext, useState, useCallback } from "react";
-import styled from "styled-components";
-import { FaRegCheckCircle } from "react-icons/fa";
-import { MdError } from "react-icons/md";
-import { theme } from "src/styles/colors/theme";
+import React, {
+  createContext,
+  useState,
+  useCallback,
+  ReactNode,
+  useRef,
+  useEffect,
+  useMemo,
+} from "react";
 import { Toast, ToastContextType } from "src/types/toast.type";
-
-const ToastContainer = styled.div`
-  position: fixed;
-  bottom: 100px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1000;
-  width: calc(100vw - 40px);
-  max-width: 430px;
-  `;
-
-const StyledToast = styled.div<{ type: "success" | "error" }>`
-  border-radius: 20px;
-  font-size: 15px;
-  font-weight: 500;
-  color: ${theme.White};
-  background-color: ${theme.Gray800};
-  height: 100%;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  opacity: 90%;
-  padding: 15px 10px;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-`;
-
-const IconWrapper = styled.div<{ type: "success" | "error" }>`
-  color: ${theme.White};
-`;
-
-const Message = styled.span`
-  flex: 1;
-`;
+import ToastComponent, {
+  ToastContainer,
+} from "src/components/toast/ToastComponent";
 
 export const ToastContext = createContext<ToastContextType | undefined>(
   undefined
 );
 
-export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
-  const [toasts, setToasts] = useState<Toast[]>([]);
+interface ToastProviderProps {
+  children: ReactNode;
+}
+
+export const ToastProvider = ({ children }: ToastProviderProps) => {
+  const [toast, setToast] = useState<Toast | null>(null);
+  const [visible, setVisible] = useState<boolean>(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const animationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const showToast = useCallback(
     (message: string, type: "success" | "error") => {
-      // 각 토스트 메시지에 고유한 식별자(ID)를 생성하기 위해
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+
+      if (animationTimeoutRef.current) {
+        clearTimeout(animationTimeoutRef.current);
+        animationTimeoutRef.current = null;
+      }
+
       const id = Math.random().toString(36).substr(2, 9);
-      setToasts((prev) => [...prev, { id, message, type }]);
-      setTimeout(() => {
-        setToasts((prev) => prev.filter((toast) => toast.id !== id));
-      }, 3000);
+      const newToast = { id, message, type };
+
+      if (toast && visible) {
+        setVisible(false);
+        animationTimeoutRef.current = setTimeout(() => {
+          setToast(newToast);
+          setVisible(true);
+        }, 100);
+      } else {
+        setToast(newToast);
+        setVisible(true);
+      }
+
+      timeoutRef.current = setTimeout(() => {
+        setVisible(false);
+
+        animationTimeoutRef.current = setTimeout(() => {
+          setToast(null);
+        }, 100);
+      }, 2000);
     },
-    []
+    [toast, visible]
   );
 
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (animationTimeoutRef.current)
+        clearTimeout(animationTimeoutRef.current);
+    };
+  }, []);
+
+  const contextValue = useMemo(() => ({ showToast }), [showToast]);
+
   return (
-    <ToastContext.Provider value={{ showToast }}>
+    <ToastContext.Provider value={contextValue}>
       {children}
       <ToastContainer>
-        {toasts.map((toast) => (
-          <StyledToast key={toast.id} type={toast.type}>
-            <IconWrapper type={toast.type}>
-              {toast.type === "success" ? <FaRegCheckCircle /> : <MdError />}
-            </IconWrapper>
-            <Message>{toast.message}</Message>
-          </StyledToast>
-        ))}
+        <ToastComponent toast={toast} visible={visible} />
       </ToastContainer>
     </ToastContext.Provider>
   );
