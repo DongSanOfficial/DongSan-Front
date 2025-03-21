@@ -11,13 +11,15 @@ import PathMap from "../../components/map/PathMap";
 import BottomNavigation from "../../components/bottomNavigation";
 import AppBar from "../../components/appBar";
 import { WalkwayDetail } from "src/apis/walkway.type";
-import { getWalkwayDetail } from "src/apis/walkway";
+import { deleteWalkway, getWalkwayDetail } from "src/apis/walkway";
 import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
 import StarCount from "src/components/review/starCount";
 import { BookmarkContent } from "./bookmark/components/BookmarkContent";
 import { toggleLike } from "src/apis/likedWalkway";
 import LoadingSpinner from "src/components/loading/LoadingSpinner";
 import { BottomSheet } from "src/components/bottomsheet/BottomSheet";
+import { useToast } from "src/hooks/useToast";
+import ConfirmationModal from "../../components/modal/ConfirmationModal";
 
 // 레이아웃 관련
 const PageWrapper = styled.div`
@@ -122,13 +124,14 @@ const ReactionButton = styled.div<ReactionButtonProps>`
   color: ${(props) => (props.active ? "red" : "black")};
 `;
 
-const EditButton = styled.button`
-  background-color: #888;
-  color: #ffffff;
+const EditButton = styled.button<{ isDelete?: boolean }>`
+  background-color: ${(props) =>
+    props.isDelete ? theme.White : theme.Gray400};
+  color: ${(props) => (props.isDelete ? theme.Red400 : theme.White)};
   width: 100%;
   min-height: 52px;
   box-sizing: border-box;
-  border: none;
+  border: ${(props) => (props.isDelete ? "1.5px solid" : "none")};
   font-size: 16px;
   font-weight: 500;
   margin-top: 20px;
@@ -222,6 +225,8 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
     canReview?: boolean;
   }>({});
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const { showToast } = useToast();
 
   const fetchWalkwayDetail = async () => {
     try {
@@ -326,7 +331,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
     }
   };
 
-  // const handleBack = () => {
+    // const handleBack = () => {
   //   if (location.state?.from === "mypage") {
   //     navigate("/mypage");
   //   } else if (isMyPath) {
@@ -340,6 +345,25 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
     setIsBottomSheetOpen(false);
   };
 
+  const openDeleteModal = () => {
+    setIsDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      await deleteWalkway(Number(walkwayId));
+      navigate(-1);
+      showToast("산책로가 삭제되었습니다.", "success");
+    } catch (error) {
+      showToast("잠시후 다시 시도해주세요.", "error");
+    } finally {
+      closeDeleteModal();
+    }
+  };
 
   if (loading) return <LoadingSpinner />;
   if (error) return <div>{error}</div>;
@@ -347,7 +371,10 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
 
   return (
     <>
-      <AppBar onBack={()=>navigate(-1)} title={isMyPath ? "내 산책로" : "산책로"} />
+      <AppBar
+        onBack={() => navigate(-1)}
+        title={isMyPath ? "내 산책로" : "산책로"}
+      />
       <PageWrapper>
         <HeaderContainer>
           <HeaderTopBar>
@@ -431,6 +458,12 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
           <EditButton onClick={isMyPath ? handleEditClick : handleWalkClick}>
             {isMyPath ? "수정하기" : "이용하기"}
           </EditButton>
+
+          {isMyPath && (
+            <EditButton isDelete onClick={openDeleteModal}>
+              삭제하기
+            </EditButton>
+          )}
           {walkwayHistory.canReview && (
             <ReviewButton onClick={handleReviewClick}>
               리뷰 작성하기
@@ -447,11 +480,18 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
         minHeight="0vh"
       >
         <div>
-          <BookmarkContent
-            onComplete={() => setIsBottomSheetOpen(false)}
-          />
+          <BookmarkContent onComplete={() => setIsBottomSheetOpen(false)} />
         </div>
       </BottomSheet>
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={closeDeleteModal}
+        onConfirm={confirmDelete}
+        message="정말 이 산책로를 삭제하시겠습니까? 삭제된 산책로는 복구할 수 없습니다."
+        cancelText="취소"
+        confirmText="삭제"
+        modalType="delete"
+      />
     </>
   );
 }

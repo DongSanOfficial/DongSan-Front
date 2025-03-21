@@ -37,14 +37,14 @@ const LocationIconWrapper = styled.div`
   align-items: center;
   width: 100px;
   height: 100px;
-  background-color: ${theme.LocationAcceptIconBg};
+  background-color: ${theme.Red100};
   border-radius: 50%;
   margin-bottom: 50px;
   animation: ${pulse} 2s infinite ease-in-out;
 `;
 
 const LocationOffIcon = styled(MdLocationOff)`
-  color: ${theme.LocationAcceptIcon};
+  color: ${theme.Red500};
   font-size: 4rem;
 `;
 
@@ -59,8 +59,8 @@ const WarningTextContainer = styled.div`
   margin-top: 30px;
   width: 85%;
   max-width: 350px;
-  background-color: ${theme.WarningTextBg};
-  border-left: 4px solid ${theme.LocationAcceptIcon};
+  background-color: ${theme.Red200};
+  border-left: 4px solid ${theme.Red500};
   border-radius: 8px;
   padding: 16px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
@@ -76,7 +76,7 @@ const WarningText = styled.p`
 
 const WarningHighlight = styled.span`
   font-weight: 700;
-  color: ${theme.WarningHighlight};
+  color: ${theme.Red600};
 `;
 
 const SettingsInstruction = styled.div`

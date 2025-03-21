@@ -38,7 +38,7 @@ const TitleWrapper = styled.div`
 `;
 
 const RequiredMark = styled.span`
-  color: ${theme.Red};
+  color: ${theme.Red300};
 `;
 
 const Title = styled.span<{ fontSize?: string }>`
