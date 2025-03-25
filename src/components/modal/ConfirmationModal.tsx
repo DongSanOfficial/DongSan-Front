@@ -1,3 +1,4 @@
+import React from "react";
 import styled from "styled-components";
 import Modal from "./Modal";
 import { theme } from "src/styles/colors/theme";
@@ -86,7 +87,7 @@ interface ConfirmationModalProps {
   message: ReactNode;
   cancelText?: string;
   confirmText?: string;
-  modalType?: "stop" | "done" | "back" | "delete" | "default";
+  modalType?: "stop" | "done" | "back" | "delete" | "default" | "location";
   mode?: "create" | "follow";
 }
 
@@ -102,42 +103,41 @@ const ConfirmationModal = ({
 }: ConfirmationModalProps) => {
   const getModalContent = () => {
     switch (modalType) {
+      case "location":
+        return {
+          icon: <MdWarning size={52} color={theme.Red300} />,
+          title: "위치 접근 권한 필요",
+        };
       case "stop":
         return {
           icon: <MdWarning size={52} color={theme.Red300} />,
           title: "산책 조건 미달",
-          iconColor: theme.Red300,
         };
       case "done":
         if (mode === "create") {
           return {
             icon: <MdCheckCircle size={52} color={theme.Green500} />,
             title: "산책로 등록",
-            iconColor: theme.Green500,
           };
         } else {
           return {
             icon: <MdDirectionsWalk size={52} color={theme.Following} />,
             title: "이용 완료",
-            iconColor: theme.Following,
           };
         }
       case "back":
         return {
           icon: <MdInfoOutline size={52} color={theme.Following} />,
-          iconColor: theme.Following,
         };
       case "delete":
         return {
           icon: <MdWarning size={52} color={theme.Red300} />,
           title: "산책로 삭제",
-          iconColor: theme.Red300,
         };
       default:
         return {
           icon: <MdInfoOutline size={52} color={theme.Following} />,
           title: "알림",
-          iconColor: theme.Following,
         };
     }
   };

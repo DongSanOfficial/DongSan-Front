@@ -12,6 +12,7 @@ import { ReactComponent as LocationIcon } from "../../assets/svg/LocationIcon.sv
 import SelectedLocationMarker from "../../assets/svg/UserLocation.svg";
 import { SearchResult } from "../../pages/main/components/SearchResult";
 import { useLocationStore } from "../../store/useLocationStore";
+import ConfirmationModal from "../modal/ConfirmationModal";
 
 const MapContainer = styled.div`
   width: 100%;
@@ -170,18 +171,17 @@ export const MainMap = ({
   const [isDragging, setIsDragging] = useState(false);
   const [mapLevel, setMapLevel] = useState(3); 
   const mapRef = useRef<kakao.maps.Map>(null);
+  const [isLocationAccessModalOpen, setIsLocationAccessModalOpen] = useState(false);
 
   const updateUserLocation = async () => {
     try {
-      // getCurrentLocation을 호출하면 자동으로 locationStore의 currentLocation이 업데이트됨
       const location = await getCurrentLocation();
       console.log("위치 정보 업데이트:", location);
-
       setMapCenter(location);
       onCenterChange?.(location);
       onLocationButtonClick?.(location);
     } catch (error) {
-      console.error("Error updating user location:", error);
+      setIsLocationAccessModalOpen(true);
     }
   };
 
@@ -341,6 +341,16 @@ export const MainMap = ({
       >
         <StyledLocationIcon />
       </LocationButton>
+
+      <ConfirmationModal 
+        isOpen={isLocationAccessModalOpen}
+        onClose={() => setIsLocationAccessModalOpen(false)}
+        onConfirm={() => setIsLocationAccessModalOpen(false)}
+        message="디바이스의 위치 접근을 수락해주세요. 
+현재 위치를 가져오려면 위치 접근 권한이 필요합니다."
+        modalType="location"
+        confirmText="확인"
+      />
     </MapContainer>
   );
 };
