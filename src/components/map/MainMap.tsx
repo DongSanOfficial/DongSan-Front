@@ -4,7 +4,7 @@ import {
   CustomOverlayMap,
   Polyline,
 } from "react-kakao-maps-sdk";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { theme } from "../../styles/colors/theme";
@@ -168,6 +168,8 @@ export const MainMap = ({
   );
   const [showSearchButton, setShowSearchButton] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [mapLevel, setMapLevel] = useState(3); 
+  const mapRef = useRef<kakao.maps.Map>(null);
 
   const updateUserLocation = async () => {
     try {
@@ -210,6 +212,27 @@ export const MainMap = ({
     }
   }, [center]);
 
+  useEffect(() => {
+    if (pathCoords && pathCoords.length > 0 && mapRef.current) {
+      try {
+        const bounds = new window.kakao.maps.LatLngBounds();
+        pathCoords.forEach(coord => {
+          bounds.extend(new window.kakao.maps.LatLng(coord.lat, coord.lng));
+        });
+
+        mapRef.current.setBounds(bounds);
+
+        if (mapRef.current.getLevel() < 2) {
+          mapRef.current.setLevel(2);
+        }
+
+        setMapLevel(mapRef.current.getLevel());
+      } catch (error) {
+        console.error("경로 맵 자동 맞춤 설정 오류:", error);
+      }
+    }
+  }, [pathCoords]);
+
   /** 검색어 변경 시 카카오맵 장소 검색 */
   useEffect(() => {
     if (searchKeyword && window.kakao) {
@@ -251,21 +274,22 @@ export const MainMap = ({
         <Map
           center={mapCenter}
           style={{ width: "100%", height: "100%" }}
-          level={3}
+          level={mapLevel}
           onDragStart={() => setIsDragging(true)}
           onDragEnd={() => {
             setIsDragging(false);
             setShowSearchButton(true);
           }}
           onCenterChanged={(map) => { 
-              const latlng = map.getCenter();
-              const newCenter = {
-                lat: latlng.getLat(),
-                lng: latlng.getLng(),
-              };
-              setMapCenter(newCenter);
-              onCenterChange?.(newCenter); 
+            const latlng = map.getCenter();
+            const newCenter = {
+              lat: latlng.getLat(),
+              lng: latlng.getLng(),
+            };
+            setMapCenter(newCenter);
+            onCenterChange?.(newCenter);
           }}
+          ref={mapRef}
         >
           {center && (
             <>
