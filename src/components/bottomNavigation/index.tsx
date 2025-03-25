@@ -1,10 +1,12 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import styled from 'styled-components';
+import React, { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import styled from "styled-components";
 import { ReactComponent as NewWay } from "../../assets/svg/NewWay.svg";
 import { ReactComponent as Home } from "../../assets/svg/Home.svg";
 import { ReactComponent as MyPage } from "../../assets/svg/MyPage.svg";
-import { theme } from 'src/styles/colors/theme';
+import { theme } from "src/styles/colors/theme";
+import { useLocationStore } from "../../store/useLocationStore";
+import ConfirmationModal from "../modal/ConfirmationModal";
 
 const NavigationBar = styled.nav`
   position: fixed;
@@ -45,40 +47,64 @@ const StyledSVG = styled.div<{ isActive: boolean }>`
     width: 24px;
     height: 24px;
     path {
-      fill: ${props => props.isActive ? theme.Green500 : 'currentColor'};
+      fill: ${(props) => (props.isActive ? theme.Green500 : "currentColor")};
     }
   }
 `;
 
 const BottomNavigation = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { getCurrentLocation } = useLocationStore();
+  const [isLocationAccessModalOpen, setIsLocationAccessModalOpen] =
+    useState(false);
 
   const isPathActive = (basePath: string): boolean => {
     return location.pathname.startsWith(basePath);
   };
 
+  const handleNewWayClick = async () => {
+    try {
+      await getCurrentLocation();
+      navigate("/newway");
+    } catch (error) {
+      setIsLocationAccessModalOpen(true);
+    }
+  };
+
   return (
-    <NavigationBar>
-      <NavContent>
-        <NavLink to="/newway">
-          <StyledSVG isActive={isPathActive('/newway')}>
-            <NewWay mode="create" />
-          </StyledSVG>
-        </NavLink>
+    <>
+      <NavigationBar>
+        <NavContent>
+          <div onClick={handleNewWayClick} style={{ cursor: "pointer" }}>
+            <StyledSVG isActive={isPathActive("/newway")}>
+              <NewWay />
+            </StyledSVG>
+          </div>
+          <NavLink to="/main">
+            <StyledSVG isActive={isPathActive("/main")}>
+              <Home />
+            </StyledSVG>
+          </NavLink>
 
-        <NavLink to="/main">
-          <StyledSVG isActive={isPathActive('/main')}>
-            <Home />
-          </StyledSVG>
-        </NavLink>
+          <NavLink to="/mypage">
+            <StyledSVG isActive={isPathActive("/mypage")}>
+              <MyPage />
+            </StyledSVG>
+          </NavLink>
+        </NavContent>
+      </NavigationBar>
 
-        <NavLink to="/mypage">
-          <StyledSVG isActive={isPathActive('/mypage')}>
-            <MyPage />
-          </StyledSVG>
-        </NavLink>
-      </NavContent>
-    </NavigationBar>
+      <ConfirmationModal
+        isOpen={isLocationAccessModalOpen}
+        onClose={() => setIsLocationAccessModalOpen(false)}
+        onConfirm={() => setIsLocationAccessModalOpen(false)}
+        message="디바이스의 위치 접근을 수락해주세요. 
+현재 위치를 가져오려면 위치 접근 권한이 필요합니다."
+        modalType="location"
+        confirmText="확인"
+      />
+    </>
   );
 };
 

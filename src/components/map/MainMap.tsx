@@ -4,7 +4,7 @@ import {
   CustomOverlayMap,
   Polyline,
 } from "react-kakao-maps-sdk";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { theme } from "../../styles/colors/theme";
@@ -12,6 +12,7 @@ import { ReactComponent as LocationIcon } from "../../assets/svg/LocationIcon.sv
 import SelectedLocationMarker from "../../assets/svg/UserLocation.svg";
 import { SearchResult } from "../../pages/main/components/SearchResult";
 import { useLocationStore } from "../../store/useLocationStore";
+import ConfirmationModal from "../modal/ConfirmationModal";
 
 const MapContainer = styled.div`
   width: 100%;
@@ -168,18 +169,19 @@ export const MainMap = ({
   );
   const [showSearchButton, setShowSearchButton] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [mapLevel, setMapLevel] = useState(3); 
+  const mapRef = useRef<kakao.maps.Map>(null);
+  const [isLocationAccessModalOpen, setIsLocationAccessModalOpen] = useState(false);
 
   const updateUserLocation = async () => {
     try {
-      // getCurrentLocation을 호출하면 자동으로 locationStore의 currentLocation이 업데이트됨
       const location = await getCurrentLocation();
       console.log("위치 정보 업데이트:", location);
-
       setMapCenter(location);
       onCenterChange?.(location);
       onLocationButtonClick?.(location);
     } catch (error) {
-      console.error("Error updating user location:", error);
+      setIsLocationAccessModalOpen(true);
     }
   };
 
@@ -209,6 +211,27 @@ export const MainMap = ({
       setMapCenter(center);
     }
   }, [center]);
+
+  useEffect(() => {
+    if (pathCoords && pathCoords.length > 0 && mapRef.current) {
+      try {
+        const bounds = new window.kakao.maps.LatLngBounds();
+        pathCoords.forEach(coord => {
+          bounds.extend(new window.kakao.maps.LatLng(coord.lat, coord.lng));
+        });
+
+        mapRef.current.setBounds(bounds);
+
+        if (mapRef.current.getLevel() < 2) {
+          mapRef.current.setLevel(2);
+        }
+
+        setMapLevel(mapRef.current.getLevel());
+      } catch (error) {
+        console.error("경로 맵 자동 맞춤 설정 오류:", error);
+      }
+    }
+  }, [pathCoords]);
 
   /** 검색어 변경 시 카카오맵 장소 검색 */
   useEffect(() => {
@@ -251,21 +274,22 @@ export const MainMap = ({
         <Map
           center={mapCenter}
           style={{ width: "100%", height: "100%" }}
-          level={3}
+          level={mapLevel}
           onDragStart={() => setIsDragging(true)}
           onDragEnd={() => {
             setIsDragging(false);
             setShowSearchButton(true);
           }}
           onCenterChanged={(map) => { 
-              const latlng = map.getCenter();
-              const newCenter = {
-                lat: latlng.getLat(),
-                lng: latlng.getLng(),
-              };
-              setMapCenter(newCenter);
-              onCenterChange?.(newCenter); 
+            const latlng = map.getCenter();
+            const newCenter = {
+              lat: latlng.getLat(),
+              lng: latlng.getLng(),
+            };
+            setMapCenter(newCenter);
+            onCenterChange?.(newCenter);
           }}
+          ref={mapRef}
         >
           {center && (
             <>
@@ -317,6 +341,16 @@ export const MainMap = ({
       >
         <StyledLocationIcon />
       </LocationButton>
+
+      <ConfirmationModal 
+        isOpen={isLocationAccessModalOpen}
+        onClose={() => setIsLocationAccessModalOpen(false)}
+        onConfirm={() => setIsLocationAccessModalOpen(false)}
+        message="디바이스의 위치 접근을 수락해주세요. 
+현재 위치를 가져오려면 위치 접근 권한이 필요합니다."
+        modalType="location"
+        confirmText="확인"
+      />
     </MapContainer>
   );
 };

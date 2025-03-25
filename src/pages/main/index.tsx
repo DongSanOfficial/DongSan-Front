@@ -256,6 +256,8 @@ function Main() {
    * 검색 실행
    */
   const handleSearch = () => {
+    setIsOpen(false);
+
     if (searchValue.trim()) {
       setSearching(true);
     }
@@ -438,7 +440,7 @@ function Main() {
 
         <BottomSheet
           isOpen={isOpen}
-          maxHeight="80vh"
+          maxHeight="75vh"
           minHeight={bottomSheetHeight}
           onClose={() => {
             setIsOpen(false);
