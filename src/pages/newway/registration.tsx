@@ -171,21 +171,21 @@ export default function Registration() {
     const value = e.target.value.replace("#", "").replace(/\s/g, "_");
     if (value.length <= 10) {
       setTagInput(value);
-    }  };
+    }
+  };
 
-    const handleTagInputKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === "Enter" && tagInput.trim() !== "") {
-        e.preventDefault();
-        const newTag = tagInput.trim();
-    
-        // 10자를 초과하는 태그는 추가하지 않음
-        if (newTag.length <= 10 && !tags.includes(newTag)) {
-          setTags([...tags, newTag]);
-        }
-        setTagInput("");
+  const handleTagInputKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && tagInput.trim() !== "") {
+      e.preventDefault();
+      const newTag = tagInput.trim();
+
+      // 10자를 초과하는 태그는 추가하지 않음
+      if (newTag.length <= 10 && !tags.includes(newTag)) {
+        setTags([...tags, newTag]);
       }
-    };
-
+      setTagInput("");
+    }
+  };
 
   // 태그 삭제 함수 추가
   const handleTagDelete = (indexToDelete: number) => {
@@ -236,7 +236,9 @@ export default function Registration() {
           };
           const walkwayId = await createWalkway(walkwayData);
           showToast("등록이 완료되었습니다.", "success");
-          navigate(`/mypage/myregister/${walkwayId}`);
+          navigate(`/mypage/myregister/${walkwayId}`, {
+            state: { from: "newRegistration" },
+          });
         }
       } catch (error) {
         showToast("다시 한 번 시도해주세요.", "error");
@@ -289,7 +291,7 @@ export default function Registration() {
           </Content>
           <TrailInfo
             duration={pathData.duration}
-            distance={pathData.totalDistance}  // 여기서는 이미 km 단위로 받은 값을 그대로 전달함
+            distance={pathData.totalDistance} // 여기서는 이미 km 단위로 받은 값을 그대로 전달함
             isRegistration={true}
           />
         </ContentWrapper>

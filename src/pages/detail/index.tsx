@@ -332,6 +332,31 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
   };
 
   const handleBack = () => {
+    // 신규등록시 확인 페이지에서 백버튼을 누른 경우 '수정하기' 버튼을 누른 것과 동일한 기능
+    if (location.state?.from === "newRegistration") {
+      const editData = {
+        isEditMode: true,
+        walkwayId: Number(walkwayId),
+        name: walkwayDetail?.name,
+        date: walkwayDetail?.date,
+        description: walkwayDetail?.memo,
+        hashtags: walkwayDetail?.hashtags.map((tag) => tag.replace("#", "")),
+        totalDistance: walkwayDetail?.distance,
+        duration: walkwayDetail?.time,
+        accessLevel: walkwayDetail?.accessLevel,
+        coordinates: walkwayDetail?.course.map((coord) => ({
+          lat: coord.latitude,
+          lng: coord.longitude,
+        })),
+      };
+  
+      navigate("/newway/registration", {
+        state: editData,
+      });
+      return;
+    }
+
+
     // 이전 상황:
     // 마이페이지에서 내가 등록한 산책로 프리뷰를 바로 클릭했을 때
     if (location.state?.from === "mypage") {
