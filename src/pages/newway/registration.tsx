@@ -168,22 +168,24 @@ export default function Registration() {
 
   const handleTagInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     // '#' 기호 제거 및 공백을 '_'로 대체
-    const value = e.target.value.replace("#", "").replace(/\s/g, "_"); // 모든 공백을 '_'로 대체
-    setTagInput(value);
-  };
+    const value = e.target.value.replace("#", "").replace(/\s/g, "_");
+    if (value.length <= 10) {
+      setTagInput(value);
+    }  };
 
-  const handleTagInputKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && tagInput.trim() !== "") {
-      e.preventDefault();
-      const newTag = tagInput.trim();
-
-      // 중복 태그 방지
-      if (!tags.includes(newTag)) {
-        setTags([...tags, newTag]);
+    const handleTagInputKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter" && tagInput.trim() !== "") {
+        e.preventDefault();
+        const newTag = tagInput.trim();
+    
+        // 10자를 초과하는 태그는 추가하지 않음
+        if (newTag.length <= 10 && !tags.includes(newTag)) {
+          setTags([...tags, newTag]);
+        }
+        setTagInput("");
       }
-      setTagInput("");
-    }
-  };
+    };
+
 
   // 태그 삭제 함수 추가
   const handleTagDelete = (indexToDelete: number) => {
@@ -302,7 +304,7 @@ export default function Registration() {
         />
         <TagInputWrapper>
           <TagInput
-            placeholder={"해시태그 추가하기"}
+            placeholder={"해시태그 추가하기(각 10자이내)"}
             value={tagInput}
             onChange={handleTagInputChange}
             onKeyDown={handleTagInputKeyDown}
