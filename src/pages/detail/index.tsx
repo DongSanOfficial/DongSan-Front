@@ -140,8 +140,7 @@ const EditButton = styled.button<{ isDelete?: boolean }>`
 // 해시태그 관련
 const TagsContainer = styled.div`
   display: flex;
-  flex-wrap: nowrap;
-  overflow-x: auto;
+  flex-wrap: wrap;
   gap: 5px;
   margin: 10px;
   padding-bottom: 10px;
@@ -151,7 +150,8 @@ const TagItem = styled.div`
   font-size: 12px;
   font-weight: 600;
   margin: 2px;
-  flex-shrink: 0;
+  display: inline-block;
+  white-space: nowrap;
 `;
 
 // 별점 관련
@@ -331,15 +331,29 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
     }
   };
 
-    // const handleBack = () => {
-  //   if (location.state?.from === "mypage") {
-  //     navigate("/mypage");
-  //   } else if (isMyPath) {
-  //     navigate("/mypage/TrailList"); // 전체보기 페이지로 이동
-  //   } else {
-  //     navigate("/main"); // 메인으로
-  //   }
-  // };
+  const handleBack = () => {
+    // 이전 상황:
+    // 마이페이지에서 내가 등록한 산책로 프리뷰를 바로 클릭했을 때
+    if (location.state?.from === "mypage") {
+      navigate("/mypage");
+    } 
+    // 내가 등록한 산책로 리스트에서 디테일 페이지로 이동했을 때
+    else if (isMyPath) {
+      navigate("/mypage/TrailList");
+    } 
+    // 내가 좋아요한 산책로 리스트에서 ...
+    else if (location.state?.from === "favorites") {
+      navigate("/mypage/TrailList?type=favorites");
+    } 
+    // 내가 북마크한 산책로 리스트에서 ...
+    else if (location.state?.from === "bookmarks" && location.state?.bookmarkId) {
+      navigate(`/mypage/TrailList?type=bookmarks&bookmarkId=${location.state.bookmarkId}`);
+    } 
+    // 기본
+    else {
+      navigate('/main');
+    }
+  };
 
   const handleBottomSheetClose = () => {
     setIsBottomSheetOpen(false);
@@ -372,7 +386,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
   return (
     <>
       <AppBar
-        onBack={() => navigate(-1)}
+        onBack={handleBack}
         title={isMyPath ? "내 산책로" : "산책로"}
       />
       <PageWrapper>
