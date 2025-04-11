@@ -21,6 +21,7 @@ import { getReviewRecord, getUserReviews } from "src/apis/review";
 import HistoryCard from "src/components/HistoryCard_mp";
 import LoadingSpinner from "src/components/loading/LoadingSpinner";
 import { getBookmark } from "../../apis/bookmark";
+import AccountDeleteModal from "src/components/modal/AccountDeleteModal";
 
 const Wrapper = styled.div`
   display: flex;
@@ -119,7 +120,16 @@ const Items = styled.div`
     display: none;
   }
 `;
-
+const Unregister = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0;
+`;
+const Delete = styled.span`
+  font-size: 12px;
+  color: ${theme.Gray400};
+`;
 // API 응답 타입에 맞게 Bookmark 인터페이스 수정
 interface Bookmark {
   bookmarkId: number; // id -> bookmarkId로 변경
@@ -141,7 +151,7 @@ function MyPage() {
   );
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [refreshBookmarks, setRefreshBookmarks] = useState(0);
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const fetchBookmarks = async () => {
     try {
       const defaultWalkwayId = 1;
@@ -163,17 +173,18 @@ function MyPage() {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const [profile, walkwaysResponse, historyReview, userReviews] = await Promise.all([
-          getUserProfile(),
-          getMyWalkways({ preview: true }),
-          getReviewRecord({ size: 3 }),
-          getUserReviews({ size: 3 }),
-        ]);
+        const [profile, walkwaysResponse, historyReview, userReviews] =
+          await Promise.all([
+            getUserProfile(),
+            getMyWalkways({ preview: true }),
+            getReviewRecord({ size: 3 }),
+            getUserReviews({ size: 3 }),
+          ]);
         setUserProfile(profile);
         setPreviewTrails(walkwaysResponse.data);
         setPreviewHistory(historyReview.data ?? []);
         setReviews(userReviews.data || []);
-        
+
         await fetchBookmarks();
 
         setError(null);
@@ -196,7 +207,7 @@ function MyPage() {
   }, [refreshBookmarks]);
 
   const handleBookmarkUpdate = useCallback(() => {
-    setRefreshBookmarks(prev => prev + 1);
+    setRefreshBookmarks((prev) => prev + 1);
   }, []);
 
   const handleBookmarkClick = useCallback(
@@ -243,6 +254,21 @@ function MyPage() {
     }
   };
 
+  const handleOpenMoal = () => {
+    setIsModalOpen(true);
+  };
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+  const handleDeleteAccount = async () => {
+    try {
+      await instance.delete("/auth/deactivate");
+      navigate("/signin");
+    } catch (error) {
+      showToast("계정삭제 중 문제가 발생했습니다.", "error");
+    }
+    setIsModalOpen(false);
+  };
   if (isLoading) return <LoadingSpinner />;
   if (error) return <div>{error}</div>;
 
@@ -294,7 +320,8 @@ function MyPage() {
             title="내가 좋아하는 산책로"
           />
 
-          {bookmarks && bookmarks.length > 0 && (
+          {bookmarks &&
+            bookmarks.length > 0 &&
             bookmarks.map((bookmark) => (
               <TrailBookmark
                 key={bookmark.bookmarkId}
@@ -305,8 +332,7 @@ function MyPage() {
                 bookmarkId={bookmark.bookmarkId}
                 onUpdate={handleBookmarkUpdate}
               />
-            ))
-          )}
+            ))}
           <Line />
         </div>
 
@@ -346,6 +372,14 @@ function MyPage() {
             ))}
           </Items>
         </div>
+        <Unregister>
+          <Delete onClick={handleOpenMoal}>탈퇴하기</Delete>
+        </Unregister>
+        <AccountDeleteModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          onDelete={handleDeleteAccount}
+        />
       </Wrapper>
       <BottomNavigation />
     </>
