@@ -195,13 +195,18 @@ function TrailListPage() {
   }, [hasNext, loading, initialLoading]);
 
   const handleCardClick = (walkwayId: number) => {
-    if (type === "favorites" || type === "bookmarks") {
-      navigate(`/main/recommend/detail/${walkwayId}`);
+    if (type === "favorites") {
+      navigate(`/main/recommend/detail/${walkwayId}`, {
+        state: { from: "favorites" }
+      });
+    } else if (type === "bookmarks") {
+      navigate(`/main/recommend/detail/${walkwayId}`, {
+        state: { from: "bookmarks", bookmarkId }
+      });
     } else {
       navigate(`/mypage/myregister/${walkwayId}`);
     }
   };
-
   return (
     <>
       <AppBar onBack={() => navigate("/mypage")} title={title} />
