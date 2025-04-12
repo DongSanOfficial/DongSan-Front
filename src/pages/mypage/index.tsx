@@ -21,7 +21,7 @@ import { getReviewRecord, getUserReviews } from "src/apis/review";
 import HistoryCard from "src/components/HistoryCard_mp";
 import LoadingSpinner from "src/components/loading/LoadingSpinner";
 import { getBookmark } from "../../apis/bookmark";
-import AccountDeleteModal from "src/components/modal/AccountDeleteModal";
+import ConfirmationModal from "src/components/modal/ConfirmationModal";
 
 const Wrapper = styled.div`
   display: flex;
@@ -375,10 +375,16 @@ function MyPage() {
         <Unregister>
           <Delete onClick={handleOpenMoal}>탈퇴하기</Delete>
         </Unregister>
-        <AccountDeleteModal
+        <ConfirmationModal
           isOpen={isModalOpen}
           onClose={handleCloseModal}
-          onDelete={handleDeleteAccount}
+          onConfirm={handleDeleteAccount}
+          message={
+            "정말로 계정을 삭제하시겠습니까?\n삭제 후에는 복구가 불가능합니다."
+          }
+          cancelText="취소"
+          confirmText="탈퇴"
+          modalType="secession"
         />
       </Wrapper>
       <BottomNavigation />

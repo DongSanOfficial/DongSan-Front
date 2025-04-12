@@ -87,7 +87,14 @@ interface ConfirmationModalProps {
   message: ReactNode;
   cancelText?: string;
   confirmText?: string;
-  modalType?: "stop" | "done" | "back" | "delete" | "default" | "location";
+  modalType?:
+    | "stop"
+    | "done"
+    | "back"
+    | "delete"
+    | "default"
+    | "location"
+    | "secession";
   mode?: "create" | "follow";
 }
 
@@ -133,6 +140,11 @@ const ConfirmationModal = ({
         return {
           icon: <MdWarning size={52} color={theme.Red300} />,
           title: "산책로 삭제",
+        };
+      case "secession":
+        return {
+          icon: <MdWarning size={52} color={theme.Red300} />,
+          title: "서비스 탈퇴",
         };
       default:
         return {
