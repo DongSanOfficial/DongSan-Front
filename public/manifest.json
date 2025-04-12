@@ -1,25 +1,36 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
-  "icons": [
-    {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
-    },
-    {
-      "src": "logo192.png",
-      "type": "image/png",
-      "sizes": "192x192"
-    },
-    {
-      "src": "logo512.png",
-      "type": "image/png",
-      "sizes": "512x512"
-    }
-  ],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
-}
+    "name": "동산",
+    "short_name": "dongsan", 
+    "icons": [
+      {
+        "src": "any-dongsan192.png",
+        "type": "image/png",
+        "sizes": "192x192",
+        "purpose": "any"
+      },
+      {
+        "src": "any-dongsan512.png",
+        "type": "image/png",
+        "sizes": "512x512",
+        "purpose": "any"
+      },
+      {
+        "src": "maskable-dongsan192.png",
+        "type": "image/png",
+        "sizes": "192x192",
+        "purpose": "maskable"
+      },
+      {
+        "src": "maskable-dongsan512.png",
+        "type": "image/png",
+        "sizes": "512x512",
+        "purpose": "maskable"
+      }
+    ],
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "description": "동산과 함께 산책해요",
+    "permissions": ["geolocation"]
+  }
+  
