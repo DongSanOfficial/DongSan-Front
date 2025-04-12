@@ -168,8 +168,10 @@ export default function Registration() {
 
   const handleTagInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     // '#' 기호 제거 및 공백을 '_'로 대체
-    const value = e.target.value.replace("#", "").replace(/\s/g, "_"); // 모든 공백을 '_'로 대체
-    setTagInput(value);
+    const value = e.target.value.replace("#", "").replace(/\s/g, "_");
+    if (value.length <= 10) {
+      setTagInput(value);
+    }
   };
 
   const handleTagInputKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -177,8 +179,8 @@ export default function Registration() {
       e.preventDefault();
       const newTag = tagInput.trim();
 
-      // 중복 태그 방지
-      if (!tags.includes(newTag)) {
+      // 10자를 초과하는 태그는 추가하지 않음
+      if (newTag.length <= 10 && !tags.includes(newTag)) {
         setTags([...tags, newTag]);
       }
       setTagInput("");
@@ -234,7 +236,9 @@ export default function Registration() {
           };
           const walkwayId = await createWalkway(walkwayData);
           showToast("등록이 완료되었습니다.", "success");
-          navigate(`/mypage/myregister/${walkwayId}`);
+          navigate(`/mypage/myregister/${walkwayId}`, {
+            state: { from: "newRegistration" },
+          });
         }
       } catch (error) {
         showToast("다시 한 번 시도해주세요.", "error");
@@ -287,7 +291,7 @@ export default function Registration() {
           </Content>
           <TrailInfo
             duration={pathData.duration}
-            distance={pathData.totalDistance}  // 여기서는 이미 km 단위로 받은 값을 그대로 전달함
+            distance={pathData.totalDistance} // 여기서는 이미 km 단위로 받은 값을 그대로 전달함
             isRegistration={true}
           />
         </ContentWrapper>
@@ -302,7 +306,7 @@ export default function Registration() {
         />
         <TagInputWrapper>
           <TagInput
-            placeholder={"해시태그 추가하기"}
+            placeholder={"해시태그 추가하기(각 10자이내)"}
             value={tagInput}
             onChange={handleTagInputChange}
             onKeyDown={handleTagInputKeyDown}

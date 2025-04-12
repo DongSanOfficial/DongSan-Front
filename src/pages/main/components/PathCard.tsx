@@ -60,7 +60,7 @@ const StarGroup = styled.div`
   display: flex;
   gap: 2px;
   align-items: center;
-  font-size: 13px;
+  font-size: 12px;
 `;
 
 const StarRating = styled.span`
@@ -136,6 +136,11 @@ export default function PathCard({
 }: PathCardProps) {
   const navigate = useNavigate();
 
+  const getFirstHashtag = (hashtags: string) => {
+    const tags = hashtags.split(/[\s,]+/);
+    return tags.length > 0 ? tags[0] : '';
+  };
+
   const renderStars = (rating: number) => {
     return [1, 2, 3, 4, 5].map((value) => {
       const diff = rating - (value - 1);
@@ -171,7 +176,7 @@ export default function PathCard({
           <ContentWrapper>
             <InfoSection>
               <Title>{pathname}</Title>
-              <HashTag>{hashtag}</HashTag>
+              <HashTag>{getFirstHashtag(hashtag)}</HashTag>
               <StarContainer>
                 <StarGroup>
                   <StarRating>{starCount.toFixed(1)}</StarRating>
