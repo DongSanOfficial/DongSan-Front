@@ -132,7 +132,7 @@ const Delete = styled.span`
 `;
 // API 응답 타입에 맞게 Bookmark 인터페이스 수정
 interface Bookmark {
-  bookmarkId: number; // id -> bookmarkId로 변경
+  bookmarkId: number;
   name: string;
   marked?: boolean;
 }
@@ -280,7 +280,7 @@ function MyPage() {
           <ProfileTop>
             <ProfileInfo>
               <Img
-                src={userProfile?.profileImageUrl || profileImg}
+                src={profileImg}
                 alt="프로필 이미지"
               />
               <div>
