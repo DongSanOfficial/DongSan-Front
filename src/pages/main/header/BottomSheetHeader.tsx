@@ -1,6 +1,5 @@
 import React from "react";
 import styled from "styled-components";
-import Divider from "../../../components/Divider";
 import { ReactComponent as DongSanTextLogo } from "../../../assets/svg/DongSanTextLogo.svg";
 import DropDownButton from "../../../components/button/DropDownButton";
 import { SortOption } from "../../../apis/walkway.type";
@@ -14,6 +13,7 @@ const DropdownContainer = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  margin-bottom: 15px;
 `;
 
 const DropdownWrapper = styled.div`
@@ -49,7 +49,6 @@ const BottomSheetHeader = ({
           />
         </DropdownWrapper>
       </DropdownContainer>
-      <Divider />
     </Container>
   );
 };
