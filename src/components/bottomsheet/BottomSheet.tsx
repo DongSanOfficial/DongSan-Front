@@ -61,6 +61,7 @@ const Header = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 16px 16px 0 16px;
+  touch-action: none;
 `;
 
 const DragIndicator = styled.div`
@@ -70,12 +71,14 @@ const DragIndicator = styled.div`
   border-radius: 2px;
   margin: 0 auto 10px;
   cursor: pointer;
+  touch-action: none;
 `;
 
 const Content = styled.div`
   padding: 16px;
-  overflow: scroll;
+  overflow-y: auto;
   height: calc(100% - 32px);
+  touch-action: auto;
 `;
 
 const BottomSheet = ({
@@ -88,6 +91,8 @@ const BottomSheet = ({
   closeOnOutsideClick = true,
 }: BottomSheetProps) => {
   const bottomSheetRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const startY = useRef<number>(0);
   const currentY = useRef<number>(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -105,9 +110,11 @@ const BottomSheet = ({
       bottomSheetRef.current.style.transition = "transform 0.3s ease";
       bottomSheetRef.current.style.transform = isOpen
         ? "translateY(0)"
-        : `translateY(calc(100% - ${
+        : showPreview
+        ? `translateY(calc(100% - ${
             typeof minHeight === "number" ? `${minHeight}px` : minHeight
-          }))`;
+          }))`
+        : "translateY(100%)";
     }
   };
 
@@ -115,7 +122,7 @@ const BottomSheet = ({
     if (!isDragging) {
       resetPosition();
     }
-  }, [isOpen, isDragging, minHeight]);
+  }, [isOpen, isDragging, minHeight, showPreview]);
 
   const handleOutsideClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (closeOnOutsideClick && e.target === e.currentTarget && isOpen) {
@@ -123,7 +130,7 @@ const BottomSheet = ({
     }
   };
 
-  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+  const handleHeaderTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
     startY.current = e.touches[0].clientY;
     setIsDragging(true);
     if (bottomSheetRef.current) {
@@ -132,7 +139,7 @@ const BottomSheet = ({
     e.stopPropagation();
   };
 
-  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+  const handleHeaderTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
     e.stopPropagation();
 
     currentY.current = e.touches[0].clientY;
@@ -150,7 +157,7 @@ const BottomSheet = ({
     }
   };
 
-  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+  const handleHeaderTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
     e.stopPropagation();
     setIsDragging(false);
 
@@ -172,6 +179,10 @@ const BottomSheet = ({
     }
   };
 
+  const handleContentTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+  };
+
   return (
     <>
       <Overlay isOpen={isOpen} onClick={handleOutsideClick} />
@@ -181,14 +192,21 @@ const BottomSheet = ({
         height={height}
         minHeight={minHeight}
         showPreview={showPreview}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
       >
-        <Header>
+        <Header
+          ref={headerRef}
+          onTouchStart={handleHeaderTouchStart}
+          onTouchMove={handleHeaderTouchMove}
+          onTouchEnd={handleHeaderTouchEnd}
+        >
           <DragIndicator onClick={handleDragIndicatorClick} />
         </Header>
-        <Content>{children}</Content>
+        <Content 
+          ref={contentRef}
+          onTouchStart={handleContentTouchStart}
+        >
+          {children}
+        </Content>
       </Container>
     </>
   );
