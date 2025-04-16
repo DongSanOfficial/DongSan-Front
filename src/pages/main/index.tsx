@@ -9,8 +9,8 @@ import SearchBar from "./header/components/SearchInput";
 import SearchResults, { SearchResult } from "./components/SearchResult";
 import BottomNavigation from "src/components/bottomNavigation";
 import { theme } from "src/styles/colors/theme";
-import { Walkway, SortOption } from "../../apis/walkway.type";
-import { searchWalkways, getWalkwayDetail } from "../../apis/walkway";
+import { Walkway, SortOption, MapOption } from "../../apis/walkway.type";
+import { searchWalkways, getWalkwayDetail, getAllWalkways } from "../../apis/walkway";
 import { ApiErrorResponse } from "src/apis/api.type";
 import GuideButton from "src/components/button/GuideButton";
 import { useNavigate } from "react-router-dom";
@@ -132,6 +132,7 @@ function Main() {
   const [walkways, setWalkways] = useState<Walkway[]>([]);
   const [hasMore, setHasMore] = useState(false);
   const [sortOption, setSortOption] = useState<SortOption>("liked");
+  const [mapOption, setMapOption] = useState<MapOption>("current");
   const [lastId, setLastId] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -154,14 +155,18 @@ function Main() {
   useEffect(() => {
     const initializeLocation = async () => {
       try {
-        const location = await getCurrentLocation();
-        if (location && !selectedLocation) {
-          await fetchWalkways(location.lat, location.lng, sortOption, true);
-          setSelectedLocation({
-            latitude: location.lat,
-            longitude: location.lng,
-            name: "현재 위치",
-          });
+        if (mapOption === "current") {
+          const location = await getCurrentLocation();
+          if (location && !selectedLocation) {
+            await fetchWalkways(location.lat, location.lng, sortOption, true);
+            setSelectedLocation({
+              latitude: location.lat,
+              longitude: location.lng,
+              name: "현재 위치",
+            });
+          }
+        } else {
+          await fetchAllWalkways(sortOption, true);
         }
       } catch (error) {
         console.error("위치 정보 초기화 실패:", error);
@@ -169,10 +174,59 @@ function Main() {
     };
 
     initializeLocation();
-  }, []);
+  }, [mapOption]);
+
 
   /**
-   * 산책로 검색 api 연동
+   * 모든 산책로 조회 API 연동
+   */
+  const fetchAllWalkways = async (
+    sort: SortOption,
+    reset: boolean = false
+  ) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await getAllWalkways({
+        sort,
+        lastId: reset ? null : lastId,
+        size: 10,
+      });
+
+      setWalkways((prev) =>
+        reset ? response.data : [...prev, ...response.data]
+      );
+      setHasMore(response.hasNext);
+
+      if (response.data.length > 0) {
+        const newLastId = response.data[response.data.length - 1]?.walkwayId;
+        setLastId(newLastId);
+      }
+
+      if (reset) {
+        const newLikedPaths = Object.fromEntries(
+          response.data.map((data) => [data.walkwayId, data.isLike])
+        );
+        const newLikeCounts = Object.fromEntries(
+          response.data.map((data) => [data.walkwayId, data.likeCount])
+        );
+        setLikedPaths(newLikedPaths);
+        setLikeCounts(newLikeCounts);
+      }
+    } catch (error) {
+      const axiosError = error as AxiosError<ApiErrorResponse>;
+      const errorMessage =
+        axiosError.response?.data?.message ||
+        "모든 산책로를 불러오는데 실패했습니다.";
+      setError(errorMessage);
+      console.error("모든 산책로 불러오기 실패:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /**
+   * 산책로 검색 api 연동 (위치 기반)
    */
   const fetchWalkways = async (
     lat: number,
@@ -230,6 +284,7 @@ function Main() {
   };
 
   const handleResultSelect = async (result: SearchResult) => {
+    setMapOption("current");    
     setSelectedLocation({
       latitude: result.location.lat,
       longitude: result.location.lng,
@@ -271,13 +326,53 @@ function Main() {
     const newSortOption = value as SortOption;
     setSortOption(newSortOption);
 
-    if (selectedLocation) {
+    if (mapOption === "current" && selectedLocation) {
       await fetchWalkways(
         selectedLocation.latitude,
         selectedLocation.longitude,
         newSortOption,
         true
       );
+    } else {
+      await fetchAllWalkways(newSortOption, true);
+    }
+  };
+
+  /**
+   * 지도 옵션 변경 처리
+   */
+  const handleMapChange = async (value: string) => {
+    const newMapOption = value as MapOption;
+    setMapOption(newMapOption);
+
+    if (newMapOption === "current") {
+      if (selectedLocation) {
+        // 현재 위치 기반 산책로 조회
+        await fetchWalkways(
+          selectedLocation.latitude,
+          selectedLocation.longitude,
+          sortOption,
+          true
+        );
+      } else {
+        // 선택된 위치가 없으면 현재 위치 가져오기
+        try {
+          const location = await getCurrentLocation();
+          if (location) {
+            await fetchWalkways(location.lat, location.lng, sortOption, true);
+            setSelectedLocation({
+              latitude: location.lat,
+              longitude: location.lng,
+              name: "현재 위치",
+            });
+          }
+        } catch (error) {
+          console.error("현재 위치 가져오기 실패:", error);
+        }
+      }
+    } else {
+      // 모든 산책로 조회
+      await fetchAllWalkways(sortOption, true);
     }
   };
 
@@ -286,6 +381,8 @@ function Main() {
    */
   const handleInitialLocation = async (location: Location) => {
     try {
+      // 위치 설정 시 mapOption을 current로 변경
+      setMapOption("current");
       await fetchWalkways(location.lat, location.lng, sortOption, true);
       setSelectedLocation({
         latitude: location.lat,
@@ -304,6 +401,8 @@ function Main() {
    */
   const handleLocationButtonClick = async (location: Location) => {
     try {
+      // 위치 버튼 클릭 시 mapOption을 current로 변경
+      setMapOption("current");
       await fetchWalkways(location.lat, location.lng, sortOption, true);
       setSelectedLocation({
         latitude: location.lat,
@@ -320,15 +419,18 @@ function Main() {
   const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
     const { scrollTop, clientHeight, scrollHeight } = event.currentTarget;
     if (scrollHeight - scrollTop <= clientHeight * 1.5 && hasMore && !loading) {
-      if (selectedLocation) {
+      if (mapOption === "current" && selectedLocation) {
         fetchWalkways(
           selectedLocation.latitude,
           selectedLocation.longitude,
           sortOption
         );
+      } else {
+        fetchAllWalkways(sortOption);
       }
     }
   };
+  
   /**
    * 좋아요 클릭 처리
    */
@@ -336,7 +438,7 @@ function Main() {
     try {
       const isLiked = likedPaths[id]; // 현재 좋아요 상태
 
-      const response = await toggleLike({
+      await toggleLike({
         walkwayId: id,
         isLiked: isLiked,
       });
@@ -386,6 +488,8 @@ function Main() {
 
   const handleSearchCurrentLocation = async (location: Location) => {
     try {
+      // 검색 위치 선택 시 mapOption을 current로 변경
+      setMapOption("current");
       // API 호출과 selectedLocation 업데이트를 동시에 실행
       setSelectedLocation({
         latitude: location.lat,
@@ -450,7 +554,9 @@ function Main() {
             <FixedHeader>
               <BottomSheetHeader
                 sortValue={sortOption}
+                mapValue={mapOption}
                 onSortChange={handleSortChange}
+                onMapChange={handleMapChange}
               />
             </FixedHeader>
             <PathCardList onScroll={handleScroll}>
@@ -486,7 +592,10 @@ function Main() {
                         <MdOutlineInbox size={40} color={theme.Gray500} />
                       </IconWrapper>
                       <NoWalkwaysMessage>
-                        전방 500m 부근에 등록된 산책로가 없습니다.
+                        {mapOption === "current" 
+                          ? "전방 500m 부근에 등록된 산책로가 없습니다."
+                          : "등록된 산책로가 없습니다."
+                        }
                       </NoWalkwaysMessage>
                     </EmptyStateContainer>
                   </>
