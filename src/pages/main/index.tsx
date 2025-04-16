@@ -10,7 +10,11 @@ import SearchResults, { SearchResult } from "./components/SearchResult";
 import BottomNavigation from "src/components/bottomNavigation";
 import { theme } from "src/styles/colors/theme";
 import { Walkway, SortOption, MapOption } from "../../apis/walkway.type";
-import { searchWalkways, getWalkwayDetail, getAllWalkways } from "../../apis/walkway";
+import {
+  searchWalkways,
+  getWalkwayDetail,
+  getAllWalkways,
+} from "../../apis/walkway";
 import { ApiErrorResponse } from "src/apis/api.type";
 import GuideButton from "src/components/button/GuideButton";
 import { useNavigate } from "react-router-dom";
@@ -104,6 +108,19 @@ const NoWalkwaysMessage = styled.p`
   font-weight: 500;
 `;
 
+const ViewAllButton = styled.button`
+  background-color: ${theme.Green300};
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 25px;
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 30px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+`;
+
 interface Location {
   lat: number;
   lng: number;
@@ -176,14 +193,10 @@ function Main() {
     initializeLocation();
   }, [mapOption]);
 
-
   /**
    * 모든 산책로 조회 API 연동
    */
-  const fetchAllWalkways = async (
-    sort: SortOption,
-    reset: boolean = false
-  ) => {
+  const fetchAllWalkways = async (sort: SortOption, reset: boolean = false) => {
     try {
       setLoading(true);
       setError(null);
@@ -284,7 +297,7 @@ function Main() {
   };
 
   const handleResultSelect = async (result: SearchResult) => {
-    setMapOption("current");    
+    setMapOption("current");
     setSelectedLocation({
       latitude: result.location.lat,
       longitude: result.location.lng,
@@ -430,7 +443,7 @@ function Main() {
       }
     }
   };
-  
+
   /**
    * 좋아요 클릭 처리
    */
@@ -592,11 +605,22 @@ function Main() {
                         <MdOutlineInbox size={40} color={theme.Gray500} />
                       </IconWrapper>
                       <NoWalkwaysMessage>
-                        {mapOption === "current" 
+                        {mapOption === "current"
                           ? "전방 500m 부근에 등록된 산책로가 없습니다."
-                          : "등록된 산책로가 없습니다."
-                        }
+                          : "등록된 산책로가 없습니다."}
                       </NoWalkwaysMessage>
+
+                      {/* 현재 위치 모드에서만 버튼 표시 */}
+                      {mapOption === "current" && (
+                        <ViewAllButton
+                          onClick={() => {
+                            setMapOption("all");
+                            fetchAllWalkways(sortOption, true);
+                          }}
+                        >
+                          동산의 모든 산책로 둘러보기
+                        </ViewAllButton>
+                      )}
                     </EmptyStateContainer>
                   </>
                 )
