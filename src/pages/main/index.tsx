@@ -2,7 +2,7 @@ import React, { useState, ChangeEvent, useEffect } from "react";
 import styled from "styled-components";
 import { AxiosError } from "axios";
 import { MainMap } from "../../components/map/MainMap";
-import { BottomSheet } from "../../components/bottomsheet/BottomSheet";
+import BottomSheet from "../../components/bottomsheet/BottomSheet";
 import BottomSheetHeader from "./header/BottomSheetHeader";
 import PathCard from "./components/PathCard";
 import SearchBar from "./header/components/SearchInput";
@@ -38,10 +38,10 @@ const SearchBarContainer = styled.div`
 `;
 
 const BottomSheetContainer = styled.div`
-  position: relative;
-  height: 100%;
   display: flex;
   flex-direction: column;
+  height: 100%;
+  width: 100%;
 `;
 
 const FixedHeader = styled.div`
@@ -49,6 +49,7 @@ const FixedHeader = styled.div`
   top: 0;
   background: white;
   z-index: 1;
+  flex-shrink: 0;
 `;
 
 const PathCardList = styled.div`
@@ -57,8 +58,9 @@ const PathCardList = styled.div`
   align-items: center;
   gap: 20px;
   padding: 10px 0 70px 0;
-  overflow: scroll;
+  overflow-y: auto;
   flex: 1;
+  -webkit-overflow-scrolling: touch;
 `;
 
 const ErrorMessage = styled.div`
@@ -110,10 +112,9 @@ interface Location {
 function Main() {
   const navigate = useNavigate();
   const { currentLocation, getCurrentLocation } = useLocationStore();
-
   // 바텀시트 상태
-  const [isOpen, setIsOpen] = useState(false);
-  const [bottomSheetHeight, setBottomSheetHeight] = useState("23vh");
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const toggleBottomSheet = () => setIsOpen((prev) => !prev);
 
   // 검색 관련 상태
   const [searchValue, setSearchValue] = useState<string>("");
@@ -292,7 +293,6 @@ function Main() {
         name: "현재 위치",
       });
       setSelectedPath([]); // 경로 초기화
-      setBottomSheetHeight("23vh");
       setIsOpen(false);
     } catch (error) {
       console.error("현재 위치 기반 산책로 조회 실패:", error);
@@ -440,13 +440,11 @@ function Main() {
 
         <BottomSheet
           isOpen={isOpen}
-          maxHeight="75vh"
-          minHeight={bottomSheetHeight}
-          onClose={() => {
-            setIsOpen(false);
-            setBottomSheetHeight("23vh");
-          }}
-          onOpen={() => setIsOpen(true)}
+          onClose={toggleBottomSheet}
+          height="75vh"
+          minHeight="180px"
+          showPreview={true}
+          closeOnOutsideClick={true}
         >
           <BottomSheetContainer>
             <FixedHeader>

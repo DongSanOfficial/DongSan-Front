@@ -1,183 +1,215 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
 interface BottomSheetProps {
   isOpen: boolean;
   onClose: () => void;
-  onOpen: () => void;
   children: React.ReactNode;
-  maxHeight?: string;
-  minHeight?: string;
+  height?: string | number;
+  minHeight?: string | number;
+  showPreview?: boolean;
+  closeOnOutsideClick?: boolean;
+  showHeader?: boolean;
+  title?: string;
 }
 
-const Overlay = styled.div<{ $isOpen: boolean }>`
+const Overlay = styled.div<{ isOpen: boolean }>`
   position: fixed;
-  margin: 0 auto;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.1);
-  opacity: ${(props) => (props.$isOpen ? 1 : 0)};
-  visibility: ${(props) => (props.$isOpen ? "visible" : "hidden")};
-  transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
-  z-index: 9;
-  max-width: 430px;
-`;
-
-const SheetContainer = styled.div<{
-  $isOpen: boolean;
-  $maxHeight: string;
-  $minHeight: string;
-  $translateY: number;
-}>`
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: ${(props) => props.$maxHeight};
-  max-width: 430px;
-  margin: 0 auto;
-  background-color: white;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-  box-shadow: 0px -5px 10px 0px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease-out;
-  transform: translateY(
-    ${(props) =>
-      props.$isOpen
-        ? `${props.$translateY}px`
-        : `calc(100% - ${props.$minHeight})`}
-  );
-  z-index: 10;
+  z-index: 1000;
+  opacity: ${({ isOpen }) => (isOpen ? 1 : 0)};
+  transition: opacity 0.3s ease;
+  pointer-events: ${({ isOpen }) => (isOpen ? "auto" : "none")};
   touch-action: none;
 `;
 
-const DraggableArea = styled.div`
-  height: 32px;
-  width: 100%;
-  cursor: grab;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: white;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
+const Container = styled.div<{
+  isOpen: boolean;
+  height: string | number;
+  minHeight: string | number;
+  showPreview: boolean;
+}>`
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: ${({ height }) =>
+    typeof height === "number" ? `${height}px` : height};
+  background-color: #fff;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  box-shadow: 0px -4px 12px rgba(0, 0, 0, 0.1);
+  transform: ${({ isOpen, minHeight, showPreview }) =>
+    isOpen
+      ? "translateY(0)"
+      : showPreview
+      ? `translateY(calc(100% - ${
+          typeof minHeight === "number" ? `${minHeight}px` : minHeight
+        }))`
+      : "translateY(100%)"};
+  transition: transform 0.3s ease;
+  z-index: 1001;
+  overflow-y: auto;
+  touch-action: none;
 `;
 
-const Handle = styled.div`
+const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 16px 0 16px;
+  touch-action: none;
+`;
+
+const DragIndicator = styled.div`
   width: 40px;
   height: 4px;
+  background-color: #ddd;
   border-radius: 2px;
-  background-color: #d0d0d0;
+  margin: 0 auto 10px;
+  cursor: pointer;
+  touch-action: none;
 `;
 
 const Content = styled.div`
-  padding: 0 20px 20px;
-  overflow: scroll;
-  background-color: white;
+  padding: 16px;
+  overflow-y: auto;
   height: calc(100% - 32px);
+  touch-action: auto;
 `;
 
-export const BottomSheet = ({
+const BottomSheet = ({
   isOpen,
   onClose,
-  onOpen,
   children,
-  maxHeight = "85vh",
-  minHeight = "0vh",
+  height = "80vh",
+  minHeight = "150px",
+  showPreview = true,
+  closeOnOutsideClick = true,
 }: BottomSheetProps) => {
-  const [translateY, setTranslateY] = useState(0);
-  const [startY, setStartY] = useState(0);
+  const bottomSheetRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const startY = useRef<number>(0);
+  const currentY = useRef<number>(0);
   const [isDragging, setIsDragging] = useState(false);
-  const sheetRef = useRef<HTMLDivElement>(null);
-
-  const getHeight = (vh: string) => {
-    return (window.innerHeight * parseInt(vh)) / 100;
-  };
-
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    setStartY(e.touches[0].clientY);
-    setIsDragging(true);
-  }, []);
-
-  const handleTouchMove = useCallback(
-    (e: React.TouchEvent) => {
-      if (!isDragging) return;
-
-      const currentY = e.touches[0].clientY;
-      const diff = currentY - startY;
-      const maxSheetHeight = getHeight(maxHeight.replace("vh", ""));
-      const minSheetHeight = getHeight(minHeight.replace("vh", ""));
-      const maxTranslate = maxSheetHeight - minSheetHeight;
-
-      if (isOpen) {
-        if (diff >= 0 && diff <= maxTranslate) {
-          setTranslateY(diff);
-        }
-      } else {
-        if (diff <= 0 && Math.abs(diff) <= maxTranslate) {
-          setTranslateY(Math.abs(diff));
-        }
-      }
-    },
-    [maxHeight, minHeight, isDragging, startY, isOpen]
-  );
-
-  const handleTouchEnd = useCallback(() => {
-    setIsDragging(false);
-    const maxSheetHeight = getHeight(maxHeight.replace("vh", ""));
-    const minSheetHeight = getHeight(minHeight.replace("vh", ""));
-    const maxTranslate = maxSheetHeight - minSheetHeight;
-    const threshold = maxTranslate / 2;
-
-    if (isOpen) {
-      if (translateY > threshold) {
-        onClose();
-      } else {
-        setTranslateY(0);
-      }
-    } else {
-      if (translateY > threshold) {
-        onOpen();
-      } else {
-        setTranslateY(0);
-      }
-    }
-  }, [translateY, maxHeight, minHeight, isOpen, onClose, onOpen]);
-
-  const handleOverlayClick = useCallback(
-    (e: React.MouseEvent) => {
-      if (e.target === e.currentTarget) {
-        onClose();
-      }
-    },
-    [onClose]
-  );
 
   useEffect(() => {
-    setTranslateY(0);
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
   }, [isOpen]);
+
+  const resetPosition = () => {
+    if (bottomSheetRef.current) {
+      bottomSheetRef.current.style.transition = "transform 0.3s ease";
+      bottomSheetRef.current.style.transform = isOpen
+        ? "translateY(0)"
+        : showPreview
+        ? `translateY(calc(100% - ${
+            typeof minHeight === "number" ? `${minHeight}px` : minHeight
+          }))`
+        : "translateY(100%)";
+    }
+  };
+
+  useEffect(() => {
+    if (!isDragging) {
+      resetPosition();
+    }
+  }, [isOpen, isDragging, minHeight, showPreview]);
+
+  const handleOutsideClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (closeOnOutsideClick && e.target === e.currentTarget && isOpen) {
+      onClose();
+    }
+  };
+
+  const handleHeaderTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    startY.current = e.touches[0].clientY;
+    setIsDragging(true);
+    if (bottomSheetRef.current) {
+      bottomSheetRef.current.style.transition = "none";
+    }
+    e.stopPropagation();
+  };
+
+  const handleHeaderTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+
+    currentY.current = e.touches[0].clientY;
+    const diff = currentY.current - startY.current;
+
+    if (isOpen && diff > 0 && bottomSheetRef.current) {
+      bottomSheetRef.current.style.transform = `translateY(${diff}px)`;
+    } else if (!isOpen && diff < 0 && bottomSheetRef.current) {
+      const currentminHeight =
+        typeof minHeight === "number" ? minHeight : parseInt(minHeight);
+      const translateY = `calc(100% - ${currentminHeight}px - ${Math.abs(
+        diff
+      )}px)`;
+      bottomSheetRef.current.style.transform = translateY;
+    }
+  };
+
+  const handleHeaderTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const diff = currentY.current - startY.current;
+    const threshold = 30;
+
+    if (isOpen && diff > threshold) {
+      onClose();
+    } else if (!isOpen && diff < -threshold) {
+      onClose();
+    } else {
+      resetPosition();
+    }
+  };
+
+  const handleDragIndicatorClick = () => {
+    if (!isOpen) {
+      onClose();
+    }
+  };
+
+  const handleContentTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+  };
 
   return (
     <>
-      <Overlay $isOpen={isOpen} onClick={handleOverlayClick} />
-      <SheetContainer
-        ref={sheetRef}
-        $isOpen={isOpen}
-        $maxHeight={maxHeight}
-        $minHeight={minHeight}
-        $translateY={translateY}
+      <Overlay isOpen={isOpen} onClick={handleOutsideClick} />
+      <Container
+        ref={bottomSheetRef}
+        isOpen={isOpen}
+        height={height}
+        minHeight={minHeight}
+        showPreview={showPreview}
       >
-        <DraggableArea
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
+        <Header
+          ref={headerRef}
+          onTouchStart={handleHeaderTouchStart}
+          onTouchMove={handleHeaderTouchMove}
+          onTouchEnd={handleHeaderTouchEnd}
         >
-          <Handle />
-        </DraggableArea>
-        <Content>{children}</Content>
-      </SheetContainer>
+          <DragIndicator onClick={handleDragIndicatorClick} />
+        </Header>
+        <Content 
+          ref={contentRef}
+          onTouchStart={handleContentTouchStart}
+        >
+          {children}
+        </Content>
+      </Container>
     </>
   );
 };
+
+export default BottomSheet;

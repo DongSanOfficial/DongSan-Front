@@ -1,10 +1,11 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import styled from "styled-components";
 import { ReactComponent as ArrowLeft } from "../../assets/svg/ArrowLeftIcon.svg";
 
 interface AppBarProps {
   title?: string;
   onBack?: () => void;
+  rightIcon?: ReactNode;
 }
 
 const AppBarContainer = styled.div`
@@ -22,21 +23,36 @@ const AppBarContainer = styled.div`
 const IconButton = styled.div`
   cursor: pointer;
   pointer-events: auto;
+  z-index: 2;
 `;
 
 const Title = styled.h1`
   font-size: 1.1rem;
-  flex: 1;
+  position: absolute;
+  left: 0;
+  right: 0;
   text-align: center;
+  margin: 0 auto;
+  z-index: 1;
 `;
 
-const AppBar = ({ title, onBack }: AppBarProps) => {
+const RightIconContainer = styled.div`
+  cursor: pointer;
+  pointer-events: auto;
+  margin-left: auto;
+  z-index: 2;
+`;
+
+const AppBar = ({ title, onBack, rightIcon }: AppBarProps) => {
   return (
     <AppBarContainer>
-      <IconButton onClick={onBack}>
-        <ArrowLeft />
-      </IconButton>
+      {onBack && (
+        <IconButton onClick={onBack}>
+          <ArrowLeft />
+        </IconButton>
+      )}
       <Title>{title}</Title>
+      {rightIcon && <RightIconContainer>{rightIcon}</RightIconContainer>}
     </AppBarContainer>
   );
 };
