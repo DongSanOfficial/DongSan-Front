@@ -70,6 +70,15 @@ const Name = styled.div`
   font-weight: bold;
   color: ${theme.Green600};
   margin-bottom: 5px;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+const Email = styled.div`
+  font-size: 14px;
+  max-width: 200px;
+  word-break: break-all;
+  white-space: normal;
 `;
 
 const Img = styled.img`
@@ -277,7 +286,7 @@ function MyPage() {
               <Img src={profileImg} alt="프로필 이미지" />
               <div>
                 <Name>{userProfile?.nickname || "이름"}</Name>
-                <div>{userProfile?.email || "이메일 정보 없음"}</div>
+                <Email>{userProfile?.email || "이메일 정보 없음"}</Email>
               </div>
             </ProfileInfo>
           </ProfileTop>
