@@ -17,7 +17,7 @@ import StarCount from "src/components/review/starCount";
 import { BookmarkContent } from "./bookmark/components/BookmarkContent";
 import { toggleLike } from "src/apis/likedWalkway";
 import LoadingSpinner from "src/components/loading/LoadingSpinner";
-import { BottomSheet } from "src/components/bottomsheet/BottomSheet";
+import BottomSheet from "src/components/bottomsheet/BottomSheet";
 import { useToast } from "src/hooks/useToast";
 import ConfirmationModal from "../../components/modal/ConfirmationModal";
 
@@ -224,7 +224,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
     historyId?: number;
     canReview?: boolean;
   }>({});
-  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const { showToast } = useToast();
 
@@ -271,9 +271,11 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
       }
     }
   };
+  // 북마크 클릭 시 바텀시트 오픈
+  const toggleBottomSheet = () => setIsOpen((prev) => !prev);
 
   const handleBookmarkClick = () => {
-    setIsBottomSheetOpen(true);
+    setIsOpen(true);
   };
 
   const goToReviews = (): void => {
@@ -349,39 +351,39 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
           lng: coord.longitude,
         })),
       };
-  
+
       navigate("/newway/registration", {
         state: editData,
       });
       return;
     }
 
-
     // 이전 상황:
     // 마이페이지에서 내가 등록한 산책로 프리뷰를 바로 클릭했을 때
     if (location.state?.from === "mypage") {
       navigate("/mypage");
-    } 
+    }
     // 내가 등록한 산책로 리스트에서 디테일 페이지로 이동했을 때
     else if (isMyPath) {
       navigate("/mypage/TrailList");
-    } 
+    }
     // 내가 좋아요한 산책로 리스트에서 ...
     else if (location.state?.from === "favorites") {
       navigate("/mypage/TrailList?type=favorites");
-    } 
+    }
     // 내가 북마크한 산책로 리스트에서 ...
-    else if (location.state?.from === "bookmarks" && location.state?.bookmarkId) {
-      navigate(`/mypage/TrailList?type=bookmarks&bookmarkId=${location.state.bookmarkId}`);
-    } 
+    else if (
+      location.state?.from === "bookmarks" &&
+      location.state?.bookmarkId
+    ) {
+      navigate(
+        `/mypage/TrailList?type=bookmarks&bookmarkId=${location.state.bookmarkId}`
+      );
+    }
     // 기본
     else {
-      navigate('/main');
+      navigate("/main");
     }
-  };
-
-  const handleBottomSheetClose = () => {
-    setIsBottomSheetOpen(false);
   };
 
   const openDeleteModal = () => {
@@ -410,10 +412,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
 
   return (
     <>
-      <AppBar
-        onBack={handleBack}
-        title={isMyPath ? "내 산책로" : "산책로"}
-      />
+      <AppBar onBack={handleBack} title={isMyPath ? "내 산책로" : "산책로"} />
       <PageWrapper>
         <HeaderContainer>
           <HeaderTopBar>
@@ -510,18 +509,20 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
           )}
         </ButtonContainer>
       </PageWrapper>
-      <BottomNavigation />
+
       <BottomSheet
-        isOpen={isBottomSheetOpen}
-        onClose={handleBottomSheetClose}
-        onOpen={() => setIsBottomSheetOpen(true)}
-        maxHeight="50vh"
-        minHeight="0vh"
+        isOpen={isOpen}
+        onClose={toggleBottomSheet}
+        height="50vh"
+        minHeight="0px"
+        showPreview={true}
+        closeOnOutsideClick={true}
       >
         <div>
-          <BookmarkContent onComplete={() => setIsBottomSheetOpen(false)} />
+          <BookmarkContent onComplete={() => toggleBottomSheet} />
         </div>
       </BottomSheet>
+
       <ConfirmationModal
         isOpen={isDeleteModalOpen}
         onClose={closeDeleteModal}
@@ -531,6 +532,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
         confirmText="삭제"
         modalType="delete"
       />
+      <BottomNavigation />
     </>
   );
 }

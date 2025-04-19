@@ -9,6 +9,7 @@ import {
   WalkwaysResponse,
   WalkwayDetail,
   WalkwayListResponse,
+  AllWalkwayParams,
 } from "./walkway.type";
 import { ApiErrorResponse } from "src/apis/api.type";
 import { AxiosError } from "axios";
@@ -40,6 +41,32 @@ export const searchWalkways = async (params: WalkwayParams) => {
     );
   }
 };
+
+/**
+ * 모든 산책로 조회 API 호출 (위치 기반 X)
+ */
+export const getAllWalkways = async (params: AllWalkwayParams) => {
+  try {
+    const { data: response } = await instance.get<WalkwaysResponse>(
+      "/walkways/all",
+      {
+        params: {
+          sort: params.sort,
+          lastId: params.lastId,
+          size: params.size || 10,
+        },
+      }
+    );
+
+    return response;
+  } catch (error) {
+    const axiosError = error as AxiosError<ApiErrorResponse>;
+    throw new Error(
+      axiosError.response?.data?.message || "모든 산책로 조회에 실패했습니다."
+    );
+  }
+};
+
 
 /**
  * 산책로 단건 조회 API 호출

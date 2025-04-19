@@ -66,7 +66,14 @@ export interface WalkwayParams {
   size?: number;
 }
 
+export interface AllWalkwayParams {
+  sort: SortOption;
+  lastId?: number | null;
+  size?: number;
+}
+
 export type SortOption = "liked" | "rating";
+export type MapOption = "all" | "current";
 
 // 디테일 조회 타입
 export interface WalkwayDetail {
