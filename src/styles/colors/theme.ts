@@ -9,6 +9,8 @@ export const theme = {
   KakaoBtnText: "#333B58",
   // 녹색
   Naver: "#03C75A",
+  //검정
+  Apple: "333333",
   StartFlag: "#A6BA59",
   // 주황색
   FinishFlag: "#FC8E5C",
