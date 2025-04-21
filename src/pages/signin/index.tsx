@@ -59,6 +59,10 @@ export default function SignIn() {
             variant="naverLogin"
             to={`${API_BASE_URL}/oauth2/authorization/naver`}
           />
+          <LoginButton
+            variant="appleLogin"
+            to={`${API_BASE_URL}/oauth2/authorization/apple`}
+          />
           {/* 개발 환경에서만 토큰발급 버튼이 보임 */}
           {process.env.NODE_ENV === "development" && <GetTokenButton />}
         </ButtonContainer>

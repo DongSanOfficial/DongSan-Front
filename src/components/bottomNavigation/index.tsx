@@ -15,7 +15,7 @@ const NavigationBar = styled.nav`
   right: 0;
   background-color: white;
   box-shadow: 0 -1px 10px rgba(0, 0, 0, 0.05);
-  z-index: 1000;
+  z-index: 1003;
   max-width: 430px;
   margin: 0 auto;
 `;

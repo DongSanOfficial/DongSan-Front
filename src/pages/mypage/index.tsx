@@ -22,6 +22,7 @@ import HistoryCard from "src/components/HistoryCard_mp";
 import LoadingSpinner from "src/components/loading/LoadingSpinner";
 import { getBookmark } from "../../apis/bookmark";
 import ConfirmationModal from "src/components/modal/ConfirmationModal";
+import { ReactComponent as Logout } from "../../assets/svg/Logout.svg";
 
 const Wrapper = styled.div`
   display: flex;
@@ -55,6 +56,7 @@ const ProfileTop = styled.div`
   align-items: flex-start;
   width: 100%;
   gap: 20px;
+  margin-bottom: 15px;
 `;
 
 const ProfileInfo = styled.div`
@@ -64,9 +66,19 @@ const ProfileInfo = styled.div`
 `;
 
 const Name = styled.div`
-  font-size: 24px;
+  font-size: 22px;
   font-weight: bold;
-  color: #054630;
+  color: ${theme.Green600};
+  margin-bottom: 5px;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+const Email = styled.div`
+  font-size: 14px;
+  max-width: 200px;
+  word-break: break-all;
+  white-space: normal;
 `;
 
 const Img = styled.img`
@@ -76,18 +88,6 @@ const Img = styled.img`
   border: 4px solid ${theme.White};
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   object-fit: cover;
-`;
-
-const LogoutButton = styled.button`
-  padding: 6px;
-  background-color: ${theme.White};
-  color: ${theme.Green500};
-  border: 1px solid ${theme.Green700};
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
 `;
 
 //내가 등록한 산책로
@@ -130,7 +130,7 @@ const Delete = styled.span`
   font-size: 12px;
   color: ${theme.Gray400};
 `;
-// API 응답 타입에 맞게 Bookmark 인터페이스 수정
+
 interface Bookmark {
   bookmarkId: number;
   name: string;
@@ -274,21 +274,21 @@ function MyPage() {
 
   return (
     <>
-      <AppBar onBack={() => navigate("/main")} title="마이 페이지" />
+      <AppBar
+        onBack={() => navigate("/main")}
+        title="마이 페이지"
+        rightIcon={<Logout onClick={handleLogout} />}
+      />{" "}
       <Wrapper>
         <Profile>
           <ProfileTop>
             <ProfileInfo>
-              <Img
-                src={profileImg}
-                alt="프로필 이미지"
-              />
+              <Img src={profileImg} alt="프로필 이미지" />
               <div>
                 <Name>{userProfile?.nickname || "이름"}</Name>
-                <div>{userProfile?.email || "이메일 정보 없음"}</div>
+                <Email>{userProfile?.email || "이메일 정보 없음"}</Email>
               </div>
             </ProfileInfo>
-            <LogoutButton onClick={handleLogout}>로그아웃</LogoutButton>
           </ProfileTop>
           <Line />
         </Profile>
