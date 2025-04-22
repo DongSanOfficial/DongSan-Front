@@ -32,6 +32,8 @@ const Container = styled.div<{
   minHeight: string | number;
   showPreview: boolean;
 }>`
+  max-width: 430px;
+  margin: auto;
   position: fixed;
   bottom: 0;
   left: 0;

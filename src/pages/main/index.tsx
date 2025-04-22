@@ -149,7 +149,7 @@ function Main() {
   const [walkways, setWalkways] = useState<Walkway[]>([]);
   const [hasMore, setHasMore] = useState(false);
   const [sortOption, setSortOption] = useState<SortOption>("liked");
-  const [mapOption, setMapOption] = useState<MapOption>("current");
+  const [mapOption, setMapOption] = useState<MapOption>("all");
   const [lastId, setLastId] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
