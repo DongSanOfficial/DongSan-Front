@@ -172,26 +172,24 @@ function Main() {
   useEffect(() => {
     const initializeLocation = async () => {
       try {
-        if (mapOption === "current") {
-          const location = await getCurrentLocation();
-          if (location && !selectedLocation) {
-            await fetchWalkways(location.lat, location.lng, sortOption, true);
-            setSelectedLocation({
-              latitude: location.lat,
-              longitude: location.lng,
-              name: "현재 위치",
-            });
-          }
-        } else {
-          await fetchAllWalkways(sortOption, true);
+        const location = await getCurrentLocation();
+        if (location) {
+          setSelectedLocation({
+            latitude: location.lat,
+            longitude: location.lng,
+            name: "현재 위치",
+          });
         }
+        await fetchAllWalkways(sortOption, true);
       } catch (error) {
         console.error("위치 정보 초기화 실패:", error);
       }
     };
-
+  
     initializeLocation();
-  }, [mapOption]);
+  
+  }, []);
+
 
   /**
    * 모든 산책로 조회 API 연동
@@ -357,7 +355,7 @@ function Main() {
   const handleMapChange = async (value: string) => {
     const newMapOption = value as MapOption;
     setMapOption(newMapOption);
-
+  
     if (newMapOption === "current") {
       if (selectedLocation) {
         // 현재 위치 기반 산책로 조회
@@ -394,8 +392,6 @@ function Main() {
    */
   const handleInitialLocation = async (location: Location) => {
     try {
-      // 위치 설정 시 mapOption을 current로 변경
-      setMapOption("current");
       await fetchWalkways(location.lat, location.lng, sortOption, true);
       setSelectedLocation({
         latitude: location.lat,
