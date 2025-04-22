@@ -37,19 +37,23 @@ const SearchSection = forwardRef<HTMLDivElement>((props, ref) => (
         <StepItem>
           <StepNumber>2</StepNumber>
           <StepContent>
-            다음과 같은 방법으로 산책로를 검색할 수 있습니다:
+            다음과 같은 방법으로 산책로를 검색할 수 있습니다.
             <List>
               <ListItem>
                 <BiChevronRight />
-                사용자의 현재 위치 근방 50m 이내의 산책로가 자동으로 검색됩니다
+                기본적으로, 동산에 등록된 모든 산책로가 검색됩니다.
               </ListItem>
               <ListItem>
                 <BiChevronRight />
-                상단 검색창에서 원하는 산책 장소를 검색
+                두 종류의 정렬 버튼을 이용하여, 현재위치 근방에 있는 산책로나 등록된 모든 산책로를 인기순 혹은 별점순으로 정렬할 수 있습니다.
               </ListItem>
               <ListItem>
                 <BiChevronRight />
-                지도를 드래그한 후 '현재 위치에서 검색' 버튼 클릭
+                상단 검색창에서 원하는 산책 장소를 검색하여 해당 위치 근방에 등록된 산책로를 조회할 수 있습니다.
+              </ListItem>
+              <ListItem>
+                <BiChevronRight />
+                지도를 드래그하여 위치를 변경한 후 검색창 하단의 '현재 위치에서 검색' 버튼 클릭하면 해당위치 근방의 산책로가 조회됩니다.
               </ListItem>
             </List>
           </StepContent>
