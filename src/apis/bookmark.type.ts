@@ -9,8 +9,17 @@ export interface AddBookmarkResponse {
   name: string;
 }
 
-// 북마크 목록 조회 응답
-export interface getBookmarkResponse {
+// 북마크 제목 리스트 조회 응답(마이페이지)
+export interface getBookmarkTitleResponse {
+  data: Array<{
+    bookmarkId: number;
+    title: string;
+  }>;
+  hasNext: boolean;
+}
+
+// 북마크 리스트 조회 응답 (marked여부 포함)
+export interface getIsBookmarkedResponse {
   data: Array<{
     bookmarkId: number;
     name: string;

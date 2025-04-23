@@ -20,7 +20,7 @@ import { UserReviewsType, walkwayHistoryType } from "src/apis/review.type";
 import { getReviewRecord, getUserReviews } from "src/apis/review";
 import HistoryCard from "src/components/HistoryCard_mp";
 import LoadingSpinner from "src/components/loading/LoadingSpinner";
-import { getBookmark } from "../../apis/bookmark";
+import { getBookmarkTitle } from "../../apis/bookmark";
 import ConfirmationModal from "src/components/modal/ConfirmationModal";
 import { ReactComponent as Logout } from "../../assets/svg/Logout.svg";
 
@@ -133,7 +133,7 @@ const Delete = styled.span`
 
 interface Bookmark {
   bookmarkId: number;
-  name: string;
+  title: string;
   marked?: boolean;
 }
 
@@ -152,22 +152,9 @@ function MyPage() {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [refreshBookmarks, setRefreshBookmarks] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const fetchBookmarks = async () => {
-    try {
-      const defaultWalkwayId = 1;
-
-      const response = await getBookmark({
-        walkwayId: defaultWalkwayId,
-        size: 10,
-      });
-
-      console.log("북마크 조회 결과:", response);
-      setBookmarks(response.data || []);
-    } catch (error) {
-      console.error("북마크 조회 에러:", error);
-      setBookmarks([]);
-    }
-  };
+  const [lastBookmarkId, setLastBookmarkId] = useState<number | null>(null);
+  const [hasMoreBookmarks, setHasMoreBookmarks] = useState(false);
+  const [loadingBookmarks, setLoadingBookmarks] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -200,11 +187,52 @@ function MyPage() {
     fetchData();
   }, []);
 
+  const fetchBookmarks = async (reset: boolean = true) => {
+    try {
+      if (loadingBookmarks) return;
+
+      setLoadingBookmarks(true);
+      const response = await getBookmarkTitle({
+        lastId: reset ? null : lastBookmarkId,
+        size: 10,
+      });
+
+      console.log("북마크 조회 결과:", response);
+      setBookmarks((prev) =>
+        reset ? response.data || [] : [...prev, ...(response.data || [])]
+      );
+      setHasMoreBookmarks(response.hasNext);
+
+      if (response.data && response.data.length > 0) {
+        const newLastId = response.data[response.data.length - 1]?.bookmarkId;
+        setLastBookmarkId(newLastId);
+      }
+    } catch (error) {
+      console.error("북마크 조회 에러:", error);
+      if (reset) {
+        setBookmarks([]);
+      }
+    } finally {
+      setLoadingBookmarks(false);
+    }
+  };
+
   useEffect(() => {
     if (refreshBookmarks > 0) {
       fetchBookmarks();
     }
   }, [refreshBookmarks]);
+
+  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
+    const { scrollTop, clientHeight, scrollHeight } = event.currentTarget;
+    if (
+      scrollHeight - scrollTop <= clientHeight * 1.5 &&
+      hasMoreBookmarks &&
+      !loadingBookmarks
+    ) {
+      fetchBookmarks(false); // 추가 데이터 로드
+    }
+  };
 
   const handleBookmarkUpdate = useCallback(() => {
     setRefreshBookmarks((prev) => prev + 1);
@@ -279,7 +307,8 @@ function MyPage() {
         title="마이 페이지"
         rightIcon={<Logout onClick={handleLogout} />}
       />{" "}
-      <Wrapper>
+      <Wrapper onScroll={handleScroll}>
+        {" "}
         <Profile>
           <ProfileTop>
             <ProfileInfo>
@@ -292,7 +321,6 @@ function MyPage() {
           </ProfileTop>
           <Line />
         </Profile>
-
         <div>
           <SeeAll>
             <Title>내가 등록한 산책로 보기</Title>
@@ -327,7 +355,7 @@ function MyPage() {
                 key={bookmark.bookmarkId}
                 icon={BookMark}
                 path={`/mypage/TrailList?type=bookmarks&bookmarkId=${bookmark.bookmarkId}`}
-                title={bookmark.name || "이름 없는 북마크"}
+                title={bookmark.title || "이름 없는 북마크"}
                 onClick={() => handleBookmarkClick(bookmark.bookmarkId)}
                 bookmarkId={bookmark.bookmarkId}
                 onUpdate={handleBookmarkUpdate}
@@ -335,7 +363,6 @@ function MyPage() {
             ))}
           <Line />
         </div>
-
         <div>
           <SeeAll>
             <Title>산책로 리뷰작성하기</Title>
@@ -354,7 +381,6 @@ function MyPage() {
           </Items>
           <Line />
         </div>
-
         <div>
           <SeeAll>
             <Title>내가 작성한 리뷰 모아보기</Title>

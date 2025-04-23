@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Trail, WalkwayListResponse } from "src/apis/walkway.type";
 import { getMyWalkways, getLikedWalkways } from "src/apis/walkway";
-import { getBookmark, getBookmarkedWalkways } from "src/apis/bookmark";
+import { getBookmarkedWalkways, getBookmarkTitle } from "src/apis/bookmark";
 import TrailCardAll from "src/components/TrailCardAll_View";
 import LoadingSpinner from "src/components/loading/LoadingSpinner";
 import BottomNavigation from "src/components/bottomNavigation";
@@ -44,7 +44,6 @@ function TrailListPage() {
   const queryParams = new URLSearchParams(location.search);
   const type = queryParams.get("type");
   const bookmarkId = queryParams.get("bookmarkId");
-
   const [trails, setTrails] = useState<Trail[]>([]);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
@@ -58,14 +57,13 @@ function TrailListPage() {
   // 북마크 이름을 가져오는 함수
   const fetchBookmarkName = async (id: number) => {
     try {
-      const defaultWalkwayId = 1;
-      const response = await getBookmark({
-        walkwayId: defaultWalkwayId,
+      const response = await getBookmarkTitle({
+        lastId: null,
         size: 10,
       });
       const bookmark = response.data.find((item) => item.bookmarkId === id);
       if (bookmark) {
-        setTitle(bookmark.name);
+        setTitle(bookmark.title);
       }
     } catch (error) {
       console.error("북마크 이름 가져오기 오류:", error);
