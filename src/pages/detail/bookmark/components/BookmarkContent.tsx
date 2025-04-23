@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import {
   AddToBookmark,
-  getBookmark,
+  getIsBookmarked,
   RemoveToBookmark,
   SaveToBookmark,
 } from "../../../../apis/bookmark";
@@ -343,7 +343,7 @@ export const BookmarkContent = ({ onComplete }: BookmarkContentProps) => {
     const fetchBookmarks = async () => {
       if (!walkwayId) return;
       try {
-        const response = await getBookmark({
+        const response = await getIsBookmarked({
           walkwayId: Number(walkwayId),
           size: 10,
         });

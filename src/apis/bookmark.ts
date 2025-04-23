@@ -4,9 +4,10 @@ import { ApiErrorResponse } from "./api.type";
 import {
   AddBookmarkRequest,
   AddBookmarkResponse,
-  getBookmarkResponse,
+  getBookmarkTitleResponse,
   addToBookmark,
   putBookmarkRequest,
+  getIsBookmarkedResponse,
 } from "./bookmark.type";
 import { BookmarkWalkwaysResponse, WalkwayListResponse } from "./walkway.type";
 
@@ -36,8 +37,36 @@ export const AddToBookmark = async (
   }
 };
 
-// 북마크 조회 api
-export const getBookmark = async ({
+// 마이페이지에서 북마크 제목 조회 api
+export const getBookmarkTitle = async ({
+  lastId,
+  size,
+}: {
+  lastId?: number | null;
+  size: number;
+}): Promise<getBookmarkTitleResponse> => {
+  try {
+    const { data: response } = await instance.get<getBookmarkTitleResponse>(
+      `/users/bookmarks/title`,
+      {
+        params: {
+          lastId,
+          size,
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    const axiosError = error as AxiosError<ApiErrorResponse>;
+    throw new Error(
+      axiosError.response?.data?.message || "북마크 목록 조회에 실패했습니다."
+    );
+  }
+};
+
+
+// 북마크 저장 시 리스트 조회 api
+export const getIsBookmarked = async ({
   walkwayId,
   lastId,
   size,
@@ -45,9 +74,9 @@ export const getBookmark = async ({
   walkwayId: number;
   lastId?: number;
   size: number;
-}): Promise<getBookmarkResponse> => {
+}): Promise<getIsBookmarkedResponse> => {
   try {
-    const { data: response } = await instance.get<getBookmarkResponse>(
+    const { data: response } = await instance.get<getIsBookmarkedResponse>(
       `/walkways/${walkwayId}/bookmarks`,
       {
         params: {
