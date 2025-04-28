@@ -32,7 +32,7 @@ const Container = styled.div<{
   minHeight: string | number;
   showPreview: boolean;
 }>`
-  max-width: 430px;
+  width: 100%;
   margin: auto;
   position: fixed;
   bottom: 0;
@@ -56,6 +56,25 @@ const Container = styled.div<{
   z-index: 1001;
   overflow-y: auto;
   touch-action: none;
+
+  /* 모바일 환경 */
+  @media screen and (max-width: 767px) {
+    max-width: 430px;
+  }
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) and (max-width: 1023px) {
+    max-width: 100%;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+  }
+
+  /* 큰 태블릿 및 노트북 */
+  @media screen and (min-width: 1024px) {
+    max-width: 100%;
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+  }
 `;
 
 const Header = styled.div`
@@ -64,6 +83,11 @@ const Header = styled.div`
   align-items: center;
   padding: 16px 16px 0 16px;
   touch-action: none;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    padding: 20px 24px 0 24px;
+  }
 `;
 
 const DragIndicator = styled.div`
@@ -74,6 +98,13 @@ const DragIndicator = styled.div`
   margin: 0 auto 10px;
   cursor: pointer;
   touch-action: none;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    width: 50px;
+    height: 5px;
+    margin: 0 auto 12px;
+  }
 `;
 
 const Content = styled.div`
@@ -81,6 +112,12 @@ const Content = styled.div`
   overflow-y: auto;
   height: calc(100% - 32px);
   touch-action: auto;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    padding: 20px 24px;
+    height: calc(100% - 40px);
+  }
 `;
 
 const BottomSheet = ({
@@ -91,6 +128,8 @@ const BottomSheet = ({
   minHeight = "150px",
   showPreview = true,
   closeOnOutsideClick = true,
+  showHeader = true,
+  title,
 }: BottomSheetProps) => {
   const bottomSheetRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
@@ -185,6 +224,57 @@ const BottomSheet = ({
     e.stopPropagation();
   };
 
+  // 마우스 이벤트 추가 (태블릿, 데스크톱 환경)
+  const handleHeaderMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    startY.current = e.clientY;
+    setIsDragging(true);
+    if (bottomSheetRef.current) {
+      bottomSheetRef.current.style.transition = "none";
+    }
+    e.stopPropagation();
+
+    // 마우스 이벤트 리스너 추가
+    document.addEventListener("mousemove", handleHeaderMouseMove);
+    document.addEventListener("mouseup", handleHeaderMouseUp);
+  };
+
+  const handleHeaderMouseMove = (e: MouseEvent) => {
+    if (!isDragging) return;
+
+    currentY.current = e.clientY;
+    const diff = currentY.current - startY.current;
+
+    if (isOpen && diff > 0 && bottomSheetRef.current) {
+      bottomSheetRef.current.style.transform = `translateY(${diff}px)`;
+    } else if (!isOpen && diff < 0 && bottomSheetRef.current) {
+      const currentminHeight =
+        typeof minHeight === "number" ? minHeight : parseInt(minHeight);
+      const translateY = `calc(100% - ${currentminHeight}px - ${Math.abs(
+        diff
+      )}px)`;
+      bottomSheetRef.current.style.transform = translateY;
+    }
+  };
+
+  const handleHeaderMouseUp = (e: MouseEvent) => {
+    setIsDragging(false);
+
+    // 마우스 이벤트 리스너 제거
+    document.removeEventListener("mousemove", handleHeaderMouseMove);
+    document.removeEventListener("mouseup", handleHeaderMouseUp);
+
+    const diff = currentY.current - startY.current;
+    const threshold = 30;
+
+    if (isOpen && diff > threshold) {
+      onClose();
+    } else if (!isOpen && diff < -threshold) {
+      onClose();
+    } else {
+      resetPosition();
+    }
+  };
+
   return (
     <>
       <Overlay isOpen={isOpen} onClick={handleOutsideClick} />
@@ -195,18 +285,21 @@ const BottomSheet = ({
         minHeight={minHeight}
         showPreview={showPreview}
       >
-        <Header
-          ref={headerRef}
-          onTouchStart={handleHeaderTouchStart}
-          onTouchMove={handleHeaderTouchMove}
-          onTouchEnd={handleHeaderTouchEnd}
-        >
-          <DragIndicator onClick={handleDragIndicatorClick} />
-        </Header>
-        <Content 
-          ref={contentRef}
-          onTouchStart={handleContentTouchStart}
-        >
+        {showHeader && (
+          <Header
+            ref={headerRef}
+            onTouchStart={handleHeaderTouchStart}
+            onTouchMove={handleHeaderTouchMove}
+            onTouchEnd={handleHeaderTouchEnd}
+            onMouseDown={handleHeaderMouseDown}
+          >
+            <DragIndicator onClick={handleDragIndicatorClick} />
+            {title && (
+              <div style={{ textAlign: "center", width: "100%" }}>{title}</div>
+            )}
+          </Header>
+        )}
+        <Content ref={contentRef} onTouchStart={handleContentTouchStart}>
           {children}
         </Content>
       </Container>

@@ -17,7 +17,6 @@ import ConfirmationModal from "../modal/ConfirmationModal";
 const MapContainer = styled.div`
   width: 100%;
   height: 100vh;
-  max-width: 430px;
   margin: 0 auto;
   position: fixed;
   top: 0;
@@ -29,6 +28,21 @@ const MapContainer = styled.div`
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+
+  /* 모바일 환경 (기본) */
+  @media screen and (min-width: 767px) {
+    max-width: 430px;
+  }
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) and (max-width: 1023px) {
+    max-width: 100%;
+  }
+
+  /* 큰 태블릿 및 노트북 */
+  @media screen and (min-width: 1024px) {
+    max-width: 1024px;
+  }
 `;
 
 const MapWrapper = styled.div`
@@ -61,6 +75,13 @@ const LocationButton = styled.button`
 
   &:active {
     background-color: #f0f0f0;
+  }
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    right: 24px;
+    width: 48px;
+    height: 48px;
   }
 `;
 
@@ -101,6 +122,9 @@ const SearchButton = styled.button`
   cursor: pointer;
   z-index: 1;
   white-space: nowrap;
+  @media screen and (min-width: 768px) {
+    top: 100px;
+  }
 
   &:hover {
     background-color: ${theme.Green600};
@@ -169,9 +193,10 @@ export const MainMap = ({
   );
   const [showSearchButton, setShowSearchButton] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [mapLevel, setMapLevel] = useState(3); 
+  const [mapLevel, setMapLevel] = useState(3);
   const mapRef = useRef<kakao.maps.Map>(null);
-  const [isLocationAccessModalOpen, setIsLocationAccessModalOpen] = useState(false);
+  const [isLocationAccessModalOpen, setIsLocationAccessModalOpen] =
+    useState(false);
 
   const updateUserLocation = async () => {
     try {
@@ -216,7 +241,7 @@ export const MainMap = ({
     if (pathCoords && pathCoords.length > 0 && mapRef.current) {
       try {
         const bounds = new window.kakao.maps.LatLngBounds();
-        pathCoords.forEach(coord => {
+        pathCoords.forEach((coord) => {
           bounds.extend(new window.kakao.maps.LatLng(coord.lat, coord.lng));
         });
 
@@ -280,7 +305,7 @@ export const MainMap = ({
             setIsDragging(false);
             setShowSearchButton(true);
           }}
-          onCenterChanged={(map) => { 
+          onCenterChanged={(map) => {
             const latlng = map.getCenter();
             const newCenter = {
               lat: latlng.getLat(),
@@ -342,7 +367,7 @@ export const MainMap = ({
         <StyledLocationIcon />
       </LocationButton>
 
-      <ConfirmationModal 
+      <ConfirmationModal
         isOpen={isLocationAccessModalOpen}
         onClose={() => setIsLocationAccessModalOpen(false)}
         onConfirm={() => setIsLocationAccessModalOpen(false)}

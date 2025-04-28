@@ -20,6 +20,11 @@ const ReviewItems = styled.div`
   margin-left: 7px;
   padding-bottom: 1rem;
   color: #054630;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    max-width: 100%;
+  }
 `;
 const ReviewTitle = styled.div`
   display: flex;

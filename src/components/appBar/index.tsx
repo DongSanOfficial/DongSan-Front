@@ -13,11 +13,24 @@ const AppBarContainer = styled.div`
   display: flex;
   align-items: center;
   padding: 12px 20px;
-  max-width: 430px;
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
   height: 56px;
   z-index: 20;
   background-color: white;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    max-width: 100%;
+    padding: 16px 24px;
+    height: 64px;
+  }
+
+  /* 큰 태블릿 및 노트북 */
+  @media screen and (min-width: 1024px) {
+    max-width: 1024px;
+  }
 `;
 
 const IconButton = styled.div`
@@ -34,6 +47,11 @@ const Title = styled.h1`
   text-align: center;
   margin: 0 auto;
   z-index: 1;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    font-size: 1.25rem;
+  }
 `;
 
 const RightIconContainer = styled.div`

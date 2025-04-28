@@ -18,6 +18,10 @@ const Wrapper = styled.div`
   &::-webkit-scrollbar {
     display: none;
   }
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    max-width: 100%;
+  }
 `;
 
 const List = styled.div`
@@ -49,7 +53,6 @@ const EmptyStateMessage = styled.p`
   line-height: 1.5;
   margin: 16px 0;
 `;
-
 
 function TrailReviewPage() {
   const navigate = useNavigate();
@@ -115,36 +118,32 @@ function TrailReviewPage() {
     <>
       <AppBar onBack={() => navigate(-1)} title="내가 작성한 리뷰" />
       <Wrapper>
-      {error && <ErrorMessage>{error}</ErrorMessage>}
+        {error && <ErrorMessage>{error}</ErrorMessage>}
 
-      {!loading && reviews.length === 0 ? (
+        {!loading && reviews.length === 0 ? (
           <EmptyStateContainer>
             <MdRateReview size={40} color={theme.Gray400} />
-            <EmptyStateMessage>
-              아직 작성한 리뷰가 없습니다.
-            </EmptyStateMessage>
+            <EmptyStateMessage>아직 작성한 리뷰가 없습니다.</EmptyStateMessage>
           </EmptyStateContainer>
         ) : (
           <List>
-          {reviews.map((review) => (
-            <div>
-              <TrailReviewCard
-                key={review.reviewId}
-                trailName={review.walkwayName}
-                date={review.date}
-                content={review.content}
-                rating={review.rating}
-                walkwayId={review.walkwayId}
-                onClick={() =>
-                  navigate(`/main/recommend/detail/${review.walkwayId}`)
-                }
-              />
-              <hr />
-            </div>
-          ))}
-
-          
-        </List>
+            {reviews.map((review) => (
+              <div>
+                <TrailReviewCard
+                  key={review.reviewId}
+                  trailName={review.walkwayName}
+                  date={review.date}
+                  content={review.content}
+                  rating={review.rating}
+                  walkwayId={review.walkwayId}
+                  onClick={() =>
+                    navigate(`/main/recommend/detail/${review.walkwayId}`)
+                  }
+                />
+                <hr />
+              </div>
+            ))}
+          </List>
         )}
 
         {loading && <LoadingSpinner />}
