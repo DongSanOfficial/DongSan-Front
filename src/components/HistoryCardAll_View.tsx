@@ -22,6 +22,17 @@ const TrailContents = styled.div`
   &:hover {
     transform: translateY(-2px);
   }
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    max-width: 500px;
+    padding: 5px;
+  }
+
+  /* 큰 태블릿 및 노트북 */
+  @media screen and (min-width: 1024px) {
+    max-width: 600px;
+  }
 `;
 
 const MytrailInfo = styled.div`
@@ -29,6 +40,12 @@ const MytrailInfo = styled.div`
   flex-direction: column;
   width: 60%;
   padding-right: 10px;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    width: 65%;
+    padding-right: 15px;
+  }
 `;
 
 const MytrailHeader = styled.div`
@@ -37,12 +54,22 @@ const MytrailHeader = styled.div`
   color: #054630;
   font-size: 18px;
   font-weight: 600;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    font-size: 20px;
+  }
 `;
 
 const MytrailContent = styled.div`
   display: flex;
   justify-content: flex-end;
   font-size: 14px;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    font-size: 16px;
+  }
 `;
 
 const Mytrailhashtag = styled.div`
@@ -50,6 +77,12 @@ const Mytrailhashtag = styled.div`
   flex-wrap: wrap;
   gap: 4px;
   font-size: 12px;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    font-size: 14px;
+    gap: 6px;
+  }
 `;
 
 const MytrailSubContent = styled.div`
@@ -57,11 +90,31 @@ const MytrailSubContent = styled.div`
   align-items: center;
   gap: 4px;
   font-size: 12px;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    font-size: 14px;
+    gap: 6px;
+  }
 `;
 
 const MytrailLength = styled.div`
   font-size: 35px;
   font-family: "Lalezar";
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    font-size: 40px;
+  }
+`;
+
+const ImageWrapper = styled.div`
+  padding: 10px;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    padding: 12px;
+  }
 `;
 
 interface HistoryCardProps {
@@ -72,13 +125,13 @@ interface HistoryCardProps {
 function HistoryCardAll({ history, onClick }: HistoryCardProps) {
   return (
     <TrailContents onClick={() => onClick?.(history.walkwayId)}>
-      <div style={{ padding: "10px" }}>
+      <ImageWrapper>
         <CourseImage
           src={history.courseImageUrl}
           alt="산책로 이미지"
           size="100px"
         />
-      </div>
+      </ImageWrapper>
       <MytrailInfo>
         <MytrailHeader>{history.name}</MytrailHeader>
         <Mytrailhashtag>

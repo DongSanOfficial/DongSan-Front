@@ -39,6 +39,18 @@ const SearchBarContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    max-width: 100%;
+    top: 25px;
+    gap: 12px;
+  }
+
+  /* 큰 태블릿 및 노트북 */
+  @media screen and (min-width: 1024px) {
+    max-width: 600px;
+    top: 30px;
+  }
 `;
 
 const BottomSheetContainer = styled.div`
@@ -86,6 +98,15 @@ const EmptyStateContainer = styled.div`
   justify-content: center;
   margin: 20px 0;
   width: 100%;
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    margin: 30px 0;
+  }
+
+  /* 큰 태블릿 및 노트북 */
+  @media screen and (min-width: 1024px) {
+    margin: 40px 0;
+  }
 `;
 
 const IconWrapper = styled.div`
@@ -185,11 +206,9 @@ function Main() {
         console.error("위치 정보 초기화 실패:", error);
       }
     };
-  
-    initializeLocation();
-  
-  }, []);
 
+    initializeLocation();
+  }, []);
 
   /**
    * 모든 산책로 조회 API 연동
@@ -355,7 +374,7 @@ function Main() {
   const handleMapChange = async (value: string) => {
     const newMapOption = value as MapOption;
     setMapOption(newMapOption);
-  
+
     if (newMapOption === "current") {
       if (selectedLocation) {
         // 현재 위치 기반 산책로 조회
