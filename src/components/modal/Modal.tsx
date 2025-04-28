@@ -30,9 +30,29 @@ const ModalContainer = styled.div<{ width?: string; height?: string }>`
   max-width: ${({ width }) => width || "400px"};
   height: ${({ height }) => height || "auto"};
   max-height: 90vh;
-  overflow: scroll;
+  overflow: auto;
   position: relative;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  /* 스크롤바 숨기기 */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    padding: 35px;
+    border-radius: 16px;
+    max-width: ${({ width }) => width || "500px"};
+  }
+
+  /* 큰 태블릿 및 노트북 */
+  @media screen and (min-width: 1024px) {
+    max-width: ${({ width }) => width || "600px"};
+    padding: 40px;
+  }
 `;
 
 export default function Modal({

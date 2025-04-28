@@ -13,6 +13,17 @@ export const ToastContainer = styled.div`
   z-index: 1000;
   width: calc(100vw - 40px);
   max-width: 430px;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    bottom: 120px;
+    max-width: 500px;
+  }
+
+  /* 큰 태블릿 및 노트북 */
+  @media screen and (min-width: 1024px) {
+    max-width: 600px;
+  }
 `;
 
 const StyledToast = styled.div<{ type: "success" | "error"; visible: boolean }>`
@@ -23,7 +34,7 @@ const StyledToast = styled.div<{ type: "success" | "error"; visible: boolean }>`
   background-color: ${theme.Gray800};
   height: 100%;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  opacity: ${props => props.visible ? "0.9" : "0"};
+  opacity: ${(props) => (props.visible ? "0.9" : "0")};
   padding: 15px 10px;
   display: flex;
   flex-direction: row;
@@ -32,15 +43,37 @@ const StyledToast = styled.div<{ type: "success" | "error"; visible: boolean }>`
   gap: 12px;
   transition: opacity 0.3s ease-in-out;
   will-change: opacity;
-  pointer-events: ${props => props.visible ? "auto" : "none"};
+  pointer-events: ${(props) => (props.visible ? "auto" : "none")};
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    font-size: 16px;
+    padding: 18px 15px;
+    border-radius: 25px;
+    gap: 15px;
+  }
 `;
 
 const IconWrapper = styled.div<{ type: "success" | "error" }>`
   color: ${theme.White};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    font-size: 22px;
+  }
 `;
 
 const Message = styled.span`
   flex: 1;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    padding: 0 5px;
+  }
 `;
 
 interface ToastComponentProps {
@@ -50,7 +83,7 @@ interface ToastComponentProps {
 
 const ToastComponent = memo(({ toast, visible }: ToastComponentProps) => {
   if (!toast) return null;
-  
+
   return (
     <StyledToast type={toast.type} visible={visible}>
       <IconWrapper type={toast.type}>

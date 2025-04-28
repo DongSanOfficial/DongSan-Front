@@ -7,14 +7,28 @@ const Content = styled.div`
   flex-direction: row;
   gap: 8px;
   align-items: center;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    gap: 10px;
+  }
 `;
+
 const IsPublic = styled.div`
   font-size: 12px;
   font-weight: 600;
+
   @media (max-width: 375px) {
     width: 50px;
   }
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    font-size: 14px;
+    font-weight: 600;
+  }
 `;
+
 const SwitchContainer = styled.div`
   display: flex;
   align-items: center;
@@ -25,6 +39,14 @@ const SwitchContainer = styled.div`
   border-radius: 15px;
   padding: 3px;
   background-color: #cdcdcd;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    width: 48px;
+    height: 26px;
+    border-radius: 18px;
+    padding: 4px;
+  }
 `;
 
 const Switch = styled.div<{ isOn: boolean }>`
@@ -34,6 +56,13 @@ const Switch = styled.div<{ isOn: boolean }>`
   background-color: ${(props) => (props.isOn ? "#1b8f6e" : theme.Gray300)};
   position: relative;
   transition: background-color 0.3s ease;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    width: 40px;
+    height: 18px;
+    border-radius: 18px;
+  }
 `;
 
 const Toggle = styled.div<{ isOn: boolean }>`
@@ -45,6 +74,13 @@ const Toggle = styled.div<{ isOn: boolean }>`
   top: 0px;
   left: ${(props) => (props.isOn ? "18px" : "0px")};
   transition: left 0.3s ease;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    width: 18px;
+    height: 18px;
+    left: ${(props) => (props.isOn ? "22px" : "0px")};
+  }
 `;
 
 const Label = styled.span<{ isOn: boolean }>`
@@ -55,6 +91,13 @@ const Label = styled.span<{ isOn: boolean }>`
   left: ${(props) => (props.isOn ? "4px" : "16px")};
   top: 3px;
   transition: color 0.3s ease;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    font-size: 9px;
+    left: ${(props) => (props.isOn ? "5px" : "18px")};
+    top: 4px;
+  }
 `;
 
 interface ToggleSwitchProps {

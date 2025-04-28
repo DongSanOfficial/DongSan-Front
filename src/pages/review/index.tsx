@@ -21,6 +21,10 @@ const CenterWrapper = styled.div`
   &::-webkit-scrollbar {
     display: none;
   }
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    max-width: 100%;
+  }
 `;
 
 const ContentWrapper = styled.div`

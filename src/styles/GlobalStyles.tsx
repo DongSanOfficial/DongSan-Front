@@ -26,9 +26,38 @@ const GlobalStyles = createGlobalStyle`
   }
 
   body, html {
-      height: 100dvh; 
+      height: 100dvh;
+      margin: 0 auto;
+      width: 100%;
+  }
+
+  /* 반응형 컨테이너 스타일 */
+  #root {
+      width: 100%;
+      height: 100%;
+      margin: 0 auto;
+  }
+
+  /* 모바일 환경 (기본) */
+  .app-container {
+      width: 100%;
       max-width: 430px;
       margin: 0 auto;
+      height: 100%;
+  }
+
+  /* 태블릿 환경 (아이패드) */
+  @media screen and (min-width: 768px) {
+      .app-container {
+          max-width: 100%;
+      }
+  }
+
+  /* 큰 태블릿 및 작은 노트북 */
+  @media screen and (min-width: 1024px) {
+      .app-container {
+          max-width: 1024px;
+      }
   }
 
   input, ::placeholder, textarea {

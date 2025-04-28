@@ -16,7 +16,27 @@ const Wrapper = styled.div`
   height: calc(100vh - 120px);
   overflow-y: auto;
   padding: 10px 30px;
-  max-width: 430px;
+  width: 100%;
+  margin: 0 auto;
+
+  /* 모바일 환경 (기본) */
+  @media screen and (max-width: 767px) {
+    max-width: 430px;
+  }
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) and (max-width: 1023px) {
+    max-width: 100%;
+    padding: 15px 40px;
+    height: calc(100vh - 140px);
+  }
+
+  /* 큰 태블릿 및 노트북 */
+  @media screen and (min-width: 1024px) {
+    max-width: 900px;
+    padding: 20px 50px;
+    height: calc(100vh - 150px);
+  }
 `;
 
 const List = styled.div`
@@ -24,18 +44,51 @@ const List = styled.div`
   flex-direction: column;
   gap: 16px;
   width: 100%;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    gap: 24px;
+  }
+
+  /* 큰 태블릿 및 노트북 */
+  @media screen and (min-width: 1024px) {
+    gap: 30px;
+  }
 `;
 
 const ErrorMessage = styled.div`
   color: red;
   text-align: center;
   padding: 20px;
+  font-size: 16px;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    font-size: 18px;
+    padding: 25px;
+  }
 `;
 
 const EmptyMessage = styled.div`
   text-align: center;
   padding: 20px;
   color: #666;
+  font-size: 16px;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    font-size: 18px;
+    padding: 30px;
+  }
+`;
+
+const CardContainer = styled.div`
+  width: 100%;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    /* 추가적인 스타일링이 필요하다면 여기에 */
+  }
 `;
 
 function TrailListPage() {
@@ -195,16 +248,17 @@ function TrailListPage() {
   const handleCardClick = (walkwayId: number) => {
     if (type === "favorites") {
       navigate(`/main/recommend/detail/${walkwayId}`, {
-        state: { from: "favorites" }
+        state: { from: "favorites" },
       });
     } else if (type === "bookmarks") {
       navigate(`/main/recommend/detail/${walkwayId}`, {
-        state: { from: "bookmarks", bookmarkId }
+        state: { from: "bookmarks", bookmarkId },
       });
     } else {
       navigate(`/mypage/myregister/${walkwayId}`);
     }
   };
+
   return (
     <>
       <AppBar onBack={() => navigate("/mypage")} title={title} />
@@ -215,7 +269,7 @@ function TrailListPage() {
         )}
         <List>
           {trails.map((trail, index) => (
-            <div
+            <CardContainer
               key={trail.walkwayId}
               ref={index === trails.length - 1 ? lastElementRef : null}
             >
@@ -223,7 +277,7 @@ function TrailListPage() {
                 trail={trail}
                 onClick={() => handleCardClick(trail.walkwayId)}
               />
-            </div>
+            </CardContainer>
           ))}
         </List>
         {loading && <LoadingSpinner />}

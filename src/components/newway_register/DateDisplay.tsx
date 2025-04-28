@@ -12,8 +12,34 @@ const DateContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 4px;
+
   @media (max-width: 375px) {
     width: 300px;
+  }
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    gap: 6px;
+    font-size: 1.1rem;
+  }
+
+  /* 큰 태블릿 및 노트북 */
+  @media screen and (min-width: 1024px) {
+    font-size: 1.15rem;
+  }
+`;
+
+const IconWrapper = styled.div`
+  color: black;
+  width: 27px;
+  height: 27px;
+  display: flex;
+  align-items: center;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    width: 30px;
+    height: 30px;
   }
 `;
 
@@ -33,9 +59,9 @@ export default function DateDisplay({ date }: DateDisplayProps) {
 
   return (
     <DateContainer>
-      <BiCalendarCheck
-        style={{ color: "black", width: "27px", height: "27px" }}
-      />
+      <IconWrapper>
+        <BiCalendarCheck style={{ width: "100%", height: "100%" }} />
+      </IconWrapper>
       {formatDate()}
     </DateContainer>
   );

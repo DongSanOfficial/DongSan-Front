@@ -16,8 +16,20 @@ const NavigationBar = styled.nav`
   background-color: white;
   box-shadow: 0 -1px 10px rgba(0, 0, 0, 0.05);
   z-index: 1003;
-  max-width: 430px;
+  width: 100%;
   margin: 0 auto;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    max-width: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  /* 큰 태블릿 및 노트북 */
+  @media screen and (min-width: 1024px) {
+    max-width: 1024px;
+  }
 `;
 
 const NavContent = styled.div`
@@ -26,8 +38,14 @@ const NavContent = styled.div`
   align-items: center;
   height: 70px;
   padding: 0 50px;
-  max-width: 430px;
+  width: 100%;
   margin: 0 auto;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    height: 80px;
+    padding: 0 100px;
+  }
 `;
 
 const NavLink = styled(Link)`
@@ -48,6 +66,14 @@ const StyledSVG = styled.div<{ isActive: boolean }>`
     height: 24px;
     path {
       fill: ${(props) => (props.isActive ? theme.Green500 : "currentColor")};
+    }
+  }
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 768px) {
+    svg {
+      width: 28px;
+      height: 28px;
     }
   }
 `;
