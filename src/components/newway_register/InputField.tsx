@@ -9,7 +9,7 @@ const InPutField = styled.div`
   align-items: center;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     margin-bottom: 15px;
   }
 `;
@@ -26,7 +26,7 @@ const Input = styled.input`
   font-size: 14px;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     max-width: 420px;
     height: 3.5vh;
     padding: 10px 6px;
@@ -47,7 +47,7 @@ const CharCounter = styled.span<{ isMax: boolean }>`
   padding: 10px 0;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     font-size: 14px;
     padding: 12px 0;
   }
@@ -58,7 +58,7 @@ const RequiredMark = styled.span`
   margin-left: 2px;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     margin-left: 4px;
     font-size: 18px;
   }

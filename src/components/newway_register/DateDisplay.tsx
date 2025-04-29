@@ -18,7 +18,7 @@ const DateContainer = styled.div`
   }
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     gap: 6px;
     font-size: 1.1rem;
   }
@@ -37,7 +37,7 @@ const IconWrapper = styled.div`
   align-items: center;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     width: 30px;
     height: 30px;
   }

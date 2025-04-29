@@ -45,9 +45,9 @@ const Wrapper = styled.div`
   }
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     padding: 15px 30px;
-    max-width: 768px;
+    max-width: 100%;
     margin: 0 auto;
   }
 
@@ -64,7 +64,7 @@ const ContentWrapper = styled.div`
   margin-bottom: 10px;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     margin-bottom: 15px;
   }
 `;
@@ -104,11 +104,11 @@ const Button = styled.button<{ isActive: boolean }>`
   }
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     min-height: 58px;
     font-size: 18px;
     border-radius: 6px;
-    max-width: 700px;
+    max-width: 100%;
     margin-left: auto;
     margin-right: auto;
   }
@@ -129,7 +129,7 @@ const TagInputWrapper = styled.div`
   margin-bottom: 20px;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     max-width: 420px;
     gap: 6px;
     margin: 6px;
@@ -150,7 +150,7 @@ const TagInput = styled.input`
   padding: 6px 0;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     font-size: 14px;
     padding: 8px 0;
   }
@@ -172,7 +172,7 @@ const Tag = styled.span`
   }
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     padding: 8px 14px;
     font-size: 14px;
     border-radius: 24px;
@@ -186,7 +186,7 @@ const DeleteIcon = styled.span`
   margin-left: 4px;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     font-size: 16px;
     margin-left: 6px;
   }
@@ -199,7 +199,7 @@ const TagList = styled.div`
   margin-top: 8px;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     gap: 10px;
     margin-top: 10px;
   }
@@ -213,7 +213,7 @@ const PathMapContainer = styled.div`
   overflow: hidden;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     min-height: 350px;
     margin-bottom: 15px;
     border-radius: 20px;

@@ -9,16 +9,32 @@ import AppBar from "src/components/appBar";
 import BottomNavigation from "src/components/bottomNavigation";
 import StarCount from "src/components/review/starCount";
 import LoadingSpinner from "src/components/loading/LoadingSpinner";
+import Divider from "src/components/Divider";
 
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   padding: 15px;
   height: calc(100dvh - 126px);
   overflow: scroll;
+  width: 100%;
   &::-webkit-scrollbar {
     display: none;
+  }
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 700px) {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0 50px;
+  }
+
+  /* 큰 태블릿 및 노트북 */
+  @media screen and (min-width: 1024px) {
+    padding: 25px 40px;
+    max-width: 900px;
+    padding: 0 50px;
   }
 `;
 
@@ -26,19 +42,47 @@ const RatingsContainer = styled.div`
   background: #f6f8f9;
   border-radius: 10px;
   padding: 20px;
-  margin: 20px;
-  width: 350px;
+  width: 100%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: row;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 700px) {
+    width: 100%;
+    border-radius: 15px;
+    padding: 25px;
+    margin-top: 20px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  /* 큰 태블릿 및 노트북 */
+  @media screen and (min-width: 1024px) {
+    width: 100%;
+    border-radius: 20px;
+    padding: 30px;
+  }
 `;
+
 const SortContainer = styled.div`
   position: relative;
   display: flex;
   justify-content: flex-end;
   width: 100%;
-  margin: 0.5rem;
+  margin-top: 15px;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 700px) {
+    margin: 1rem;
+    max-width: 100%;
+  }
+
+  /* 큰 태블릿 및 노트북 */
+  @media screen and (min-width: 1024px) {
+    max-width: 600px;
+  }
 `;
+
 const SortType = styled.div`
   display: flex;
   align-items: center;
@@ -49,7 +93,17 @@ const SortType = styled.div`
   border-radius: 3.125rem;
   border: 1px solid #828485;
   background: #fff;
+  cursor: pointer;
+  font-size: 15px;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 700px) {
+    width: 9rem;
+    height: 3rem;
+    font-size: 25px;
+  }
 `;
+
 const DropdownMenu = styled.div`
   position: absolute;
   top: 100%;
@@ -61,6 +115,13 @@ const DropdownMenu = styled.div`
   z-index: 10;
   margin-top: 0.5rem;
   width: 6.5rem;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 700px) {
+    width: 7.5rem;
+    border-radius: 6px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+  }
 `;
 
 const DropdownItem = styled.div`
@@ -69,6 +130,12 @@ const DropdownItem = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 700px) {
+    padding: 0.75rem;
+    font-size: 1.1rem;
+  }
 `;
 
 const RatingLeft = styled.div`
@@ -76,10 +143,41 @@ const RatingLeft = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 700px) {
+    padding: 0 10px;
+  }
 `;
+
 const StarLength = styled.h2`
   font-size: 35px;
   font-family: "Lalezar";
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 700px) {
+    font-size: 45px;
+  }
+
+  /* 큰 태블릿 및 노트북 */
+  @media screen and (min-width: 1024px) {
+    font-size: 50px;
+  }
+`;
+
+const ReviewCount = styled.span`
+  font-size: 15px;
+  margin-top: 13px;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 700px) {
+    font-size: 25px;
+  }
+
+  /* 큰 태블릿 및 노트북 */
+  @media screen and (min-width: 1024px) {
+    font-size: 30px;
+  }
 `;
 
 const RatingRight = styled.div`
@@ -87,6 +185,11 @@ const RatingRight = styled.div`
   flex-direction: column;
   justify-content: center;
   margin-left: 20px;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 700px) {
+    margin-left: 50px;
+  }
 `;
 
 const BarContainer = styled.div`
@@ -95,11 +198,33 @@ const BarContainer = styled.div`
   overflow: hidden;
   margin: 5px;
   width: 120px;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 700px) {
+    width: 300px;
+    border-radius: 6px;
+    margin: 6px;
+  }
+
+  /* 큰 태블릿 및 노트북 */
+  @media screen and (min-width: 1024px) {
+    width: 220px;
+  }
 `;
 
 const Bar = styled.div`
   height: 10px;
   background: #ffc107;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 700px) {
+    height: 20px;
+  }
+
+  /* 큰 태블릿 및 노트북 */
+  @media screen and (min-width: 1024px) {
+    height: 25px;
+  }
 `;
 
 const RatingBreakdown = styled.div`
@@ -108,12 +233,23 @@ const RatingBreakdown = styled.div`
   align-items: center;
   width: 100%;
   margin: 0 auto;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 700px) {
+    margin: 3px auto;
+  }
 `;
 
 const Label = styled.span`
-  font-size: 14px;
+  font-size: 12px;
   color: #666;
   width: 10px;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 700px) {
+    font-size: 20px;
+    width: 15px;
+  }
 `;
 
 interface ProgressBarProps {
@@ -126,7 +262,6 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ percent }) => (
   </BarContainer>
 );
 
-// Main component
 const ReviewCheck = () => {
   const { walkwayId = "", sort = "rating" } = useParams<{
     walkwayId: string;
@@ -170,7 +305,7 @@ const ReviewCheck = () => {
 
   const handleSortChange = (newType: string) => {
     setSortType(newType);
-    navigate(`/main/review/${walkwayId}/content?sort=${newType}`); // URL 업데이트
+    navigate(`/main/review/${walkwayId}/content?sort=${newType}`);
   };
   const ratingData = [
     { label: 5, percent: reviewStats?.five ?? 0 },
@@ -187,7 +322,7 @@ const ReviewCheck = () => {
           <RatingLeft>
             <StarLength>{reviewStats?.rating.toFixed(1)}</StarLength>
             <StarCount rating={reviewStats?.rating ?? 0} size={24} />
-            <span>{`후기 ${reviewStats?.reviewCount}개`}</span>
+            <ReviewCount>{`후기 ${reviewStats?.reviewCount}개`}</ReviewCount>
           </RatingLeft>
           <RatingRight>
             {ratingData.map((data) => (
@@ -224,18 +359,20 @@ const ReviewCheck = () => {
         {!loading &&
           !error &&
           reviews?.map((review) => (
-            <div key={review.reviewId}>
-              <TrailReviewCard
-                trailName={review.nickname}
-                date={review.date}
-                content={review.content}
-                rating={review.rating}
-                period={review.period}
-              />
-              <hr />
-            </div>
+            <>
+              <div key={review.reviewId}>
+                <TrailReviewCard
+                  trailName={review.nickname}
+                  date={review.date}
+                  content={review.content}
+                  rating={review.rating}
+                  period={review.period}
+                />
+              </div>
+              <Divider />
+            </>
           ))}
-      </Wrapper>{" "}
+      </Wrapper>
       <BottomNavigation />
     </>
   );

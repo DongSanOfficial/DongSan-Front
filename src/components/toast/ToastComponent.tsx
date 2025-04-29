@@ -15,7 +15,7 @@ export const ToastContainer = styled.div`
   max-width: 430px;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     bottom: 120px;
     max-width: 500px;
   }
@@ -46,7 +46,7 @@ const StyledToast = styled.div<{ type: "success" | "error"; visible: boolean }>`
   pointer-events: ${(props) => (props.visible ? "auto" : "none")};
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     font-size: 16px;
     padding: 18px 15px;
     border-radius: 25px;
@@ -62,7 +62,7 @@ const IconWrapper = styled.div<{ type: "success" | "error" }>`
   font-size: 18px;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     font-size: 22px;
   }
 `;
@@ -71,7 +71,7 @@ const Message = styled.span`
   flex: 1;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     padding: 0 5px;
   }
 `;

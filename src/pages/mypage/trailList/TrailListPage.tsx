@@ -25,7 +25,7 @@ const Wrapper = styled.div`
   }
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) and (max-width: 1023px) {
+  @media screen and (min-width: 700px) and (max-width: 1023px) {
     max-width: 100%;
     padding: 15px 40px;
     height: calc(100vh - 140px);
@@ -46,7 +46,7 @@ const List = styled.div`
   width: 100%;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     gap: 24px;
   }
 
@@ -63,7 +63,7 @@ const ErrorMessage = styled.div`
   font-size: 16px;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     font-size: 18px;
     padding: 25px;
   }
@@ -76,7 +76,7 @@ const EmptyMessage = styled.div`
   font-size: 16px;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     font-size: 18px;
     padding: 30px;
   }
@@ -86,7 +86,7 @@ const CardContainer = styled.div`
   width: 100%;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     /* 추가적인 스타일링이 필요하다면 여기에 */
   }
 `;

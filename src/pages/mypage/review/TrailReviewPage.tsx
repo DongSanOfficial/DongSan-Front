@@ -19,7 +19,7 @@ const Wrapper = styled.div`
     display: none;
   }
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     max-width: 100%;
   }
 `;

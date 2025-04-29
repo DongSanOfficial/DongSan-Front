@@ -18,7 +18,7 @@ const TrailInfoContainer = styled.div`
   }
 
   /* 태블릿 환경 */
-  @media screen {
+  @media screen and (min-width: 700px){
     max-width: 100vw;
     align-items: center;
     justify-content: center;
@@ -44,7 +44,7 @@ const ClockItems = styled.div`
   }
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     font-size: 56px;
     gap: 8px;
   }
@@ -63,7 +63,7 @@ const DistanceItems = styled.div`
   }
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     font-size: 58px;
     gap: 8px;
   }
@@ -74,7 +74,7 @@ const IconWrapper = styled.div`
   height: 24px;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     width: 28px;
     height: 28px;
   }
@@ -85,7 +85,7 @@ const UnitSpan = styled.span`
   font-family: "Pretendard";
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     font-size: 22px;
   }
 `;

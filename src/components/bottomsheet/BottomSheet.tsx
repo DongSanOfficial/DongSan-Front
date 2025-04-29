@@ -63,7 +63,7 @@ const Container = styled.div<{
   }
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) and (max-width: 1023px) {
+  @media screen and (min-width: 700px) and (max-width: 1023px) {
     max-width: 100%;
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
@@ -85,7 +85,7 @@ const Header = styled.div`
   touch-action: none;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     padding: 20px 24px 0 24px;
   }
 `;
@@ -100,7 +100,7 @@ const DragIndicator = styled.div`
   touch-action: none;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     width: 50px;
     height: 5px;
     margin: 0 auto 12px;
@@ -114,7 +114,7 @@ const Content = styled.div`
   touch-action: auto;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     padding: 20px 24px;
     height: calc(100% - 40px);
   }

@@ -48,7 +48,7 @@ const Container = styled.div`
   }
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     max-width: 100%;
   }
 
@@ -71,7 +71,7 @@ const InfoContainer = styled.div`
   justify-content: center;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     top: 25px;
     left: 30px;
     right: 30px;
@@ -96,7 +96,7 @@ const ButtonContainer = styled.div`
   z-index: 1;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     bottom: 120px;
     right: 40px;
   }
@@ -129,7 +129,7 @@ const LocationButton = styled.button`
   }
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     bottom: 200px;
     right: 40px;
     width: 48px;

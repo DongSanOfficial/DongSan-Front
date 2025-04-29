@@ -29,7 +29,7 @@ const TrailContents = styled.div`
   }
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     width: 320px;
     border-radius: 24px;
     padding: 12px;
@@ -46,7 +46,7 @@ const TrailContents = styled.div`
 
 const ImageContainer = styled.div`
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     transform: scale(1.1);
   }
 
@@ -65,7 +65,7 @@ const MytrailInfo = styled.div`
   padding-right: 10px;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     gap: 12px;
     padding-right: 12px;
   }
@@ -79,7 +79,7 @@ const MytrailHeader = styled.div`
   font-weight: 900;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     font-size: 14px;
     gap: 12px;
   }
@@ -96,7 +96,7 @@ const MytrailContent = styled.div`
   font-size: 12px;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     font-size: 14px;
   }
 `;
@@ -107,7 +107,7 @@ const Mytrail = styled.div`
   font-weight: 600;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     font-size: 14px;
   }
 
@@ -122,7 +122,7 @@ const MytrailLength = styled.div`
   font-family: "Lalezar";
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     font-size: 46px;
   }
 
@@ -137,7 +137,7 @@ const UnitSpan = styled.span`
   font-family: "Pretendard";
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     font-size: 14px;
   }
 

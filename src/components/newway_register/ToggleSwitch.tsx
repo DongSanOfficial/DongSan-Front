@@ -9,7 +9,7 @@ const Content = styled.div`
   align-items: center;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     gap: 10px;
   }
 `;
@@ -23,7 +23,7 @@ const IsPublic = styled.div`
   }
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     font-size: 14px;
     font-weight: 600;
   }
@@ -41,7 +41,7 @@ const SwitchContainer = styled.div`
   background-color: #cdcdcd;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     width: 48px;
     height: 26px;
     border-radius: 18px;
@@ -58,7 +58,7 @@ const Switch = styled.div<{ isOn: boolean }>`
   transition: background-color 0.3s ease;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     width: 40px;
     height: 18px;
     border-radius: 18px;
@@ -76,7 +76,7 @@ const Toggle = styled.div<{ isOn: boolean }>`
   transition: left 0.3s ease;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     width: 18px;
     height: 18px;
     left: ${(props) => (props.isOn ? "22px" : "0px")};
@@ -93,7 +93,7 @@ const Label = styled.span<{ isOn: boolean }>`
   transition: color 0.3s ease;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     font-size: 9px;
     left: ${(props) => (props.isOn ? "5px" : "18px")};
     top: 4px;
