@@ -20,7 +20,7 @@ const NavigationBar = styled.nav`
   margin: 0 auto;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     max-width: 100%;
     left: 50%;
     transform: translateX(-50%);
@@ -42,7 +42,7 @@ const NavContent = styled.div`
   margin: 0 auto;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     height: 80px;
     padding: 0 100px;
   }
@@ -70,7 +70,7 @@ const StyledSVG = styled.div<{ isActive: boolean }>`
   }
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     svg {
       width: 28px;
       height: 28px;

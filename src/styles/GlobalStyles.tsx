@@ -47,7 +47,7 @@ const GlobalStyles = createGlobalStyle`
   }
 
   /* 태블릿 환경 (아이패드) */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
       .app-container {
           max-width: 100%;
       }

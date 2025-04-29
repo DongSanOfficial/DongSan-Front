@@ -33,7 +33,7 @@ const PageWrapper = styled.div`
   }
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     padding: 15px 30px;
   }
 
@@ -51,8 +51,8 @@ const HeaderContainer = styled.div`
   width: 100%;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
-    max-width: 768px;
+  @media screen and (min-width: 700px) {
+    max-width: 100%;
     margin: 0 auto;
   }
 
@@ -70,7 +70,7 @@ const HeaderTopBar = styled.div`
   width: 100%;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     padding: 5px 0;
   }
 `;
@@ -82,7 +82,7 @@ const PathTitle = styled.div`
   margin: 5px 0px 5px 0px;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     font-size: 1.5rem;
     margin: 8px 0px 10px 0px;
   }
@@ -101,7 +101,7 @@ const PathDate = styled.div`
   gap: 4px;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     font-size: 1.1rem;
     gap: 6px;
   }
@@ -117,7 +117,7 @@ const PathDescription = styled.div`
   margin: 10px;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     font-size: 15px;
     margin: 15px;
     line-height: 1.5;
@@ -139,8 +139,8 @@ const MapSection = styled.div`
   width: 100%;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
-    max-width: 700px;
+  @media screen and (min-width: 700px) {
+    max-width: 100%;
     margin: 20px auto;
   }
 
@@ -158,7 +158,7 @@ const MapBox = styled.div`
   overflow: hidden;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     height: 40vh;
     border-radius: 24px 24px 0px 0px;
   }
@@ -176,7 +176,7 @@ const MapDetailsContainer = styled.div`
   border-radius: 0px 0px 10px 10px;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     border-radius: 0px 0px 14px 14px;
   }
 `;
@@ -189,7 +189,7 @@ const ReactionBar = styled.div`
   margin: 10px;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     margin: 15px;
   }
 `;
@@ -200,7 +200,7 @@ const LeftIcon = styled.div`
   gap: 5px;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     gap: 8px;
   }
 `;
@@ -217,7 +217,7 @@ const ReactionButton = styled.div<ReactionButtonProps>`
   color: ${(props) => (props.active ? "red" : "black")};
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     font-size: 14px;
     margin-right: 4px;
   }
@@ -232,7 +232,7 @@ const TagsContainer = styled.div`
   padding-bottom: 10px;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     gap: 8px;
     margin: 15px;
     padding-bottom: 15px;
@@ -247,7 +247,7 @@ const TagItem = styled.div`
   white-space: nowrap;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     font-size: 14px;
     margin: 3px;
   }
@@ -261,7 +261,7 @@ const RatingContainer = styled.div`
   width: 100%;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     margin: 0 3px;
   }
 `;
@@ -273,7 +273,7 @@ const RatingGroup = styled.div`
   font-size: 13px;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     font-size: 15px;
     gap: 4px;
   }
@@ -284,7 +284,7 @@ const RatingScore = styled.span`
   color: ${theme.Gray700};
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     margin-right: 6px;
   }
 `;
@@ -298,7 +298,7 @@ const StyledHeart = styled(HeartIcon)<{ $isActive: boolean }>`
   margin-right: 5px;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     width: 18px;
     height: 18px;
     margin-right: 7px;
@@ -310,7 +310,7 @@ const BookmarkButton = styled.div<{ $isActive: boolean }>`
   color: ${({ $isActive }) => ($isActive ? theme.Green500 : theme.Gray200)};
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     transform: scale(1.2);
   }
 `;
@@ -336,12 +336,12 @@ const EditButton = styled.button<{ isDelete?: boolean }>`
   }
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     min-height: 58px;
     font-size: 18px;
     margin-top: 24px;
     border-radius: 6px;
-    max-width: 700px;
+    max-width: 100%;
     margin-left: auto;
     margin-right: auto;
   }
@@ -372,12 +372,12 @@ const ReviewButton = styled.button`
   }
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     min-height: 58px;
     font-size: 18px;
     margin-top: 14px;
     border-radius: 6px;
-    max-width: 700px;
+    max-width: 100%;
     margin-left: auto;
     margin-right: auto;
   }
@@ -394,7 +394,7 @@ const ButtonContainer = styled.div`
   width: 100%;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     margin: 10px 0;
   }
 `;

@@ -40,7 +40,7 @@ const SearchBarContainer = styled.div`
   align-items: center;
   gap: 8px;
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     max-width: 100%;
     top: 25px;
     gap: 12px;
@@ -99,7 +99,7 @@ const EmptyStateContainer = styled.div`
   margin: 20px 0;
   width: 100%;
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     margin: 30px 0;
   }
 

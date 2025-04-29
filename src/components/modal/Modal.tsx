@@ -42,7 +42,7 @@ const ModalContainer = styled.div<{ width?: string; height?: string }>`
   scrollbar-width: none;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     padding: 35px;
     border-radius: 16px;
     max-width: ${({ width }) => width || "500px"};

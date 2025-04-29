@@ -27,7 +27,7 @@ const SearchInput = styled.input`
   }
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     height: 3.5rem;
     padding: 1rem;
     padding-left: 55px;
@@ -57,7 +57,7 @@ const IconWrapper = styled.div<{ position: "left" | "right" }>`
   cursor: ${(props) => (props.position === "right" ? "pointer" : "default")};
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     ${(props) => props.position}: 1.25rem;
     svg {
       transform: scale(1.2);

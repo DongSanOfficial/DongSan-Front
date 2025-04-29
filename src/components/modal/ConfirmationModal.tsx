@@ -17,7 +17,7 @@ const ModalContent = styled.div`
   gap: 24px;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     gap: 28px;
   }
 `;
@@ -28,7 +28,7 @@ const IconContainer = styled.div`
   margin-bottom: 6px;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     margin-bottom: 10px;
     transform: scale(1.1);
   }
@@ -42,7 +42,7 @@ const TitleText = styled.h3`
   color: ${theme.Gray900};
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     font-size: 1.4rem;
   }
 `;
@@ -57,7 +57,7 @@ const ModalText = styled.p`
   max-width: 280px;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     font-size: 1.1rem;
     max-width: 320px;
     line-height: 1.6;
@@ -76,7 +76,7 @@ const TextContainer = styled.div`
   margin-bottom: 8px;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     gap: 16px;
     margin-bottom: 12px;
   }
@@ -90,7 +90,7 @@ const ButtonContainer = styled.div`
   margin-top: 8px;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     gap: 20px;
     margin-top: 12px;
   }
@@ -120,7 +120,7 @@ const Button = styled.button<{ isConfirm?: boolean }>`
   }
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     padding: 14px 28px;
     border-radius: 14px;
     font-size: 1rem;
