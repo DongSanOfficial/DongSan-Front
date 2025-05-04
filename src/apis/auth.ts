@@ -12,3 +12,14 @@ export const getUserProfile = async (): Promise<UserProfileType> => {
     throw error;
   }
 };
+
+export const updateUserNickname = async (nickname: string): Promise<void> => {
+  try {
+    const response = await instance.patch('/users/profile/nickname', {
+      nickname: nickname
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
