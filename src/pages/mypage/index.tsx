@@ -21,7 +21,7 @@ import LoadingSpinner from "src/components/loading/LoadingSpinner";
 import { getBookmarkTitle } from "../../apis/bookmark/bookmark";
 import Modal from "src/components/modal/Modal";
 import { ReactComponent as Logout } from "../../assets/svg/Logout.svg";
-import TrailBookmark from "./components/TrailBookmark";
+import TrailBookmark from "./components/bookmark/TrailBookmark";
 
 interface Bookmark {
   bookmarkId: number;

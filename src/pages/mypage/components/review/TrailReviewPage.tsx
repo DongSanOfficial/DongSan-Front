@@ -54,7 +54,7 @@ const EmptyStateMessage = styled.p`
   margin: 16px 0;
 `;
 
-function TrailReviewPage() {
+export default function TrailReviewPage() {
   const navigate = useNavigate();
   const [reviews, setReviews] = useState<UserReviewsType[]>([]);
   const [loading, setLoading] = useState(false);
@@ -89,7 +89,6 @@ function TrailReviewPage() {
     }
   }, [loading, hasNext]);
 
-  // ✅ 마지막 리뷰 요소 감지해서 자동 로딩
   const lastReviewElementRef = useCallback(
     (node: HTMLDivElement | null) => {
       if (loading) return;
@@ -98,9 +97,10 @@ function TrailReviewPage() {
 
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && hasNext) {
-          console.log(lastIdRef.current);
           loadMoreReviews();
         }
+      }, {
+        threshold: 0.1
       });
 
       if (node) observer.current.observe(node);
@@ -114,9 +114,10 @@ function TrailReviewPage() {
       if (observer.current) observer.current.disconnect();
     };
   }, []);
+
   return (
     <>
-      <AppBar onBack={() => navigate(-1)} title="내가 작성한 리뷰" />
+      <AppBar onBack={() => navigate("/mypage")} title="내가 작성한 리뷰" />
       <Wrapper>
         {error && <ErrorMessage>{error}</ErrorMessage>}
 
@@ -127,17 +128,21 @@ function TrailReviewPage() {
           </EmptyStateContainer>
         ) : (
           <List>
-            {reviews.map((review) => (
-              <div>
+            {reviews.map((review, index) => (
+              <div 
+                key={review.reviewId}
+                ref={index === reviews.length - 1 ? lastReviewElementRef : null}
+              >
                 <TrailReviewCard
-                  key={review.reviewId}
                   trailName={review.walkwayName}
                   date={review.date}
                   content={review.content}
                   rating={review.rating}
                   walkwayId={review.walkwayId}
                   onClick={() =>
-                    navigate(`/main/recommend/detail/${review.walkwayId}`)
+                    navigate(`/main/recommend/detail/${review.walkwayId}`, {
+                      state: { from: "myReviews" },
+                    })
                   }
                 />
                 <hr />
@@ -152,5 +157,3 @@ function TrailReviewPage() {
     </>
   );
 }
-
-export default TrailReviewPage;
