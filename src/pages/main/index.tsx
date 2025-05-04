@@ -3,24 +3,24 @@ import styled from "styled-components";
 import { AxiosError } from "axios";
 import { MainMap } from "../../components/map/MainMap";
 import BottomSheet from "../../components/bottomsheet/BottomSheet";
-import BottomSheetHeader from "./header/BottomSheetHeader";
-import PathCard from "./components/PathCard";
-import SearchBar from "./header/components/SearchInput";
+import BottomSheetHeader from "./components/BottomSheetHeader";
+import PathCard from "../../components/card/PathCard";
 import SearchResults, { SearchResult } from "./components/SearchResult";
 import BottomNavigation from "src/components/bottomNavigation";
 import { theme } from "src/styles/colors/theme";
-import { Walkway, SortOption, MapOption } from "../../apis/walkway.type";
+import { Walkway, SortOption, MapOption } from "../../apis/walkway/walkway.type";
 import {
   searchWalkways,
   getWalkwayDetail,
   getAllWalkways,
-} from "../../apis/walkway";
+  toggleLike,
+} from "../../apis/walkway/walkway";
 import { ApiErrorResponse } from "src/apis/api.type";
 import GuideButton from "src/components/button/GuideButton";
 import { useNavigate } from "react-router-dom";
-import { toggleLike } from "src/apis/likedWalkway";
 import { useLocationStore } from "../../store/useLocationStore";
 import { MdOutlineInbox } from "react-icons/md";
+import SearchBar from "./components/SearchInput";
 
 const MainContainer = styled.div`
   position: relative;

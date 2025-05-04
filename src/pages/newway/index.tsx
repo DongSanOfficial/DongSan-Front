@@ -5,7 +5,7 @@ import TrackingMap from "../../components/map/TrackingMap";
 import SmallButton from "src/components/button/SmallButton";
 import Modal from "src/components/modal/Modal";
 import useWatchLocation from "src/hooks/useWatchLocation";
-import TrailInfo from "src/components/newway_register/TrailInfo";
+import TrailInfo from "src/pages/newway/components/TrailInfo";
 import { useLocation, useNavigate } from "react-router-dom";
 import { BiCurrentLocation } from "react-icons/bi";
 import AppBar from "src/components/appBar";
@@ -14,8 +14,8 @@ import {
   uploadCourseImage,
   getWalkwayDetail,
   createWalkwayHistory,
-} from "src/apis/walkway";
-import { useToast } from "src/hooks/useToast";
+} from "src/apis/walkway/walkway";
+import { useToast } from "src/context/toast/useToast";
 import WaveTextLoader from "src/components/loading/WaveTextLoader";
 
 interface Location {

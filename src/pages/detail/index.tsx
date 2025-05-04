@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import ToggleSwitch from "../../components/newway_register/ToggleSwitch";
-import TrailInfo from "../../components/newway_register/TrailInfo";
+import ToggleSwitch from "../register/components/ToggleSwitch";
+import TrailInfo from "../newway/components/TrailInfo";
 import { ReactComponent as HeartIcon } from "../../assets/svg/Heart.svg";
 import { MdArrowForwardIos } from "react-icons/md";
 import { BiCalendarCheck } from "react-icons/bi";
@@ -10,15 +10,15 @@ import { theme } from "src/styles/colors/theme";
 import PathMap from "../../components/map/PathMap";
 import BottomNavigation from "../../components/bottomNavigation";
 import AppBar from "../../components/appBar";
-import { WalkwayDetail } from "src/apis/walkway.type";
-import { deleteWalkway, getWalkwayDetail } from "src/apis/walkway";
+import { WalkwayDetail } from "src/apis/walkway/walkway.type";
+import { deleteWalkway, getWalkwayDetail } from "src/apis/walkway/walkway";
 import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
-import StarCount from "src/components/review/starCount";
-import { BookmarkContent } from "./bookmark/components/BookmarkContent";
-import { toggleLike } from "src/apis/likedWalkway";
+import StarCount from "src/pages/review/components/starCount";
+import { BookmarkSheet } from "./components/BookmarkSheet";
+import { toggleLike } from "src/apis/walkway/walkway";
 import LoadingSpinner from "src/components/loading/LoadingSpinner";
 import BottomSheet from "src/components/bottomsheet/BottomSheet";
-import { useToast } from "src/hooks/useToast";
+import { useToast } from "src/context/toast/useToast";
 import Modal from "../../components/modal/Modal";
 
 // 레이아웃 관련
@@ -711,7 +711,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
         closeOnOutsideClick={true}
       >
         <div>
-          <BookmarkContent onComplete={() => toggleBottomSheet} />
+          <BookmarkSheet onComplete={() => toggleBottomSheet} />
         </div>
       </BottomSheet>
 
