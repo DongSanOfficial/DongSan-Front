@@ -10,7 +10,7 @@ import PathMap from "../../components/map/PathMap";
 import BottomNavigation from "src/components/bottomNavigation";
 import AppBar from "src/components/appBar";
 import { createWalkway, updateWalkway } from "src/apis/walkway";
-import ConfirmationModal from "src/components/modal/ConfirmationModal";
+import Modal from "src/components/modal/Modal";
 import { useToast } from "src/hooks/useToast";
 import { CreateWalkwayType, UpdateWalkwayType } from "src/apis/walkway.type";
 
@@ -420,7 +420,7 @@ export default function Registration() {
         </Button>
       </Wrapper>
       <BottomNavigation />
-      <ConfirmationModal
+      <Modal
         isOpen={isModalOpen}
         onClose={handleModalClose}
         onConfirm={handleModalConfirm}

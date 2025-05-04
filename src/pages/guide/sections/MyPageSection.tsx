@@ -35,7 +35,7 @@ const MyPageSection = forwardRef<HTMLDivElement>((props, ref) => (
       <ListItem>
         <BiCheckCircle />
         내가 이용한 산책로 중 리뷰를 작성할 수 있는 산책로를 볼 수 있어요.
-        리뷰를 남기 않은 이용내역이 있다면, 리뷰를 남겨보세요!
+        리뷰를 쓰지 않은 이용내역이 있다면, 리뷰를 남겨보세요!
       </ListItem>
     </List>
   </Section>

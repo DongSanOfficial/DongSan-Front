@@ -19,7 +19,7 @@ import { toggleLike } from "src/apis/likedWalkway";
 import LoadingSpinner from "src/components/loading/LoadingSpinner";
 import BottomSheet from "src/components/bottomsheet/BottomSheet";
 import { useToast } from "src/hooks/useToast";
-import ConfirmationModal from "../../components/modal/ConfirmationModal";
+import Modal from "../../components/modal/Modal";
 
 // 레이아웃 관련
 const PageWrapper = styled.div`
@@ -677,8 +677,8 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
             <PathDescription>{walkwayDetail.memo}</PathDescription>
             {walkwayDetail.hashtags && walkwayDetail.hashtags.length > 0 && (
               <TagsContainer>
-                {walkwayDetail.hashtags.map((hashtag, index) => (
-                  <TagItem key={index}>{hashtag}</TagItem>
+                {walkwayDetail.hashtags.map((hashtag) => (
+                  <TagItem key={hashtag}>{hashtag}</TagItem>
                 ))}
               </TagsContainer>
             )}
@@ -715,7 +715,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
         </div>
       </BottomSheet>
 
-      <ConfirmationModal
+      <Modal
         isOpen={isDeleteModalOpen}
         onClose={closeDeleteModal}
         onConfirm={confirmDelete}
