@@ -6,7 +6,7 @@ import { ReactComponent as Home } from "../../assets/svg/Home.svg";
 import { ReactComponent as MyPage } from "../../assets/svg/MyPage.svg";
 import { theme } from "src/styles/colors/theme";
 import { useLocationStore } from "../../store/useLocationStore";
-import ConfirmationModal from "../modal/ConfirmationModal";
+import Modal from "../modal/Modal";
 
 const NavigationBar = styled.nav`
   position: fixed;
@@ -121,7 +121,7 @@ const BottomNavigation = () => {
         </NavContent>
       </NavigationBar>
 
-      <ConfirmationModal
+      <Modal
         isOpen={isLocationAccessModalOpen}
         onClose={() => setIsLocationAccessModalOpen(false)}
         onConfirm={() => setIsLocationAccessModalOpen(false)}
