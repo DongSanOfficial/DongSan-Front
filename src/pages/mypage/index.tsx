@@ -1,135 +1,27 @@
 import React, { useState, useEffect, useCallback } from "react";
-import styled from "styled-components";
+import S from "./mypage.styles";
 import { ReactComponent as Favorite } from "../../assets/svg/Favorite.svg";
 import { ReactComponent as BookMark } from "../../assets/svg/BookMark.svg";
-import TrailCard from "src/components/TrailCard_mp";
-import ReviewCard from "src/components/ReviewCard_mp";
+import TrailCard from "src/components/card/TrailCard";
+import ReviewCard from "src/components/card/ReviewCard";
 import { Link, useNavigate } from "react-router-dom";
 import profileImg from "../../assets/images/profile.png";
-import TrailBookmark from "./bookmark/TrailBookmark";
-import { getUserProfile } from "../../apis/auth";
-import { UserProfileType } from "../../apis/auth.type";
+import { getUserProfile, updateUserNickname } from "../../apis/auth/auth";
+import { UserProfileType } from "../../apis/auth/auth.type";
 import BottomNavigation from "src/components/bottomNavigation";
 import AppBar from "src/components/appBar";
-import { getMyWalkways } from "src/apis/walkway";
-import { Trail } from "src/apis/walkway.type";
+import { getMyWalkways } from "src/apis/walkway/walkway";
+import { Trail } from "src/apis/walkway/walkway.type";
 import instance from "src/apis/instance";
-import { theme } from "src/styles/colors/theme";
-import { useToast } from "src/hooks/useToast";
-import { UserReviewsType, walkwayHistoryType } from "src/apis/review.type";
-import { getReviewRecord, getUserReviews } from "src/apis/review";
-import HistoryCard from "src/components/HistoryCard_mp";
+import { useToast } from "src/context/toast/useToast";
+import { UserReviewsType, walkwayHistoryType } from "src/apis/review/review.type";
+import { getReviewRecord, getUserReviews } from "src/apis/review/review";
+import HistoryCard from "src/components/card/HistoryCard";
 import LoadingSpinner from "src/components/loading/LoadingSpinner";
-import { getBookmarkTitle } from "../../apis/bookmark";
-import ConfirmationModal from "src/components/modal/ConfirmationModal";
+import { getBookmarkTitle } from "../../apis/bookmark/bookmark";
+import Modal from "src/components/modal/Modal";
 import { ReactComponent as Logout } from "../../assets/svg/Logout.svg";
-
-const Wrapper = styled.div`
-  display: flex;
-  padding: 10px;
-  flex-direction: column;
-  overflow: scroll;
-  height: calc(100dvh - 126px);
-  &::-webkit-scrollbar {
-    display: none;
-  }
-`;
-
-const Line = styled.div`
-  align-items: center;
-  width: 95%;
-  height: 1px;
-  background-color: #cdcdcd;
-  margin: 12px;
-`;
-
-const Profile = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  padding: 10px;
-`;
-
-const ProfileTop = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  width: 100%;
-  gap: 20px;
-  margin-bottom: 15px;
-`;
-
-const ProfileInfo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 15px;
-`;
-
-const Name = styled.div`
-  font-size: 22px;
-  font-weight: bold;
-  color: ${theme.Green600};
-  margin-bottom: 5px;
-  max-width: 220px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
-const Email = styled.div`
-  font-size: 14px;
-  max-width: 200px;
-  word-break: break-all;
-  white-space: normal;
-`;
-
-const Img = styled.img`
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  border: 4px solid ${theme.White};
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  object-fit: cover;
-`;
-
-//내가 등록한 산책로
-const SeeAll = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-`;
-
-const Title = styled.div`
-  font-size: 15px;
-  font-weight: 700;
-  margin: 10px 25px;
-`;
-
-const Button = styled.span`
-  font-size: 10px;
-  margin: 10px 25px;
-`;
-
-const Items = styled.div`
-  display: flex;
-  overflow-x: auto;
-  gap: 16px;
-  padding: 10px 5px 10px 0;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  &::-webkit-scrollbar {
-    display: none;
-  }
-`;
-const Unregister = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 10px 0;
-`;
-const Delete = styled.span`
-  font-size: 12px;
-  color: ${theme.Gray400};
-`;
+import TrailBookmark from "./components/bookmark/TrailBookmark";
 
 interface Bookmark {
   bookmarkId: number;
@@ -155,6 +47,8 @@ function MyPage() {
   const [lastBookmarkId, setLastBookmarkId] = useState<number | null>(null);
   const [hasMoreBookmarks, setHasMoreBookmarks] = useState(false);
   const [loadingBookmarks, setLoadingBookmarks] = useState(false);
+  const [isEditingNickname, setIsEditingNickname] = useState(false);
+  const [editedNickname, setEditedNickname] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -297,8 +191,45 @@ function MyPage() {
     }
     setIsModalOpen(false);
   };
+
+  const handleEditNickname = () => {
+    setIsEditingNickname(true);
+    setEditedNickname(userProfile?.nickname || "");
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditingNickname(false);
+    setEditedNickname("");
+  };
+
+  const handleNicknameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value.length <= 9 || value.length < editedNickname.length) {
+      setEditedNickname(value);
+    }
+  };
+
+  const handleSaveNickname = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await updateUserNickname(editedNickname);
+      const updatedProfile = await getUserProfile();
+      setUserProfile(updatedProfile);
+
+      setIsEditingNickname(false);
+      showToast("닉네임이 성공적으로 변경되었습니다!", "success");
+    } catch (error) {
+      showToast("닉네임 변경 중 문제가 발생했습니다.", "error");
+    }
+  };
+
   if (isLoading) return <LoadingSpinner />;
   if (error) return <div>{error}</div>;
+
+  const getTruncatedNickname = (nickname: string | undefined) => {
+    if (!nickname) return "이름";
+    return nickname.length > 9 ? `${nickname.slice(0, 9)}...` : nickname;
+  };
 
   return (
     <>
@@ -306,29 +237,54 @@ function MyPage() {
         onBack={() => navigate("/main")}
         title="마이 페이지"
         rightIcon={<Logout onClick={handleLogout} />}
-      />{" "}
-      <Wrapper onScroll={handleScroll}>
-        {" "}
-        <Profile>
-          <ProfileTop>
-            <ProfileInfo>
-              <Img src={profileImg} alt="프로필 이미지" />
+      />
+      <S.Wrapper onScroll={handleScroll}>
+        <S.Profile>
+          <S.ProfileTop>
+            <S.ProfileInfo>
+              <S.Img src={profileImg} alt="프로필 이미지" />
               <div>
-                <Name>{userProfile?.nickname || "이름"}</Name>
-                <Email>{userProfile?.email || "이메일 정보 없음"}</Email>
+                {isEditingNickname ? (
+                  <S.NicknameForm onSubmit={handleSaveNickname}>
+                    <S.NicknameInputWrapper>
+                      <S.NicknameInput
+                        type="text"
+                        value={editedNickname}
+                        onChange={handleNicknameChange}
+                        maxLength={9}
+                        placeholder="닉네임을 입력하세요"
+                      />
+                      <S.Counter>
+                        {editedNickname.length}/9
+                      </S.Counter>
+                    </S.NicknameInputWrapper>
+                    <S.SaveButton type="submit">저장</S.SaveButton>
+                    <S.CancelButton type="button" onClick={handleCancelEdit}>
+                      취소
+                    </S.CancelButton>
+                  </S.NicknameForm>
+                ) : (
+                  <S.NicknameContainer>
+                    <S.Name title={userProfile?.nickname}>
+                      {getTruncatedNickname(userProfile?.nickname)}
+                    </S.Name>
+                    <S.EditIcon onClick={handleEditNickname} />
+                  </S.NicknameContainer>
+                )}
+                <S.Email>{userProfile?.email || "이메일 정보 없음"}</S.Email>
               </div>
-            </ProfileInfo>
-          </ProfileTop>
-          <Line />
-        </Profile>
+            </S.ProfileInfo>
+          </S.ProfileTop>
+          <S.Line />
+        </S.Profile>
         <div>
-          <SeeAll>
-            <Title>내가 등록한 산책로 보기</Title>
-            <Button onClick={() => navigate("/mypage/TrailList")}>
+          <S.SeeAll>
+            <S.Title>내가 등록한 산책로 보기</S.Title>
+            <S.Button onClick={() => navigate("/mypage/TrailList")}>
               전체보기
-            </Button>
-          </SeeAll>
-          <Items>
+            </S.Button>
+          </S.SeeAll>
+          <S.Items>
             {previewTrails.map((trail) => (
               <TrailCard
                 key={trail.walkwayId}
@@ -336,11 +292,11 @@ function MyPage() {
                 onClick={handleCardClick}
               />
             ))}
-          </Items>
-          <Line />
+          </S.Items>
+          <S.Line />
         </div>
         <div>
-          <Title>내가 찜한 산책로 조회</Title>
+          <S.Title>내가 찜한 산책로 조회</S.Title>
           {/* 좋아하는 산책로 */}
           <TrailBookmark
             icon={Favorite}
@@ -361,16 +317,16 @@ function MyPage() {
                 onUpdate={handleBookmarkUpdate}
               />
             ))}
-          <Line />
+          <S.Line />
         </div>
         <div>
-          <SeeAll>
-            <Title>산책로 리뷰작성하기</Title>
-            <Button onClick={() => navigate("/mypage/ReviewableWalkway")}>
+          <S.SeeAll>
+            <S.Title>산책로 리뷰작성하기</S.Title>
+            <S.Button onClick={() => navigate("/mypage/ReviewableWalkway")}>
               전체보기
-            </Button>
-          </SeeAll>
-          <Items>
+            </S.Button>
+          </S.SeeAll>
+          <S.Items>
             {previewHistory.map((data) => (
               <HistoryCard
                 key={data.walkwayId}
@@ -378,17 +334,17 @@ function MyPage() {
                 onClick={() => handleHistoryClick(data)}
               />
             ))}
-          </Items>
-          <Line />
+          </S.Items>
+          <S.Line />
         </div>
         <div>
-          <SeeAll>
-            <Title>내가 작성한 리뷰 모아보기</Title>
+          <S.SeeAll>
+            <S.Title>내가 작성한 리뷰 모아보기</S.Title>
             <Link to="/mypage/ReviewList">
-              <Button>전체보기</Button>
+              <S.Button>전체보기</S.Button>
             </Link>
-          </SeeAll>
-          <Items>
+          </S.SeeAll>
+          <S.Items>
             {reviews.map((review) => (
               <ReviewCard
                 key={review.reviewId}
@@ -396,12 +352,12 @@ function MyPage() {
                 onClick={handleReviewClick}
               />
             ))}
-          </Items>
+          </S.Items>
         </div>
-        <Unregister>
-          <Delete onClick={handleOpenMoal}>탈퇴하기</Delete>
-        </Unregister>
-        <ConfirmationModal
+        <S.Unregister>
+          <S.Delete onClick={handleOpenMoal}>탈퇴하기</S.Delete>
+        </S.Unregister>
+        <Modal
           isOpen={isModalOpen}
           onClose={handleCloseModal}
           onConfirm={handleDeleteAccount}
@@ -412,7 +368,7 @@ function MyPage() {
           confirmText="탈퇴"
           modalType="secession"
         />
-      </Wrapper>
+      </S.Wrapper>
       <BottomNavigation />
     </>
   );

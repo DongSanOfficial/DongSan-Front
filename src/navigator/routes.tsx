@@ -1,19 +1,17 @@
 import Main from "../pages/main";
 import MyPage from "../pages/mypage";
-import TrailListPage from "../pages/mypage/trailList/TrailListPage";
+import TrailListPage from "../pages/mypage/components/trailList/TrailListPage";
 import SignIn from "../pages/signin";
-import Registration from "../pages/newway/registration";
+import Registration from "../pages/register";
 import ReviewPage from "../pages/review";
-import NavigationPage from "../pages";
-import ReviewCheck from "../pages/review/ReviewCheck";
 import PathDetails from "../pages/detail";
-import SplashScreen from "src/components/SplashScreen";
+import SplashScreen from "src/pages/splash/components/SplashScreen";
 import Splash from "src/pages/splash";
 import NewWay from "../pages/newway";
-import ReviewableHistory from "../pages/mypage/review/ReviewableHistory";
+import ReviewableHistory from "../pages/mypage/components/review/ReviewableHistory";
 import Guide from "../pages/guide";
-import LocationAcceptance from "../pages/error/locationAcceptance";
-import TrailReviewPage from "src/pages/mypage/review/TrailReviewPage";
+import TrailReviewPage from "src/pages/mypage/components/review/TrailReviewPage";
+import ReviewCheck from "src/pages/review/components/ReviewCheck";
 
 interface RouteConfig {
   path: string;
@@ -24,10 +22,6 @@ const routes: RouteConfig[] = [
   {
     path: "/",
     component: Splash,
-  },
-  {
-    path: "/navigation",
-    component: NavigationPage,
   },
   {
     path: "/main",
@@ -87,10 +81,6 @@ const routes: RouteConfig[] = [
     path: "/guide",
     component: Guide,
   },
-  {
-    path: "/locationAcceptance",
-    component: LocationAcceptance,
-  }
 ];
 
 export default routes;

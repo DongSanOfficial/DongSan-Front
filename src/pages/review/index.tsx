@@ -7,8 +7,8 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import BottomNavigation from "src/components/bottomNavigation";
 import AppBar from "src/components/appBar";
-import { writingReview } from "src/apis/review";
-import { WriteReviewType } from "src/apis/review.type";
+import { writingReview } from "src/apis/review/review";
+import { WriteReviewType } from "src/apis/review/review.type";
 
 const CenterWrapper = styled.div`
   display: flex;
@@ -22,7 +22,7 @@ const CenterWrapper = styled.div`
     display: none;
   }
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     max-width: 100%;
   }
 `;

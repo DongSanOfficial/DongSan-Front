@@ -3,9 +3,9 @@ import styled from "styled-components";
 import { calculateDistance } from "src/utils/calculateDistance";
 import TrackingMap from "../../components/map/TrackingMap";
 import SmallButton from "src/components/button/SmallButton";
-import ConfirmationModal from "src/components/modal/ConfirmationModal";
+import Modal from "src/components/modal/Modal";
 import useWatchLocation from "src/hooks/useWatchLocation";
-import TrailInfo from "src/components/newway_register/TrailInfo";
+import TrailInfo from "src/pages/newway/components/TrailInfo";
 import { useLocation, useNavigate } from "react-router-dom";
 import { BiCurrentLocation } from "react-icons/bi";
 import AppBar from "src/components/appBar";
@@ -14,8 +14,8 @@ import {
   uploadCourseImage,
   getWalkwayDetail,
   createWalkwayHistory,
-} from "src/apis/walkway";
-import { useToast } from "src/hooks/useToast";
+} from "src/apis/walkway/walkway";
+import { useToast } from "src/context/toast/useToast";
 import WaveTextLoader from "src/components/loading/WaveTextLoader";
 
 interface Location {
@@ -48,7 +48,7 @@ const Container = styled.div`
   }
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     max-width: 100%;
   }
 
@@ -71,7 +71,7 @@ const InfoContainer = styled.div`
   justify-content: center;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     top: 25px;
     left: 30px;
     right: 30px;
@@ -96,7 +96,7 @@ const ButtonContainer = styled.div`
   z-index: 1;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     bottom: 120px;
     right: 40px;
   }
@@ -129,7 +129,7 @@ const LocationButton = styled.button`
   }
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     bottom: 200px;
     right: 40px;
     width: 48px;
@@ -485,7 +485,7 @@ export default function NewWay() {
           />
         </ButtonContainer>
 
-        <ConfirmationModal
+        <Modal
           isOpen={modalType !== null}
           onClose={handleModalClose}
           onConfirm={handleModalConfirm}

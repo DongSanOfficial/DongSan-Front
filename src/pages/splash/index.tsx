@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useLocationStore } from "../../store/useLocationStore";
 import { LocationState } from "../../store/locationStore.type";
 import instance from "../../apis/instance";
-import SplashScreen from "src/components/SplashScreen";
+import SplashScreen from "src/pages/splash/components/SplashScreen";
 
 export default function Splash() {
   const navigate = useNavigate();

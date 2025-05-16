@@ -12,7 +12,7 @@ import { ReactComponent as LocationIcon } from "../../assets/svg/LocationIcon.sv
 import SelectedLocationMarker from "../../assets/svg/UserLocation.svg";
 import { SearchResult } from "../../pages/main/components/SearchResult";
 import { useLocationStore } from "../../store/useLocationStore";
-import ConfirmationModal from "../modal/ConfirmationModal";
+import Modal from "../modal/Modal";
 
 const MapContainer = styled.div`
   width: 100%;
@@ -35,7 +35,7 @@ const MapContainer = styled.div`
   }
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) and (max-width: 1023px) {
+  @media screen and (min-width: 700px) and (max-width: 1023px) {
     max-width: 100%;
   }
 
@@ -78,7 +78,7 @@ const LocationButton = styled.button`
   }
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     right: 24px;
     width: 48px;
     height: 48px;
@@ -122,7 +122,7 @@ const SearchButton = styled.button`
   cursor: pointer;
   z-index: 1;
   white-space: nowrap;
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     top: 100px;
   }
 
@@ -367,7 +367,7 @@ export const MainMap = ({
         <StyledLocationIcon />
       </LocationButton>
 
-      <ConfirmationModal
+      <Modal
         isOpen={isLocationAccessModalOpen}
         onClose={() => setIsLocationAccessModalOpen(false)}
         onConfirm={() => setIsLocationAccessModalOpen(false)}

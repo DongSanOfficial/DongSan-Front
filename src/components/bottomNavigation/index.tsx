@@ -6,7 +6,7 @@ import { ReactComponent as Home } from "../../assets/svg/Home.svg";
 import { ReactComponent as MyPage } from "../../assets/svg/MyPage.svg";
 import { theme } from "src/styles/colors/theme";
 import { useLocationStore } from "../../store/useLocationStore";
-import ConfirmationModal from "../modal/ConfirmationModal";
+import Modal from "../modal/Modal";
 
 const NavigationBar = styled.nav`
   position: fixed;
@@ -20,7 +20,7 @@ const NavigationBar = styled.nav`
   margin: 0 auto;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     max-width: 100%;
     left: 50%;
     transform: translateX(-50%);
@@ -42,7 +42,7 @@ const NavContent = styled.div`
   margin: 0 auto;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     height: 80px;
     padding: 0 100px;
   }
@@ -70,7 +70,7 @@ const StyledSVG = styled.div<{ isActive: boolean }>`
   }
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     svg {
       width: 28px;
       height: 28px;
@@ -121,7 +121,7 @@ const BottomNavigation = () => {
         </NavContent>
       </NavigationBar>
 
-      <ConfirmationModal
+      <Modal
         isOpen={isLocationAccessModalOpen}
         onClose={() => setIsLocationAccessModalOpen(false)}
         onConfirm={() => setIsLocationAccessModalOpen(false)}

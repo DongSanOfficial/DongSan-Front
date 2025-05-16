@@ -21,7 +21,7 @@ const AppBarContainer = styled.div`
   background-color: white;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     max-width: 100%;
     padding: 16px 24px;
     height: 64px;
@@ -49,7 +49,7 @@ const Title = styled.h1`
   z-index: 1;
 
   /* 태블릿 환경 */
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 700px) {
     font-size: 1.25rem;
   }
 `;
