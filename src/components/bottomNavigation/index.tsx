@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { ReactComponent as NewWay } from "../../assets/svg/NewWay.svg";
 import { ReactComponent as Home } from "../../assets/svg/Home.svg";
+import { ReactComponent as Community } from "../../assets/svg/Community.svg";
 import { ReactComponent as MyPage } from "../../assets/svg/MyPage.svg";
 import { theme } from "src/styles/colors/theme";
 import { useLocationStore } from "../../store/useLocationStore";
@@ -102,17 +103,25 @@ const BottomNavigation = () => {
     <>
       <NavigationBar>
         <NavContent>
-          <div onClick={handleNewWayClick} style={{ cursor: "pointer" }}>
-            <StyledSVG isActive={isPathActive("/newway")}>
-              <NewWay />
-            </StyledSVG>
-          </div>
+          {/* 메인 홈 */}
           <NavLink to="/main">
             <StyledSVG isActive={isPathActive("/main")}>
               <Home />
             </StyledSVG>
           </NavLink>
-
+          {/* 산책로 생성 */}
+          <div onClick={handleNewWayClick} style={{ cursor: "pointer" }}>
+            <StyledSVG isActive={isPathActive("/newway")}>
+              <NewWay />
+            </StyledSVG>
+          </div>
+          {/* 커뮤니티 */}
+          <NavLink to="/community">
+            <StyledSVG isActive={isPathActive("/community")}>
+              <Community />
+            </StyledSVG>
+          </NavLink>
+          {/* 마이페이지 */}
           <NavLink to="/mypage">
             <StyledSVG isActive={isPathActive("/mypage")}>
               <MyPage />
