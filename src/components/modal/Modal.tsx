@@ -23,7 +23,8 @@ interface ConfirmationModalProps {
     | "delete"
     | "default"
     | "location"
-    | "secession";
+    | "secession"
+    | "crewSecession";
   mode?: "create" | "follow";
 }
 
@@ -75,6 +76,11 @@ const Modal = ({
           icon: <MdWarning size={52} color={theme.Red300} />,
           title: "서비스 탈퇴",
         };
+        case "crewSecession":
+          return {
+            icon: <MdWarning size={52} color={theme.Red300} />,
+            title: "크루 탈퇴",
+          };
       default:
         return {
           icon: <MdInfoOutline size={52} color={theme.Following} />,

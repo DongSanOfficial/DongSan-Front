@@ -15,7 +15,7 @@ import ReviewCheck from "src/pages/review/components/ReviewCheck";
 import Community from "src/pages/community";
 import CreateCrew from "src/pages/community/create";
 import SearchCrew from "src/pages/community/search";
-import Summary from "src/pages/community/detail/summary";
+import CrewDetail from "src/pages/community/detail";
 import RankDetail from "src/pages/community/detail/summary/rank";
 
 interface RouteConfig {
@@ -100,8 +100,8 @@ const routes: RouteConfig[] = [
     component: SearchCrew,
   },
   {
-    path: "/community/detail/summary",
-    component: Summary,
+    path: "/community/detail",
+    component: CrewDetail,
   },
   {
     path: "/community/detail/summary/rank",

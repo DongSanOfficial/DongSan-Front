@@ -226,6 +226,7 @@ export default function Community() {
               crewImage={crew.crewImageUrl}
               variant="myCrew"
               isManager={crew.isManager}
+              onClick={() => navigate("/community/detail", { state: { crew } })}
             />
           ))}
         </CrewCardList>
@@ -244,6 +245,7 @@ export default function Community() {
               crewImage={crew.crewImageUrl}
               variant="recommended"
               memberCount={crew.memberCount}
+              onClick={() => navigate("/community/detail", { state: { crew } })}
             />
           ))}
         </CrewCardList>
