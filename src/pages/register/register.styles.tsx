@@ -86,6 +86,17 @@ const Button = styled.button<{ isActive: boolean }>`
   }
 `;
 
+const RequiredMark = styled.span`
+  color: ${theme.Red300};
+  margin-left: 2px;
+
+  /* 태블릿 환경 */
+  @media screen and (min-width: 700px) {
+    margin-left: 4px;
+    font-size: 18px;
+  }
+`;
+
 const TagInputWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -203,5 +214,6 @@ const S = {
   DeleteIcon,
   TagList,
   PathMapContainer,
+  RequiredMark
 };
 export default S;

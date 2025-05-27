@@ -66,6 +66,7 @@ const Label = styled.label`
   font-size: 15px;
   font-weight: 500;
   color: ${({ theme }) => theme.Black};
+  margin-bottom: 10px;
 `;
 
 const SubmitButton = styled.button<{ disabled: boolean }>`
@@ -110,6 +111,11 @@ const NumberInput = styled.input`
   &::-webkit-outer-spin-button {
     -webkit-appearance: inner-spin-button;
     margin: 0;
+  }
+
+    &:focus {
+    outline: none;
+    border-bottom: 1.5px solid ${({ theme }) => theme.Green500};
   }
 `;
 
@@ -178,8 +184,7 @@ export default function CreateCrew() {
             <Label>
               <MdGroup /> 크루 이름 <RequiredMark>*</RequiredMark>
             </Label>
-            <Divider margin="0.6rem 0" />
-            <div style={{ display: "flex", gap: "8px", width: "100%" }}>
+            <div style={{ display: "flex", gap: "8px", marginTop: "10px"}}>
               <div style={{ flex: 3 }}>
                 <TextInput
                   value={crewName}
@@ -203,19 +208,17 @@ export default function CreateCrew() {
             <Label>
               <MdInfo /> 크루 소개
             </Label>
-            <Divider margin="0.6rem 0" />
             <TextareaField
               value={description}
               onChange={setDescription}
               maxLength={250}
-              placeholder="크루 소개를 입력해 주세요."
+              placeholder="크루를 소개해주세요."
             />
           </Section>
           <Section>
             <Label>
               <MdRule /> 크루 규칙
             </Label>
-            <Divider margin="0.6rem 0" />
             <TextareaField
               value={rules}
               onChange={setRules}
@@ -227,7 +230,7 @@ export default function CreateCrew() {
             <Label>
               <MdVisibility /> 공개 범위<RequiredMark>*</RequiredMark>
             </Label>
-            <Divider margin="0.6rem 0" />
+            <div style={{display: "flex", justifyContent: "center", alignItems: "center", margin: "10px 0"}}>
             <Radio
               options={[
                 { label: "공개 크루", value: "PUBLIC" },
@@ -236,6 +239,7 @@ export default function CreateCrew() {
               selectedValue={isPrivate ? "PRIVATE" : "PUBLIC"}
               onChange={(val) => setIsPrivate(val === "PRIVATE")}
             />
+            </div>
             <Description>
               * 공개 크루: 크루에 가입하지 않아도 모든 게시글과 활동 정보를
               확인할 수 있어요.
@@ -272,13 +276,12 @@ export default function CreateCrew() {
                 onChange={setLimitEnabled}
               />
             </MemberRow>
-            <Divider margin="0.6rem 0" />
             {limitEnabled && (
               <>
                 <Description>
                   *최소 2명, 최대 100명의 크루원을 모집할 수 있어요.
                 </Description>
-                <div style={{ display: "flex", alignItems: "center" }}>
+                <div style={{ display: "flex", alignItems: "center", marginTop: "5px" }}>
                   <span style={{ fontSize: "14px" }}>
                     최대 인원:<RequiredMark>*</RequiredMark>
                   </span>
@@ -303,7 +306,6 @@ export default function CreateCrew() {
             <Label>
               <MdImage /> 크루 이미지 첨부<RequiredMark>*</RequiredMark>
             </Label>
-            <Divider margin="0.6rem 0" />
             <ImageUploader file={image} onChange={setImage} />
             <Description>* 1:1 비율의 이미지를 권장합니다.</Description>
           </Section>

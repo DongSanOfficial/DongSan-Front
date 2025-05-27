@@ -4,7 +4,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import DateDisplay from "src/pages/register/components/DateDisplay";
 import TrailInfo from "src/pages/newway/components/TrailInfo";
 import ToggleSwitch from "src/components/toggle/ToggleSwitch";
-import InputField from "src/pages/register/components/InputField";
 import PathMap from "../../components/map/PathMap";
 import BottomNavigation from "src/components/bottomNavigation";
 import AppBar from "src/components/appBar";
@@ -15,6 +14,8 @@ import {
   CreateWalkwayType,
   UpdateWalkwayType,
 } from "src/apis/walkway/walkway.type";
+import TextInput from "src/components/input";
+import TextareaField from "src/components/textarea";
 
 interface PathData {
   coordinates: Array<{ lat: number; lng: number }>;
@@ -41,7 +42,6 @@ export default function Registration() {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const { state } = location as { state: LocationState };
-  // state.isEditMode를 직접 확인
   const [isEditMode, setIsEditMode] = useState(state?.isEditMode || false);
   const [name, setName] = useState(state?.name || "");
   const [description, setDescription] = useState(state?.description || "");
@@ -205,11 +205,22 @@ export default function Registration() {
         <S.PathMapContainer>
           <PathMap pathCoords={pathData.coordinates} />
         </S.PathMapContainer>
-        <InputField
-          name={name}
-          setName={setName}
-          description={description}
-          setDescription={setDescription}
+        <div style={{ position: "relative", marginBottom: "10px" }}>
+          <TextInput
+            value={name}
+            onChange={setName}
+            maxLength={20}
+            placeholder="산책로를 잘 나타내는 이름을 지어주세요."
+          />
+          <S.RequiredMark style={{ position: "absolute", top: 4, right: 1 }}>
+            *
+          </S.RequiredMark>
+        </div>
+        <TextareaField
+          value={description}
+          onChange={setDescription}
+          maxLength={150}
+          placeholder="산책로를 설명해주세요."
         />
         <S.TagInputWrapper>
           <S.TagInput

@@ -18,8 +18,13 @@ const Input = styled.input<{ isFull: boolean }>`
   padding: 10px;
   font-size: 14px;
   border: none;
-  border-bottom: 1px solid ${({ theme }) => theme.Gray300};
+  border-bottom: 1px solid ${theme.Gray300};
   box-sizing: border-box;
+
+  &:focus {
+    outline: none;
+    border-bottom: 1.5px solid ${theme.Green500};
+  }
 `;
 
 const Counter = styled.div<{ isFull: boolean }>`
