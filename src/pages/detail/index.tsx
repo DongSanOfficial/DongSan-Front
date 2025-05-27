@@ -1,5 +1,5 @@
 import S from "./detail.styles";
-import ToggleSwitch from "../register/components/ToggleSwitch";
+import ToggleSwitch from "../../components/toggle/ToggleSwitch";
 import TrailInfo from "../newway/components/TrailInfo";
 import { MdArrowForwardIos } from "react-icons/md";
 import { BiCalendarCheck } from "react-icons/bi";
@@ -191,8 +191,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
       navigate(
         `/mypage/TrailList?type=bookmarks&bookmarkId=${location.state.bookmarkId}`
       );
-    }
-    else if (location.state?.from === "myReviews") {
+    } else if (location.state?.from === "myReviews") {
       navigate("/mypage/ReviewList");
     }
     // 기본
@@ -239,7 +238,8 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
             </div>
             {isMyPath && (
               <ToggleSwitch
-                isPublic={walkwayDetail.accessLevel === "PUBLIC"}
+                label="전체공개"
+                isOn={walkwayDetail.accessLevel === "PUBLIC"}
                 readOnly={true}
               />
             )}

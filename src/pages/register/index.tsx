@@ -3,7 +3,7 @@ import { ChangeEvent, KeyboardEvent, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import DateDisplay from "src/pages/register/components/DateDisplay";
 import TrailInfo from "src/pages/newway/components/TrailInfo";
-import ToggleSwitch from "src/pages/register/components/ToggleSwitch";
+import ToggleSwitch from "src/components/toggle/ToggleSwitch";
 import InputField from "src/pages/register/components/InputField";
 import PathMap from "../../components/map/PathMap";
 import BottomNavigation from "src/components/bottomNavigation";
@@ -11,7 +11,10 @@ import AppBar from "src/components/appBar";
 import { createWalkway, updateWalkway } from "src/apis/walkway/walkway";
 import Modal from "src/components/modal/Modal";
 import { useToast } from "src/context/toast/useToast";
-import { CreateWalkwayType, UpdateWalkwayType } from "src/apis/walkway/walkway.type";
+import {
+  CreateWalkwayType,
+  UpdateWalkwayType,
+} from "src/apis/walkway/walkway.type";
 
 interface PathData {
   coordinates: Array<{ lat: number; lng: number }>;
@@ -32,7 +35,6 @@ interface LocationState extends PathData {
   hashtags?: string[];
   accessLevel?: "PRIVATE" | "PUBLIC";
 }
-
 
 export default function Registration() {
   const location = useLocation();
@@ -186,7 +188,8 @@ export default function Registration() {
               date={isEditMode && state.date ? state.date : undefined}
             />
             <ToggleSwitch
-              isPublic={accessLevel === "PUBLIC"}
+              label="전체공개"
+              isOn={accessLevel === "PUBLIC"}
               readOnly={false}
               onChange={(isPublic) =>
                 setAccessLevel(isPublic ? "PUBLIC" : "PRIVATE")
@@ -224,7 +227,11 @@ export default function Registration() {
             ))}
           </S.TagList>
         </S.TagInputWrapper>
-        <S.Button isActive={isActive} onClick={handleSubmit} disabled={isLoading}>
+        <S.Button
+          isActive={isActive}
+          onClick={handleSubmit}
+          disabled={isLoading}
+        >
           {isLoading ? "처리 중..." : isEditMode ? "수정완료" : "작성완료"}
         </S.Button>
       </S.Wrapper>
