@@ -12,6 +12,11 @@ import ReviewableHistory from "../pages/mypage/components/review/ReviewableHisto
 import Guide from "../pages/guide";
 import TrailReviewPage from "src/pages/mypage/components/review/TrailReviewPage";
 import ReviewCheck from "src/pages/review/components/ReviewCheck";
+import Community from "src/pages/community";
+import CreateCrew from "src/pages/community/create";
+import SearchCrew from "src/pages/community/search";
+import CrewDetail from "src/pages/community/detail";
+import RankDetail from "src/pages/community/detail/summary/rank";
 
 interface RouteConfig {
   path: string;
@@ -80,6 +85,27 @@ const routes: RouteConfig[] = [
   {
     path: "/guide",
     component: Guide,
+  },
+  // 커뮤니티
+  {
+    path: "/community",
+    component: Community
+  },
+  {
+    path: "/community/create",
+    component: CreateCrew,
+  },
+  {
+    path: "/community/search",
+    component: SearchCrew,
+  },
+  {
+    path: "/community/detail",
+    component: CrewDetail,
+  },
+  {
+    path: "/community/detail/summary/rank",
+    component: RankDetail,
   },
 ];
 
