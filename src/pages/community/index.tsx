@@ -4,7 +4,7 @@ import { MdAdd, MdSearch, MdChevronRight } from "react-icons/md";
 import { theme } from "src/styles/colors/theme";
 import AppBar from "src/components/appBar";
 import BottomNavigation from "src/components/bottomNavigation";
-import Divider from "src/components/Divider";
+import Divider from "src/components/divider/Divider";
 import CrewCard from "./components/CrewCard";
 
 const PageWrapper = styled.div`

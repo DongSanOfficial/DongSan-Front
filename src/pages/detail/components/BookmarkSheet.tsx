@@ -9,7 +9,7 @@ import {
 } from "../../../apis/bookmark/bookmark";
 import { AiOutlinePlus } from "react-icons/ai";
 import { useToast } from "src/context/toast/useToast";
-import Divider from "src/components/Divider";
+import Divider from "src/components/divider/Divider";
 import { theme } from "src/styles/colors/theme";
 
 const Container = styled.div`

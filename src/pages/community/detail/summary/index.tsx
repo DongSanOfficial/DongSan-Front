@@ -6,7 +6,7 @@ import { MdChevronRight } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import Modal from "src/components/modal/Modal";
 import { useState } from "react";
-import Divider from "src/components/Divider";
+import Divider from "src/components/divider/Divider";
 
 const PageWrapper = styled.div`
   display: flex;

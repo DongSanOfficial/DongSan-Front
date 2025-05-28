@@ -8,7 +8,6 @@ import ToggleSwitch from "src/components/toggle/ToggleSwitch";
 import ImageUploader from "src/components/imageUpload";
 import TextareaField from "src/components/textarea";
 import CheckButton from "src/components/button/CheckButton";
-import Divider from "src/components/Divider";
 import Radio from "src/components/radio";
 import { theme } from "src/styles/colors/theme";
 import {
