@@ -12,7 +12,7 @@ import { ReactComponent as LocationIcon } from "../../assets/svg/LocationIcon.sv
 import SelectedLocationMarker from "../../assets/svg/UserLocation.svg";
 import { SearchResult } from "../../pages/main/components/SearchResult";
 import { useLocationStore } from "../../store/useLocationStore";
-import Modal from "../modal/Modal";
+import ConfirmationModal from "../modal/ConfirmationModal";
 
 const MapContainer = styled.div`
   width: 100%;
@@ -367,7 +367,7 @@ export const MainMap = ({
         <StyledLocationIcon />
       </LocationButton>
 
-      <Modal
+      <ConfirmationModal
         isOpen={isLocationAccessModalOpen}
         onClose={() => setIsLocationAccessModalOpen(false)}
         onConfirm={() => setIsLocationAccessModalOpen(false)}

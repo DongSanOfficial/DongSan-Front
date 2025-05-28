@@ -5,7 +5,8 @@ const Button = styled.button<{ active: boolean }>`
   height: 38px;
   width: 100%;
   font-size: 12px;
-  background-color: ${({ active }) => (active ? theme.Green500 : theme.Gray400)};
+  background-color: ${({ active }) =>
+    active ? theme.Green500 : theme.Gray400};
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -16,13 +17,18 @@ const Button = styled.button<{ active: boolean }>`
 
 interface CheckButtonProps {
   active: boolean;
+  label: string;
   onClick: () => void;
 }
 
-export default function CheckButton({ active, onClick }: CheckButtonProps) {
+export default function CheckButton({
+  active,
+  label,
+  onClick,
+}: CheckButtonProps) {
   return (
     <Button active={active} onClick={active ? onClick : undefined}>
-      {active ? "중복체크" : "사용가능"}
+      {label}
     </Button>
   );
 }

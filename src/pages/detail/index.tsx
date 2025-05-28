@@ -17,7 +17,7 @@ import { toggleLike } from "src/apis/walkway/walkway";
 import LoadingSpinner from "src/components/loading/LoadingSpinner";
 import BottomSheet from "src/components/bottomsheet/BottomSheet";
 import { useToast } from "src/context/toast/useToast";
-import Modal from "../../components/modal/Modal";
+import ConfirmationModal from "../../components/modal/ConfirmationModal";
 
 interface PathDetailsProps {
   isMyPath?: boolean;
@@ -340,7 +340,7 @@ export default function PathDetails({ isMyPath = false }: PathDetailsProps) {
         </div>
       </BottomSheet>
 
-      <Modal
+      <ConfirmationModal
         isOpen={isDeleteModalOpen}
         onClose={closeDeleteModal}
         onConfirm={confirmDelete}

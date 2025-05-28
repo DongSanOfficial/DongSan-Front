@@ -19,7 +19,7 @@ import { getReviewRecord, getUserReviews } from "src/apis/review/review";
 import HistoryCard from "src/components/card/HistoryCard";
 import LoadingSpinner from "src/components/loading/LoadingSpinner";
 import { getBookmarkTitle } from "../../apis/bookmark/bookmark";
-import Modal from "src/components/modal/Modal";
+import ConfirmationModal from "src/components/modal/ConfirmationModal";
 import { ReactComponent as Logout } from "../../assets/svg/Logout.svg";
 import TrailBookmark from "./components/bookmark/TrailBookmark";
 
@@ -265,9 +265,9 @@ function MyPage() {
                   </S.NicknameForm>
                 ) : (
                   <S.NicknameContainer>
-                    <S.Name title={userProfile?.nickname}>
+<S.Name title={userProfile?.nickname}>
                       {getTruncatedNickname(userProfile?.nickname)}
-                    </S.Name>
+</S.Name>
                     <S.EditIcon onClick={handleEditNickname} />
                   </S.NicknameContainer>
                 )}
@@ -357,7 +357,7 @@ function MyPage() {
         <S.Unregister>
           <S.Delete onClick={handleOpenMoal}>탈퇴하기</S.Delete>
         </S.Unregister>
-        <Modal
+        <ConfirmationModal
           isOpen={isModalOpen}
           onClose={handleCloseModal}
           onConfirm={handleDeleteAccount}

@@ -1,5 +1,5 @@
 import React from "react";
-import S from "./modal.styles";
+import S from "./ConfirmationModal.styles";
 import { theme } from "src/styles/colors/theme";
 import { ReactNode } from "react";
 import {
@@ -28,7 +28,7 @@ interface ConfirmationModalProps {
   mode?: "create" | "follow";
 }
 
-const Modal = ({
+const ConfirmationModal = ({
   isOpen,
   onClose,
   onConfirm,
@@ -120,4 +120,4 @@ const Modal = ({
   );
 };
 
-export default Modal;
+export default ConfirmationModal;

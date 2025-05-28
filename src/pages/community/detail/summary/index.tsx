@@ -4,7 +4,7 @@ import RankingList from "../components/RankList";
 import { theme } from "src/styles/colors/theme";
 import { MdChevronRight } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import Modal from "src/components/modal/Modal";
+import ConfirmationModal from "src/components/modal/ConfirmationModal";
 import { useState } from "react";
 import Divider from "src/components/divider/Divider";
 
@@ -143,7 +143,7 @@ export default function Summary({
 
       {/* isJoined가 false인 경우는 안보이게 처리해야 함 */}
       <WithdrawButton onClick={handleOpenMoal}>탈퇴하기</WithdrawButton>
-      <Modal
+      <ConfirmationModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         onConfirm={handleDeleteAccount}
