@@ -10,6 +10,7 @@ import Modal from "src/components/modal";
 import TextInput from "src/components/input";
 import CheckButton from "src/components/button/CheckButton";
 import { MdLockOutline, MdClose } from "react-icons/md";
+import { truncateText } from "src/utils/truncateText";
 
 const PageWrapper = styled.div`
   display: flex;
@@ -251,8 +252,9 @@ export default function SearchCrew() {
               : "제한 없음"}
           </Info>
           <Info>시작일 | {selectedCrew.createdAt}</Info>
-          <Description>소개글 | {selectedCrew.description}</Description>
-
+          <Description>
+            소개글 | {truncateText(selectedCrew.description, 100)}
+          </Description>
           {!selectedCrew.isJoined && selectedCrew.visibility === "PRIVATE" && (
             <Field>
               <label>가입 비밀번호</label>

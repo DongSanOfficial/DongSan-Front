@@ -14,7 +14,10 @@ import { getMyWalkways } from "src/apis/walkway/walkway";
 import { Trail } from "src/apis/walkway/walkway.type";
 import instance from "src/apis/instance";
 import { useToast } from "src/context/toast/useToast";
-import { UserReviewsType, walkwayHistoryType } from "src/apis/review/review.type";
+import {
+  UserReviewsType,
+  walkwayHistoryType,
+} from "src/apis/review/review.type";
 import { getReviewRecord, getUserReviews } from "src/apis/review/review";
 import HistoryCard from "src/components/card/HistoryCard";
 import LoadingSpinner from "src/components/loading/LoadingSpinner";
@@ -22,6 +25,7 @@ import { getBookmarkTitle } from "../../apis/bookmark/bookmark";
 import ConfirmationModal from "src/components/modal/ConfirmationModal";
 import { ReactComponent as Logout } from "../../assets/svg/Logout.svg";
 import TrailBookmark from "./components/bookmark/TrailBookmark";
+import { truncateText } from "src/utils/truncateText";
 
 interface Bookmark {
   bookmarkId: number;
@@ -226,11 +230,6 @@ function MyPage() {
   if (isLoading) return <LoadingSpinner />;
   if (error) return <div>{error}</div>;
 
-  const getTruncatedNickname = (nickname: string | undefined) => {
-    if (!nickname) return "이름";
-    return nickname.length > 9 ? `${nickname.slice(0, 9)}...` : nickname;
-  };
-
   return (
     <>
       <AppBar
@@ -254,9 +253,7 @@ function MyPage() {
                         maxLength={9}
                         placeholder="닉네임을 입력하세요"
                       />
-                      <S.Counter>
-                        {editedNickname.length}/9
-                      </S.Counter>
+                      <S.Counter>{editedNickname.length}/9</S.Counter>
                     </S.NicknameInputWrapper>
                     <S.SaveButton type="submit">저장</S.SaveButton>
                     <S.CancelButton type="button" onClick={handleCancelEdit}>
@@ -265,9 +262,9 @@ function MyPage() {
                   </S.NicknameForm>
                 ) : (
                   <S.NicknameContainer>
-<S.Name title={userProfile?.nickname}>
-                      {getTruncatedNickname(userProfile?.nickname)}
-</S.Name>
+                    <S.Name title={userProfile?.nickname}>
+                      {truncateText(userProfile?.nickname, 9)}
+                    </S.Name>
                     <S.EditIcon onClick={handleEditNickname} />
                   </S.NicknameContainer>
                 )}
