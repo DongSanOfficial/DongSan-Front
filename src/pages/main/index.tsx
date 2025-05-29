@@ -8,7 +8,11 @@ import PathCard from "../../components/card/PathCard";
 import SearchResults, { SearchResult } from "./components/SearchResult";
 import BottomNavigation from "src/components/bottomNavigation";
 import { theme } from "src/styles/colors/theme";
-import { Walkway, SortOption, MapOption } from "../../apis/walkway/walkway.type";
+import {
+  Walkway,
+  SortOption,
+  MapOption,
+} from "../../apis/walkway/walkway.type";
 import {
   searchWalkways,
   getWalkwayDetail,
@@ -423,6 +427,12 @@ function Main() {
             value={searchValue}
             onChange={handleSearchChange}
             onSearch={handleSearch}
+            leftIcon={true}
+            inputStyle={{
+              border: "2px solid #188163",
+              borderRadius: "2rem",
+              boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.1)",
+            }}
           />
           <SearchResults
             results={searchResults}
@@ -430,7 +440,7 @@ function Main() {
             onOutsideClick={() => setSearchResults([])}
           />
         </S.SearchBarContainer>
-  
+
         <MainMap
           center={
             selectedLocation
@@ -449,7 +459,7 @@ function Main() {
           onLocationButtonClick={handleLocationButtonClick}
           onSearchCurrentLocation={handleSearchCurrentLocation}
         />
-  
+
         <BottomSheet
           isOpen={isOpen}
           onClose={toggleBottomSheet}
@@ -504,7 +514,7 @@ function Main() {
                           ? "전방 500m 부근에 등록된 산책로가 없습니다."
                           : "등록된 산책로가 없습니다."}
                       </S.NoWalkwaysMessage>
-  
+
                       {/* 현재 위치 모드에서만 버튼 표시 */}
                       {mapOption === "current" && (
                         <S.ViewAllButton

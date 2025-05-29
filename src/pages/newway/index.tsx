@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { calculateDistance } from "src/utils/calculateDistance";
 import TrackingMap from "../../components/map/TrackingMap";
 import SmallButton from "src/components/button/SmallButton";
-import Modal from "src/components/modal/Modal";
+import ConfirmationModal from "src/components/modal/ConfirmationModal";
 import useWatchLocation from "src/hooks/useWatchLocation";
 import TrailInfo from "src/pages/newway/components/TrailInfo";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -485,7 +485,7 @@ export default function NewWay() {
           />
         </ButtonContainer>
 
-        <Modal
+        <ConfirmationModal
           isOpen={modalType !== null}
           onClose={handleModalClose}
           onConfirm={handleModalConfirm}

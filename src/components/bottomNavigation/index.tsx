@@ -7,7 +7,7 @@ import { ReactComponent as Community } from "../../assets/svg/Community.svg";
 import { ReactComponent as MyPage } from "../../assets/svg/MyPage.svg";
 import { theme } from "src/styles/colors/theme";
 import { useLocationStore } from "../../store/useLocationStore";
-import Modal from "../modal/Modal";
+import ConfirmationModal from "../modal/ConfirmationModal";
 
 const NavigationBar = styled.nav`
   position: fixed;
@@ -130,7 +130,7 @@ const BottomNavigation = () => {
         </NavContent>
       </NavigationBar>
 
-      <Modal
+      <ConfirmationModal
         isOpen={isLocationAccessModalOpen}
         onClose={() => setIsLocationAccessModalOpen(false)}
         onConfirm={() => setIsLocationAccessModalOpen(false)}

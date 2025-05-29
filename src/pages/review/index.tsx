@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { theme } from "src/styles/colors/theme";
 import { ReactComponent as StarIcon } from "../../assets/svg/ReviewStar.svg";
-import Divider from "../../components/Divider";
+import Divider from "../../components/divider/Divider";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import BottomNavigation from "src/components/bottomNavigation";

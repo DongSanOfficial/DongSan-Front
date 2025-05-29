@@ -43,4 +43,6 @@ export const theme = {
   Green200: "#b8dcd2",
   Green100: "#ddeee9",
   Green50: "#e8f4f1",
+
+  LightGreen100: "#2ecc71"
 };

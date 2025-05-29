@@ -8,7 +8,6 @@ import ToggleSwitch from "src/components/toggle/ToggleSwitch";
 import ImageUploader from "src/components/imageUpload";
 import TextareaField from "src/components/textarea";
 import CheckButton from "src/components/button/CheckButton";
-import Divider from "src/components/Divider";
 import Radio from "src/components/radio";
 import { theme } from "src/styles/colors/theme";
 import {
@@ -113,7 +112,7 @@ const NumberInput = styled.input`
     margin: 0;
   }
 
-    &:focus {
+  &:focus {
     outline: none;
     border-bottom: 1.5px solid ${({ theme }) => theme.Green500};
   }
@@ -153,9 +152,9 @@ export default function CreateCrew() {
     (!limitEnabled ||
       (maxMember && Number(maxMember) >= 2 && Number(maxMember) <= 100));
 
-  // const handleNameCheck = () => {
-  //   setIsNameChecked(true);
-  // };
+  const handleNameCheck = () => {
+    setIsNameChecked(true);
+  };
 
   const handleSubmit = () => {
     if (!isFormValid) return;
@@ -184,7 +183,7 @@ export default function CreateCrew() {
             <Label>
               <MdGroup /> 크루 이름 <RequiredMark>*</RequiredMark>
             </Label>
-            <div style={{ display: "flex", gap: "8px", marginTop: "10px"}}>
+            <div style={{ display: "flex", gap: "8px", marginTop: "10px" }}>
               <div style={{ flex: 3 }}>
                 <TextInput
                   value={crewName}
@@ -199,7 +198,8 @@ export default function CreateCrew() {
               <div style={{ flex: 1 }}>
                 <CheckButton
                   active={crewName.length > 0 && !isNameChecked}
-                  onClick={() => setIsNameChecked(true)}
+                  label={isNameChecked ? "사용가능" : "중복체크"}
+                  onClick={handleNameCheck}
                 />
               </div>
             </div>
@@ -230,15 +230,22 @@ export default function CreateCrew() {
             <Label>
               <MdVisibility /> 공개 범위<RequiredMark>*</RequiredMark>
             </Label>
-            <div style={{display: "flex", justifyContent: "center", alignItems: "center", margin: "10px 0"}}>
-            <Radio
-              options={[
-                { label: "공개 크루", value: "PUBLIC" },
-                { label: "비공개 크루", value: "PRIVATE" },
-              ]}
-              selectedValue={isPrivate ? "PRIVATE" : "PUBLIC"}
-              onChange={(val) => setIsPrivate(val === "PRIVATE")}
-            />
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                margin: "10px 0",
+              }}
+            >
+              <Radio
+                options={[
+                  { label: "공개 크루", value: "PUBLIC" },
+                  { label: "비공개 크루", value: "PRIVATE" },
+                ]}
+                selectedValue={isPrivate ? "PRIVATE" : "PUBLIC"}
+                onChange={(val) => setIsPrivate(val === "PRIVATE")}
+              />
             </div>
             <Description>
               * 공개 크루: 크루에 가입하지 않아도 모든 게시글과 활동 정보를
@@ -281,7 +288,13 @@ export default function CreateCrew() {
                 <Description>
                   *최소 2명, 최대 100명의 크루원을 모집할 수 있어요.
                 </Description>
-                <div style={{ display: "flex", alignItems: "center", marginTop: "5px" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginTop: "5px",
+                  }}
+                >
                   <span style={{ fontSize: "14px" }}>
                     최대 인원:<RequiredMark>*</RequiredMark>
                   </span>
