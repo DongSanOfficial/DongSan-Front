@@ -1,12 +1,12 @@
 import styled from "styled-components";
 import WeeklyInfo from "../components/WeeklyInfo";
-import RankingList from "../components/RankList";
 import { theme } from "src/styles/colors/theme";
 import { MdChevronRight } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import ConfirmationModal from "src/components/modal/ConfirmationModal";
 import { useState } from "react";
 import Divider from "src/components/divider/Divider";
+import RankItem from "../components/RankItem";
 
 const PageWrapper = styled.div`
   display: flex;
@@ -104,7 +104,17 @@ export default function Summary({
     { name: "조유리", distance: 0.6 },
   ];
 
-  const handleRankDetail = () => navigate("/community/detail/summary/rank");
+  const handleRankDetail = () => {
+    const crew = {
+      name,
+      crewImageUrl,
+      visibility,
+      description,
+      memberCount,
+    };
+
+    navigate("/community/detail/summary/rank", { state: { crew } });
+  };
   const handleOpenMoal = () => {
     setIsModalOpen(true);
   };
@@ -131,14 +141,20 @@ export default function Summary({
           time={info.time}
         />
         <Divider margin="2rem 0" />
-
         <SectionHeader>
           <SectionTitle>랭킹</SectionTitle>
           <IconButton onClick={handleRankDetail}>
             <MdChevronRight size={20} />
           </IconButton>
         </SectionHeader>
-        <RankingList rankItems={ranks} />
+        {ranks.map((rank, i) => (
+          <RankItem
+            key={i}
+            rank={i + 1}
+            name={rank.name}
+            distance={rank.distance}
+          />
+        ))}
       </Content>
 
       {/* isJoined가 false인 경우는 안보이게 처리해야 함 */}
