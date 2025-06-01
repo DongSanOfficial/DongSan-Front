@@ -1,9 +1,9 @@
 import { theme } from "src/styles/colors/theme";
 import { useState } from "react";
-import { BiCalendar, BiSolidToggleLeft } from "react-icons/bi";
-import { FiToggleRight } from "react-icons/fi";
+import { BiCalendar } from "react-icons/bi";
 import styled from "styled-components";
 import { BsClock } from "react-icons/bs";
+import ToggleSwitch from "src/components/toggle/ToggleSwitch";
 
 interface RecruitFormProps {
   onSubmit: (date: string, time: string, peopleCount?: number) => void;
@@ -137,12 +137,22 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
           />
         </SelectItem>
       </ScheduleContainer>
-      <SubTitle onClick={() => setIsLimitEnabled((prev) => !prev)}>
+      <SubTitle>
         최대 모집인원 설정하기{" "}
         {isLimitEnabled ? (
-          <BiSolidToggleLeft fontSize="30px" color={theme.Green500} />
+          <ToggleSwitch
+            isOn={false}
+            label="비공개"
+            readOnly={false}
+            onChange={() => setIsLimitEnabled((prev) => !prev)}
+          ></ToggleSwitch>
         ) : (
-          <FiToggleRight fontSize="30px" color={theme.Green500} />
+          <ToggleSwitch
+            isOn={true}
+            label="전체공개"
+            readOnly={false}
+            onChange={() => setIsLimitEnabled((prev) => !prev)}
+          ></ToggleSwitch>
         )}{" "}
       </SubTitle>
       <LittleTitle>최소 2명에서 100명까지 가능합니다.</LittleTitle>

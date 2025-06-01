@@ -2,8 +2,8 @@ import { BiPlusCircle } from "react-icons/bi";
 import RecruitList from "../components/RecruitList";
 import styled from "styled-components";
 import { useState } from "react";
-import FormModal from "src/components/modal/FormModal";
 import RecruitForm from "../../components/RecruitForm";
+import Modal from "src/components/modal";
 
 const Plusicon = styled.div`
   display: flex;
@@ -23,9 +23,9 @@ export default function Together() {
         <BiPlusCircle fontSize="32px" />
       </Plusicon>
       <RecruitList />
-      <FormModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <RecruitForm onSubmit={handleSubmit} />
-      </FormModal>
+      </Modal>
     </div>
   );
 }
