@@ -4,6 +4,7 @@ import styled from "styled-components";
 import ToggleSwitch from "src/components/toggle/ToggleSwitch";
 import CustomDatePicker from "./CustomDate";
 import CustomTimePicker from "./CustomTime";
+import CheckButton from "src/components/button/CheckButton";
 
 interface RecruitFormProps {
   onSubmit: (date: string, time: string, peopleCount?: number) => void;
@@ -98,6 +99,13 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
       isLimitEnabled ? Number(peopleCount) : undefined
     );
   };
+  const isFormValid =
+    date !== null &&
+    time !== null &&
+    (!isLimitEnabled ||
+      (typeof peopleCount === "number" &&
+        peopleCount >= 2 &&
+        peopleCount <= 100));
 
   return (
     <>
@@ -152,7 +160,11 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
         />
         <span>명</span>
       </InputNumberContainer>
-      <button onClick={handleSubmit}>추가하기</button>
+      <CheckButton
+        active={isFormValid}
+        label="추가하기"
+        onClick={handleSubmit}
+      />
     </>
   );
 }

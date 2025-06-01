@@ -18,7 +18,6 @@ const StyledFakeInput = styled.input`
   border: none;
   background: transparent;
   width: 100%;
-  cursor: pointer;
   font-size: 16px;
   color: ${(props) => (props.value ? "#000" : "#aaa")};
 `;
