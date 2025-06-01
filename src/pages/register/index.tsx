@@ -8,7 +8,7 @@ import PathMap from "../../components/map/PathMap";
 import BottomNavigation from "src/components/bottomNavigation";
 import AppBar from "src/components/appBar";
 import { createWalkway, updateWalkway } from "src/apis/walkway/walkway";
-import Modal from "src/components/modal/Modal";
+import ConfirmationModal from "src/components/modal/ConfirmationModal";
 import { useToast } from "src/context/toast/useToast";
 import {
   CreateWalkwayType,
@@ -247,7 +247,7 @@ export default function Registration() {
         </S.Button>
       </S.Wrapper>
       <BottomNavigation />
-      <Modal
+      <ConfirmationModal
         isOpen={isModalOpen}
         onClose={handleModalClose}
         onConfirm={handleModalConfirm}

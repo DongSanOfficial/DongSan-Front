@@ -4,6 +4,15 @@ import { theme } from "../../../styles/colors/theme";
 import { BsSearch } from "react-icons/bs";
 import { ReactComponent as FootPrint } from "src/assets/svg/FootPrint.svg";
 
+interface CustomInputProps {
+  hasLeftIcon: boolean;
+  inputStyle: {
+    border?: string;
+    borderRadius?: string;
+    boxShadow?: string;
+  };
+}
+
 const SearchBarContainer = styled.div`
   position: relative;
   display: flex;
@@ -11,26 +20,30 @@ const SearchBarContainer = styled.div`
   width: 100%;
 `;
 
-const SearchInput = styled.input`
+const SearchInput = styled.input<CustomInputProps>`
   width: 100%;
-  height: 3rem;
+  height: 50px;
   padding: 0.75rem;
-  padding-left: 45px;
-  border-radius: 2rem;
-  border: 2px solid ${theme.Green400};
+  padding-left: ${(props) => (props.hasLeftIcon ? "45px" : "1rem")};
+  border: ${(props) => props.inputStyle.border};
+  border-radius: ${(props) => props.inputStyle.borderRadius};
+  box-shadow: ${(props) => props.inputStyle.boxShadow};
   font-size: 0.875rem;
   transition: all 0.2s ease-in-out;
-  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
 
   &::placeholder {
     color: ${theme.Gray500};
+  }
+
+  &:focus {
+    outline: none;
   }
 
   /* 태블릿 환경 */
   @media screen and (min-width: 700px) {
     height: 3.5rem;
     padding: 1rem;
-    padding-left: 55px;
+    padding-left: ${(props) => (props.hasLeftIcon ? "55px" : "1rem")};
     border-radius: 2.5rem;
     font-size: 1rem;
     box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.1);
@@ -40,7 +53,7 @@ const SearchInput = styled.input`
   @media screen and (min-width: 1024px) {
     height: 3.75rem;
     padding: 1.125rem;
-    padding-left: 60px;
+    padding-left: ${(props) => (props.hasLeftIcon ? "60px" : "1.125rem")};
     border-radius: 3rem;
     font-size: 1.125rem;
   }
@@ -79,6 +92,12 @@ interface SearchBarProps {
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onSearch: () => void;
   className?: string;
+  leftIcon: boolean;
+  inputStyle: {
+    border?: string;
+    borderRadius?: string;
+    boxShadow?: string;
+  };
 }
 
 const SearchBar = ({
@@ -87,6 +106,8 @@ const SearchBar = ({
   value,
   onSearch,
   className,
+  leftIcon = true,
+  inputStyle,
 }: SearchBarProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -98,14 +119,18 @@ const SearchBar = ({
 
   return (
     <SearchBarContainer ref={containerRef} className={className}>
-      <IconWrapper position="left">
-        <FootPrint />
-      </IconWrapper>
+      {leftIcon && (
+        <IconWrapper position="left">
+          <FootPrint />
+        </IconWrapper>
+      )}
       <SearchInput
         placeholder={placeholder}
         onChange={onChange}
         value={value}
         onKeyPress={handleKeyPress}
+        hasLeftIcon={leftIcon}
+        inputStyle={inputStyle}
       />
       <IconWrapper position="right" onClick={onSearch}>
         <BsSearch size={20} />

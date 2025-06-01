@@ -8,7 +8,7 @@ import AppBar from "src/components/appBar";
 import BottomNavigation from "src/components/bottomNavigation";
 import StarCount from "src/pages/review/components/starCount";
 import LoadingSpinner from "src/components/loading/LoadingSpinner";
-import Divider from "src/components/Divider";
+import Divider from "src/components/divider/Divider";
 import TrailReviewCard from "src/components/card/TrailReviewCard";
 
 const Wrapper = styled.div`
