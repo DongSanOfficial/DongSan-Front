@@ -1,9 +1,9 @@
 import { theme } from "src/styles/colors/theme";
 import { useState } from "react";
-import { BiCalendar } from "react-icons/bi";
 import styled from "styled-components";
-import { BsClock } from "react-icons/bs";
 import ToggleSwitch from "src/components/toggle/ToggleSwitch";
+import CustomDatePicker from "./CustomDate";
+import CustomTimePicker from "./CustomTime";
 
 interface RecruitFormProps {
   onSubmit: (date: string, time: string, peopleCount?: number) => void;
@@ -39,33 +39,7 @@ const SelectItem = styled.label`
   position: relative;
   height: 2.5rem;
 `;
-const DateInput = styled.input`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
 
-  &::-webkit-calendar-picker-indicator {
-    opacity: 0;
-    -webkit-appearance: none;
-  }
-`;
-
-const TimeInput = styled.input`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 50%;
-  height: 100%;
-  opacity: 0;
-
-  &::-webkit-calendar-picker-indicator {
-    opacity: 0;
-    -webkit-appearance: none;
-  }
-`;
 const LittleTitle = styled.div`
   font-size: 14px;
   font-weight: 500;
@@ -104,13 +78,25 @@ const StyledInput = styled.input<{ disabled?: boolean }>`
 `;
 
 export default function RecruitForm({ onSubmit }: RecruitFormProps) {
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
+  const [date, setDate] = useState<Date | null>(null);
+  const [time, setTime] = useState<Date | null>(null);
   const [peopleCount, setPeopleCount] = useState<number | "">("");
   const [isLimitEnabled, setIsLimitEnabled] = useState(true);
 
   const handleSubmit = () => {
-    onSubmit(date, time);
+    const formattedDate = date ? date.toISOString().split("T")[0] : "";
+    const formattedTime = time
+      ? `${time.getHours().toString().padStart(2, "0")}:${time
+          .getMinutes()
+          .toString()
+          .padStart(2, "0")}`
+      : "";
+
+    onSubmit(
+      formattedDate,
+      formattedTime,
+      isLimitEnabled ? Number(peopleCount) : undefined
+    );
   };
 
   return (
@@ -121,19 +107,15 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
       </SubTitle>
       <ScheduleContainer>
         <SelectItem>
-          <BiCalendar fontSize="30px" />
-          <DateInput
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
+          <CustomDatePicker
+            selected={date}
+            onChange={(date) => setDate(date)}
           />
         </SelectItem>
         <SelectItem>
-          <BsClock fontSize="25px" />
-          <TimeInput
-            type="time"
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
+          <CustomTimePicker
+            selected={time}
+            onChange={(date) => setTime(date)}
           />
         </SelectItem>
       </ScheduleContainer>
@@ -141,15 +123,15 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
         최대 모집인원 설정하기{" "}
         {isLimitEnabled ? (
           <ToggleSwitch
-            isOn={false}
-            label="비공개"
+            isOn={true}
+            label="전체공개"
             readOnly={false}
             onChange={() => setIsLimitEnabled((prev) => !prev)}
           ></ToggleSwitch>
         ) : (
           <ToggleSwitch
-            isOn={true}
-            label="전체공개"
+            isOn={false}
+            label="비공개"
             readOnly={false}
             onChange={() => setIsLimitEnabled((prev) => !prev)}
           ></ToggleSwitch>
