@@ -7,6 +7,7 @@ import { theme } from "src/styles/colors/theme";
 import profileImg from "src/assets/images/profile.png";
 import CheckButton from "src/components/button/CheckButton";
 import CommentBtn from "../components/CommentBtn";
+import CommentItem from "../components/CommentItem";
 
 const PageWrapper = styled.div`
   display: flex;
@@ -109,6 +110,7 @@ export default function DetailFeed() {
               </HalfButton>
             </ButtonWrapper>
           </Bulletin>
+          <CommentItem />
           <CommentBtn />
         </ScrollContainer>
       </PageWrapper>
