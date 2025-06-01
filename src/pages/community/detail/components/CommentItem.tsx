@@ -6,6 +6,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
+  margin: 1rem 0;
 `;
 const Contain = styled.div`
   display: flex;
@@ -33,7 +34,7 @@ const Img = styled.img`
   border: 1px solid ${theme.Black};
   //box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   object-fit: cover;
-  margin: 0.2rem 0 0 10px;
+  margin-top: 0.2rem;
 `;
 const Nickname = styled.div`
   font-size: 16px;
@@ -56,7 +57,10 @@ export default function CommentItem() {
               <Nickname>dongsan</Nickname>
               <Date>2025.05.16</Date>
             </Container>
-            <Comment>저도 갈래요</Comment>
+            <Comment>
+              저도 갈래요 근데 더 기이이이이이일게 길어져라길어져라
+              길어져라길어져라 길어져라길어져라 길어져라길어져라
+            </Comment>
           </ContainerWrapper>
         </Contain>
       </Wrapper>

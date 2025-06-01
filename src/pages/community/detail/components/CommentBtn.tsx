@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { theme } from "src/styles/colors/theme";
 import styled from "styled-components";
 
@@ -29,11 +30,21 @@ const SendBtn = styled.button`
   height: 2.5rem;
 `;
 export default function CommentBtn() {
+  const [comment, setComment] = useState<string>("");
+  const handleSubmit = () => {
+    if (comment.trim() === "") return;
+    console.log(comment);
+    setComment("");
+  };
   return (
     <>
       <Wrapper>
-        <InputComment placeholder="댓글을 남겨주세요"></InputComment>
-        <SendBtn>보내기</SendBtn>
+        <InputComment
+          placeholder="댓글을 남겨주세요"
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+        ></InputComment>
+        <SendBtn onClick={handleSubmit}>보내기</SendBtn>
       </Wrapper>
     </>
   );

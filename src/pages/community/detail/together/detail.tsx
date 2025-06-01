@@ -23,11 +23,22 @@ const ScrollContainer = styled.div`
   flex-direction: column;
   justify-content: space-between;
 `;
+const BottomScrollContainer = styled.div`
+  flex: 1;
+  overflow-y: auto;
+  padding: 5px 0;
+  display: flex;
+  flex-direction: column;
+  //justify-content: space-between;
+`;
 const Bulletin = styled.div`
   width: 100%;
-  height: auto;
+  max-height: 55%; // 원하는 최대 높이 지정
+  //overflow-y: auto; // 넘칠 경우 스크롤 가능하게
   border-bottom: 1px solid ${theme.Gray500};
+  margin-bottom: 1rem;
 `;
+
 const HeaderContainer = styled.div`
   display: flex;
   flex-direction: row;
@@ -54,6 +65,9 @@ const UserName = styled.div`
 const Date = styled.div``;
 const DetailContainer = styled.div``;
 const Content = styled.div`
+  max-height: 100px;
+  height: auto;
+  overflow-y: auto; // 넘칠 경우 스크롤 가능하게
   padding: 1rem;
   font-size: 18px;
   font-weight: 700;
@@ -62,6 +76,7 @@ const JoinContent = styled.div`
   border: 1px solid ${theme.Green500};
   width: 100%;
   height: 6rem;
+  margin: 1rem 0;
   border-radius: 16px;
 `;
 const ButtonWrapper = styled.div`
@@ -97,7 +112,9 @@ export default function DetailFeed() {
               </Container>
             </HeaderContainer>
             <DetailContainer>
-              <Content>안녕하세요안녕하세요</Content>
+              <Content>
+                안녕하세요안녕하세요안녕하세요안녕하세안녕하세요안녕하세요요
+              </Content>
               <JoinContent />
             </DetailContainer>
             <ButtonWrapper>
@@ -110,7 +127,12 @@ export default function DetailFeed() {
               </HalfButton>
             </ButtonWrapper>
           </Bulletin>
-          <CommentItem />
+          <BottomScrollContainer>
+            <CommentItem />
+            <CommentItem />
+            <CommentItem />
+            <CommentItem />
+          </BottomScrollContainer>
           <CommentBtn />
         </ScrollContainer>
       </PageWrapper>
