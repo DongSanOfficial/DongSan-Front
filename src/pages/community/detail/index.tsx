@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { MdMoreVert } from "react-icons/md";
+import { MdMoreVert, MdLockOutline } from "react-icons/md";
 import AppBar from "src/components/appBar";
 import BottomNavigation from "src/components/bottomNavigation";
 import { useState } from "react";
@@ -57,7 +57,21 @@ export default function CrewDetailPage() {
     <>
       <AppBar
         onBack={handleBack}
-        title={crew.visibility === "PRIVATE" ? `${crew.name} 🔒` : crew.name}
+        title={
+          crew.visibility === "PRIVATE" ? (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {crew.name} <MdLockOutline />
+            </div>
+          ) : (
+            crew.name
+          )
+        }
         rightIcon={<MdMoreVert size={20} />}
       />
       <PageWrapper>
