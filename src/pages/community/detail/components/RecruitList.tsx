@@ -7,6 +7,7 @@ const Container = styled.div`
   width: 100%;
   height: auto;
   padding: 0.7rem;
+  margin: 1rem 0;
   box-shadow: 4px 4px rgba(0, 0, 0, 0.3);
 `;
 const CreationInfo = styled.div`
@@ -74,12 +75,25 @@ const Comment = styled.div`
   font-weight: 500;
   margin: 0.5rem 1.5rem;
 `;
-export default function RecruitList() {
+interface RecruitItem {
+  id: number;
+  date: string;
+  time: string;
+  peopleCount: number;
+  maxCount: number;
+  content: string;
+}
+
+interface RecruitListProps {
+  item: RecruitItem;
+  onClick: (id: number) => void;
+}
+export default function RecruitList({ item, onClick }: RecruitListProps) {
   return (
-    <Container>
+    <Container onClick={() => onClick(item.id)}>
       <CreationInfo>
         <Writer>| 노성원</Writer>
-        <Date>2025.05.16</Date>
+        <Date>{item.date}</Date>
       </CreationInfo>
       <RecruitContent>
         <ItemContainer>
@@ -88,14 +102,16 @@ export default function RecruitList() {
           </BoldWrapper>
 
           <Items>
-            <div>2025년 5월 15일 목요일</div>
-            <div> 오후 8시 30분</div>
+            <div>{item.date}</div>
+            <div>{item.time}</div>
           </Items>
         </ItemContainer>
 
         <ItemContainer>
           <Bold>모집 인원: </Bold>
-          <Count>4/5</Count>
+          <Count>
+            {item.peopleCount}/{item.maxCount}
+          </Count>
         </ItemContainer>
       </RecruitContent>
       <Line />
