@@ -8,6 +8,7 @@ import profileImg from "src/assets/images/profile.png";
 import CheckButton from "src/components/button/CheckButton";
 import CommentBtn from "../components/CommentBtn";
 import CommentItem from "../components/CommentItem";
+import RecruitItem from "../components/RecruitItem";
 
 const PageWrapper = styled.div`
   display: flex;
@@ -78,6 +79,9 @@ const JoinContent = styled.div`
   height: 6rem;
   margin: 1rem 0;
   border-radius: 16px;
+  display: flex;
+  align-items: center;
+  box-shadow: 2px 4px rgba(0, 0, 0, 0.1);
 `;
 const ButtonWrapper = styled.div`
   display: flex;
@@ -88,12 +92,29 @@ const ButtonWrapper = styled.div`
 const HalfButton = styled.div`
   width: 40%;
 `;
-
+interface Item {
+  id: number;
+  date: string;
+  time: string;
+  peopleCount: number;
+  maxCount: number;
+  content: string;
+}
 export default function DetailFeed() {
   const navigate = useNavigate();
   const handleBack = () => navigate(-1);
 
   const clickJoin = () => {};
+
+  const mockItem: Item = {
+    id: 1,
+    date: "2025-06-01",
+    time: "오후 6:00",
+    peopleCount: 3,
+    maxCount: 5,
+    content: "같이 산책할 사람 구해요~",
+  };
+
   return (
     <>
       <AppBar
@@ -115,7 +136,9 @@ export default function DetailFeed() {
               <Content>
                 안녕하세요안녕하세요안녕하세요안녕하세안녕하세요안녕하세요요
               </Content>
-              <JoinContent />
+              <JoinContent>
+                <RecruitItem item={mockItem} />
+              </JoinContent>
             </DetailContainer>
             <ButtonWrapper>
               <HalfButton>
