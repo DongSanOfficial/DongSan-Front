@@ -18,6 +18,9 @@ import SearchCrew from "src/pages/community/search";
 import CrewDetail from "src/pages/community/detail";
 import RankDetail from "src/pages/community/detail/summary/rank";
 import DetailFeed from "src/pages/community/detail/together/detail";
+import CrewInfo from "src/pages/community/info";
+import CrewSetting from "src/pages/community/info/setting";
+import ModifyCrew from "src/pages/community/modify";
 
 interface RouteConfig {
   path: string;
@@ -97,12 +100,24 @@ const routes: RouteConfig[] = [
     component: CreateCrew,
   },
   {
+    path: "/community/modify",
+    component: ModifyCrew,
+  },
+  {
     path: "/community/search",
     component: SearchCrew,
   },
   {
     path: "/community/detail",
     component: CrewDetail,
+  },
+  {
+    path: "/community/detail/information",
+    component: CrewInfo,
+  },
+  {
+    path: "/community/detail/crewSetting",
+    component: CrewSetting,
   },
   {
     path: "/community/detail/:cowalkId",

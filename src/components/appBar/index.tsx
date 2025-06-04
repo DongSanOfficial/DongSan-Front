@@ -6,6 +6,7 @@ interface AppBarProps {
   title?: string;
   onBack?: () => void;
   rightIcon?: ReactNode;
+  onRightClick?: () => void;
 }
 
 const AppBarContainer = styled.div`
@@ -61,7 +62,7 @@ const RightIconContainer = styled.div`
   z-index: 2;
 `;
 
-const AppBar = ({ title, onBack, rightIcon }: AppBarProps) => {
+const AppBar = ({ title, onBack, rightIcon, onRightClick }: AppBarProps) => {
   return (
     <AppBarContainer>
       {onBack && (
@@ -70,7 +71,11 @@ const AppBar = ({ title, onBack, rightIcon }: AppBarProps) => {
         </IconButton>
       )}
       <Title>{title}</Title>
-      {rightIcon && <RightIconContainer>{rightIcon}</RightIconContainer>}
+      {rightIcon && (
+        <RightIconContainer onClick={onRightClick}>
+          {rightIcon}
+        </RightIconContainer>
+      )}
     </AppBarContainer>
   );
 };

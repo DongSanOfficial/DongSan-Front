@@ -52,6 +52,9 @@ export default function CrewDetailPage() {
   }
 
   const handleBack = () => navigate(-1);
+  const handleRightClick = () => {
+    navigate("/community/detail/crewSetting", { state: { crew } });
+  };
 
   return (
     <>
@@ -73,6 +76,7 @@ export default function CrewDetailPage() {
           )
         }
         rightIcon={<MdMoreVert size={20} />}
+        onRightClick={handleRightClick}
       />
       <PageWrapper>
         <TabHeader>
