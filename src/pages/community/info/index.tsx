@@ -20,13 +20,13 @@ const ScrollContainer = styled.div`
   flex-direction: column;
   justify-content: flex-start;
 `;
-const FixedButtonWrapper = styled.div`
-  padding: 0 20px 20px;
-  background-color: #fff;
-  position: sticky;
-  bottom: 0;
-  z-index: 10;
-`;
+// const FixedButtonWrapper = styled.div`
+//   padding: 0 20px 20px;
+//   background-color: #fff;
+//   position: sticky;
+//   bottom: 0;
+//   z-index: 10;
+// `;
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -44,22 +44,22 @@ const Line = styled.div`
   width: 100%;
   height: 1px;
   background-color: ${theme.Gray500};
-  margin: 1rem 0;
+  margin: 1.5rem 0 1rem;
 `;
-const SubmitButton = styled.button<{ disabled: boolean }>`
-  background-color: ${({ disabled, theme }) =>
-    disabled ? theme.Gray400 : theme.Green500};
-  color: ${theme.White};
-  width: 100%;
-  min-height: 52px;
-  border: none;
-  font-size: 16px;
-  font-weight: 500;
-  border-radius: 6px;
-  margin: 20px auto;
-  max-width: 800px;
-  cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
-`;
+// const SubmitButton = styled.button<{ disabled: boolean }>`
+//   background-color: ${({ disabled, theme }) =>
+//     disabled ? theme.Gray400 : theme.Green500};
+//   color: ${theme.White};
+//   width: 100%;
+//   min-height: 52px;
+//   border: none;
+//   font-size: 16px;
+//   font-weight: 500;
+//   border-radius: 6px;
+//   margin: 20px auto;
+//   max-width: 800px;
+//   cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
+// `;
 export default function CrewInfo() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -70,11 +70,11 @@ export default function CrewInfo() {
   }
 
   const handleBack = () => navigate(-1);
-  const handleSubmit = () => {
-    if (!crew.description || !crew.rules) return; // 예시
-    // API 호출 or 다음 페이지 이동
-    console.log("제출됨:", crew);
-  };
+  // const handleSubmit = () => {
+  //   if (!crew.description || !crew.rules) return; // 예시
+  //   // API 호출 or 다음 페이지 이동
+  //   console.log("제출됨:", crew);
+  // };
 
   return (
     <>
@@ -105,18 +105,18 @@ export default function CrewInfo() {
           </Container>
           <Line></Line>
           <Container>
-            <Title>크루 소개</Title>
+            <Title>크루 규칙</Title>
             <Content>{crew.rules}</Content>
           </Container>
         </ScrollContainer>
-        <FixedButtonWrapper>
+        {/* <FixedButtonWrapper>
           <SubmitButton
             disabled={!crew.description || !crew.rules}
             onClick={handleSubmit}
           >
             완료
           </SubmitButton>
-        </FixedButtonWrapper>
+        </FixedButtonWrapper> */}
       </PageWrapper>
       <BottomNavigation />
     </>
