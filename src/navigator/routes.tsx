@@ -17,6 +17,7 @@ import CreateCrew from "src/pages/community/create";
 import SearchCrew from "src/pages/community/search";
 import CrewDetail from "src/pages/community/detail";
 import RankDetail from "src/pages/community/detail/summary/rank";
+import DetailFeed from "src/pages/community/detail/together/detail";
 
 interface RouteConfig {
   path: string;
@@ -89,7 +90,7 @@ const routes: RouteConfig[] = [
   // 커뮤니티
   {
     path: "/community",
-    component: Community
+    component: Community,
   },
   {
     path: "/community/create",
@@ -102,6 +103,10 @@ const routes: RouteConfig[] = [
   {
     path: "/community/detail",
     component: CrewDetail,
+  },
+  {
+    path: "/community/detail/:cowalkId",
+    component: DetailFeed,
   },
   {
     path: "/community/detail/summary/rank",

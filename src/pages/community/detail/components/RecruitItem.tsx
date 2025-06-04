@@ -1,34 +1,6 @@
 import { theme } from "src/styles/colors/theme";
 import styled from "styled-components";
 
-const Container = styled.div`
-  border: 2px solid ${theme.Black};
-  border-radius: 8px;
-  width: 100%;
-  height: auto;
-  padding: 0.7rem;
-  margin: 1rem 0;
-  box-shadow: 4px 4px rgba(0, 0, 0, 0.3);
-`;
-const CreationInfo = styled.div`
-  display: flex;
-  flex-direction: row;
-  margin-bottom: 0.5rem;
-`;
-const Writer = styled.div`
-  font-size: 14px;
-  font-weight: 500;
-  width: 100%;
-  display: flex;
-  justify-content: start;
-`;
-const Date = styled.div`
-  font-size: 14px;
-  font-weight: 500;
-  width: 100%;
-  display: flex;
-  justify-content: end;
-`;
 const RecruitContent = styled.div`
   display: flex;
   flex-direction: column;
@@ -64,18 +36,8 @@ const Count = styled.span`
   justify-content: center;
   margin: auto 0;
 `;
-const Line = styled.div`
-  margin: 0.5rem auto;
-  width: 95%;
-  height: 1px;
-  background-color: ${theme.Gray500};
-`;
-const Comment = styled.div`
-  font-size: 14px;
-  font-weight: 500;
-  margin: 0.5rem 1.5rem;
-`;
-interface RecruitItem {
+
+interface Item {
   id: number;
   date: string;
   time: string;
@@ -85,16 +47,12 @@ interface RecruitItem {
 }
 
 interface RecruitListProps {
-  item: RecruitItem;
-  onClick: (id: number) => void;
+  item: Item;
+  onClick?: (id: number) => void;
 }
-export default function RecruitList({ item, onClick }: RecruitListProps) {
+export default function RecruitItem({ item }: RecruitListProps) {
   return (
-    <Container onClick={() => onClick(item.id)}>
-      <CreationInfo>
-        <Writer>| 노성원</Writer>
-        <Date>{item.date}</Date>
-      </CreationInfo>
+    <>
       <RecruitContent>
         <ItemContainer>
           <BoldWrapper>
@@ -114,8 +72,6 @@ export default function RecruitList({ item, onClick }: RecruitListProps) {
           </Count>
         </ItemContainer>
       </RecruitContent>
-      <Line />
-      <Comment>날씨도 좋은데 퇴근하고 같이 산책해요~</Comment>
-    </Container>
+    </>
   );
 }
