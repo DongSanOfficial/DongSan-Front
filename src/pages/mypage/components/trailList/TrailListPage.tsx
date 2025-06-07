@@ -3,7 +3,10 @@ import styled from "styled-components";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Trail, WalkwayListResponse } from "src/apis/walkway/walkway.type";
 import { getMyWalkways, getLikedWalkways } from "src/apis/walkway/walkway";
-import { getBookmarkedWalkways, getBookmarkTitle } from "src/apis/bookmark/bookmark";
+import {
+  getBookmarkedWalkways,
+  getBookmarkTitle,
+} from "src/apis/bookmark/bookmark";
 import TrailCardAll from "src/components/card/TrailCardAll";
 import LoadingSpinner from "src/components/loading/LoadingSpinner";
 import BottomNavigation from "src/components/bottomNavigation";
@@ -106,6 +109,20 @@ function TrailListPage() {
   const lastIdRef = useRef<number | undefined>(undefined);
   const observerRef = useRef<IntersectionObserver | null>(null);
   const lastElementRef = useRef<HTMLDivElement | null>(null);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+
+  // 스크롤 위치 복원
+  useEffect(() => {
+    if (!initialLoading && wrapperRef.current) {
+      const savedScroll = sessionStorage.getItem("trailListScroll");
+      if (savedScroll) {
+        requestAnimationFrame(() => {
+          wrapperRef.current!.scrollTop = parseInt(savedScroll, 10);
+        });
+      }
+    }
+  }, [initialLoading]);
+  
 
   // 북마크 이름을 가져오는 함수
   const fetchBookmarkName = async (id: number) => {
@@ -114,7 +131,9 @@ function TrailListPage() {
         lastId: null,
         size: 10,
       });
-      const bookmark = response.data.find((item: { bookmarkId: number; }) => item.bookmarkId === id);
+      const bookmark = response.data.find(
+        (item: { bookmarkId: number }) => item.bookmarkId === id
+      );
       if (bookmark) {
         setTitle(bookmark.title);
       }
@@ -246,6 +265,10 @@ function TrailListPage() {
   }, [hasNext, loading, initialLoading]);
 
   const handleCardClick = (walkwayId: number) => {
+    sessionStorage.setItem(
+      "trailListScroll",
+      String(wrapperRef.current?.scrollTop || 0)
+    );
     if (type === "favorites") {
       navigate(`/main/recommend/detail/${walkwayId}`, {
         state: { from: "favorites" },
@@ -262,8 +285,8 @@ function TrailListPage() {
   return (
     <>
       <AppBar onBack={() => navigate("/mypage")} title={title} />
-      <Wrapper>
-        {error && <ErrorMessage>{error}</ErrorMessage>}
+      <Wrapper ref={wrapperRef}>
+      {error && <ErrorMessage>{error}</ErrorMessage>}
         {!initialLoading && trails.length === 0 && !error && (
           <EmptyMessage>표시할 산책로가 없습니다.</EmptyMessage>
         )}
