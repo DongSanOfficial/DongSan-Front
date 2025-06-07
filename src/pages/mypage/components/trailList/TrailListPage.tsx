@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Trail, WalkwayListResponse } from "src/apis/walkway/walkway.type";
@@ -11,6 +11,7 @@ import TrailCardAll from "src/components/card/TrailCardAll";
 import LoadingSpinner from "src/components/loading/LoadingSpinner";
 import BottomNavigation from "src/components/bottomNavigation";
 import AppBar from "src/components/appBar";
+import { useInfiniteScroll } from "src/hooks/useInfiniteScroll";
 
 const Wrapper = styled.div`
   display: flex;
@@ -107,36 +108,15 @@ function TrailListPage() {
   const [hasNext, setHasNext] = useState(true);
   const [title, setTitle] = useState("산책로 목록");
   const lastIdRef = useRef<number | undefined>(undefined);
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  const lastElementRef = useRef<HTMLDivElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
 
-  // 스크롤 위치 복원
-  useEffect(() => {
-    if (!initialLoading && wrapperRef.current) {
-      const savedScroll = sessionStorage.getItem("trailListScroll");
-      if (savedScroll) {
-        requestAnimationFrame(() => {
-          wrapperRef.current!.scrollTop = parseInt(savedScroll, 10);
-        });
-      }
-    }
-  }, [initialLoading]);
-  
-
-  // 북마크 이름을 가져오는 함수
   const fetchBookmarkName = async (id: number) => {
     try {
-      const response = await getBookmarkTitle({
-        lastId: null,
-        size: 10,
-      });
+      const response = await getBookmarkTitle({ lastId: null, size: 10 });
       const bookmark = response.data.find(
         (item: { bookmarkId: number }) => item.bookmarkId === id
       );
-      if (bookmark) {
-        setTitle(bookmark.title);
-      }
+      if (bookmark) setTitle(bookmark.title);
     } catch (error) {
       console.error("북마크 이름 가져오기 오류:", error);
     }
@@ -146,8 +126,7 @@ function TrailListPage() {
     if (type === "favorites") {
       setTitle("내가 좋아하는 산책로");
     } else if (type === "bookmarks" && bookmarkId) {
-      const id = parseInt(bookmarkId);
-      fetchBookmarkName(id);
+      fetchBookmarkName(parseInt(bookmarkId));
     } else {
       setTitle("내가 등록한 산책로");
     }
@@ -187,7 +166,7 @@ function TrailListPage() {
     }
   };
 
-  const loadMoreData = async () => {
+  const loadMoreData = useCallback(async () => {
     if (loading || !hasNext || !lastIdRef.current) return;
 
     try {
@@ -224,45 +203,31 @@ function TrailListPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [type, bookmarkId, loading, hasNext]);
+
+  const { lastElementRef } = useInfiniteScroll({
+    hasNext,
+    loading,
+    onLoadMore: loadMoreData,
+  });
+
+  useEffect(() => {
+    if (!initialLoading && wrapperRef.current) {
+      const savedScroll = sessionStorage.getItem("trailListScroll");
+      if (savedScroll) {
+        requestAnimationFrame(() => {
+          wrapperRef.current!.scrollTop = parseInt(savedScroll, 10);
+        });
+      }
+    }
+  }, [initialLoading]);
 
   useEffect(() => {
     setTrails([]);
     setHasNext(true);
     lastIdRef.current = undefined;
     loadInitialData();
-
-    return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-      }
-    };
   }, [type, bookmarkId]);
-
-  useEffect(() => {
-    if (initialLoading) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasNext && !loading) {
-          loadMoreData();
-        }
-      },
-      { threshold: 0.5 }
-    );
-
-    if (lastElementRef.current) {
-      observer.observe(lastElementRef.current);
-    }
-
-    observerRef.current = observer;
-
-    return () => {
-      if (observer) {
-        observer.disconnect();
-      }
-    };
-  }, [hasNext, loading, initialLoading]);
 
   const handleCardClick = (walkwayId: number) => {
     sessionStorage.setItem(
@@ -286,7 +251,7 @@ function TrailListPage() {
     <>
       <AppBar onBack={() => navigate("/mypage")} title={title} />
       <Wrapper ref={wrapperRef}>
-      {error && <ErrorMessage>{error}</ErrorMessage>}
+        {error && <ErrorMessage>{error}</ErrorMessage>}
         {!initialLoading && trails.length === 0 && !error && (
           <EmptyMessage>표시할 산책로가 없습니다.</EmptyMessage>
         )}
