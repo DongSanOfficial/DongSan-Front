@@ -109,6 +109,7 @@ const routes: RouteConfig[] = [
   },
   {
     path: "/community/detail",
+    // path: "/community/detail/:crewId",
     component: CrewDetail,
   },
   {
