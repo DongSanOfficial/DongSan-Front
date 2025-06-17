@@ -1,7 +1,7 @@
 import { AxiosError } from "axios";
 import { ApiErrorResponse } from "../api.type";
 import instance from "../instance";
-import { CheckCrewNameResponse, CreateCrewRequest, CreateCrewResponse, CrewListParams, CrewListResponse, feedList, UploadCrewImageResponse } from "./crew.type";
+import { CheckCrewNameResponse, CreateCrewRequest, CreateCrewResponse, feedList, UploadCrewImageResponse } from "./crew.type";
 
 
 export const getIsBookmarked = async ({
