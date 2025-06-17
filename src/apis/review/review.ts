@@ -2,7 +2,6 @@ import {
   ReviewContentType,
   ReviewRatingType,
   UserReviewsType,
-  walkwayHistoryResponse,
   walkwayHistoryType,
   WriteReviewType,
 } from "../review/review.type";
@@ -83,21 +82,7 @@ export const writingReview = async (
   }
 };
 
-//리뷰 작성 가능한 산책로 이용기록 보기
-export const writeableReviewRecord = async (
-  walkwayId: number
-): Promise<walkwayHistoryType[]> => {
-  try {
-    const response = await instance.get<{ data: walkwayHistoryResponse }>(
-      `/walkways/${walkwayId}/history`
-    );
-    return response.data.data.data;
-  } catch (error) {
-    throw error;
-  }
-};
-
-//회원의 리뷰작성 가능한 산책로 이용기록 모두 보기(마이페이지)
+// 리뷰작성 가능한 산책로 이용기록 모두 보기
 export const getReviewRecord = async ({
   size,
   lastId,
@@ -106,10 +91,12 @@ export const getReviewRecord = async ({
   lastId?: number;
 }): Promise<{
   data: walkwayHistoryType[];
+  hasNext: boolean;
 }> => {
   try {
     const response = await instance.get<{
       data: walkwayHistoryType[];
+      hasNext: boolean;
     }>("/users/walkways/history", {
       params: { size, lastId },
     });
