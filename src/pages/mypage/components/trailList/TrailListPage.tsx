@@ -11,32 +11,13 @@ import AppBar from "src/components/appBar";
 
 const Wrapper = styled.div`
   display: flex;
+  max-width: 430px;
   flex-direction: column;
   align-items: center;
   height: calc(100vh - 120px);
   overflow-y: auto;
   padding: 10px 30px;
-  width: 100%;
   margin: 0 auto;
-
-  /* 모바일 환경 (기본) */
-  @media screen and (max-width: 767px) {
-    max-width: 430px;
-  }
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) and (max-width: 1023px) {
-    max-width: 100%;
-    padding: 15px 40px;
-    height: calc(100vh - 140px);
-  }
-
-  /* 큰 태블릿 및 노트북 */
-  @media screen and (min-width: 1024px) {
-    max-width: 900px;
-    padding: 20px 50px;
-    height: calc(100vh - 150px);
-  }
 `;
 
 const List = styled.div`
@@ -44,16 +25,6 @@ const List = styled.div`
   flex-direction: column;
   gap: 16px;
   width: 100%;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    gap: 24px;
-  }
-
-  /* 큰 태블릿 및 노트북 */
-  @media screen and (min-width: 1024px) {
-    gap: 30px;
-  }
 `;
 
 const ErrorMessage = styled.div`
@@ -61,12 +32,6 @@ const ErrorMessage = styled.div`
   text-align: center;
   padding: 20px;
   font-size: 16px;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    font-size: 18px;
-    padding: 25px;
-  }
 `;
 
 const EmptyMessage = styled.div`
@@ -74,21 +39,10 @@ const EmptyMessage = styled.div`
   padding: 20px;
   color: #666;
   font-size: 16px;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    font-size: 18px;
-    padding: 30px;
-  }
 `;
 
 const CardContainer = styled.div`
   width: 100%;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    /* 추가적인 스타일링이 필요하다면 여기에 */
-  }
 `;
 
 function TrailListPage() {

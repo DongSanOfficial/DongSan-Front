@@ -22,16 +22,6 @@ const PageWrapper = styled.div`
   &::-webkit-scrollbar {
     display: none;
   }
-
-  @media screen and (min-width: 700px) {
-    padding: 15px 30px;
-  }
-
-  @media screen and (min-width: 1024px) {
-    padding: 20px 40px;
-    max-width: 1024px;
-    margin: 0 auto;
-  }
 `;
 
 const ModalHeader = styled.div`

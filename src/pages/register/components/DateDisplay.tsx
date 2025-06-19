@@ -12,21 +12,7 @@ const DateContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 4px;
-
-  @media (max-width: 375px) {
-    width: 300px;
-  }
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    gap: 6px;
-    font-size: 1.1rem;
-  }
-
-  /* 큰 태블릿 및 노트북 */
-  @media screen and (min-width: 1024px) {
-    font-size: 1.15rem;
-  }
+  width: 300px;
 `;
 
 const IconWrapper = styled.div`
@@ -35,12 +21,6 @@ const IconWrapper = styled.div`
   height: 27px;
   display: flex;
   align-items: center;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    width: 30px;
-    height: 30px;
-  }
 `;
 
 export default function DateDisplay({ date }: DateDisplayProps) {

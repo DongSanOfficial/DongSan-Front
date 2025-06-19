@@ -19,10 +19,6 @@ const Wrapper = styled.div`
   overflow-y: auto;
   padding: 10px;
   max-width: 430px;
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    max-width: 100%;
-  }
 `;
 
 const List = styled.div`
