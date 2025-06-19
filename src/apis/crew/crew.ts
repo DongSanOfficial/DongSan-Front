@@ -150,3 +150,35 @@ export const getSearchCrews = async ({
   const { data: response } = await instance.get("/crews/search", { params });
   return response;
 };
+
+// 크루 가입 api
+export const joinCrew = async ({
+  crewId,
+  password = null,
+}: {
+  crewId: number;
+  password?: string | null;
+}): Promise<void> => {
+  try {
+    await instance.post(`/crews/${crewId}/members`, {
+      password,
+    });
+  } catch (error) {
+    const axiosError = error as AxiosError<ApiErrorResponse>;
+    throw new Error(
+      axiosError.response?.data?.message || "크루 가입에 실패했습니다."
+    );
+  }
+};
+
+// 크루 탈퇴 api
+export const leaveCrew = async (crewId: number): Promise<void> => {
+  try {
+    await instance.delete(`/crews/${crewId}/members`);
+  } catch (error) {
+    const axiosError = error as AxiosError<ApiErrorResponse>;
+    throw new Error(
+      axiosError.response?.data?.message || "크루 탈퇴에 실패했습니다."
+    );
+  }
+};

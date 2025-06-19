@@ -8,11 +8,11 @@ import SearchBar from "src/pages/main/components/SearchInput";
 import SearchCrewCard from "./components/SearchCrewCard";
 import Modal from "src/components/modal";
 import TextInput from "src/components/input";
-import CheckButton from "src/components/button/CheckButton";
+import { joinCrew, leaveCrew, getSearchCrews } from "src/apis/crew/crew";
 import { MdLockOutline, MdClose } from "react-icons/md";
 import { truncateText } from "src/utils/truncateText";
-import { getSearchCrews } from "src/apis/crew/crew";
 import { CrewData } from "src/apis/crew/crew.type";
+import { useToast } from "src/context/toast/useToast";
 
 const PageWrapper = styled.div`
   display: flex;
@@ -107,6 +107,7 @@ const ActionButton = styled.button<{
 
 export default function SearchCrew() {
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [search, setSearch] = useState("");
   const [crews, setCrews] = useState<CrewData[]>([]);
   const [selectedCrew, setSelectedCrew] = useState<CrewData | null>(null);
@@ -131,10 +132,6 @@ export default function SearchCrew() {
     fetchCrews(search);
   };
 
-  const handleVerify = () => {
-    if (password.length >= 8) setIsVerified(true);
-  };
-
   const handleExplore = () => {
     if (!selectedCrew) return;
     navigate("/community/detail", {
@@ -146,12 +143,35 @@ export default function SearchCrew() {
     });
   };
 
-  const handleJoin = () => {
-    console.log("가입 요청", selectedCrew?.name);
+  const handleJoin = async () => {
+    if (!selectedCrew) return;
+
+    try {
+      await joinCrew({
+        crewId: selectedCrew.crewId,
+        password: selectedCrew.visibility === "PRIVATE" ? password : null,
+      });
+
+      showToast("가입이 완료되었습니다.", "success");
+      setSelectedCrew(null);
+      fetchCrews(search);
+    } catch (error: any) {
+      showToast(error.message ?? "크루 가입에 실패했습니다.", "error");
+    }
   };
 
-  const handleSecession = () => {
-    console.log("탈퇴 요청", selectedCrew?.name);
+  const handleSecession = async () => {
+    if (!selectedCrew) return;
+
+    try {
+      await leaveCrew(selectedCrew.crewId);
+      showToast("크루에서 탈퇴되었습니다.", "success");
+      setSelectedCrew(null);
+      fetchCrews(search);
+    } catch (error: any) {
+      console.error("탈퇴 실패:", error);
+      showToast("다시 시도해주세요.", "error");
+    }
   };
 
   return (
@@ -213,19 +233,12 @@ export default function SearchCrew() {
             <Field>
               <label>가입 비밀번호</label>
               <Row>
-                <div style={{ flex: 3 }}>
+                <div style={{ flex: 1 }}>
                   <TextInput
                     value={password}
                     onChange={setPassword}
                     maxLength={20}
                     placeholder="비밀번호 입력"
-                  />
-                </div>
-                <div style={{ flex: 1 }}>
-                  <CheckButton
-                    active={password.length >= 8 && !isVerified}
-                    label={isVerified ? "인증완료" : "인증요청"}
-                    onClick={handleVerify}
                   />
                 </div>
               </Row>
@@ -259,7 +272,7 @@ export default function SearchCrew() {
                 <ActionButton
                   variant="primary"
                   disabled={
-                    selectedCrew.visibility === "PRIVATE" && !isVerified
+                    selectedCrew.visibility === "PRIVATE" && password.length < 1
                   }
                   onClick={handleJoin}
                 >
