@@ -29,7 +29,7 @@ const Content = styled.div`
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  height: 60vh;
+  height: 75vh;
   margin: auto;
   width: 100%;
 `;
@@ -37,7 +37,7 @@ const Content = styled.div`
 const ButtonContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 15px;
   width: 100%;
 `;
 
