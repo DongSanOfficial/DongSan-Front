@@ -248,11 +248,8 @@ export default function SearchCrew() {
           <FooterButtons>
             {selectedCrew.isJoined ? (
               <>
-                <ActionButton
-                  variant="secondary"
-                  onClick={() => setSelectedCrew(null)}
-                >
-                  취소
+                <ActionButton variant="secondary" onClick={handleExplore}>
+                  둘러보기
                 </ActionButton>
                 <ActionButton variant="secession" onClick={handleSecession}>
                   탈퇴하기

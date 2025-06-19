@@ -25,7 +25,7 @@ export interface CreateCrewRequest {
   password?: string;
   limitEnable: boolean;
   memberLimit?: number;
-  crewImageId: number;
+  crewImageId?: number;
 }
 
 export interface CreateCrewResponse {

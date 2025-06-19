@@ -89,7 +89,7 @@ export default function ViewAllCrewsPage() {
               <CrewCard
                 key={crew.crewId}
                 crewName={crew.name}
-                crewImage={crew.crewImageUrl}
+                crewImageUrl={crew.crewImageUrl}
                 variant={type === "recommended" ? "recommended" : "myCrew"}
                 memberCount={crew.memberCount}
                 isManager={crew.isManager}

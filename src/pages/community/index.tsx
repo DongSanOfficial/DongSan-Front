@@ -162,7 +162,7 @@ export default function Community() {
               <CrewCard
                 key={crew.crewId}
                 crewName={crew.name}
-                crewImage={crew.crewImageUrl}
+                crewImageUrl={crew.crewImageUrl}
                 variant="myCrew"
                 isManager={crew.isManager}
                 onClick={() =>
@@ -203,7 +203,7 @@ export default function Community() {
               <CrewCard
                 key={crew.crewId}
                 crewName={crew.name}
-                crewImage={crew.crewImageUrl}
+                crewImageUrl={crew.crewImageUrl}
                 variant="recommended"
                 memberCount={crew.memberCount}
                 onClick={() =>

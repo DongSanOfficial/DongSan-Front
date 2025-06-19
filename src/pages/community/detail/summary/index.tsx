@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import RankItem from "../components/RankItem";
 import ConfirmationModal from "src/components/modal/ConfirmationModal";
 import { theme } from "src/styles/colors/theme";
+import DefaultImage from "src/assets/images/profile.png";
 
 const PageWrapper = styled.div`
   display: flex;
@@ -172,7 +173,7 @@ export default function Summary({ crewId, isJoined = false }: SummaryProps) {
     <PageWrapper>
       <Title>소개</Title>
       <CrewInfo>
-        <CrewImage src={crewDetail.crewImageUrl} alt="crew" />
+        <CrewImage src={crewDetail.crewImageUrl ?? DefaultImage} alt="crew" />
         <Description>{crewDetail.description}</Description>
       </CrewInfo>
       <Divider margin="2rem 0" />

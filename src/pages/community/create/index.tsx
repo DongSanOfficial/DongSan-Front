@@ -148,15 +148,13 @@ export default function CreateCrew() {
   const [maxMember, setMaxMember] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const isFormValid =
     crewName &&
     nameCheckStatus === "valid" &&
     (!isPrivate || (password && password.length >= 8)) &&
     (!limitEnabled ||
-      (maxMember && Number(maxMember) >= 2 && Number(maxMember) <= 100)) &&
-    image;
-
+      (maxMember && Number(maxMember) >= 2 && Number(maxMember) <= 100));
   const handleNameCheck = async () => {
     try {
       const isValid = await checkCrewName(crewName);
@@ -168,12 +166,16 @@ export default function CreateCrew() {
   };
 
   const handleSubmit = async () => {
-    if (!isFormValid || !image || isSubmitting) return;
+    if (!isFormValid || isSubmitting) return;
 
     try {
       setIsSubmitting(true);
 
-      const { crewImageId } = await uploadCrewImage(image);
+      let crewImageId: number | undefined = undefined;
+      if (image) {
+        const result = await uploadCrewImage(image);
+        crewImageId = result.crewImageId;
+      }
 
       const visibility: CrewVisibility = isPrivate ? "PRIVATE" : "PUBLIC";
 
@@ -359,7 +361,7 @@ export default function CreateCrew() {
           </Section>
           <Section>
             <Label>
-              <MdImage /> 크루 이미지 첨부<RequiredMark>*</RequiredMark>
+              <MdImage /> 크루 이미지 첨부
             </Label>
             <ImageUploader file={image} onChange={setImage} />
             <Description>* 1:1 비율의 이미지를 권장합니다.</Description>
