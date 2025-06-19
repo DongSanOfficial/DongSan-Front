@@ -44,7 +44,7 @@ export interface CrewData {
   crewImageUrl: string;
   createdAt: string;
   isManager?: boolean;
-  isJoined?: boolean;
+  isJoined: boolean;
 }
 
 export interface MyCrewsResponse {

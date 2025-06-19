@@ -152,8 +152,6 @@ export default function CreateCrew() {
   const isFormValid =
     crewName &&
     nameCheckStatus === "valid" &&
-    description &&
-    rules &&
     (!isPrivate || (password && password.length >= 8)) &&
     (!limitEnabled ||
       (maxMember && Number(maxMember) >= 2 && Number(maxMember) <= 100)) &&

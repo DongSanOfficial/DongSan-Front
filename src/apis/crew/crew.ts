@@ -5,6 +5,7 @@ import {
   CheckCrewNameResponse,
   CreateCrewRequest,
   CreateCrewResponse,
+  CrewData,
   CrewDetailInfo,
   feedList,
   MyCrewsResponse,
@@ -131,4 +132,21 @@ export const getCrewDetail = async (
       axiosError.response?.data?.message || "크루 정보 조회에 실패했습니다."
     );
   }
+};
+
+// 크루 검색 api
+export const getSearchCrews = async ({
+  name,
+  size = 10,
+  lastId,
+}: {
+  name: string;
+  size?: number;
+  lastId?: number;
+}): Promise<{ data: CrewData[]; hasNext: boolean }> => {
+  const params: Record<string, any> = { name, size };
+  if (lastId) params.lastId = lastId;
+
+  const { data: response } = await instance.get("/crews/search", { params });
+  return response;
 };

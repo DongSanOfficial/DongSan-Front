@@ -177,7 +177,7 @@ export default function Community() {
               />
             ))
           ) : (
-            <LoadingText>생성하거나 가입된 크루가 없습니다.</LoadingText>
+            <LoadingText>가입된 크루가 없습니다.</LoadingText>
           )}
         </CrewCardList>
 
