@@ -1,22 +1,19 @@
 import styled from "styled-components";
+import { useState, useEffect } from "react";
+import { getCrewDetail } from "src/apis/crew/crew";
+import { CrewDetailInfo } from "src/apis/crew/crew.type";
 import WeeklyInfo from "../components/WeeklyInfo";
-import { theme } from "src/styles/colors/theme";
+import Divider from "src/components/divider/Divider";
 import { MdChevronRight } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import ConfirmationModal from "src/components/modal/ConfirmationModal";
-import { useState } from "react";
-import Divider from "src/components/divider/Divider";
 import RankItem from "../components/RankItem";
+import ConfirmationModal from "src/components/modal/ConfirmationModal";
+import { theme } from "src/styles/colors/theme";
 
 const PageWrapper = styled.div`
   display: flex;
   flex-direction: column;
   min-height: 100%;
-`;
-
-const Content = styled.div`
-  display: flex;
-  flex-direction: column;
 `;
 
 const Title = styled.div`
@@ -78,25 +75,50 @@ const WithdrawButton = styled.button`
   text-decoration: underline;
 `;
 
-interface CrewIntroProps {
-  name: string;
-  description: string;
-  crewImageUrl: string;
-  visibility: string;
-  memberCount: number;
+const LoadingText = styled.div`
+  text-align: center;
+  padding: 20px;
+  color: ${theme.Gray500};
+`;
+
+const ErrorText = styled.div`
+  text-align: center;
+  padding: 20px;
+  color: ${theme.Red300};
+`;
+
+interface SummaryProps {
+  crewId: number;
+  isJoined?: boolean;
 }
 
-export default function Summary({
-  name,
-  crewImageUrl,
-  visibility,
-  description,
-  memberCount,
-}: CrewIntroProps) {
+export default function Summary({ crewId, isJoined = false }: SummaryProps) {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [crewDetail, setCrewDetail] = useState<CrewDetailInfo | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const info = { crewSize: memberCount, distance: 25, time: 7 };
+  useEffect(() => {
+    const fetchDetail = async () => {
+      try {
+        setLoading(true);
+        const response = await getCrewDetail(crewId);
+        setCrewDetail(response);
+      } catch (err) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : "크루 정보를 불러오는 데 실패했습니다."
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDetail();
+  }, [crewId]);
+
   const ranks = [
     { name: "김건우", distance: 5 },
     { name: "노성원", distance: 4 },
@@ -105,65 +127,88 @@ export default function Summary({
   ];
 
   const handleRankDetail = () => {
-    const crew = {
-      name,
-      crewImageUrl,
-      visibility,
-      description,
-      memberCount,
-    };
+    if (!crewDetail) return;
 
-    navigate("/community/detail/summary/rank", { state: { crew } });
+    navigate("/community/detail/summary/rank", {
+      state: {
+        crew: {
+          name: crewDetail.name,
+          crewImageUrl: crewDetail.crewImageUrl,
+          visibility: crewDetail.visibility,
+          description: crewDetail.description,
+          memberCount: crewDetail.memberCount,
+        },
+      },
+    });
   };
-  const handleOpenMoal = () => {
-    setIsModalOpen(true);
+
+  const handleDelete = async () => {
+    try {
+      console.log("크루 탈퇴");
+      setIsModalOpen(false);
+      navigate(-1);
+    } catch (err) {
+      console.error("탈퇴 실패", err);
+    }
   };
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
-  const handleDeleteAccount = async () => {
-    console.log("크루 탈퇴");
-  };
+
+  if (loading) {
+    return (
+      <PageWrapper>
+        <LoadingText>로딩 중...</LoadingText>
+      </PageWrapper>
+    );
+  }
+
+  if (error || !crewDetail) {
+    return (
+      <PageWrapper>
+        <ErrorText>{error || "크루 정보를 불러올 수 없습니다."}</ErrorText>
+      </PageWrapper>
+    );
+  }
 
   return (
     <PageWrapper>
-      <Content>
-        <Title>소개</Title>
-        <CrewInfo>
-          <CrewImage src={crewImageUrl} alt="crew" />
-          <Description>{description}</Description>
-        </CrewInfo>
-        <Divider margin="2rem 0" />
-        <Title>주간 정보</Title>
-        <WeeklyInfo
-          crewSize={info.crewSize}
-          distance={info.distance}
-          time={info.time}
+      <Title>소개</Title>
+      <CrewInfo>
+        <CrewImage src={crewDetail.crewImageUrl} alt="crew" />
+        <Description>{crewDetail.description}</Description>
+      </CrewInfo>
+      <Divider margin="2rem 0" />
+      <Title>주간 정보</Title>
+      <WeeklyInfo
+        crewSize={crewDetail.memberCount}
+        distance={crewDetail.weeklyStats.distanceKm}
+        time={crewDetail.weeklyStats.durationHour}
+      />
+      <Divider margin="2rem 0" />
+      <SectionHeader>
+        <SectionTitle>랭킹</SectionTitle>
+        <IconButton onClick={handleRankDetail}>
+          <MdChevronRight size={20} />
+        </IconButton>
+      </SectionHeader>
+      {ranks.map((rank, i) => (
+        <RankItem
+          key={i}
+          rank={i + 1}
+          name={rank.name}
+          distance={rank.distance}
         />
-        <Divider margin="2rem 0" />
-        <SectionHeader>
-          <SectionTitle>랭킹</SectionTitle>
-          <IconButton onClick={handleRankDetail}>
-            <MdChevronRight size={20} />
-          </IconButton>
-        </SectionHeader>
-        {ranks.map((rank, i) => (
-          <RankItem
-            key={i}
-            rank={i + 1}
-            name={rank.name}
-            distance={rank.distance}
-          />
-        ))}
-      </Content>
+      ))}
 
-      {/* isJoined가 false인 경우는 안보이게 처리해야 함 */}
-      <WithdrawButton onClick={handleOpenMoal}>탈퇴하기</WithdrawButton>
+      {isJoined && (
+        <WithdrawButton onClick={() => setIsModalOpen(true)}>
+          탈퇴하기
+        </WithdrawButton>
+      )}
+
       <ConfirmationModal
         isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        onConfirm={handleDeleteAccount}
-        message={"정말로 크루에서 나가시겠습니까?"}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={handleDelete}
+        message="정말로 크루에서 나가시겠습니까?"
         cancelText="취소"
         confirmText="나가기"
         modalType="crewSecession"

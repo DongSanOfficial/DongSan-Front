@@ -179,7 +179,7 @@ export default function CreateCrew() {
 
       const visibility: CrewVisibility = isPrivate ? "PRIVATE" : "PUBLIC";
 
-      const crewId = await createCrew({
+      await createCrew({
         name: crewName,
         description,
         rule: rules,
@@ -189,7 +189,7 @@ export default function CreateCrew() {
         memberLimit: limitEnabled ? Number(maxMember) : undefined,
         crewImageId,
       });
-      navigate(`/community/detail/${crewId}`);
+      navigate(`/community`);
     } catch (err) {
       console.log("크루 생성에 실패했습니다.");
     } finally {

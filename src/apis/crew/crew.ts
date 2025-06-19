@@ -1,8 +1,16 @@
 import { AxiosError } from "axios";
 import { ApiErrorResponse } from "../api.type";
 import instance from "../instance";
-import { CheckCrewNameResponse, CreateCrewRequest, CreateCrewResponse, feedList, UploadCrewImageResponse } from "./crew.type";
-
+import {
+  CheckCrewNameResponse,
+  CreateCrewRequest,
+  CreateCrewResponse,
+  CrewDetailInfo,
+  feedList,
+  MyCrewsResponse,
+  RecommendedCrewsResponse,
+  UploadCrewImageResponse,
+} from "./crew.type";
 
 export const getIsBookmarked = async ({
   crewId,
@@ -31,13 +39,19 @@ export const checkCrewName = async (name: string): Promise<boolean> => {
 };
 
 // 이미지 업로드
-export const uploadCrewImage = async (crewImage: File): Promise<UploadCrewImageResponse> => {
+export const uploadCrewImage = async (
+  crewImage: File
+): Promise<UploadCrewImageResponse> => {
   const formData = new FormData();
   formData.append("crewImage", crewImage);
 
-  const { data } = await instance.post<UploadCrewImageResponse>("/crews/image", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  const { data } = await instance.post<UploadCrewImageResponse>(
+    "/crews/image",
+    formData,
+    {
+      headers: { "Content-Type": "multipart/form-data" },
+    }
+  );
 
   return data;
 };
@@ -46,4 +60,75 @@ export const uploadCrewImage = async (crewImage: File): Promise<UploadCrewImageR
 export const createCrew = async (body: CreateCrewRequest): Promise<number> => {
   const { data } = await instance.post<CreateCrewResponse>("/crews", body);
   return data.crewId;
+};
+
+// 나의 크루 목록 조회 api
+export const getMyCrews = async ({
+  size = 10,
+  lastId,
+}: {
+  size?: number;
+  lastId?: number;
+}): Promise<MyCrewsResponse> => {
+  try {
+    const params: { size: number; lastId?: number } = { size };
+    if (lastId) {
+      params.lastId = lastId;
+    }
+
+    const { data: response } = await instance.get<MyCrewsResponse>(
+      "/users/crews",
+      { params }
+    );
+    return response;
+  } catch (error) {
+    const axiosError = error as AxiosError<ApiErrorResponse>;
+    throw new Error(
+      axiosError.response?.data?.message || "나의 크루 조회에 실패했습니다."
+    );
+  }
+};
+
+// 추천 크루 목록 조회 api
+export const getRecommendedCrews = async ({
+  size = 10,
+  lastId,
+}: {
+  size?: number;
+  lastId?: number;
+}): Promise<RecommendedCrewsResponse> => {
+  try {
+    const params: { size: number; lastId?: number } = { size };
+    if (lastId) {
+      params.lastId = lastId;
+    }
+
+    const { data: response } = await instance.get<RecommendedCrewsResponse>(
+      "/crews/recommend",
+      { params }
+    );
+    return response;
+  } catch (error) {
+    const axiosError = error as AxiosError<ApiErrorResponse>;
+    throw new Error(
+      axiosError.response?.data?.message || "추천 크루 조회에 실패했습니다."
+    );
+  }
+};
+
+// 단일 크루 정보 조회 api
+export const getCrewDetail = async (
+  crewId: number
+): Promise<CrewDetailInfo> => {
+  try {
+    const { data: response } = await instance.get<CrewDetailInfo>(
+      `/crews/${crewId}/info`
+    );
+    return response;
+  } catch (error) {
+    const axiosError = error as AxiosError<ApiErrorResponse>;
+    throw new Error(
+      axiosError.response?.data?.message || "크루 정보 조회에 실패했습니다."
+    );
+  }
 };

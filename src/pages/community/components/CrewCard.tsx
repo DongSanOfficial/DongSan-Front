@@ -5,12 +5,14 @@ import { ReactComponent as Crown } from "src/assets/svg/Crown.svg";
 
 const Container = styled.div`
   width: 100%;
+  height: 75px;
   background-color: ${theme.Gray100};
   border-radius: 12px;
   padding: 14px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 8px;
   cursor: pointer;
 `;

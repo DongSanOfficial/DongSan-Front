@@ -31,3 +31,47 @@ export interface CreateCrewRequest {
 export interface CreateCrewResponse {
   crewId: number;
 }
+
+export interface CrewData {
+  crewId: number;
+  name: string;
+  description: string;
+  rule: string;
+  visibility: CrewVisibility;
+  limitEnable: boolean;
+  memberLimit: number;
+  memberCount: number;
+  crewImageUrl: string;
+  createdAt: string;
+  isManager?: boolean;
+  isJoined?: boolean;
+}
+
+export interface MyCrewsResponse {
+  data: CrewData[];
+  hasNext: boolean;
+}
+
+export interface RecommendedCrewsResponse {
+  data: CrewData[];
+  hasNext: boolean;
+}
+
+// 단일 크루 정보 타입
+export interface WeeklyStats {
+  distanceKm: number;
+  durationHour: number;
+}
+
+export interface CrewDetailInfo {
+  name: string;
+  description: string;
+  rule: string;
+  visibility: CrewVisibility;
+  limitEnable: boolean;
+  memberCount: number;
+  memberLimit: number;
+  crewImageUrl: string;
+  createdAt: string;
+  weeklyStats: WeeklyStats;
+}

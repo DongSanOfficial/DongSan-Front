@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { ReactComponent as ArrowLeft } from "../../assets/svg/ArrowLeftIcon.svg";
 
 interface AppBarProps {
-  title?: string;
+  title?: ReactNode;
   onBack?: () => void;
   rightIcon?: ReactNode;
   onRightClick?: () => void;
