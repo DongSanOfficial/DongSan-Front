@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { useState, useEffect } from "react";
-import { getCrewDetail } from "src/apis/crew/crew";
+import { getCrewDetail, leaveCrew } from "src/apis/crew/crew";
 import { CrewDetailInfo } from "src/apis/crew/crew.type";
 import WeeklyInfo from "../components/WeeklyInfo";
 import Divider from "src/components/divider/Divider";
@@ -90,10 +90,9 @@ const ErrorText = styled.div`
 
 interface SummaryProps {
   crewId: number;
-  isJoined?: boolean;
 }
 
-export default function Summary({ crewId, isJoined = false }: SummaryProps) {
+export default function Summary({ crewId }: SummaryProps) {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [crewDetail, setCrewDetail] = useState<CrewDetailInfo | null>(null);
@@ -145,7 +144,7 @@ export default function Summary({ crewId, isJoined = false }: SummaryProps) {
 
   const handleDelete = async () => {
     try {
-      console.log("크루 탈퇴");
+      await leaveCrew(crewId);
       setIsModalOpen(false);
       navigate(-1);
     } catch (err) {
@@ -199,7 +198,7 @@ export default function Summary({ crewId, isJoined = false }: SummaryProps) {
         />
       ))}
 
-      {isJoined && (
+      {crewDetail.isJoined && (
         <WithdrawButton onClick={() => setIsModalOpen(true)}>
           탈퇴하기
         </WithdrawButton>

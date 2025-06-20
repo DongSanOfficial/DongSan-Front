@@ -1,14 +1,18 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { MdAdd, MdSearch, MdChevronRight } from "react-icons/md";
+import { MdAdd, MdSearch, MdChevronRight, MdLockOutline, MdClose } from "react-icons/md";
 import { theme } from "src/styles/colors/theme";
 import AppBar from "src/components/appBar";
 import BottomNavigation from "src/components/bottomNavigation";
 import Divider from "src/components/divider/Divider";
 import CrewCard from "./components/CrewCard";
-import { getMyCrews, getRecommendedCrews } from "src/apis/crew/crew";
+import { getMyCrews, getRecommendedCrews, joinCrew } from "src/apis/crew/crew";
 import { CrewData } from "src/apis/crew/crew.type";
+import { useToast } from "src/context/toast/useToast";
+import Modal from "src/components/modal";
+import TextInput from "src/components/input";
+import { truncateText } from "src/utils/truncateText";
 
 const PageWrapper = styled.div`
   display: flex;
@@ -67,53 +71,158 @@ const ErrorText = styled.div`
   color: ${theme.Red300};
 `;
 
+const ModalHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const Title = styled.h3`
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
+const CloseButton = styled.button`
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+`;
+
+const Info = styled.p`
+  font-size: 14px;
+  margin: 8px 0;
+`;
+
+const Description = styled.p`
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 10px 0;
+`;
+
+const Field = styled.div`
+  margin-top: 14px;
+`;
+
+const Row = styled.div`
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 6px;
+`;
+
+const FooterButtons = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 24px;
+`;
+
+const ActionButton = styled.button<{
+  variant?: "primary" | "secondary";
+  disabled?: boolean;
+}>`
+  flex: 1;
+  padding: 10px 0;
+  border-radius: 6px;
+  border: none;
+  font-size: 14px;
+  cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
+  background-color: ${({ variant, disabled }) =>
+    disabled
+      ? theme.Gray300
+      : variant === "primary"
+      ? theme.Green500
+      : theme.Gray400};
+  color: white;
+`;
+
 export default function Community() {
   const navigate = useNavigate();
-  // 나의 크루
+  const { showToast } = useToast();
+
   const [myCrews, setMyCrews] = useState<CrewData[]>([]);
   const [myCrewLoading, setmyCrewLoading] = useState(true);
   const [myCrewError, setmyCrewError] = useState<string | null>(null);
-  // 추천 크루
+
   const [recommendedCrews, setRecommendedCrews] = useState<CrewData[]>([]);
   const [recommendedLoading, setRecommendedLoading] = useState(true);
   const [recommendedError, setRecommendedError] = useState<string | null>(null);
+
+  const [selectedCrew, setSelectedCrew] = useState<CrewData | null>(null);
+  const [password, setPassword] = useState("");
 
   const handleBack = () => navigate(-1);
   const handleCreateCrew = () => navigate("/community/create");
   const handleSearch = () => navigate("/community/search");
 
+  const fetchMyCrews = async () => {
+    try {
+      setmyCrewLoading(true);
+      setmyCrewError(null);
+      const response = await getMyCrews({ size: 10 });
+      setMyCrews(response.data);
+    } catch (err) {
+      setmyCrewError(err instanceof Error ? err.message : "나의 크루 로드 실패");
+    } finally {
+      setmyCrewLoading(false);
+    }
+  };
+
+  const fetchRecommendedCrews = async () => {
+    try {
+      setRecommendedLoading(true);
+      setRecommendedError(null);
+      const response = await getRecommendedCrews({ size: 10 });
+      setRecommendedCrews(response.data);
+    } catch (err) {
+      setRecommendedError(
+        err instanceof Error ? err.message : "추천 크루 로드 실패"
+      );
+    } finally {
+      setRecommendedLoading(false);
+    }
+  };
+
+  const handleJoin = async () => {
+    if (!selectedCrew) return;
+    try {
+      await joinCrew({
+        crewId: selectedCrew.crewId,
+        password: selectedCrew.visibility === "PRIVATE" ? password : null,
+      });
+      showToast("가입이 완료되었습니다.", "success");
+      setSelectedCrew(null);
+      setPassword("");
+      fetchRecommendedCrews();
+      fetchMyCrews();
+    } catch (error: any) {
+      showToast(error.message ?? "크루 가입에 실패했습니다.", "error");
+    }
+  };
+
   useEffect(() => {
-    const fetchMyCrews = async () => {
-      try {
-        setmyCrewLoading(true);
-        setmyCrewError(null);
-        const response = await getMyCrews({ size: 10 });
-        setMyCrews(response.data);
-      } catch (err) {
-        setmyCrewError(err instanceof Error ? err.message : "나의 크루 로드 실패");
-      } finally {
-        setmyCrewLoading(false);
-      }
-    };
-
-    const fetchRecommendedCrews = async () => {
-      try {
-        setRecommendedLoading(true);
-        setRecommendedError(null);
-        const response = await getRecommendedCrews({ size: 10 });
-        setRecommendedCrews(response.data);
-      } catch (err) {
-        setRecommendedError(
-          err instanceof Error ? err.message : "추천 크루 로드 실패"
-        );
-      } finally {
-        setRecommendedLoading(false);
-      }
-    };
-
     fetchMyCrews();
     fetchRecommendedCrews();
   }, []);
+
+  const handleExplore = () => {
+    if (!selectedCrew) return;
+    if (!selectedCrew.isJoined && selectedCrew.visibility === "PRIVATE") {
+      showToast("가입된 크루원만 볼 수 있습니다.", "error");
+      return;
+    }
+    navigate("/community/detail", {
+      state: {
+        crewId: selectedCrew.crewId,
+        name: selectedCrew.name,
+        visibility: selectedCrew.visibility,
+      },
+    });
+  };
 
   return (
     <>
@@ -135,9 +244,7 @@ export default function Community() {
         <SectionHeader>
           <SectionTitle>나의 크루</SectionTitle>
           <IconButton
-            onClick={() =>
-              navigate("/community/all", { state: { type: "my" } })
-            }
+            onClick={() => navigate("/community/all", { state: { type: "my" } })}
           >
             <MdChevronRight size={20} />
           </IconButton>
@@ -176,9 +283,7 @@ export default function Community() {
         <SectionHeader>
           <SectionTitle>동산 추천 크루</SectionTitle>
           <IconButton
-            onClick={() =>
-              navigate("/community/all", { state: { type: "recommended" } })
-            }
+            onClick={() => navigate("/community/all", { state: { type: "recommended" } })}
           >
             <MdChevronRight size={20} />
           </IconButton>
@@ -196,15 +301,10 @@ export default function Community() {
                 crewImageUrl={crew.crewImageUrl}
                 variant="recommended"
                 memberCount={crew.memberCount}
-                onClick={() =>
-                  navigate("/community/detail", {
-                    state: {
-                      crewId: crew.crewId,
-                      name: crew.name,
-                      visibility: crew.visibility,
-                    },
-                  })
-                }
+                onClick={() => {
+                  setSelectedCrew(crew);
+                  setPassword("");
+                }}
               />
             ))
           ) : (
@@ -213,6 +313,62 @@ export default function Community() {
         </CrewCardList>
         <BottomNavigation />
       </PageWrapper>
+
+      {selectedCrew && (
+        <Modal isOpen onClose={() => setSelectedCrew(null)}>
+          <ModalHeader>
+            <Title>
+              {selectedCrew.name} {selectedCrew.visibility === "PRIVATE" && <MdLockOutline />}
+            </Title>
+            <CloseButton onClick={() => setSelectedCrew(null)}>
+              <MdClose />
+            </CloseButton>
+          </ModalHeader>
+          <Info>
+            인원 | {selectedCrew.limitEnable
+              ? `${selectedCrew.memberCount} / ${selectedCrew.memberLimit}명`
+              : "제한 없음"}
+          </Info>
+          <Info>시작일 | {selectedCrew.createdAt}</Info>
+          <Description>
+            소개글 | {truncateText(selectedCrew.description, 100)}
+          </Description>
+
+          {!selectedCrew.isJoined && selectedCrew.visibility === "PRIVATE" && (
+            <Field>
+              <label>가입 비밀번호</label>
+              <Row>
+                <div style={{ flex: 1 }}>
+                  <TextInput
+                    value={password}
+                    onChange={setPassword}
+                    maxLength={20}
+                    placeholder="비밀번호 입력"
+                  />
+                </div>
+              </Row>
+            </Field>
+          )}
+
+          <FooterButtons>
+            <ActionButton
+              variant="secondary"
+              onClick={handleExplore}
+            >
+              둘러보기
+            </ActionButton>
+            <ActionButton
+              variant="primary"
+              disabled={
+                selectedCrew.visibility === "PRIVATE" && password.length < 1
+              }
+              onClick={handleJoin}
+            >
+              가입하기
+            </ActionButton>
+          </FooterButtons>
+        </Modal>
+      )}
     </>
   );
 }

@@ -6,7 +6,7 @@ import DefaultImage from "src/assets/images/profile.png";
 
 const Container = styled.div`
   width: 100%;
-  height: 75px;
+  height: 100%;
   background-color: ${theme.Gray100};
   border-radius: 12px;
   padding: 14px;

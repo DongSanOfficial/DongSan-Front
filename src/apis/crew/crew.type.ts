@@ -64,6 +64,7 @@ export interface WeeklyStats {
 }
 
 export interface CrewDetailInfo {
+  crewId: number;
   name: string;
   description: string;
   rule: string;
@@ -74,4 +75,5 @@ export interface CrewDetailInfo {
   crewImageUrl: string;
   createdAt: string;
   weeklyStats: WeeklyStats;
+  isJoined: boolean;
 }
