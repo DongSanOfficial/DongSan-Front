@@ -77,3 +77,11 @@ export interface CrewDetailInfo {
   weeklyStats: WeeklyStats;
   isJoined: boolean;
 }
+
+// 크루 랭킹 아이템 타입
+export interface CrewRankingItem {
+  memberId: number;
+  nickname: string;
+  distanceKm: number;
+  durationHour: number;
+}

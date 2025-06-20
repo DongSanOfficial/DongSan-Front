@@ -7,6 +7,7 @@ import {
   CreateCrewResponse,
   CrewData,
   CrewDetailInfo,
+  CrewRankingItem,
   feedList,
   MyCrewsResponse,
   RecommendedCrewsResponse,
@@ -179,6 +180,42 @@ export const leaveCrew = async (crewId: number): Promise<void> => {
     const axiosError = error as AxiosError<ApiErrorResponse>;
     throw new Error(
       axiosError.response?.data?.message || "크루 탈퇴에 실패했습니다."
+    );
+  }
+};
+
+// 크루 랭킹 api
+export const getCrewRanking = async (
+  crewId: number,
+  {
+    period,
+    date,
+    sort,
+    size = 10,
+    lastId,
+  }: {
+    period: "daily" | "weekly" | "monthly";
+    date: string;
+    sort: "distance" | "duration";
+    size?: number;
+    lastId?: number;
+  }
+): Promise<{ data: CrewRankingItem[]; hasNext: boolean }> => {
+  try {
+    const params: Record<string, any> = { period, date, sort, size };
+    if (lastId !== undefined) {
+      params.lastId = lastId;
+    }
+
+    const { data: response } = await instance.get(`/crews/${crewId}/ranking`, {
+      params,
+    });
+    return response;
+  } catch (error) {
+    const axiosError = error as AxiosError<ApiErrorResponse>;
+    throw new Error(
+      axiosError.response?.data?.message ||
+        "크루 랭킹 정보를 불러오는 데 실패했습니다."
     );
   }
 };

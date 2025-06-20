@@ -1,7 +1,7 @@
 import styled from "styled-components";
-import { useState, useEffect } from "react";
-import { getCrewDetail, leaveCrew } from "src/apis/crew/crew";
-import { CrewDetailInfo } from "src/apis/crew/crew.type";
+import { useState, useEffect, useMemo } from "react";
+import { getCrewDetail, getCrewRanking, leaveCrew } from "src/apis/crew/crew";
+import { CrewDetailInfo, CrewRankingItem } from "src/apis/crew/crew.type";
 import WeeklyInfo from "../components/WeeklyInfo";
 import Divider from "src/components/divider/Divider";
 import { MdChevronRight } from "react-icons/md";
@@ -88,14 +88,11 @@ const ErrorText = styled.div`
   color: ${theme.Red300};
 `;
 
-interface SummaryProps {
-  crewId: number;
-}
-
-export default function Summary({ crewId }: SummaryProps) {
+export default function Summary({ crewId }: { crewId: number }) {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [crewDetail, setCrewDetail] = useState<CrewDetailInfo | null>(null);
+  const [ranks, setRanks] = useState<CrewRankingItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -119,25 +116,40 @@ export default function Summary({ crewId }: SummaryProps) {
     fetchDetail();
   }, [crewId]);
 
-  const ranks = [
-    { name: "김건우", distance: 5 },
-    { name: "노성원", distance: 4 },
-    { name: "이다은", distance: 2 },
-    { name: "조유리", distance: 0.6 },
-  ];
+  const today = useMemo(() => {
+    return new Date().toISOString().split("T")[0];
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [detailRes, rankRes] = await Promise.all([
+          getCrewDetail(crewId),
+          getCrewRanking(crewId, {
+            period: "daily",
+            date: today,
+            sort: "distance",
+          }),
+        ]);
+        setCrewDetail(detailRes);
+        setRanks(rankRes.data);
+      } catch (err) {
+        setError("크루 정보를 불러오는 데 실패했습니다.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [crewId, today]);
 
   const handleRankDetail = () => {
     if (!crewDetail) return;
 
     navigate("/community/detail/summary/rank", {
       state: {
-        crew: {
-          name: crewDetail.name,
-          crewImageUrl: crewDetail.crewImageUrl,
-          visibility: crewDetail.visibility,
-          description: crewDetail.description,
-          memberCount: crewDetail.memberCount,
-        },
+        crewId,
       },
     });
   };
@@ -191,10 +203,10 @@ export default function Summary({ crewId }: SummaryProps) {
       </SectionHeader>
       {ranks.map((rank, i) => (
         <RankItem
-          key={i}
+          key={rank.memberId}
           rank={i + 1}
-          name={rank.name}
-          distance={rank.distance}
+          name={rank.nickname}
+          distance={rank.distanceKm}
         />
       ))}
 
