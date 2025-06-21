@@ -8,7 +8,6 @@ import {
   CrewData,
   CrewDetailInfo,
   CrewRankingItem,
-  feedList,
   MyCrewFeedResponse,
   MyCrewsResponse,
   RecommendedCrewsResponse,

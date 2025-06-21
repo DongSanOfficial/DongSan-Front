@@ -15,7 +15,11 @@ const ListContainer = styled.div`
   flex-direction: column;
   gap: 1rem;
 `;
-
+const GroupedFeeds = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
 export default function Feed() {
   const location = useLocation();
   const crewId = location.state?.crewId;
@@ -25,25 +29,47 @@ export default function Feed() {
     const fetchFeeds = async () => {
       try {
         const { data: responseData } = await getCrewfeedlist({ crewId });
-        console.log(responseData);
         setFeeds(responseData);
       } catch (e) {
         console.error("피드 조회 실패:", e);
       }
     };
-    fetchFeeds();
+    if (crewId) fetchFeeds();
   }, [crewId]);
+
+  const getDaysAgoLabel = (dateStr: string): string => {
+    const today = new Date();
+    const targetDate = new Date(dateStr); // 문자열을 Date로 바로 변환
+    const diffTime = today.getTime() - targetDate.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) return "오늘";
+    if (diffDays === 1) return "어제";
+    return `${diffDays}일 전`;
+  };
+
+  // 🔸 날짜별 그룹핑
+  const groupedFeeds: Record<string, feedList[]> = feeds.reduce((acc, feed) => {
+    const label = getDaysAgoLabel(feed.date);
+    if (!acc[label]) acc[label] = [];
+    acc[label].push(feed);
+    return acc;
+  }, {} as Record<string, feedList[]>);
 
   return (
     <ListContainer>
-      {feeds.map((item) => (
-        <div key={item.walkwayHistoryId}>
-          <FeedList
-            date={item.date}
-            nickname={item.nickname}
-            distanceKm={item.distanceKm}
-          />
-        </div>
+      {Object.entries(groupedFeeds).map(([label, group]) => (
+        <GroupedFeeds key={label}>
+          <Daysago>{label}</Daysago>
+          {group.map((item) => (
+            <FeedList
+              key={item.walkwayHistoryId}
+              date={item.date}
+              nickname={item.nickname}
+              distanceKm={item.distanceKm}
+            />
+          ))}
+        </GroupedFeeds>
       ))}
     </ListContainer>
   );
