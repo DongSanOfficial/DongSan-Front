@@ -177,7 +177,7 @@ export default function NewWay() {
 
   const handleStopRequest = () => {
     if (mode === "create") {
-      if (elapsedTime < 600 || distances <= 200) {
+      if (elapsedTime < 300 || distances <= 200) {
         setModalType("stop");
         return;
       }
@@ -190,7 +190,7 @@ export default function NewWay() {
     if (
       mode === "create" &&
       isWalking &&
-      elapsedTime >= 600 &&
+      elapsedTime >= 300 &&
       distances > 200 &&
       !toastShownRef.current
     ) {
@@ -290,7 +290,7 @@ export default function NewWay() {
       case "stop":
         return {
           message:
-            "10분 이상, 200m 이상 산책하지 않은 경우, 산책 정보가 저장되지 않습니다. \n산책을 중단하시겠습니까?",
+            "5분 이상, 200m 이상 산책하지 않은 경우, 산책 정보가 저장되지 않습니다. \n산책을 중단하시겠습니까?",
           cancelText: "취소",
           confirmText: "홈으로",
         };

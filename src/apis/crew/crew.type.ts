@@ -85,3 +85,4 @@ export interface CrewRankingItem {
   distanceKm: number;
   durationHour: number;
 }
+

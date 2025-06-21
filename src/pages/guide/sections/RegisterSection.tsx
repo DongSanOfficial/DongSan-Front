@@ -33,8 +33,8 @@ const RegisterSection = forwardRef<HTMLDivElement>((props, ref) => (
         <StepItem>
           <StepNumber>2</StepNumber>
           <StepContent>
-            지도 상에 마커가 현재 위치와 일치하면 등록 페이지 우측 하단의
-            산책 시작 버튼을 눌러 산책이 시작합니다.
+            지도 상에 마커가 현재 위치와 일치하면 등록 페이지 우측 하단의 산책
+            시작 버튼을 눌러 산책이 시작합니다.
           </StepContent>
         </StepItem>
 
@@ -43,8 +43,14 @@ const RegisterSection = forwardRef<HTMLDivElement>((props, ref) => (
           <StepContent>
             산책을 완료했다면, 산책 중단 버튼을 눌러 등록 페이지로 이동할 수
             있습니다.
-            <div style={{ marginTop: "8px", color: theme.Green300, fontWeight: "500" }}>
-              ※ 10분 이상, 200m 이상 산책해야만 산책로를 등록할 수 있습니다.
+            <div
+              style={{
+                marginTop: "8px",
+                color: theme.Green300,
+                fontWeight: "500",
+              }}
+            >
+              ※ 5분 이상, 200m 이상 산책해야만 산책로를 등록할 수 있습니다.
             </div>
             <NavImg src={newwayGuide} />
           </StepContent>
@@ -53,9 +59,9 @@ const RegisterSection = forwardRef<HTMLDivElement>((props, ref) => (
         <StepItem>
           <StepNumber>4</StepNumber>
           <StepContent>
-            산책로 등록 페이지로 이동하면 산책로의 이름, 설명, 해시태그를
-            입력할 수 있습니다. 전체공개 여부 토글을 눌러 공개여부를 선택할
-            수 있습니다.
+            산책로 등록 페이지로 이동하면 산책로의 이름, 설명, 해시태그를 입력할
+            수 있습니다. 전체공개 여부 토글을 눌러 공개여부를 선택할 수
+            있습니다.
           </StepContent>
         </StepItem>
       </StepList>

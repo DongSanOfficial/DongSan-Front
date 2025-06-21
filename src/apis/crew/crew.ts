@@ -13,6 +13,7 @@ import {
   RecommendedCrewsResponse,
   UploadCrewImageResponse,
 } from "./crew.type";
+import { feedList } from "./crew.type";
 
 export const getIsBookmarked = async ({
   crewId,
