@@ -1,5 +1,9 @@
 import styled from "styled-components";
 import FeedList from "../components/FeedList";
+import { useEffect, useState } from "react";
+import { feedList } from "src/apis/crew/crew.type";
+import { getCrewfeedlist } from "src/apis/crew/crew";
+import { useLocation } from "react-router-dom";
 
 const Daysago = styled.div`
   font-weight: 600;
@@ -13,24 +17,34 @@ const ListContainer = styled.div`
 `;
 
 export default function Feed() {
-  // 날짜 차이를 구해서 "오늘", "어제", "n일 전"으로 변환하는 함수
-  const getDaysAgoLabel = (dateString: string): string => {
-    const today = new Date();
-    const targetDate = new Date(dateString);
-    const diffTime = today.getTime() - targetDate.getTime();
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  const location = useLocation();
+  const crewId = location.state?.crewId;
+  const [feeds, setFeeds] = useState<feedList[]>([]);
 
-    if (diffDays === 0) return "오늘";
-    if (diffDays === 1) return "어제";
-    return `${diffDays}일 전`;
-  };
+  useEffect(() => {
+    const fetchFeeds = async () => {
+      try {
+        const { data: responseData } = await getCrewfeedlist({ crewId });
+        console.log(responseData);
+        setFeeds(responseData);
+      } catch (e) {
+        console.error("피드 조회 실패:", e);
+      }
+    };
+    fetchFeeds();
+  }, [crewId]);
+
   return (
-    <div>
-      <Daysago>오늘</Daysago>
-      <ListContainer>
-        <FeedList />
-        <FeedList />
-      </ListContainer>
-    </div>
+    <ListContainer>
+      {feeds.map((item) => (
+        <div key={item.walkwayHistoryId}>
+          <FeedList
+            date={item.date}
+            nickname={item.nickname}
+            distanceKm={item.distanceKm}
+          />
+        </div>
+      ))}
+    </ListContainer>
   );
 }

@@ -9,21 +9,30 @@ import {
   CrewDetailInfo,
   CrewRankingItem,
   feedList,
+  MyCrewFeedResponse,
   MyCrewsResponse,
   RecommendedCrewsResponse,
   UploadCrewImageResponse,
 } from "./crew.type";
 
-export const getIsBookmarked = async ({
+// 크루 피드 목록 조회 api
+export const getCrewfeedlist = async ({
   crewId,
+  size = 10,
+  lastId,
 }: {
   crewId: number;
-}): Promise<feedList> => {
+  size?: number;
+  lastId?: number;
+}): Promise<MyCrewFeedResponse> => {
+  const params: Record<string, any> = { crewId, size };
+  if (lastId) params.lastId = lastId;
+
   try {
-    const { data: response } = await instance.get<feedList>(
-      `/crews/${crewId}/feeds`
-    );
-    return response;
+    const { data } = await instance.get(`/crews/${crewId}/feeds`, {
+      params,
+    });
+    return data;
   } catch (error) {
     const axiosError = error as AxiosError<ApiErrorResponse>;
     throw new Error(
