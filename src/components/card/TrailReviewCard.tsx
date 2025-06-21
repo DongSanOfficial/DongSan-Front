@@ -15,10 +15,9 @@ const ReviewItems = styled.div`
   width: 100%;
   height: auto;
   background: #ffffff;
-  border-radius: 20px;
-  margin: 0 0 15px 0;
   color: #054630;
   box-sizing: border-box;
+  padding: 10px;
 
   /* 태블릿 환경 */
   @media screen and (min-width: 700px) {
@@ -31,13 +30,12 @@ const ReviewItems = styled.div`
 const ReviewerName = styled.div`
   font-size: 15px;
   font-weight: 600;
-  padding: 15px 15px 5px 15px;
+  padding: 10px;
 
   /* 태블릿 환경 */
   @media screen and (min-width: 700px) {
     font-size: 18px;
-      margin-bottom: 10px;
-
+    margin-bottom: 10px;
   }
 `;
 
@@ -46,7 +44,7 @@ const ReviewStars = styled.div`
   align-items: center;
   margin: 0 15px;
   color: #fbbc05;
-  width: calc(100% - 30px); 
+  width: calc(100% - 30px);
   box-sizing: border-box;
 
   /* 태블릿 환경 */
@@ -101,7 +99,7 @@ const TrailReviewCard = ({
 }: ReviewCardProps) => {
   return (
     <ReviewItems onClick={onClick}>
-        <ReviewerName>| {trailName}</ReviewerName>
+      <ReviewerName>| {trailName}</ReviewerName>
       <ReviewStars>
         {Array.from({ length: rating }).map((_, index) => (
           <FaStar key={index} />

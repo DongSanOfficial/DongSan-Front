@@ -9,6 +9,7 @@ import TrailReviewCard from "src/components/card/TrailReviewCard";
 import LoadingSpinner from "src/components/loading/LoadingSpinner";
 import { MdRateReview } from "react-icons/md";
 import { theme } from "src/styles/colors/theme";
+import { useInfiniteScroll } from "src/hooks/useInfiniteScroll";
 
 const Wrapper = styled.div`
   display: flex;
@@ -61,7 +62,6 @@ export default function TrailReviewPage() {
   const [error, setError] = useState<string | null>(null);
   const [hasNext, setHasNext] = useState(true);
   const lastIdRef = useRef<number | undefined>(undefined);
-  const observer = useRef<IntersectionObserver>();
 
   const loadMoreReviews = useCallback(async () => {
     if (loading || !hasNext) return;
@@ -89,30 +89,14 @@ export default function TrailReviewPage() {
     }
   }, [loading, hasNext]);
 
-  const lastReviewElementRef = useCallback(
-    (node: HTMLDivElement | null) => {
-      if (loading) return;
-
-      if (observer.current) observer.current.disconnect();
-
-      observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasNext) {
-          loadMoreReviews();
-        }
-      }, {
-        threshold: 0.1
-      });
-
-      if (node) observer.current.observe(node);
-    },
-    [loading, hasNext, loadMoreReviews]
-  );
+  const { lastElementRef } = useInfiniteScroll({
+    hasNext,
+    loading,
+    onLoadMore: loadMoreReviews,
+  });
 
   useEffect(() => {
     loadMoreReviews();
-    return () => {
-      if (observer.current) observer.current.disconnect();
-    };
   }, []);
 
   return (
@@ -129,9 +113,9 @@ export default function TrailReviewPage() {
         ) : (
           <List>
             {reviews.map((review, index) => (
-              <div 
+              <div
                 key={review.reviewId}
-                ref={index === reviews.length - 1 ? lastReviewElementRef : null}
+                ref={index === reviews.length - 1 ? lastElementRef : undefined}
               >
                 <TrailReviewCard
                   trailName={review.walkwayName}

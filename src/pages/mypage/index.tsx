@@ -26,6 +26,7 @@ import ConfirmationModal from "src/components/modal/ConfirmationModal";
 import { ReactComponent as Logout } from "../../assets/svg/Logout.svg";
 import TrailBookmark from "./components/bookmark/TrailBookmark";
 import { truncateText } from "src/utils/truncateText";
+import { useInfiniteScroll } from "src/hooks/useInfiniteScroll";
 
 interface Bookmark {
   bookmarkId: number;
@@ -53,6 +54,12 @@ function MyPage() {
   const [loadingBookmarks, setLoadingBookmarks] = useState(false);
   const [isEditingNickname, setIsEditingNickname] = useState(false);
   const [editedNickname, setEditedNickname] = useState("");
+
+  const { lastElementRef } = useInfiniteScroll({
+    hasNext: hasMoreBookmarks,
+    loading: loadingBookmarks,
+    onLoadMore: () => fetchBookmarks(false),
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -120,17 +127,6 @@ function MyPage() {
       fetchBookmarks();
     }
   }, [refreshBookmarks]);
-
-  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
-    const { scrollTop, clientHeight, scrollHeight } = event.currentTarget;
-    if (
-      scrollHeight - scrollTop <= clientHeight * 1.5 &&
-      hasMoreBookmarks &&
-      !loadingBookmarks
-    ) {
-      fetchBookmarks(false); // 추가 데이터 로드
-    }
-  };
 
   const handleBookmarkUpdate = useCallback(() => {
     setRefreshBookmarks((prev) => prev + 1);
@@ -237,7 +233,7 @@ function MyPage() {
         title="마이 페이지"
         rightIcon={<Logout onClick={handleLogout} />}
       />
-      <S.Wrapper onScroll={handleScroll}>
+      <S.Wrapper>
         <S.Profile>
           <S.ProfileTop>
             <S.ProfileInfo>
@@ -303,17 +299,31 @@ function MyPage() {
 
           {bookmarks &&
             bookmarks.length > 0 &&
-            bookmarks.map((bookmark) => (
-              <TrailBookmark
+            bookmarks.map((bookmark, index) => (
+              <div
                 key={bookmark.bookmarkId}
-                icon={BookMark}
-                path={`/mypage/TrailList?type=bookmarks&bookmarkId=${bookmark.bookmarkId}`}
-                title={bookmark.title || "이름 없는 북마크"}
-                onClick={() => handleBookmarkClick(bookmark.bookmarkId)}
-                bookmarkId={bookmark.bookmarkId}
-                onUpdate={handleBookmarkUpdate}
-              />
+                ref={
+                  index === bookmarks.length - 1 ? lastElementRef : undefined
+                }
+              >
+                <TrailBookmark
+                  icon={BookMark}
+                  path={`/mypage/TrailList?type=bookmarks&bookmarkId=${bookmark.bookmarkId}`}
+                  title={bookmark.title || "이름 없는 북마크"}
+                  onClick={() => handleBookmarkClick(bookmark.bookmarkId)}
+                  bookmarkId={bookmark.bookmarkId}
+                  onUpdate={handleBookmarkUpdate}
+                />
+              </div>
             ))}
+
+          {/* 로딩 상태 표시 */}
+          {loadingBookmarks && (
+            <div style={{ padding: "20px", textAlign: "center" }}>
+              <LoadingSpinner />
+            </div>
+          )}
+
           <S.Line />
         </div>
         <div>
