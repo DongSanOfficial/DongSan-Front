@@ -71,12 +71,6 @@ const OptionItem = styled.div`
   &:active {
     background-color: ${theme.Gray100};
   }
-
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      background-color: ${theme.Gray100};
-    }
-  }
 `;
 
 const IconWrapper = styled.div`

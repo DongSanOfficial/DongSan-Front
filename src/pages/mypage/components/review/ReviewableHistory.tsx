@@ -10,7 +10,6 @@ import { getReviewRecord } from "src/apis/review/review";
 import { walkwayHistoryType } from "src/apis/review/review.type";
 import { theme } from "src/styles/colors/theme";
 import { MdRateReview } from "react-icons/md";
-import { useInfiniteScroll } from "src/hooks/useInfiniteScroll";
 
 const Wrapper = styled.div`
   display: flex;
@@ -18,19 +17,14 @@ const Wrapper = styled.div`
   align-items: center;
   height: calc(100vh - 120px);
   overflow-y: auto;
-  padding: 10px 30px;
+  padding: 10px;
   max-width: 430px;
-
-  @media screen and (min-width: 700px) {
-    max-width: 100%;
-  }
 `;
 
 const List = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
-  width: 100%;
 `;
 
 const ErrorMessage = styled.div`
@@ -80,6 +74,7 @@ function ReviewableHistory() {
   const [error, setError] = React.useState<string | null>(null);
   const [hasNext, setHasNext] = React.useState(true);
   const lastIdRef = useRef<number | undefined>(undefined);
+  const observer = useRef<IntersectionObserver>();
 
   const loadTrails = useCallback(async () => {
     if (loading || !hasNext) return;
@@ -95,7 +90,7 @@ function ReviewableHistory() {
       if (response.data.length > 0) {
         lastIdRef.current = response.data[response.data.length - 1].walkwayId;
       }
-      setHasNext(response.hasNext);
+      //setHasNext(response.hasNext);
     } catch (error) {
       setError(
         error instanceof Error ? error.message : "산책로 조회에 실패했습니다."
@@ -105,14 +100,13 @@ function ReviewableHistory() {
     }
   }, [loading, hasNext]);
 
-  const { lastElementRef } = useInfiniteScroll({
-    hasNext,
-    loading,
-    onLoadMore: loadTrails,
-  });
-
   useEffect(() => {
     loadTrails();
+    return () => {
+      if (observer.current) {
+        observer.current.disconnect();
+      }
+    };
   }, []);
 
   const handleHistoryClick = useCallback(
@@ -149,11 +143,8 @@ function ReviewableHistory() {
           </EmptyStateContainer>
         ) : (
           <List>
-            {reviews.map((review, index) => (
-              <div
-                key={review.walkwayId}
-                ref={index === reviews.length - 1 ? lastElementRef : undefined}
-              >
+            {reviews.map((review) => (
+              <div key={review.walkwayId}>
                 <TrailCardAll trail={review} onClick={handleHistoryClick} />
               </div>
             ))}

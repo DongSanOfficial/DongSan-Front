@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
-import { addDays, isAfter } from "date-fns";
-import { MdLockOutline } from "react-icons/md";
+import { addDays, isAfter, format, startOfWeek, startOfMonth } from "date-fns";
 import AppBar from "src/components/appBar";
 import BottomNavigation from "src/components/bottomNavigation";
 import { useLocation, useNavigate } from "react-router-dom";
 import DropDownButton from "src/components/button/DropDownButton";
 import RankItem from "../components/RankItem";
 import DateSelector from "../components/DateSelector";
+import { getCrewRanking } from "src/apis/crew/crew";
+import { CrewRankingItem } from "src/apis/crew/crew.type";
 
 const Wrapper = styled.div`
   display: flex;
@@ -15,19 +16,8 @@ const Wrapper = styled.div`
   height: calc(100dvh - 126px);
   padding: 0 30px;
   overflow: scroll;
-
   &::-webkit-scrollbar {
     display: none;
-  }
-
-  @media screen and (min-width: 700px) {
-    padding: 15px 30px;
-  }
-
-  @media screen and (min-width: 1024px) {
-    padding: 20px 40px;
-    max-width: 1024px;
-    margin: 0 auto;
   }
 `;
 
@@ -49,35 +39,25 @@ const periodOptions = [
   { value: "monthly", label: "월간" },
 ] as const;
 
-interface RankItemType {
-  name: string;
-  distance: number;
-  time: number;
-}
-
 export default function RankDetailPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const crew = location.state?.crew;
+  const { crewId } = location.state ?? {};
 
-  const [period, setPeriod] = useState("daily");
-  const [sort, setSort] = useState("distance");
+
+  console.log("location.state:", location.state);
+console.log("crewId:", crewId);
+
+
+  const [period, setPeriod] = useState<"daily" | "weekly" | "monthly">("daily");
+  const [sort, setSort] = useState<"distance" | "duration">("distance");
   const [baseDate, setBaseDate] = useState(new Date());
+  const [rankItems, setRankItems] = useState<CrewRankingItem[]>([]);
 
-  const mock: RankItemType[] = Array.from({ length: 20 }).map((_, i) => ({
-    name: `홍길동 ${i + 1}`,
-    distance: Math.round(Math.random() * 20 * 10) / 10,
-    time: Math.round(Math.random() * 5 * 10) / 10,
-  }));
-
-  const sortedRankItems = [...mock].sort((a, b) =>
-    sort === "distance" ? b.distance - a.distance : b.time - a.time
-  );
-
-  /*
-  서버에 전송할 날짜 확인용 콘솔
-  const getRequestDate = () => {
-    return format(
+  useEffect(() => {
+    if (!crewId) return;
+  
+    const requestDate = format(
       period === "daily"
         ? baseDate
         : period === "weekly"
@@ -85,12 +65,24 @@ export default function RankDetailPage() {
         : startOfMonth(baseDate),
       "yyyy-MM-dd"
     );
-  };
+  
+    const fetchRankData = async () => {
+      try {
+        const res = await getCrewRanking(crewId, {
+          period,
+          sort,
+          date: requestDate,
+        });
+        setRankItems(res.data);
+      } catch (e) {
+        console.error("랭킹 불러오기 실패", e);
+      }
+    };
+  
+    fetchRankData();
+  }, [crewId, period, sort, baseDate]);
+  
 
-  useEffect(() => {
-    console.log("서버 전송 날짜 확인용:", getRequestDate());
-  }, [period, baseDate]);
-  */
 
   const handlePrev = () => {
     setBaseDate((prev) =>
@@ -121,21 +113,7 @@ export default function RankDetailPage() {
     <>
       <AppBar
         onBack={handleBack}
-        title={
-          crew.visibility === "PRIVATE" ? (
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              {crew.name} <MdLockOutline />
-            </div>
-          ) : (
-            crew.name
-          )
-        }
+        title="전체 랭킹 보기"
       />
       <Wrapper>
         <DateSelector
@@ -158,13 +136,13 @@ export default function RankDetailPage() {
             size="small"
           />
         </ControlBar>
-        {sortedRankItems.map((item, index) => (
+        {rankItems.map((item, index) => (
           <RankItem
-            key={`${item.name}-${index}`}
+            key={`${item.memberId}-${index}`}
             rank={index + 1}
-            name={item.name}
-            distance={item.distance}
-            time={item.time}
+            name={item.nickname}
+            distance={item.distanceKm}
+            time={item.durationHour}
           />
         ))}
       </Wrapper>

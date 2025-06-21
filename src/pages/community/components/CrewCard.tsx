@@ -2,15 +2,18 @@ import styled from "styled-components";
 import { theme } from "src/styles/colors/theme";
 import { ReactComponent as Member } from "src/assets/svg/Member.svg";
 import { ReactComponent as Crown } from "src/assets/svg/Crown.svg";
+import DefaultImage from "src/assets/images/profile.png";
 
 const Container = styled.div`
   width: 100%;
+  height: 100%;
   background-color: ${theme.Gray100};
   border-radius: 12px;
   padding: 14px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 8px;
   cursor: pointer;
 `;
@@ -66,7 +69,7 @@ const MemberCount = styled.div`
 interface CrewCardProps {
   crewName: string;
   variant: "myCrew" | "recommended";
-  crewImage: string;
+  crewImageUrl: string;
   isManager?: boolean;
   memberCount?: number;
   onClick?: () => void;
@@ -75,7 +78,7 @@ interface CrewCardProps {
 export default function CrewCard({
   crewName,
   variant,
-  crewImage,
+  crewImageUrl,
   isManager = false,
   memberCount,
   onClick,
@@ -84,7 +87,7 @@ export default function CrewCard({
     <Container onClick={onClick}>
       <ImageContainer>
         <CrewInfo>
-          {crewImage && <CrewImage src={crewImage} alt="crew" />}
+          <CrewImage src={crewImageUrl ?? DefaultImage} alt="crew" />{" "}
           <VerticalDivider />
           <CrewName>{crewName}</CrewName>
         </CrewInfo>

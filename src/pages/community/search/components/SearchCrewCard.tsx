@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { MdLock, MdGroups, MdDateRange } from "react-icons/md";
 import { theme } from "src/styles/colors/theme";
+import DefaultImage from "src/assets/images/profile.png";
 
 const Card = styled.div`
   display: flex;
@@ -98,7 +99,7 @@ export default function SearchCrewCard({
   return (
     <Card onClick={onClick}>
       <ImageWrapper>
-        <img src={crewImageUrl} alt={name} />
+        <img src={crewImageUrl ?? DefaultImage} alt={name} />
         {isJoined && <Badge>활동중</Badge>}
       </ImageWrapper>
       <Info>

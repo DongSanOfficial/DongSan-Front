@@ -1,9 +1,9 @@
 import { useLocation, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import styled from "styled-components";
 import { MdMoreVert, MdLockOutline } from "react-icons/md";
 import AppBar from "src/components/appBar";
 import BottomNavigation from "src/components/bottomNavigation";
-import { useState } from "react";
 import Together from "./together";
 import Feed from "./feed";
 import Summary from "./summary";
@@ -38,46 +38,67 @@ const ScrollContainer = styled.div`
   padding: 16px 20px 20px;
 `;
 
+const ErrorContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  font-size: 16px;
+  color: ${({ theme }) => theme.Red};
+`;
+
 const TabList = ["요약", "피드", "같이 산책"];
 
 export default function CrewDetailPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("요약");
-
-  const crew = location.state?.crew;
-
-  if (!crew) {
-    return <div>크루 정보를 찾을 수 없습니다.</div>;
-  }
+  const crewId = location.state?.crewId;
+  const crewName = location.state?.name;
+  const visibility = location.state?.visibility;
 
   const handleBack = () => navigate(-1);
   const handleRightClick = () => {
-    navigate("/community/detail/crewSetting", { state: { crew } });
+    navigate("/community/detail/crewSetting", { state: { crewId } });
   };
+
+  const renderHeader = () => (
+    <AppBar
+      onBack={handleBack}
+      title={
+        visibility === "PRIVATE" ? (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {crewName} <MdLockOutline />
+          </div>
+        ) : (
+          crewName
+        )
+      }
+      rightIcon={<MdMoreVert size={20} />}
+      onRightClick={handleRightClick}
+    />
+  );
+
+  if (!crewId) {
+    return (
+      <>
+        {renderHeader()}
+        <PageWrapper>
+          <ErrorContainer>크루 ID가 없습니다.</ErrorContainer>
+        </PageWrapper>
+      </>
+    );
+  }
 
   return (
     <>
-      <AppBar
-        onBack={handleBack}
-        title={
-          crew.visibility === "PRIVATE" ? (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              {crew.name} <MdLockOutline />
-            </div>
-          ) : (
-            crew.name
-          )
-        }
-        rightIcon={<MdMoreVert size={20} />}
-        onRightClick={handleRightClick}
-      />
+      {renderHeader()}
       <PageWrapper>
         <TabHeader>
           {TabList.map((tab) => (
@@ -91,15 +112,7 @@ export default function CrewDetailPage() {
           ))}
         </TabHeader>
         <ScrollContainer>
-          {activeTab === "요약" && (
-            <Summary
-              name={crew.name}
-              description={crew.description}
-              crewImageUrl={crew.crewImageUrl}
-              visibility={crew.visibility}
-              memberCount={crew.memberCount}
-            />
-          )}
+          {activeTab === "요약" && <Summary crewId={crewId} />}
           {activeTab === "피드" && <Feed />}
           {activeTab === "같이 산책" && <Together />}
         </ScrollContainer>

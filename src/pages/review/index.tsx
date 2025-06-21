@@ -21,10 +21,6 @@ const CenterWrapper = styled.div`
   &::-webkit-scrollbar {
     display: none;
   }
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    max-width: 100%;
-  }
 `;
 
 const ContentWrapper = styled.div`
@@ -183,11 +179,11 @@ const ReviewPage = () => {
           <TextAreaWrapper>
             <TextArea
               value={review}
-              onChange={(e) => setReview(e.target.value.slice(0, 100))}
+              onChange={(e) => setReview(e.target.value.slice(0, 250))}
               placeholder="리뷰를 입력해주세요"
             />
             <CharCount>
-              <span>{review.length}</span> / 100
+              <span>{review.length}</span> / 250
             </CharCount>
           </TextAreaWrapper>
         </ContentWrapper>

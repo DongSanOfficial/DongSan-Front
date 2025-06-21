@@ -21,6 +21,7 @@ import DetailFeed from "src/pages/community/detail/together/detail";
 import CrewInfo from "src/pages/community/info";
 import CrewSetting from "src/pages/community/info/setting";
 import ModifyCrew from "src/pages/community/modify";
+import ViewAllCrewsPage from "src/pages/community/ViewAllCrews";
 
 interface RouteConfig {
   path: string;
@@ -94,6 +95,10 @@ const routes: RouteConfig[] = [
   {
     path: "/community",
     component: Community,
+  },
+  {
+    path: "/community/all",
+    component: ViewAllCrewsPage,
   },
   {
     path: "/community/create",

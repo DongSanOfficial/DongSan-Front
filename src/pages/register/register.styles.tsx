@@ -10,30 +10,12 @@ const Wrapper = styled.div`
   &::-webkit-scrollbar {
     display: none;
   }
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    padding: 15px 30px;
-    max-width: 100%;
-    margin: 0 auto;
-  }
-
-  /* 큰 태블릿 및 노트북 */
-  @media screen and (min-width: 1024px) {
-    padding: 20px 40px;
-    max-width: 1024px;
-  }
 `;
 
 const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   margin-bottom: 10px;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    margin-bottom: 15px;
-  }
 `;
 
 const Content = styled.div`
@@ -69,32 +51,11 @@ const Button = styled.button<{ isActive: boolean }>`
         ? theme.Green600
         : theme.Gray500};
   }
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    min-height: 58px;
-    font-size: 18px;
-    border-radius: 6px;
-    max-width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  /* 큰 태블릿 및 노트북 */
-  @media screen and (min-width: 1024px) {
-    max-width: 800px;
-  }
 `;
 
 const RequiredMark = styled.span`
   color: ${theme.Red300};
   margin-left: 2px;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    margin-left: 4px;
-    font-size: 18px;
-  }
 `;
 
 const TagInputWrapper = styled.div`
@@ -105,19 +66,6 @@ const TagInputWrapper = styled.div`
   width: 80vw;
   max-width: 322px;
   margin-bottom: 20px;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    max-width: 420px;
-    gap: 6px;
-    margin: 6px;
-    margin-bottom: 25px;
-  }
-
-  /* 큰 태블릿 및 노트북 */
-  @media screen and (min-width: 1024px) {
-    max-width: 500px;
-  }
 `;
 
 const TagInput = styled.input`
@@ -126,12 +74,6 @@ const TagInput = styled.input`
   font-size: 12px;
   width: 90%;
   padding: 6px 0;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    font-size: 14px;
-    padding: 8px 0;
-  }
 `;
 
 const Tag = styled.span`
@@ -148,26 +90,12 @@ const Tag = styled.span`
   &:hover {
     opacity: 0.9;
   }
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    padding: 8px 14px;
-    font-size: 14px;
-    border-radius: 24px;
-    gap: 6px;
-  }
 `;
 
 const DeleteIcon = styled.span`
   font-size: 14px;
   font-weight: 500;
   margin-left: 4px;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    font-size: 16px;
-    margin-left: 6px;
-  }
 `;
 
 const TagList = styled.div`
@@ -175,12 +103,6 @@ const TagList = styled.div`
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 8px;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    gap: 10px;
-    margin-top: 10px;
-  }
 `;
 
 const PathMapContainer = styled.div`
@@ -189,18 +111,6 @@ const PathMapContainer = styled.div`
   margin-bottom: 10px;
   border-radius: 15px;
   overflow: hidden;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    min-height: 350px;
-    margin-bottom: 15px;
-    border-radius: 20px;
-  }
-
-  /* 큰 태블릿 및 노트북 */
-  @media screen and (min-width: 1024px) {
-    min-height: 400px;
-  }
 `;
 
 const S = {
