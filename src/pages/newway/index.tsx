@@ -41,21 +41,6 @@ const Container = styled.div`
   width: 100%;
   height: 100dvh;
   margin: 0 auto;
-
-  /* 모바일 환경 (기본) */
-  @media screen and (max-width: 767px) {
-    max-width: 430px;
-  }
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    max-width: 100%;
-  }
-
-  /* 큰 태블릿 및 노트북 */
-  @media screen and (min-width: 1024px) {
-    max-width: 1024px;
-  }
 `;
 
 const InfoContainer = styled.div`
@@ -69,24 +54,6 @@ const InfoContainer = styled.div`
   z-index: 20;
   display: flex;
   justify-content: center;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    top: 25px;
-    left: 30px;
-    right: 30px;
-    border-radius: 12px;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
-    padding: 5px 0;
-  }
-
-  /* 큰 태블릿 및 노트북 */
-  @media screen and (min-width: 1024px) {
-    top: 30px;
-    left: 40px;
-    right: 40px;
-    border-radius: 15px;
-  }
 `;
 
 const ButtonContainer = styled.div`
@@ -94,18 +61,6 @@ const ButtonContainer = styled.div`
   bottom: 100px;
   right: 30px;
   z-index: 1;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    bottom: 120px;
-    right: 40px;
-  }
-
-  /* 큰 태블릿 및 노트북 */
-  @media screen and (min-width: 1024px) {
-    bottom: 140px;
-    right: 50px;
-  }
 `;
 
 const LocationButton = styled.button`
@@ -126,35 +81,6 @@ const LocationButton = styled.button`
 
   &:active {
     background-color: #f0f0f0;
-  }
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    bottom: 200px;
-    right: 40px;
-    width: 48px;
-    height: 48px;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
-
-    /* 아이콘 크기 증가 */
-    svg {
-      width: 28px;
-      height: 28px;
-    }
-  }
-
-  /* 큰 태블릿 및 노트북 */
-  @media screen and (min-width: 1024px) {
-    bottom: 220px;
-    right: 50px;
-    width: 56px;
-    height: 56px;
-
-    /* 아이콘 크기 증가 */
-    svg {
-      width: 32px;
-      height: 32px;
-    }
   }
 `;
 

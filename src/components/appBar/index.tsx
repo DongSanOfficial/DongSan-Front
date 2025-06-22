@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { ReactComponent as ArrowLeft } from "../../assets/svg/ArrowLeftIcon.svg";
 
 interface AppBarProps {
-  title?: string;
+  title?: ReactNode;
   onBack?: () => void;
   rightIcon?: ReactNode;
   onRightClick?: () => void;
@@ -20,19 +20,8 @@ const AppBarContainer = styled.div`
   height: 56px;
   z-index: 20;
   background-color: white;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    max-width: 100%;
-    padding: 16px 24px;
-    height: 64px;
-  }
-
-  /* 큰 태블릿 및 노트북 */
-  @media screen and (min-width: 1024px) {
-    max-width: 1024px;
-  }
 `;
+
 
 const IconButton = styled.div`
   cursor: pointer;
@@ -48,11 +37,6 @@ const Title = styled.h1`
   text-align: center;
   margin: 0 auto;
   z-index: 1;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    font-size: 1.25rem;
-  }
 `;
 
 const RightIconContainer = styled.div`

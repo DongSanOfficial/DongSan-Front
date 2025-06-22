@@ -18,6 +18,8 @@ import {
   MdPeople,
   MdImage,
 } from "react-icons/md";
+import { checkCrewName, uploadCrewImage, createCrew } from "src/apis/crew/crew";
+import type { CrewVisibility } from "src/apis/crew/crew.type";
 
 const PageWrapper = styled.div`
   display: flex;
@@ -27,18 +29,6 @@ const PageWrapper = styled.div`
   height: calc(100dvh - 126px);
   &::-webkit-scrollbar {
     display: none;
-  }
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    padding: 15px 30px;
-  }
-
-  /* 큰 태블릿 및 노트북 */
-  @media screen and (min-width: 1024px) {
-    padding: 20px 40px;
-    max-width: 1024px;
-    margin: 0 auto;
   }
 `;
 
@@ -135,6 +125,9 @@ export default function CreateCrew() {
   const navigate = useNavigate();
   const [crewName, setCrewName] = useState("");
   const [isNameChecked, setIsNameChecked] = useState(false);
+  const [nameCheckStatus, setNameCheckStatus] = useState<
+    "unchecked" | "valid" | "invalid"
+  >("unchecked");
   const [description, setDescription] = useState("");
   const [rules, setRules] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
@@ -142,33 +135,58 @@ export default function CreateCrew() {
   const [limitEnabled, setLimitEnabled] = useState(false);
   const [maxMember, setMaxMember] = useState("");
   const [image, setImage] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isFormValid =
     crewName &&
-    isNameChecked &&
-    description &&
-    rules &&
+    nameCheckStatus === "valid" &&
     (!isPrivate || (password && password.length >= 8)) &&
     (!limitEnabled ||
       (maxMember && Number(maxMember) >= 2 && Number(maxMember) <= 100));
-
-  const handleNameCheck = () => {
-    setIsNameChecked(true);
+  const handleNameCheck = async () => {
+    try {
+      const isValid = await checkCrewName(crewName);
+      setIsNameChecked(true);
+      setNameCheckStatus(isValid ? "valid" : "invalid");
+    } catch (err) {
+      console.log("이름 중복 확인에 실패했습니다.");
+    }
   };
 
-  const handleSubmit = () => {
-    if (!isFormValid) return;
-    console.log({
-      crewName,
-      description,
-      rules,
-      isPrivate,
-      password,
-      limitEnabled,
-      maxMember,
-      image,
-    });
+  const handleSubmit = async () => {
+    if (!isFormValid || isSubmitting) return;
+
+    try {
+      setIsSubmitting(true);
+
+      let crewImageId: number | undefined = undefined;
+      if (image) {
+        const result = await uploadCrewImage(image);
+        crewImageId = result.crewImageId;
+      }
+
+      const visibility: CrewVisibility = isPrivate ? "PRIVATE" : "PUBLIC";
+
+      await createCrew({
+        name: crewName,
+        description,
+        rule: rules,
+        visibility,
+        password: isPrivate ? password : undefined,
+        limitEnable: limitEnabled,
+        memberLimit: limitEnabled ? Number(maxMember) : undefined,
+        crewImageId,
+      });
+      navigate(`/community`);
+    } catch (err) {
+      console.log("크루 생성에 실패했습니다.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  const isInvalidMaxMember =
+    limitEnabled && (Number(maxMember) < 2 || Number(maxMember) > 100);
 
   return (
     <>
@@ -189,7 +207,7 @@ export default function CreateCrew() {
                   value={crewName}
                   onChange={(value) => {
                     setCrewName(value);
-                    if (isNameChecked) setIsNameChecked(false);
+                    setNameCheckStatus("unchecked");
                   }}
                   maxLength={20}
                   placeholder="크루 이름을 입력해 주세요."
@@ -197,12 +215,26 @@ export default function CreateCrew() {
               </div>
               <div style={{ flex: 1 }}>
                 <CheckButton
-                  active={crewName.length > 0 && !isNameChecked}
-                  label={isNameChecked ? "사용가능" : "중복체크"}
+                  active={crewName.length > 0 && nameCheckStatus !== "valid"}
+                  label={nameCheckStatus === "valid" ? "사용가능" : "중복체크"}
                   onClick={handleNameCheck}
                 />
               </div>
             </div>
+            {isNameChecked && nameCheckStatus === "invalid" && (
+              <ErrorText>이미 사용중인 이름입니다.</ErrorText>
+            )}
+            {isNameChecked && nameCheckStatus === "valid" && (
+              <div
+                style={{
+                  fontSize: "12px",
+                  color: theme.Green500,
+                  marginTop: "4px",
+                }}
+              >
+                사용가능한 이름입니다.
+              </div>
+            )}
           </Section>
           <Section>
             <Label>
@@ -285,9 +317,6 @@ export default function CreateCrew() {
             </MemberRow>
             {limitEnabled && (
               <>
-                <Description>
-                  *최소 2명, 최대 100명의 크루원을 모집할 수 있어요.
-                </Description>
                 <div
                   style={{
                     display: "flex",
@@ -312,17 +341,23 @@ export default function CreateCrew() {
                     }}
                   />
                 </div>
+                {isInvalidMaxMember && (
+                  <ErrorText>2이상 100 이하의 인원만 모집가능합니다.</ErrorText>
+                )}
               </>
             )}
           </Section>
           <Section>
             <Label>
-              <MdImage /> 크루 이미지 첨부<RequiredMark>*</RequiredMark>
+              <MdImage /> 크루 이미지 첨부
             </Label>
             <ImageUploader file={image} onChange={setImage} />
             <Description>* 1:1 비율의 이미지를 권장합니다.</Description>
           </Section>
-          <SubmitButton disabled={!isFormValid} onClick={handleSubmit}>
+          <SubmitButton
+            disabled={!isFormValid || isSubmitting}
+            onClick={handleSubmit}
+          >
             완료
           </SubmitButton>
         </FormContent>

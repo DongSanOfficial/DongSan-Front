@@ -20,10 +20,6 @@ const Wrapper = styled.div`
   overflow-y: auto;
   padding: 10px 30px;
   max-width: 430px;
-
-  @media screen and (min-width: 700px) {
-    max-width: 100%;
-  }
 `;
 
 const List = styled.div`

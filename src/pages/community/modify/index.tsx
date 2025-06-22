@@ -28,18 +28,6 @@ const PageWrapper = styled.div`
   &::-webkit-scrollbar {
     display: none;
   }
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    padding: 15px 30px;
-  }
-
-  /* 큰 태블릿 및 노트북 */
-  @media screen and (min-width: 1024px) {
-    padding: 20px 40px;
-    max-width: 1024px;
-    margin: 0 auto;
-  }
 `;
 
 const FormContent = styled.div`

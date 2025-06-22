@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AppBar from "src/components/appBar";
 import BottomNavigation from "src/components/bottomNavigation";
 import styled from "styled-components";
@@ -8,9 +8,11 @@ import SearchBar from "src/pages/main/components/SearchInput";
 import SearchCrewCard from "./components/SearchCrewCard";
 import Modal from "src/components/modal";
 import TextInput from "src/components/input";
-import CheckButton from "src/components/button/CheckButton";
+import { joinCrew, leaveCrew, getSearchCrews } from "src/apis/crew/crew";
 import { MdLockOutline, MdClose } from "react-icons/md";
 import { truncateText } from "src/utils/truncateText";
+import { CrewData } from "src/apis/crew/crew.type";
+import { useToast } from "src/context/toast/useToast";
 
 const PageWrapper = styled.div`
   display: flex;
@@ -19,16 +21,6 @@ const PageWrapper = styled.div`
   height: calc(100dvh - 176px);
   &::-webkit-scrollbar {
     display: none;
-  }
-
-  @media screen and (min-width: 700px) {
-    padding: 15px 30px;
-  }
-
-  @media screen and (min-width: 1024px) {
-    padding: 20px 40px;
-    max-width: 1024px;
-    margin: 0 auto;
   }
 `;
 
@@ -102,103 +94,74 @@ const ActionButton = styled.button<{
       : theme.Gray400};
   color: white;
 `;
-const mockData = [
-  {
-    name: "크루 1",
-    description:
-      "매일 30분 이상 걷기! 함께 인증하고 응원하며 건강한 습관을 만들어가요. 목표는 작지만, 함께라면 꾸준히 할 수 있어요 💪 매일 30분 이상 걷기! 함께 인증하고 응원하며 건강한 습관을 만들어가요. 목표는 작지만, 함께라면 꾸준히 할 수 있어요 💪 ",
-    visibility: "PRIVATE",
-    limitEnable: true,
-    memberCount: 10,
-    memberLimit: 20,
-    crewImageUrl:
-      "https://cdn.theden.co.kr/news/photo/202412/3175_11900_4233.jpg",
-    createdAt: "2025.01.01",
-    isJoined: false,
-  },
-  {
-    name: "크루 2",
-    description:
-      "크루원끼리 대화하며 운동도 하고, 근처에서 함께 산책할 친구도 찾아보세요! 자유롭게, 하지만 배려하는 분위기를 지켜요 🫶",
-    visibility: "PUBLIC",
-    limitEnable: true,
-    memberCount: 1,
-    memberLimit: 40,
-    crewImageUrl:
-      "https://cdn.theden.co.kr/news/photo/202412/3175_11900_4233.jpg",
-    createdAt: "2025.04.01",
-    isJoined: true,
-  },
-  {
-    name: "크루 3",
-    description:
-      "크루원끼리 대화하며 운동도 하고, 근처에서 함께 산책할 친구도 찾아보세요! 자유롭게, 하지만 배려하는 분위기를 지켜요 🫶",
-    visibility: "PUBLIC",
-    limitEnable: false,
-    memberCount: 100,
-    memberLimit: 0,
-    crewImageUrl:
-      "https://cdn.theden.co.kr/news/photo/202412/3175_11900_4233.jpg",
-    createdAt: "2025.03.15",
-    isJoined: false,
-  },
-  {
-    name: "크루 3",
-    description:
-      "크루원끼리 대화하며 운동도 하고, 근처에서 함께 산책할 친구도 찾아보세요! 자유롭게, 하지만 배려하는 분위기를 지켜요 🫶",
-    visibility: "PRIVATE",
-    limitEnable: false,
-    memberCount: 100,
-    memberLimit: 0,
-    crewImageUrl:
-      "https://cdn.theden.co.kr/news/photo/202412/3175_11900_4233.jpg",
-    createdAt: "2025.03.15",
-    isJoined: false,
-  },
-  {
-    name: "크루 4",
-    description:
-      "자연을 느끼며 걷는 사람들 모여요. 오늘 걸은 길, 들은 새소리, 본 하늘을 공유하는 따뜻한 공간이에요.",
-    visibility: "PUBLIC",
-    limitEnable: false,
-    memberCount: 100,
-    memberLimit: 0,
-    crewImageUrl:
-      "https://cdn.theden.co.kr/news/photo/202412/3175_11900_4233.jpg",
-    createdAt: "2025.03.15",
-    isJoined: true,
-  },
-];
 
 export default function SearchCrew() {
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [search, setSearch] = useState("");
-  const [crews, setCrews] = useState(mockData);
-  const [selectedCrew, setSelectedCrew] = useState<(typeof mockData)[0] | null>(
-    null
-  );
+  const [crews, setCrews] = useState<CrewData[]>([]);
+  const [selectedCrew, setSelectedCrew] = useState<CrewData | null>(null);
   const [password, setPassword] = useState("");
   const [isVerified, setIsVerified] = useState(false);
 
+  const fetchCrews = async (keyword: string) => {
+    try {
+      const trimmed = keyword.trim();
+      const response = await getSearchCrews({ name: trimmed });
+      setCrews(response.data);
+    } catch (error) {
+      console.error("크루 검색 실패:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCrews("");
+  }, []);
+
   const handleSearch = () => {
-    setCrews(mockData.filter((c) => c.name.includes(search)));
+    fetchCrews(search);
   };
 
-  const handleVerify = () => {
-    // 인증 api
-    if (password.length >= 8) setIsVerified(true);
+  const handleExplore = () => {
+    if (!selectedCrew) return;
+    navigate("/community/detail", {
+      state: {
+        crewId: selectedCrew.crewId,
+        name: selectedCrew.name,
+        visibility: selectedCrew.visibility,
+      },
+    });
   };
 
-  const handleExplore = () => navigate("/community/detail");
+  const handleJoin = async () => {
+    if (!selectedCrew) return;
 
-  const handleJoin = () => {
-    // 가입 api
-    console.log("가입 요청", selectedCrew?.name);
+    try {
+      await joinCrew({
+        crewId: selectedCrew.crewId,
+        password: selectedCrew.visibility === "PRIVATE" ? password : null,
+      });
+
+      showToast("가입이 완료되었습니다.", "success");
+      setSelectedCrew(null);
+      fetchCrews(search);
+    } catch (error: any) {
+      showToast(error.message ?? "크루 가입에 실패했습니다.", "error");
+    }
   };
 
-  const handleSecession = () => {
-    // 탈퇴 api
-    console.log("탈퇴 요청", selectedCrew?.name);
+  const handleSecession = async () => {
+    if (!selectedCrew) return;
+
+    try {
+      await leaveCrew(selectedCrew.crewId);
+      showToast("크루에서 탈퇴되었습니다.", "success");
+      setSelectedCrew(null);
+      fetchCrews(search);
+    } catch (error: any) {
+      console.error("탈퇴 실패:", error);
+      showToast("다시 시도해주세요.", "error");
+    }
   };
 
   return (
@@ -217,9 +180,9 @@ export default function SearchCrew() {
           }}
         />
         <PageWrapper>
-          {crews.map((crew, crewIndex) => (
+          {crews.map((crew) => (
             <SearchCrewCard
-              key={crewIndex}
+              key={crew.crewId}
               {...crew}
               onClick={() => {
                 setSelectedCrew(crew);
@@ -234,7 +197,7 @@ export default function SearchCrew() {
       <BottomNavigation />
 
       {selectedCrew && (
-        <Modal isOpen={!!selectedCrew} onClose={() => setSelectedCrew(null)}>
+        <Modal isOpen onClose={() => setSelectedCrew(null)}>
           <ModalHeader>
             <Title>
               {selectedCrew.name}{" "}
@@ -255,23 +218,17 @@ export default function SearchCrew() {
           <Description>
             소개글 | {truncateText(selectedCrew.description, 100)}
           </Description>
+
           {!selectedCrew.isJoined && selectedCrew.visibility === "PRIVATE" && (
             <Field>
               <label>가입 비밀번호</label>
               <Row>
-                <div style={{ flex: 3 }}>
+                <div style={{ flex: 1 }}>
                   <TextInput
                     value={password}
                     onChange={setPassword}
                     maxLength={20}
                     placeholder="비밀번호 입력"
-                  />
-                </div>
-                <div style={{ flex: 1 }}>
-                  <CheckButton
-                    active={password.length >= 8 && !isVerified}
-                    label={isVerified ? "인증완료" : "인증요청"}
-                    onClick={handleVerify}
                   />
                 </div>
               </Row>
@@ -281,11 +238,8 @@ export default function SearchCrew() {
           <FooterButtons>
             {selectedCrew.isJoined ? (
               <>
-                <ActionButton
-                  variant="secondary"
-                  onClick={() => setSelectedCrew(null)}
-                >
-                  취소
+                <ActionButton variant="secondary" onClick={handleExplore}>
+                  둘러보기
                 </ActionButton>
                 <ActionButton variant="secession" onClick={handleSecession}>
                   탈퇴하기
@@ -305,7 +259,7 @@ export default function SearchCrew() {
                 <ActionButton
                   variant="primary"
                   disabled={
-                    selectedCrew.visibility === "PRIVATE" && !isVerified
+                    selectedCrew.visibility === "PRIVATE" && password.length < 1
                   }
                   onClick={handleJoin}
                 >
