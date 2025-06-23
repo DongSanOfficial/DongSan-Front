@@ -98,7 +98,7 @@ export interface CowalkResponse {
 export interface Cowalkwithcrew {
   cowalkId: number;
   profileImageUrl: string;
-  ninkname: string;
+  nickname: string;
   createdDate: string;
   date: string;
   time: string;

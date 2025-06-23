@@ -85,7 +85,7 @@ export default function RecruitList({ item, onClick }: RecruitListProps) {
   return (
     <Container onClick={() => onClick(item.cowalkId)}>
       <CreationInfo>
-        <Writer>| {item.ninkname}</Writer>
+        <Writer>| {item.nickname}</Writer>
         <Date>{item.createdDate}</Date>
       </CreationInfo>
       <RecruitContent>
