@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { feedList } from "src/apis/crew/crew.type";
 import { getCrewfeedlist } from "src/apis/crew/crew";
 import { useLocation } from "react-router-dom";
+import FeedTogether from "../components/FeedTogether";
 
 const Daysago = styled.div`
   font-weight: 600;
@@ -14,6 +15,14 @@ const ListContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
+`;
+const TogetherContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
 `;
 const GroupedFeeds = styled.div`
   display: flex;
@@ -30,6 +39,7 @@ export default function Feed() {
       try {
         const { data: responseData } = await getCrewfeedlist({ crewId });
         setFeeds(responseData);
+        console.log("피드 조회 성공:", responseData);
       } catch (e) {
         console.error("피드 조회 실패:", e);
       }
@@ -50,6 +60,7 @@ export default function Feed() {
 
   // 🔸 날짜별 그룹핑
   const groupedFeeds: Record<string, feedList[]> = feeds.reduce((acc, feed) => {
+    if (!feed.date) return acc;
     const label = getDaysAgoLabel(feed.date);
     if (!acc[label]) acc[label] = [];
     acc[label].push(feed);
@@ -57,20 +68,39 @@ export default function Feed() {
   }, {} as Record<string, feedList[]>);
 
   return (
-    <ListContainer>
-      {Object.entries(groupedFeeds).map(([label, group]) => (
-        <GroupedFeeds key={label}>
-          <Daysago>{label}</Daysago>
-          {group.map((item) => (
-            <FeedList
-              key={item.walkwayHistoryId}
-              date={item.date}
-              nickname={item.nickname}
-              distanceKm={item.distanceKm}
-            />
-          ))}
-        </GroupedFeeds>
-      ))}
-    </ListContainer>
+    <>
+      <Daysago>같이 산책</Daysago>
+      <TogetherContainer>
+        {feeds.slice(0, 4).map((item) => (
+          <FeedTogether
+            key={item.walkwayHistoryId}
+            nickname={item.nickname}
+            durationSec={item.durationSec}
+            distanceKm={item.distanceKm}
+          />
+        ))}
+        {feeds.length > 4 && (
+          <span style={{ fontWeight: 600, fontSize: "14px", color: "#888" }}>
+            외 {feeds.length - 4}명
+          </span>
+        )}
+      </TogetherContainer>
+
+      <ListContainer>
+        {Object.entries(groupedFeeds).map(([label, group]) => (
+          <GroupedFeeds key={label}>
+            <Daysago>{label}</Daysago>
+            {group.map((item) => (
+              <FeedList
+                key={item.walkwayHistoryId}
+                date={item.date}
+                nickname={item.nickname}
+                distanceKm={item.distanceKm}
+              />
+            ))}
+          </GroupedFeeds>
+        ))}
+      </ListContainer>
+    </>
   );
 }

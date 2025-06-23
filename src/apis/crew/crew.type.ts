@@ -5,7 +5,7 @@ export interface MyCrewFeedResponse {
 export interface feedList {
   walkwayHistoryId?: number;
   nickname: string;
-  date: string;
+  date?: string;
   distanceKm: number;
   durationSec?: number;
 }

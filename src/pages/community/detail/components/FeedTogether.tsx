@@ -1,0 +1,50 @@
+import { feedList } from "src/apis/crew/crew.type";
+import { BiMapPin } from "react-icons/bi";
+import { BsClock } from "react-icons/bs";
+import styled from "styled-components";
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 5.5rem;
+  height: 5rem;
+  padding: 0.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.19);
+  border-radius: 20px;
+  box-shadow: 0px 2px rgba(0, 0, 0, 0.25);
+`;
+const Contains = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-weight: 600;
+  font-size: 14px;
+`;
+export default function FeedTogether({
+  nickname,
+  distanceKm,
+  durationSec,
+}: feedList) {
+  const formatDurationToMinutes = (durationSec?: number): string => {
+    if (typeof durationSec !== "number") return "-";
+    const minutes = Math.floor(durationSec / 60);
+    return `${minutes}분`;
+  };
+  return (
+    <>
+      <Container>
+        <Contains>{nickname}</Contains>
+        <Contains>
+          <BsClock />
+          {formatDurationToMinutes(durationSec)}
+        </Contains>
+        <Contains>
+          <BiMapPin />
+          {distanceKm}Km
+        </Contains>
+      </Container>
+    </>
+  );
+}
