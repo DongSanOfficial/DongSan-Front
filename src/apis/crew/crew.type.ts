@@ -1,10 +1,14 @@
-export interface feedList {
-  id: number;
-  nickname: string;
-  date: number;
-  distanceKm: number;
+export interface MyCrewFeedResponse {
+  data: feedList[];
+  hasNext: boolean;
 }
-
+export interface feedList {
+  walkwayHistoryId?: number;
+  nickname: string;
+  date?: string;
+  distanceKm: number;
+  durationSec?: number;
+}
 // 크루 생성
 export type CrewVisibility = "PUBLIC" | "PRIVATE";
 
@@ -85,4 +89,3 @@ export interface CrewRankingItem {
   distanceKm: number;
   durationHour: number;
 }
-
