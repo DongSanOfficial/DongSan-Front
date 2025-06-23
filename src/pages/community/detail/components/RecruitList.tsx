@@ -99,13 +99,14 @@ export default function RecruitList({ item, onClick }: RecruitListProps) {
             <div>{item.time}</div>
           </Items>
         </ItemContainer>
-
-        <ItemContainer>
-          <Bold>모집 인원: </Bold>
-          <Count>
-            {item.memberCount}/{item.memberLimit}
-          </Count>
-        </ItemContainer>
+        {item.memberLimit !== null && (
+          <ItemContainer>
+            <Bold>모집 인원: </Bold>
+            <Count>
+              {item.memberCount}/{item.memberLimit}
+            </Count>
+          </ItemContainer>
+        )}
       </RecruitContent>
       <Line />
       <Comment>날씨도 좋은데 퇴근하고 같이 산책해요~</Comment>
