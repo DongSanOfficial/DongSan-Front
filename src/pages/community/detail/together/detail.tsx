@@ -1,6 +1,6 @@
 import BottomNavigation from "src/components/bottomNavigation";
 import { MdMoreVert } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import AppBar from "src/components/appBar";
 import styled from "styled-components";
 import { theme } from "src/styles/colors/theme";
@@ -9,6 +9,9 @@ import CheckButton from "src/components/button/CheckButton";
 import CommentBtn from "../components/CommentBtn";
 import CommentItem from "../components/CommentItem";
 import RecruitItem from "../components/RecruitItem";
+import { getCowalkDetailList } from "src/apis/crew/crew";
+import { useEffect, useState } from "react";
+import { Cowalkwithcrew } from "src/apis/crew/crew.type";
 
 const PageWrapper = styled.div`
   display: flex;
@@ -92,29 +95,32 @@ const ButtonWrapper = styled.div`
 const HalfButton = styled.div`
   width: 40%;
 `;
-interface Item {
-  id: number;
-  date: string;
-  time: string;
-  peopleCount: number;
-  maxCount: number;
-  content: string;
-}
+
 export default function DetailFeed() {
   const navigate = useNavigate();
   const handleBack = () => navigate(-1);
 
   const clickJoin = () => {};
+  const [recruitList, setRecruitList] = useState<Cowalkwithcrew>();
+  const location = useLocation();
+  const crewId = location.state?.crewId;
+  const cowalkId = location.state?.cowalkId;
 
-  const mockItem: Item = {
-    id: 1,
-    date: "2025-06-01",
-    time: "오후 6:00",
-    peopleCount: 3,
-    maxCount: 5,
-    content: "같이 산책할 사람 구해요~",
-  };
-
+  useEffect(() => {
+    const fetchCowalkList = async () => {
+      try {
+        const reponse = await getCowalkDetailList({
+          crewId,
+          cowalkId,
+        });
+        setRecruitList(reponse);
+        console.log(reponse);
+      } catch (e) {
+        console.error("같이 산책 글 조회 실패", e);
+      }
+    };
+    if (crewId) fetchCowalkList();
+  }, [crewId, cowalkId]);
   return (
     <>
       <AppBar
@@ -126,18 +132,19 @@ export default function DetailFeed() {
         <ScrollContainer>
           <Bulletin>
             <HeaderContainer>
-              <ProfileImg src={profileImg} alt="프로필 이미지" />
+              <ProfileImg
+                src={recruitList?.profileImageUrl || profileImg}
+                alt="프로필 이미지"
+              />
               <Container>
-                <UserName>노성원</UserName>
-                <Date>2025.05.04</Date>
+                <UserName>{recruitList?.nickname}</UserName>
+                <Date>{recruitList?.createdDate}</Date>
               </Container>
             </HeaderContainer>
             <DetailContainer>
-              <Content>
-                안녕하세요안녕하세요안녕하세요안녕하세안녕하세요안녕하세요요
-              </Content>
+              <Content>{recruitList?.content || "내용이 없습니다."}</Content>
               <JoinContent>
-                <RecruitItem item={mockItem} />
+                {recruitList && <RecruitItem item={recruitList} />}
               </JoinContent>
             </DetailContainer>
             <ButtonWrapper>
