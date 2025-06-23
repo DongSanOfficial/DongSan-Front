@@ -25,6 +25,7 @@ import { useNavigate } from "react-router-dom";
 import { useLocationStore } from "../../store/useLocationStore";
 import { MdOutlineInbox } from "react-icons/md";
 import SearchBar from "./components/SearchInput";
+import { useInfiniteScroll } from "../../hooks/useInfiniteScroll";
 
 interface Location {
   lat: number;
@@ -34,6 +35,7 @@ interface Location {
 function Main() {
   const navigate = useNavigate();
   const { currentLocation, getCurrentLocation } = useLocationStore();
+
   // 바텀시트 상태
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const toggleBottomSheet = () => setIsOpen((prev) => !prev);
@@ -70,6 +72,24 @@ function Main() {
   const [selectedWalkwayId, setSelectedWalkwayId] = useState<number | null>(
     null
   );
+
+  const loadMoreWalkways = () => {
+    if (mapOption === "current" && selectedLocation) {
+      fetchWalkways(
+        selectedLocation.latitude,
+        selectedLocation.longitude,
+        sortOption
+      );
+    } else {
+      fetchAllWalkways(sortOption);
+    }
+  };
+
+  const { lastElementRef } = useInfiniteScroll({
+    hasNext: hasMore,
+    loading,
+    onLoadMore: loadMoreWalkways,
+  });
 
   /**
    * 컴포넌트 마운트 시 현재 위치 가져오기
@@ -328,21 +348,6 @@ function Main() {
     }
   };
 
-  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
-    const { scrollTop, clientHeight, scrollHeight } = event.currentTarget;
-    if (scrollHeight - scrollTop <= clientHeight * 1.5 && hasMore && !loading) {
-      if (mapOption === "current" && selectedLocation) {
-        fetchWalkways(
-          selectedLocation.latitude,
-          selectedLocation.longitude,
-          sortOption
-        );
-      } else {
-        fetchAllWalkways(sortOption);
-      }
-    }
-  };
-
   /**
    * 좋아요 클릭 처리
    */
@@ -477,30 +482,40 @@ function Main() {
                 onMapChange={handleMapChange}
               />
             </S.FixedHeader>
-            <S.PathCardList onScroll={handleScroll}>
+            <S.PathCardList>
               {error ? (
                 <S.ErrorMessage>{error}</S.ErrorMessage>
               ) : walkways.length > 0 ? (
-                walkways.map((walkway) => (
-                  <PathCard
-                    key={walkway.walkwayId}
-                    walkwayId={walkway.walkwayId}
-                    pathimage={walkway.courseImageUrl}
-                    pathname={walkway.name}
-                    hashtag={walkway.hashtags.join(" ")}
-                    distance={`${walkway.distance} km`}
-                    starCount={walkway.rating}
-                    reviewCount={walkway.reviewCount}
-                    isLiked={likedPaths[walkway.walkwayId] || false}
-                    onLikeClick={() => handleLikeClick(walkway.walkwayId)}
-                    onClick={() =>
-                      handlePathClick(
-                        walkway.walkwayId,
-                        walkway.location,
-                        walkway.name
-                      )
-                    }
-                  />
+                walkways.map((walkway, index) => (
+                  <div
+                    ref={index === walkways.length - 1 ? lastElementRef : null}
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      width: "100%",
+                    }}
+                  >
+                    <PathCard
+                      key={walkway.walkwayId}
+                      walkwayId={walkway.walkwayId}
+                      pathimage={walkway.courseImageUrl}
+                      pathname={walkway.name}
+                      hashtag={walkway.hashtags.join(" ")}
+                      distance={`${walkway.distance} km`}
+                      starCount={walkway.rating}
+                      reviewCount={walkway.reviewCount}
+                      isLiked={likedPaths[walkway.walkwayId] || false}
+                      onLikeClick={() => handleLikeClick(walkway.walkwayId)}
+                      onClick={() =>
+                        handlePathClick(
+                          walkway.walkwayId,
+                          walkway.location,
+                          walkway.name
+                        )
+                      }
+                    />
+                  </div>
                 ))
               ) : (
                 !loading && (
