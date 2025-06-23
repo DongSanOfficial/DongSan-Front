@@ -1,3 +1,4 @@
+import { Cowalkwithcrew } from "src/apis/crew/crew.type";
 import { theme } from "src/styles/colors/theme";
 import styled from "styled-components";
 
@@ -75,25 +76,17 @@ const Comment = styled.div`
   font-weight: 500;
   margin: 0.5rem 1.5rem;
 `;
-interface RecruitItem {
-  id: number;
-  date: string;
-  time: string;
-  peopleCount: number;
-  maxCount: number;
-  content: string;
-}
 
 interface RecruitListProps {
-  item: RecruitItem;
+  item: Cowalkwithcrew;
   onClick: (id: number) => void;
 }
 export default function RecruitList({ item, onClick }: RecruitListProps) {
   return (
-    <Container onClick={() => onClick(item.id)}>
+    <Container onClick={() => onClick(item.cowalkId)}>
       <CreationInfo>
-        <Writer>| 노성원</Writer>
-        <Date>{item.date}</Date>
+        <Writer>| {item.ninkname}</Writer>
+        <Date>{item.createdDate}</Date>
       </CreationInfo>
       <RecruitContent>
         <ItemContainer>
@@ -110,7 +103,7 @@ export default function RecruitList({ item, onClick }: RecruitListProps) {
         <ItemContainer>
           <Bold>모집 인원: </Bold>
           <Count>
-            {item.peopleCount}/{item.maxCount}
+            {item.memberCount}/{item.memberLimit}
           </Count>
         </ItemContainer>
       </RecruitContent>
