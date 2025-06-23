@@ -7,13 +7,24 @@ import Modal from "src/components/modal";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Cowalkwithcrew, RecruitCowalker } from "src/apis/crew/crew.type";
 import { getCowalkList } from "src/apis/crew/crew";
+import MyCowalkList from "../components/MyCowalkList";
 
 const Plusicon = styled.div`
   display: flex;
   justify-content: flex-end;
   margin: 0.5rem;
 `;
-
+const Title = styled.div`
+  font-weight: 600;
+  font-size: 18px;
+  margin: 0.5rem 0.2rem;
+`;
+const Line = styled.div`
+  width: 100%;
+  height: 1px;
+  background-color: #e0e0e0;
+  margin: 0.5rem 0;
+`;
 export default function Together() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [recruitList, setRecruitList] = useState<Cowalkwithcrew[]>([]);
@@ -29,10 +40,6 @@ export default function Together() {
     limitEnable,
     memberLimit,
   }: RecruitCowalker) => {
-    console.log("제출된 날짜:", date);
-    console.log("제출된 시간:", time);
-
-    // 모집글 다시 불러오기
     try {
       const { data: listdata } = await getCowalkList({ crewId });
       setRecruitList(listdata);
@@ -61,6 +68,11 @@ export default function Together() {
       <Plusicon onClick={() => setIsModalOpen(true)}>
         <BiPlusCircle fontSize="32px" />
       </Plusicon>
+      <Title>내가 신청한 산책 일정 목록</Title>
+
+      <MyCowalkList />
+      <Line />
+      <Title>최근 올라온 같이산책 일정</Title>
       {recruitList.map((item) => (
         <RecruitList
           key={item.cowalkId}
