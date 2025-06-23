@@ -5,10 +5,10 @@ import ToggleSwitch from "src/components/toggle/ToggleSwitch";
 import CustomDatePicker from "./CustomDate";
 import CustomTimePicker from "./CustomTime";
 import CheckButton from "src/components/button/CheckButton";
+import { createCowalk } from "src/apis/crew/crew";
+import { useLocation } from "react-router-dom";
+import { RecruitCowalker } from "src/apis/crew/crew.type";
 
-interface RecruitFormProps {
-  onSubmit: (date: string, time: string, peopleCount?: number) => void;
-}
 const Title = styled.h2`
   display: flex;
   align-items: center;
@@ -77,28 +77,54 @@ const StyledInput = styled.input<{ disabled?: boolean }>`
     color: ${theme.Gray400};
   }
 `;
-
+interface RecruitFormProps {
+  onSubmit: (params: RecruitCowalker) => void;
+}
 export default function RecruitForm({ onSubmit }: RecruitFormProps) {
   const [date, setDate] = useState<Date | null>(null);
   const [time, setTime] = useState<Date | null>(null);
   const [peopleCount, setPeopleCount] = useState<number | "">("");
   const [isLimitEnabled, setIsLimitEnabled] = useState(true);
+  const location = useLocation();
+  const crewId = location.state?.crewId;
 
-  const handleSubmit = () => {
-    const formattedDate = date ? date.toISOString().split("T")[0] : "";
-    const formattedTime = time
-      ? `${time.getHours().toString().padStart(2, "0")}:${time
-          .getMinutes()
-          .toString()
-          .padStart(2, "0")}`
-      : "";
+  const handleSubmit = async () => {
+    try {
+      if (!date || !time) return;
 
-    onSubmit(
-      formattedDate,
-      formattedTime,
-      isLimitEnabled ? Number(peopleCount) : undefined
-    );
+      const formattedDate = date.toISOString().split("T")[0];
+      const formattedTime = `${time
+        .getHours()
+        .toString()
+        .padStart(2, "0")}:${time.getMinutes().toString().padStart(2, "0")}`;
+
+      const requestBody = {
+        crewId,
+        date: formattedDate,
+        time: formattedTime,
+        limitEnable: isLimitEnabled,
+        ...(isLimitEnabled &&
+          peopleCount !== "" && {
+            memberLimit: Number(peopleCount),
+          }),
+      };
+
+      const cowalkId = await createCowalk(requestBody);
+      console.log("생성된 cowalkId:", cowalkId);
+      onSubmit({
+        date: formattedDate,
+        time: formattedTime,
+        limitEnable: isLimitEnabled,
+        ...(isLimitEnabled &&
+          peopleCount !== "" && {
+            memberLimit: Number(peopleCount),
+          }),
+      });
+    } catch (error) {
+      console.error("산책 생성 실패:", error);
+    }
   };
+
   const isFormValid =
     date !== null &&
     time !== null &&

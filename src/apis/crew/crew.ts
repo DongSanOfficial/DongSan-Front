@@ -12,6 +12,7 @@ import {
   MyCrewFeedResponse,
   MyCrewsResponse,
   RecommendedCrewsResponse,
+  RecruitCowalker,
   UploadCrewImageResponse,
 } from "./crew.type";
 
@@ -249,6 +250,24 @@ export const getCowalkList = async ({
     throw new Error(
       axiosError.response?.data?.message ||
         "같이 산책 목록 조회에 실패했습니다."
+    );
+  }
+};
+
+export const createCowalk = async ({
+  crewId,
+  ...rest
+}: { crewId: number } & RecruitCowalker): Promise<number> => {
+  try {
+    const { data } = await instance.post<{ cowalkId: number }>(
+      `crews/${crewId}/cowalk`,
+      rest
+    );
+    return data.cowalkId;
+  } catch (error) {
+    const axiosError = error as AxiosError<ApiErrorResponse>;
+    throw new Error(
+      axiosError.response?.data?.message || "같이 산책 생성에 실패했습니다."
     );
   }
 };

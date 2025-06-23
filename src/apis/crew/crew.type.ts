@@ -94,6 +94,7 @@ export interface CowalkResponse {
   data: Cowalkwithcrew[];
   hasNext: boolean;
 }
+//같이 산책 목록
 export interface Cowalkwithcrew {
   cowalkId: number;
   profileImageUrl: string;
@@ -106,4 +107,14 @@ export interface Cowalkwithcrew {
   memberLimit: number;
   content: string;
   commentCount: number;
+}
+//같이 산책 생성
+export interface RecruitCowalker {
+  date: string;
+  time: string;
+  limitEnable: boolean;
+  memberLimit?: number;
+}
+export interface RecruitCowalkerResponse {
+  cowalkId: number;
 }

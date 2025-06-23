@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import RecruitForm from "../../components/RecruitForm";
 import Modal from "src/components/modal";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Cowalkwithcrew } from "src/apis/crew/crew.type";
+import { Cowalkwithcrew, RecruitCowalker } from "src/apis/crew/crew.type";
 import { getCowalkList } from "src/apis/crew/crew";
 
 const Plusicon = styled.div`
@@ -23,12 +23,26 @@ export default function Together() {
   const handleCardClick = (cowalkId: number) => {
     navigate(`/community/detail/${cowalkId}`);
   };
-  const handleSubmit = (title: string, content: string) => {
-    console.log("제출된 제목:", title);
-    console.log("제출된 내용:", content);
-    //setRecruitList((prev) => [...prev, newRecruit]);
+  const handleSubmit = async ({
+    date,
+    time,
+    limitEnable,
+    memberLimit,
+  }: RecruitCowalker) => {
+    console.log("제출된 날짜:", date);
+    console.log("제출된 시간:", time);
+
+    // 모집글 다시 불러오기
+    try {
+      const { data: listdata } = await getCowalkList({ crewId });
+      setRecruitList(listdata);
+    } catch (e) {
+      console.error("산책 리스트 갱신 실패", e);
+    }
+
     setIsModalOpen(false); // 작성 후 모달 닫기
   };
+
   useEffect(() => {
     const fetchCowalkList = async () => {
       try {
