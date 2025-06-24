@@ -9,7 +9,11 @@ import CheckButton from "src/components/button/CheckButton";
 import CommentBtn from "../components/CommentBtn";
 import CommentItem from "../components/CommentItem";
 import RecruitItem from "../components/RecruitItem";
-import { getCowalkCommentList, getCowalkDetailList } from "src/apis/crew/crew";
+import {
+  createCowalkComment,
+  getCowalkCommentList,
+  getCowalkDetailList,
+} from "src/apis/crew/crew";
 import { useEffect, useState } from "react";
 import { CowalkComment, Cowalkwithcrew } from "src/apis/crew/crew.type";
 
@@ -125,6 +129,25 @@ export default function DetailFeed() {
 
     if (crewId) fetchCowalkList();
   }, [crewId, cowalkId]);
+
+  const handleSubmit = async (comment: string, clear: () => void) => {
+    try {
+      await createCowalkComment({
+        crewId,
+        cowalkId,
+        content: comment,
+      });
+      clear();
+      const { data: updatedComments } = await getCowalkCommentList({
+        crewId,
+        cowalkId,
+      });
+      setCommentList(updatedComments);
+    } catch (e) {
+      console.error("댓글 작성 실패", e);
+    }
+  };
+
   return (
     <>
       <AppBar
@@ -173,7 +196,7 @@ export default function DetailFeed() {
                 />
               ))}
           </BottomScrollContainer>
-          <CommentBtn />
+          <CommentBtn onSubmit={handleSubmit} />
         </ScrollContainer>
       </PageWrapper>
       <BottomNavigation />

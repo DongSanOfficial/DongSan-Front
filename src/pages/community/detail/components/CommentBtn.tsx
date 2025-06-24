@@ -13,6 +13,7 @@ const Wrapper = styled.div`
   align-items: center;
   justify-content: space-between;
 `;
+
 const InputComment = styled.input`
   border: none;
   background-color: transparent;
@@ -20,6 +21,7 @@ const InputComment = styled.input`
   width: 84%;
   outline: none;
 `;
+
 const SendBtn = styled.button`
   border: none;
   background-color: transparent;
@@ -29,23 +31,27 @@ const SendBtn = styled.button`
   width: auto;
   height: 2.5rem;
 `;
-export default function CommentBtn() {
-  const [comment, setComment] = useState<string>("");
+
+interface CommentBtnProps {
+  onSubmit: (comment: string, clear: () => void) => void;
+}
+
+export default function CommentBtn({ onSubmit }: CommentBtnProps) {
+  const [comment, setComment] = useState("");
+
   const handleSubmit = () => {
-    if (comment.trim() === "") return;
-    console.log(comment);
-    setComment("");
+    if (!comment.trim()) return;
+    onSubmit(comment, () => setComment(""));
   };
+
   return (
-    <>
-      <Wrapper>
-        <InputComment
-          placeholder="댓글을 남겨주세요"
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-        ></InputComment>
-        <SendBtn onClick={handleSubmit}>보내기</SendBtn>
-      </Wrapper>
-    </>
+    <Wrapper>
+      <InputComment
+        placeholder="댓글을 남겨주세요"
+        value={comment}
+        onChange={(e) => setComment(e.target.value)}
+      />
+      <SendBtn onClick={handleSubmit}>보내기</SendBtn>
+    </Wrapper>
   );
 }

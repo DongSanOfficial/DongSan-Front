@@ -131,3 +131,8 @@ export interface CowalkCommentResponse {
   data: CowalkComment[];
   hasNext: boolean;
 }
+
+//댓글 작성
+export interface WriteComment {
+  content: string;
+}

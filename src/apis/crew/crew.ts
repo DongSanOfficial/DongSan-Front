@@ -16,6 +16,7 @@ import {
   RecommendedCrewsResponse,
   RecruitCowalker,
   UploadCrewImageResponse,
+  WriteComment,
 } from "./crew.type";
 
 // 크루 피드 목록 조회 api
@@ -313,6 +314,31 @@ export const getCowalkCommentList = async ({
     throw new Error(
       axiosError.response?.data?.message ||
         "같이 산책 댓글 목록 조회에 실패했습니다."
+    );
+  }
+};
+
+//같이 산책 댓글 작성 api
+export const createCowalkComment = async ({
+  crewId,
+  cowalkId,
+  content,
+}: {
+  crewId: number;
+  cowalkId: number;
+  content: string;
+}): Promise<WriteComment> => {
+  try {
+    const { data } = await instance.post(
+      `/crews/${crewId}/cowalk/${cowalkId}/comments`,
+      { content }
+    );
+    return data;
+  } catch (error) {
+    const axiosError = error as AxiosError<ApiErrorResponse>;
+    throw new Error(
+      axiosError.response?.data?.message ||
+        "같이 산책 댓글 등록에 실패했습니다."
     );
   }
 };
