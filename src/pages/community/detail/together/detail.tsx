@@ -13,6 +13,7 @@ import {
   createCowalkComment,
   getCowalkCommentList,
   getCowalkDetailList,
+  joinCowalk,
 } from "src/apis/crew/crew";
 import { useEffect, useState } from "react";
 import { CowalkComment, Cowalkwithcrew } from "src/apis/crew/crew.type";
@@ -104,7 +105,9 @@ export default function DetailFeed() {
   const navigate = useNavigate();
   const handleBack = () => navigate(-1);
 
-  const clickJoin = () => {};
+  const clickJoin = async () => {
+    await joinCowalk({ crewId, cowalkId });
+  };
   const [recruitList, setRecruitList] = useState<Cowalkwithcrew>();
   const [commentList, setCommentList] = useState<CowalkComment[]>([]);
   const location = useLocation();

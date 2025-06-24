@@ -342,3 +342,20 @@ export const createCowalkComment = async ({
     );
   }
 };
+
+export const joinCowalk = async ({
+  crewId,
+  cowalkId,
+}: {
+  crewId: number;
+  cowalkId: number;
+}): Promise<void> => {
+  try {
+    await instance.post(`/crews/${crewId}/cowalk/${cowalkId}/join`);
+  } catch (error) {
+    const axiosError = error as AxiosError<ApiErrorResponse>;
+    throw new Error(
+      axiosError.response?.data?.message || "같이 산책 참여에 실패했습니다."
+    );
+  }
+};
