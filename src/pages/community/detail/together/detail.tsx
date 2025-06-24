@@ -9,9 +9,9 @@ import CheckButton from "src/components/button/CheckButton";
 import CommentBtn from "../components/CommentBtn";
 import CommentItem from "../components/CommentItem";
 import RecruitItem from "../components/RecruitItem";
-import { getCowalkDetailList } from "src/apis/crew/crew";
+import { getCowalkCommentList, getCowalkDetailList } from "src/apis/crew/crew";
 import { useEffect, useState } from "react";
-import { Cowalkwithcrew } from "src/apis/crew/crew.type";
+import { CowalkComment, Cowalkwithcrew } from "src/apis/crew/crew.type";
 
 const PageWrapper = styled.div`
   display: flex;
@@ -102,6 +102,7 @@ export default function DetailFeed() {
 
   const clickJoin = () => {};
   const [recruitList, setRecruitList] = useState<Cowalkwithcrew>();
+  const [commentList, setCommentList] = useState<CowalkComment[]>([]);
   const location = useLocation();
   const crewId = location.state?.crewId;
   const cowalkId = location.state?.cowalkId;
@@ -109,16 +110,19 @@ export default function DetailFeed() {
   useEffect(() => {
     const fetchCowalkList = async () => {
       try {
-        const reponse = await getCowalkDetailList({
-          crewId,
-          cowalkId,
-        });
-        setRecruitList(reponse);
-        console.log(reponse);
+        const [recruitRes, commentRes] = await Promise.all([
+          getCowalkDetailList({ crewId, cowalkId }),
+          getCowalkCommentList({ crewId, cowalkId }),
+        ]);
+        console.log(recruitRes);
+        console.log(commentRes);
+        setRecruitList(recruitRes);
+        setCommentList(commentRes.data);
       } catch (e) {
-        console.error("같이 산책 글 조회 실패", e);
+        console.error("같이 산책 상세조회 또는 댓글 조회 실패", e);
       }
     };
+
     if (crewId) fetchCowalkList();
   }, [crewId, cowalkId]);
   return (
@@ -158,10 +162,16 @@ export default function DetailFeed() {
             </ButtonWrapper>
           </Bulletin>
           <BottomScrollContainer>
-            <CommentItem />
-            <CommentItem />
-            <CommentItem />
-            <CommentItem />
+            {commentList.length > 0 &&
+              commentList.map((comment) => (
+                <CommentItem
+                  key={comment.commentId}
+                  profileImageUrl={comment.profileImageUrl || profileImg}
+                  nickname={comment.nickname}
+                  createdDate={comment.createdDate}
+                  content={comment.content}
+                />
+              ))}
           </BottomScrollContainer>
           <CommentBtn />
         </ScrollContainer>

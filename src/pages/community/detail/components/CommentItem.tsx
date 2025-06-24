@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import profileImg from "src/assets/images/profile.png";
 import { theme } from "src/styles/colors/theme";
+import { CowalkComment } from "src/apis/crew/crew.type";
 
 const Wrapper = styled.div`
   display: flex;
@@ -46,21 +47,23 @@ const Date = styled.div`
 `;
 const Comment = styled.div``;
 
-export default function CommentItem() {
+export default function CommentItem({
+  profileImageUrl,
+  nickname,
+  createdDate,
+  content,
+}: CowalkComment) {
   return (
     <>
       <Wrapper>
         <Contain>
-          <Img src={profileImg} />
+          <Img src={profileImageUrl || profileImg} />
           <ContainerWrapper>
             <Container>
-              <Nickname>dongsan</Nickname>
-              <Date>2025.05.16</Date>
+              <Nickname>{nickname}</Nickname>
+              <Date>{createdDate}</Date>
             </Container>
-            <Comment>
-              저도 갈래요 근데 더 기이이이이이일게 길어져라길어져라
-              길어져라길어져라 길어져라길어져라 길어져라길어져라
-            </Comment>
+            <Comment>{content}</Comment>
           </ContainerWrapper>
         </Contain>
       </Wrapper>

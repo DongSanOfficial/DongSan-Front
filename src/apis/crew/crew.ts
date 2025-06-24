@@ -3,6 +3,7 @@ import { ApiErrorResponse } from "../api.type";
 import instance from "../instance";
 import {
   CheckCrewNameResponse,
+  CowalkCommentResponse,
   CowalkResponse,
   Cowalkwithcrew,
   CreateCrewRequest,
@@ -290,6 +291,28 @@ export const getCowalkDetailList = async ({
     throw new Error(
       axiosError.response?.data?.message ||
         "같이 산책 목록 상세 조회에 실패했습니다."
+    );
+  }
+};
+
+//같이 산책 댓글 목록 api
+export const getCowalkCommentList = async ({
+  crewId,
+  cowalkId,
+}: {
+  crewId: number;
+  cowalkId: number;
+}): Promise<CowalkCommentResponse> => {
+  try {
+    const { data } = await instance.get(
+      `/crews/${crewId}/cowalk/${cowalkId}/comments`
+    );
+    return data;
+  } catch (error) {
+    const axiosError = error as AxiosError<ApiErrorResponse>;
+    throw new Error(
+      axiosError.response?.data?.message ||
+        "같이 산책 댓글 목록 조회에 실패했습니다."
     );
   }
 };
