@@ -32,7 +32,7 @@ export default function Together() {
   const crewId = location.state?.crewId;
   const navigate = useNavigate();
   const handleCardClick = (cowalkId: number) => {
-    navigate(`/community/detail/${cowalkId}`);
+    navigate(`/community/detail/${cowalkId}`, { state: { crewId, cowalkId } });
   };
   const handleSubmit = async ({
     date,

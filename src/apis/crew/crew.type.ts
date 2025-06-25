@@ -118,3 +118,21 @@ export interface RecruitCowalker {
 export interface RecruitCowalkerResponse {
   cowalkId: number;
 }
+
+//같이 산책 댓글 작성
+export interface CowalkComment {
+  commentId?: number;
+  profileImageUrl: string;
+  nickname: string;
+  createdDate: string;
+  content: string;
+}
+export interface CowalkCommentResponse {
+  data: CowalkComment[];
+  hasNext: boolean;
+}
+
+//댓글 작성
+export interface WriteComment {
+  content: string;
+}

@@ -1,6 +1,6 @@
 import BottomNavigation from "src/components/bottomNavigation";
 import { MdMoreVert } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import AppBar from "src/components/appBar";
 import styled from "styled-components";
 import { theme } from "src/styles/colors/theme";
@@ -9,6 +9,14 @@ import CheckButton from "src/components/button/CheckButton";
 import CommentBtn from "../components/CommentBtn";
 import CommentItem from "../components/CommentItem";
 import RecruitItem from "../components/RecruitItem";
+import {
+  createCowalkComment,
+  getCowalkCommentList,
+  getCowalkDetailList,
+  joinCowalk,
+} from "src/apis/crew/crew";
+import { useEffect, useState } from "react";
+import { CowalkComment, Cowalkwithcrew } from "src/apis/crew/crew.type";
 
 const PageWrapper = styled.div`
   display: flex;
@@ -92,27 +100,55 @@ const ButtonWrapper = styled.div`
 const HalfButton = styled.div`
   width: 40%;
 `;
-interface Item {
-  id: number;
-  date: string;
-  time: string;
-  peopleCount: number;
-  maxCount: number;
-  content: string;
-}
+
 export default function DetailFeed() {
   const navigate = useNavigate();
   const handleBack = () => navigate(-1);
 
-  const clickJoin = () => {};
+  const clickJoin = async () => {
+    await joinCowalk({ crewId, cowalkId });
+  };
+  const [recruitList, setRecruitList] = useState<Cowalkwithcrew>();
+  const [commentList, setCommentList] = useState<CowalkComment[]>([]);
+  const location = useLocation();
+  const crewId = location.state?.crewId;
+  const cowalkId = location.state?.cowalkId;
 
-  const mockItem: Item = {
-    id: 1,
-    date: "2025-06-01",
-    time: "오후 6:00",
-    peopleCount: 3,
-    maxCount: 5,
-    content: "같이 산책할 사람 구해요~",
+  useEffect(() => {
+    const fetchCowalkList = async () => {
+      try {
+        const [recruitRes, commentRes] = await Promise.all([
+          getCowalkDetailList({ crewId, cowalkId }),
+          getCowalkCommentList({ crewId, cowalkId }),
+        ]);
+        console.log(recruitRes);
+        console.log(commentRes);
+        setRecruitList(recruitRes);
+        setCommentList(commentRes.data);
+      } catch (e) {
+        console.error("같이 산책 상세조회 또는 댓글 조회 실패", e);
+      }
+    };
+
+    if (crewId) fetchCowalkList();
+  }, [crewId, cowalkId]);
+
+  const handleSubmit = async (comment: string, clear: () => void) => {
+    try {
+      await createCowalkComment({
+        crewId,
+        cowalkId,
+        content: comment,
+      });
+      clear();
+      const { data: updatedComments } = await getCowalkCommentList({
+        crewId,
+        cowalkId,
+      });
+      setCommentList(updatedComments);
+    } catch (e) {
+      console.error("댓글 작성 실패", e);
+    }
   };
 
   return (
@@ -126,18 +162,19 @@ export default function DetailFeed() {
         <ScrollContainer>
           <Bulletin>
             <HeaderContainer>
-              <ProfileImg src={profileImg} alt="프로필 이미지" />
+              <ProfileImg
+                src={recruitList?.profileImageUrl || profileImg}
+                alt="프로필 이미지"
+              />
               <Container>
-                <UserName>노성원</UserName>
-                <Date>2025.05.04</Date>
+                <UserName>{recruitList?.nickname}</UserName>
+                <Date>{recruitList?.createdDate}</Date>
               </Container>
             </HeaderContainer>
             <DetailContainer>
-              <Content>
-                안녕하세요안녕하세요안녕하세요안녕하세안녕하세요안녕하세요요
-              </Content>
+              <Content>{recruitList?.content || "내용이 없습니다."}</Content>
               <JoinContent>
-                <RecruitItem item={mockItem} />
+                {recruitList && <RecruitItem item={recruitList} />}
               </JoinContent>
             </DetailContainer>
             <ButtonWrapper>
@@ -151,12 +188,18 @@ export default function DetailFeed() {
             </ButtonWrapper>
           </Bulletin>
           <BottomScrollContainer>
-            <CommentItem />
-            <CommentItem />
-            <CommentItem />
-            <CommentItem />
+            {commentList.length > 0 &&
+              commentList.map((comment) => (
+                <CommentItem
+                  key={comment.commentId}
+                  profileImageUrl={comment.profileImageUrl || profileImg}
+                  nickname={comment.nickname}
+                  createdDate={comment.createdDate}
+                  content={comment.content}
+                />
+              ))}
           </BottomScrollContainer>
-          <CommentBtn />
+          <CommentBtn onSubmit={handleSubmit} />
         </ScrollContainer>
       </PageWrapper>
       <BottomNavigation />

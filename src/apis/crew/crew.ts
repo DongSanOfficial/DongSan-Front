@@ -3,7 +3,9 @@ import { ApiErrorResponse } from "../api.type";
 import instance from "../instance";
 import {
   CheckCrewNameResponse,
+  CowalkCommentResponse,
   CowalkResponse,
+  Cowalkwithcrew,
   CreateCrewRequest,
   CreateCrewResponse,
   CrewData,
@@ -14,6 +16,7 @@ import {
   RecommendedCrewsResponse,
   RecruitCowalker,
   UploadCrewImageResponse,
+  WriteComment,
 } from "./crew.type";
 
 // 크루 피드 목록 조회 api
@@ -243,7 +246,7 @@ export const getCowalkList = async ({
   const params: Record<string, any> = { crewId, size };
   if (lastId) params.lastId = lastId;
   try {
-    const { data } = await instance.get(`crews/${crewId}/cowalk`, { params });
+    const { data } = await instance.get(`/crews/${crewId}/cowalk`, { params });
     return data;
   } catch (error) {
     const axiosError = error as AxiosError<ApiErrorResponse>;
@@ -254,6 +257,7 @@ export const getCowalkList = async ({
   }
 };
 
+//같이 산책 생성 api
 export const createCowalk = async ({
   crewId,
   ...rest
@@ -268,6 +272,90 @@ export const createCowalk = async ({
     const axiosError = error as AxiosError<ApiErrorResponse>;
     throw new Error(
       axiosError.response?.data?.message || "같이 산책 생성에 실패했습니다."
+    );
+  }
+};
+
+//같이 산책 목록 상세조회 api
+export const getCowalkDetailList = async ({
+  crewId,
+  cowalkId,
+}: {
+  crewId: number;
+  cowalkId: number;
+}): Promise<Cowalkwithcrew> => {
+  try {
+    const { data } = await instance.get(`/crews/${crewId}/cowalk/${cowalkId}`);
+    return data;
+  } catch (error) {
+    const axiosError = error as AxiosError<ApiErrorResponse>;
+    throw new Error(
+      axiosError.response?.data?.message ||
+        "같이 산책 목록 상세 조회에 실패했습니다."
+    );
+  }
+};
+
+//같이 산책 댓글 목록 api
+export const getCowalkCommentList = async ({
+  crewId,
+  cowalkId,
+}: {
+  crewId: number;
+  cowalkId: number;
+}): Promise<CowalkCommentResponse> => {
+  try {
+    const { data } = await instance.get(
+      `/crews/${crewId}/cowalk/${cowalkId}/comments`
+    );
+    return data;
+  } catch (error) {
+    const axiosError = error as AxiosError<ApiErrorResponse>;
+    throw new Error(
+      axiosError.response?.data?.message ||
+        "같이 산책 댓글 목록 조회에 실패했습니다."
+    );
+  }
+};
+
+//같이 산책 댓글 작성 api
+export const createCowalkComment = async ({
+  crewId,
+  cowalkId,
+  content,
+}: {
+  crewId: number;
+  cowalkId: number;
+  content: string;
+}): Promise<WriteComment> => {
+  try {
+    const { data } = await instance.post(
+      `/crews/${crewId}/cowalk/${cowalkId}/comments`,
+      { content }
+    );
+    return data;
+  } catch (error) {
+    const axiosError = error as AxiosError<ApiErrorResponse>;
+    throw new Error(
+      axiosError.response?.data?.message ||
+        "같이 산책 댓글 등록에 실패했습니다."
+    );
+  }
+};
+
+export const joinCowalk = async ({
+  crewId,
+  cowalkId,
+}: {
+  crewId: number;
+  cowalkId: number;
+}): Promise<void> => {
+  try {
+    await instance.post(`/crews/${crewId}/cowalk/${cowalkId}/join`);
+  } catch (error) {
+    const axiosError = error as AxiosError<ApiErrorResponse>;
+    throw new Error(
+      axiosError.response?.data?.message || "같이 산책 참여에 실패했습니다."
     );
   }
 };
