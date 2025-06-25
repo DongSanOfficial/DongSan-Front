@@ -1,66 +1,84 @@
 import { BiPlusCircle } from "react-icons/bi";
 import RecruitList from "../components/RecruitList";
 import styled from "styled-components";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import RecruitForm from "../../components/RecruitForm";
 import Modal from "src/components/modal";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Cowalkwithcrew, RecruitCowalker } from "src/apis/crew/crew.type";
+import { getCowalkList } from "src/apis/crew/crew";
+import MyCowalkList from "../components/MyCowalkList";
 
 const Plusicon = styled.div`
   display: flex;
   justify-content: flex-end;
   margin: 0.5rem;
 `;
-
-interface RecruitItem {
-  id: number;
-  cowalkId: number;
-  date: string;
-  time: string;
-  peopleCount: number;
-  maxCount: number;
-  content: string;
-}
-
+const Title = styled.div`
+  font-weight: 600;
+  font-size: 18px;
+  margin: 0.5rem 0.2rem;
+`;
+const Line = styled.div`
+  width: 100%;
+  height: 1px;
+  background-color: #e0e0e0;
+  margin: 0.5rem 0;
+`;
 export default function Together() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [recruitList, setRecruitList] = useState<RecruitItem[]>([
-    {
-      id: 1,
-      cowalkId: 1,
-      date: "2025-06-03",
-      time: "18:30",
-      peopleCount: 3,
-      maxCount: 5,
-      content: "퇴근 후 같이 가볍게 산책하실 분 구해요!",
-    },
-    {
-      id: 2,
-      cowalkId: 2,
-      date: "2025-06-03",
-      time: "18:30",
-      peopleCount: 3,
-      maxCount: 5,
-      content: "퇴근 후 같이 가볍게 산책하실 분 구해요!",
-    },
-  ]);
+  const [recruitList, setRecruitList] = useState<Cowalkwithcrew[]>([]);
+  const location = useLocation();
+  const crewId = location.state?.crewId;
   const navigate = useNavigate();
   const handleCardClick = (cowalkId: number) => {
     navigate(`/community/detail/${cowalkId}`);
   };
-  const handleSubmit = (title: string, content: string) => {
-    console.log("제출된 제목:", title);
-    console.log("제출된 내용:", content);
-    //setRecruitList((prev) => [...prev, newRecruit]);
+  const handleSubmit = async ({
+    date,
+    time,
+    limitEnable,
+    memberLimit,
+  }: RecruitCowalker) => {
+    try {
+      const { data: listdata } = await getCowalkList({ crewId });
+      setRecruitList(listdata);
+    } catch (e) {
+      console.error("산책 리스트 갱신 실패", e);
+    }
+
     setIsModalOpen(false); // 작성 후 모달 닫기
   };
+
+  useEffect(() => {
+    const fetchCowalkList = async () => {
+      try {
+        const { data: listdata } = await getCowalkList({ crewId });
+        setRecruitList(listdata);
+        console.log(listdata);
+      } catch (e) {
+        console.error("같이 산책 글 조회 실패", e);
+      }
+    };
+    if (crewId) fetchCowalkList();
+  }, [crewId]);
+
   return (
     <div>
       <Plusicon onClick={() => setIsModalOpen(true)}>
         <BiPlusCircle fontSize="32px" />
       </Plusicon>
+      <Title>내가 신청한 산책 일정 목록</Title>
+
+      <MyCowalkList />
+      <Line />
+      <Title>최근 올라온 같이산책 일정</Title>
       {recruitList.map((item) => (
-        <RecruitList key={item.id} item={item} onClick={handleCardClick} />
+        <RecruitList
+          key={item.cowalkId}
+          item={item}
+          onClick={handleCardClick}
+        />
       ))}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <RecruitForm onSubmit={handleSubmit} />
