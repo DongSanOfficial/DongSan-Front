@@ -24,11 +24,22 @@ const AlertBtn = styled.button`
   font-size: 16px;
   color: #333;
 `;
-export default function MyCowalkList() {
+interface Props {
+  date: string;
+  time: {
+    hour: number;
+    minute: number;
+    second: number;
+    nano: number;
+  };
+}
+export default function MyCowalkList({ date, time }: Props) {
+  const formatted = `${date} ${time.hour}시 ${time.minute}분`;
+
   return (
     <Wrapper>
       <img src={icon} alt="산책 아이콘" />
-      <Content>2025/5/15 오후 8 : 30</Content>
+      <Content>{formatted}</Content>
       <AlertBtn>시작</AlertBtn>
     </Wrapper>
   );

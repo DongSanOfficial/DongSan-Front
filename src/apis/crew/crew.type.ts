@@ -136,3 +136,21 @@ export interface CowalkCommentResponse {
 export interface WriteComment {
   content: string;
 }
+
+export interface Time {
+  hour: number;
+  minute: number;
+  second: number;
+  nano: number;
+}
+
+export interface UserCowalk {
+  cowalkId: number;
+  date: string;
+  time: Time;
+}
+
+export interface UserCowalkList {
+  data: UserCowalk[];
+  hasNext: boolean;
+}
