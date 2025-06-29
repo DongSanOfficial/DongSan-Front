@@ -60,6 +60,11 @@ export default function CrewSetting() {
       state: { crewId },
     });
   };
+  const handlemodify = () => {
+    navigate("/community/modify", {
+      state: { crewId },
+    });
+  };
   const handleBack = () => navigate(-1);
   return (
     <>
@@ -95,12 +100,14 @@ export default function CrewSetting() {
           <ItemContainer>
             <Title>크루 인원</Title>
             <Item>
-              {crew?.memberCount}/{crew?.memberLimit}
+              {crew?.memberLimit
+                ? `${crew?.memberCount}/${crew?.memberLimit}`
+                : "제한 없음"}
             </Item>
           </ItemContainer>
           <ItemContainer>
             <Title>크루 정보 수정</Title>
-            <MdArrowForwardIos onClick={() => navigate("/community/modify")} />
+            <MdArrowForwardIos onClick={handlemodify} />
           </ItemContainer>
         </ScrollContainer>
       </PageWrapper>

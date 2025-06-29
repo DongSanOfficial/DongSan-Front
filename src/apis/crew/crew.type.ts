@@ -82,6 +82,16 @@ export interface CrewDetailInfo {
   isJoined: boolean;
 }
 
+export interface ModifyCrewInfo {
+  crewId: number;
+  name: string;
+  description: string;
+  rule: string;
+  visibility: CrewVisibility;
+  password?: string;
+  memberLimit: number;
+  crewImageId: number;
+}
 // 크루 랭킹 아이템 타입
 export interface CrewRankingItem {
   memberId: number;

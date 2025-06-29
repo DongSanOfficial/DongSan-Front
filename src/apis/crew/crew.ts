@@ -233,7 +233,27 @@ export const getCrewRanking = async (
     );
   }
 };
-
+//크루 정보 수정 api
+export const modifyCrew = async (
+  crewId: number,
+  body: {
+    name: string;
+    description: string;
+    rule: string;
+    visibility: "PUBLIC" | "PRIVATE";
+    password?: string;
+    memberLimit?: number;
+  }
+): Promise<void> => {
+  try {
+    await instance.put(`/crews/${crewId}`, body);
+  } catch (error) {
+    const axiosError = error as AxiosError<ApiErrorResponse>;
+    throw new Error(
+      axiosError.response?.data?.message || "크루 정보 수정에 실패했습니다."
+    );
+  }
+};
 //같이 산책 목록 조회 api
 export const getCowalkList = async ({
   crewId,

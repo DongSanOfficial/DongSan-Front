@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import AppBar from "src/components/appBar";
 import BottomNavigation from "src/components/bottomNavigation";
 import TextInput from "src/components/input";
@@ -18,6 +18,8 @@ import {
   MdPeople,
   MdImage,
 } from "react-icons/md";
+import { getCrewDetail, modifyCrew } from "src/apis/crew/crew";
+import { CrewDetailInfo } from "src/apis/crew/crew.type";
 
 const PageWrapper = styled.div`
   display: flex;
@@ -112,6 +114,9 @@ const RequiredMark = styled.span`
 `;
 
 export default function ModifyCrew() {
+  const location = useLocation();
+  const crewId = location.state?.crewId;
+
   const navigate = useNavigate();
   const [crewName, setCrewName] = useState("");
   const [isNameChecked, setIsNameChecked] = useState(false);
@@ -122,7 +127,32 @@ export default function ModifyCrew() {
   const [limitEnabled, setLimitEnabled] = useState(false);
   const [maxMember, setMaxMember] = useState("");
   const [image, setImage] = useState<File | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  // 기존 정보 불러오기
+  useEffect(() => {
+    if (!crewId) return;
 
+    const fetchData = async () => {
+      try {
+        const data: CrewDetailInfo = await getCrewDetail(crewId);
+        setCrewName(data.name);
+        setDescription(data.description || "");
+        setRules(data.rule || "");
+        setIsPrivate(data.visibility === "PRIVATE");
+        setPassword(""); // 비공개지만 비밀번호는 비워둠 (보안)
+        if (data.memberLimit) {
+          setLimitEnabled(true);
+          setMaxMember(data.memberLimit.toString());
+        }
+      } catch (error) {
+        alert("크루 정보를 불러오는 데 실패했습니다.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [crewId]);
   const isFormValid =
     crewName &&
     isNameChecked &&
@@ -136,18 +166,24 @@ export default function ModifyCrew() {
     setIsNameChecked(true);
   };
 
-  const handleSubmit = () => {
-    if (!isFormValid) return;
-    console.log({
-      crewName,
-      description,
-      rules,
-      isPrivate,
-      password,
-      limitEnabled,
-      maxMember,
-      image,
-    });
+  const handleSubmit = async () => {
+    if (!isFormValid || !crewId) return;
+
+    try {
+      await modifyCrew(crewId, {
+        name: crewName,
+        description,
+        rule: rules,
+        visibility: isPrivate ? "PRIVATE" : "PUBLIC",
+        password: isPrivate ? password : undefined,
+        memberLimit: limitEnabled ? Number(maxMember) : undefined,
+      });
+
+      alert("크루 정보가 성공적으로 수정되었습니다.");
+      navigate(-1); // 이전 페이지로 이동
+    } catch (error) {
+      alert((error as Error).message);
+    }
   };
 
   return (
