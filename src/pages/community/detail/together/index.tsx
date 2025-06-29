@@ -5,8 +5,12 @@ import { useEffect, useState } from "react";
 import RecruitForm from "../../components/RecruitForm";
 import Modal from "src/components/modal";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Cowalkwithcrew, RecruitCowalker } from "src/apis/crew/crew.type";
-import { getCowalkList } from "src/apis/crew/crew";
+import {
+  Cowalkwithcrew,
+  RecruitCowalker,
+  UserCowalk,
+} from "src/apis/crew/crew.type";
+import { getCowalkList, getUserCowalkList } from "src/apis/crew/crew";
 import MyCowalkList from "../components/MyCowalkList";
 
 const Plusicon = styled.div`
@@ -28,6 +32,7 @@ const Line = styled.div`
 export default function Together() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [recruitList, setRecruitList] = useState<Cowalkwithcrew[]>([]);
+  const [myCowalkList, setMyCowalkList] = useState<UserCowalk[]>([]);
   const location = useLocation();
   const crewId = location.state?.crewId;
   const navigate = useNavigate();
@@ -51,16 +56,24 @@ export default function Together() {
   };
 
   useEffect(() => {
-    const fetchCowalkList = async () => {
+    const fetchLists = async () => {
       try {
-        const { data: listdata } = await getCowalkList({ crewId });
-        setRecruitList(listdata);
-        console.log(listdata);
+        if (!crewId) return;
+
+        const [recruitRes, userCowalkRes] = await Promise.all([
+          getCowalkList({ crewId }),
+          getUserCowalkList(),
+        ]);
+
+        setRecruitList(recruitRes.data);
+        setMyCowalkList(userCowalkRes.data);
+        console.log("내가 신청한 산책 일정:", userCowalkRes.data);
       } catch (e) {
-        console.error("같이 산책 글 조회 실패", e);
+        console.error("산책 목록 조회 실패", e);
       }
     };
-    if (crewId) fetchCowalkList();
+
+    fetchLists();
   }, [crewId]);
 
   return (
@@ -70,7 +83,15 @@ export default function Together() {
       </Plusicon>
       <Title>내가 신청한 산책 일정 목록</Title>
 
-      <MyCowalkList />
+      {myCowalkList.length === 0 ? (
+        <div style={{ padding: "0.5rem 1rem", color: "#999" }}>
+          신청한 산책 일정이 없습니다.
+        </div>
+      ) : (
+        myCowalkList.map(({ cowalkId, date, time }) => (
+          <MyCowalkList key={cowalkId} date={date} time={time} />
+        ))
+      )}
       <Line />
       <Title>최근 올라온 같이산책 일정</Title>
       {recruitList.map((item) => (

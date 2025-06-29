@@ -16,6 +16,7 @@ import {
   RecommendedCrewsResponse,
   RecruitCowalker,
   UploadCrewImageResponse,
+  UserCowalkList,
   WriteComment,
 } from "./crew.type";
 
@@ -356,6 +357,19 @@ export const joinCowalk = async ({
     const axiosError = error as AxiosError<ApiErrorResponse>;
     throw new Error(
       axiosError.response?.data?.message || "같이 산책 참여에 실패했습니다."
+    );
+  }
+};
+
+export const getUserCowalkList = async (): Promise<UserCowalkList> => {
+  try {
+    const { data } = await instance.get<UserCowalkList>(`/users/cowalk`);
+    return data;
+  } catch (error) {
+    const axiosError = error as AxiosError<ApiErrorResponse>;
+    throw new Error(
+      axiosError.response?.data?.message ||
+        "사용자 같이 산책 목록 조회에 실패했습니다."
     );
   }
 };
