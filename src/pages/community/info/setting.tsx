@@ -4,6 +4,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import AppBar from "src/components/appBar";
 import styled from "styled-components";
 import { theme } from "src/styles/colors/theme";
+import { useEffect, useState } from "react";
+import { getCrewDetail } from "src/apis/crew/crew";
+import { CrewDetailInfo } from "src/apis/crew/crew.type";
 
 const PageWrapper = styled.div`
   display: flex;
@@ -34,14 +37,27 @@ const Item = styled.div``;
 export default function CrewSetting() {
   const location = useLocation();
   const navigate = useNavigate();
-  const crew = location.state?.crew;
+  const crewId = location.state?.crewId;
 
-  if (!crew) {
-    return <div>크루 정보를 찾을 수 없습니다.</div>;
-  }
+  const [crew, setCrew] = useState<CrewDetailInfo | null>(null);
+
+  useEffect(() => {
+    const fetchCrew = async () => {
+      if (!crewId) {
+        return <div>크루 정보를 찾을 수 없습니다.</div>;
+      }
+      try {
+        const data = await getCrewDetail(crewId);
+        setCrew(data);
+      } catch (e) {
+        console.error("크루 정보 불러오기 실패", e);
+      }
+    };
+    fetchCrew();
+  }, [crewId]);
   const handleClick = () => {
     navigate("/community/detail/information", {
-      state: { crew },
+      state: { crewId },
     });
   };
   const handleBack = () => navigate(-1);
@@ -50,7 +66,7 @@ export default function CrewSetting() {
       <AppBar
         onBack={handleBack}
         title={
-          crew.visibility === "PRIVATE" ? (
+          crew?.visibility === "PRIVATE" ? (
             <div
               style={{
                 display: "flex",
@@ -58,10 +74,10 @@ export default function CrewSetting() {
                 alignItems: "center",
               }}
             >
-              {crew.name} <MdLockOutline />
+              {crew?.name} <MdLockOutline />
             </div>
           ) : (
-            crew.name
+            crew?.name
           )
         }
         //rightIcon={<MdMoreVert size={20} />}
@@ -79,7 +95,7 @@ export default function CrewSetting() {
           <ItemContainer>
             <Title>크루 인원</Title>
             <Item>
-              {crew.memberCount}/{crew.memberLimit}
+              {crew?.memberCount}/{crew?.memberLimit}
             </Item>
           </ItemContainer>
           <ItemContainer>
