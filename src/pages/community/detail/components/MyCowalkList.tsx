@@ -29,24 +29,15 @@ const AlertBtn = styled.button<{ isNow: boolean }>`
 
 interface Props {
   date: string;
-  time: {
-    hour: number;
-    minute: number;
-    second: number;
-    nano: number;
-  };
+  time: string;
 }
 
 export default function MyCowalkList({ date, time }: Props) {
-  const formatted = `${date} ${time.hour}시 ${time.minute}분`;
+  const [hour, minute] = time.split(":"); // "10:06:20" → ["10", "06", "20"]
+  const formatted = `${date} ${hour}시 ${minute}분`;
 
-  // 현재 시각과 비교할 대상 시간 만들기
-  const targetTime = new Date(
-    `${date}T${String(time.hour).padStart(2, "0")}:${String(
-      time.minute
-    ).padStart(2, "0")}:00`
-  );
   const now = new Date();
+  const targetTime = new Date(`${date}T${time}`);
 
   const isNow =
     now.getFullYear() === targetTime.getFullYear() &&

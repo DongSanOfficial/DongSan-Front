@@ -157,7 +157,7 @@ export interface Time {
 export interface UserCowalk {
   cowalkId: number;
   date: string;
-  time: Time;
+  time: string;
 }
 
 export interface UserCowalkList {
