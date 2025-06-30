@@ -117,6 +117,7 @@ export interface Cowalkwithcrew {
   memberLimit: number;
   content: string;
   commentCount: number;
+  memo: string;
 }
 //같이 산책 생성
 export interface RecruitCowalker {
@@ -124,6 +125,7 @@ export interface RecruitCowalker {
   time: string;
   limitEnable: boolean;
   memberLimit?: number;
+  memo: string;
 }
 export interface RecruitCowalkerResponse {
   cowalkId: number;
