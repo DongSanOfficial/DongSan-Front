@@ -25,13 +25,13 @@ const PreviewImage = styled.img`
 const HiddenInput = styled.input`
   display: none;
 `;
-
 interface Props {
   file: File | null;
-  onChange: (file: File | null) => void;
+  onChange: (file: File) => void;
+  previewUrl?: string;
 }
 
-export default function ImageUploader({ file, onChange }: Props) {
+export default function ImageUploader({ file, onChange, previewUrl }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleClick = () => {
@@ -50,6 +50,8 @@ export default function ImageUploader({ file, onChange }: Props) {
       <UploadBox onClick={handleClick}>
         {file ? (
           <PreviewImage src={URL.createObjectURL(file)} alt="preview" />
+        ) : previewUrl ? (
+          <PreviewImage src={previewUrl} alt="preview" />
         ) : (
           "탭하여 이미지 등록"
         )}

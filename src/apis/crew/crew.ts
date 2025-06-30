@@ -243,6 +243,7 @@ export const modifyCrew = async (
     visibility: "PUBLIC" | "PRIVATE";
     password?: string;
     memberLimit?: number;
+    crewImageId?: number;
   }
 ): Promise<void> => {
   try {
