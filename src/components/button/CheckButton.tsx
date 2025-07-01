@@ -10,6 +10,7 @@ const Button = styled.button<{ active: boolean }>`
   color: #fff;
   border: none;
   border-radius: 6px;
+  margin-top: 0.5rem;
   cursor: ${({ active }) => (active ? "pointer" : "not-allowed")};
   white-space: nowrap;
   transition: background-color 0.2s ease;

@@ -172,7 +172,7 @@ export default function DetailFeed() {
               </Container>
             </HeaderContainer>
             <DetailContainer>
-              <Content>{recruitList?.content || "내용이 없습니다."}</Content>
+              <Content>{recruitList?.memo || "내용이 없습니다."}</Content>
               <JoinContent>
                 {recruitList && <RecruitItem item={recruitList} />}
               </JoinContent>

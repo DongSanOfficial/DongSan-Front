@@ -109,7 +109,7 @@ export default function RecruitList({ item, onClick }: RecruitListProps) {
         )}
       </RecruitContent>
       <Line />
-      <Comment>날씨도 좋은데 퇴근하고 같이 산책해요~</Comment>
+      <Comment>{item.memo}</Comment>
     </Container>
   );
 }

@@ -77,26 +77,32 @@ const StyledInput = styled.input<{ disabled?: boolean }>`
     color: ${theme.Gray400};
   }
 `;
+
 interface RecruitFormProps {
-  onSubmit: (params: RecruitCowalker) => void;
+  onSubmit: (params: RecruitCowalker & { crewId: number }) => void;
 }
+
 export default function RecruitForm({ onSubmit }: RecruitFormProps) {
   const [date, setDate] = useState<Date | null>(null);
   const [time, setTime] = useState<Date | null>(null);
   const [peopleCount, setPeopleCount] = useState<number | "">("");
   const [isLimitEnabled, setIsLimitEnabled] = useState(true);
+  const [memo, setMemo] = useState<string>("");
   const location = useLocation();
   const crewId = location.state?.crewId;
 
   const handleSubmit = async () => {
     try {
-      if (!date || !time) return;
+      if (!date || !time || !crewId) return;
 
       const formattedDate = date.toISOString().split("T")[0];
       const formattedTime = `${time
         .getHours()
         .toString()
-        .padStart(2, "0")}:${time.getMinutes().toString().padStart(2, "0")}`;
+        .padStart(2, "0")}:${time
+        .getMinutes()
+        .toString()
+        .padStart(2, "0")}:${time.getSeconds().toString().padStart(2, "0")}`;
 
       const requestBody = {
         crewId,
@@ -107,11 +113,14 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
           peopleCount !== "" && {
             memberLimit: Number(peopleCount),
           }),
+        memo,
       };
 
       const cowalkId = await createCowalk(requestBody);
       console.log("생성된 cowalkId:", cowalkId);
+
       onSubmit({
+        crewId,
         date: formattedDate,
         time: formattedTime,
         limitEnable: isLimitEnabled,
@@ -119,6 +128,7 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
           peopleCount !== "" && {
             memberLimit: Number(peopleCount),
           }),
+        memo,
       });
     } catch (error) {
       console.error("산책 생성 실패:", error);
@@ -131,7 +141,8 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
     (!isLimitEnabled ||
       (typeof peopleCount === "number" &&
         peopleCount >= 2 &&
-        peopleCount <= 100));
+        peopleCount <= 100)) &&
+    memo.trim().length > 0;
 
   return (
     <>
@@ -153,23 +164,15 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
           />
         </SelectItem>
       </ScheduleContainer>
+
       <SubTitle>
         최대 모집인원 설정하기{" "}
-        {isLimitEnabled ? (
-          <ToggleSwitch
-            isOn={true}
-            label="전체공개"
-            readOnly={false}
-            onChange={() => setIsLimitEnabled((prev) => !prev)}
-          ></ToggleSwitch>
-        ) : (
-          <ToggleSwitch
-            isOn={false}
-            label="비공개"
-            readOnly={false}
-            onChange={() => setIsLimitEnabled((prev) => !prev)}
-          ></ToggleSwitch>
-        )}{" "}
+        <ToggleSwitch
+          isOn={isLimitEnabled}
+          label={isLimitEnabled ? "전체공개" : "비공개"}
+          readOnly={false}
+          onChange={() => setIsLimitEnabled((prev) => !prev)}
+        />
       </SubTitle>
       <LittleTitle>최소 2명에서 100명까지 가능합니다.</LittleTitle>
       <InputNumberContainer>
@@ -186,6 +189,17 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
         />
         <span>명</span>
       </InputNumberContainer>
+
+      <SubTitle>한줄 소개</SubTitle>
+      <StyledInput
+        type="text"
+        value={memo}
+        onChange={(e) => setMemo(e.target.value)}
+        placeholder="같이 산책할 내용을 적어주세요"
+        min={2}
+        max={200}
+      />
+
       <CheckButton
         active={isFormValid}
         label="추가하기"
