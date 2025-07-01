@@ -4,6 +4,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import AppBar from "src/components/appBar";
 import styled from "styled-components";
 import { theme } from "src/styles/colors/theme";
+import { getCrewDetail } from "src/apis/crew/crew";
+import { CrewDetailInfo } from "src/apis/crew/crew.type";
+import { useEffect, useState } from "react";
 
 const PageWrapper = styled.div`
   display: flex;
@@ -63,11 +66,23 @@ const Line = styled.div`
 export default function CrewInfo() {
   const location = useLocation();
   const navigate = useNavigate();
-  const crew = location.state?.crew;
+  const crewId = location.state?.crewId;
+  const [crew, setCrew] = useState<CrewDetailInfo | null>(null);
 
-  if (!crew) {
-    return <div>크루 정보를 찾을 수 없습니다.</div>;
-  }
+  useEffect(() => {
+    const fetchCrew = async () => {
+      if (!crewId) {
+        return <div>크루 정보를 찾을 수 없습니다.</div>;
+      }
+      try {
+        const data = await getCrewDetail(crewId);
+        setCrew(data);
+      } catch (e) {
+        console.error("크루 정보 불러오기 실패", e);
+      }
+    };
+    fetchCrew();
+  }, [crewId]);
 
   const handleBack = () => navigate(-1);
   // const handleSubmit = () => {
@@ -81,7 +96,7 @@ export default function CrewInfo() {
       <AppBar
         onBack={handleBack}
         title={
-          crew.visibility === "PRIVATE" ? (
+          crew?.visibility === "PRIVATE" ? (
             <div
               style={{
                 display: "flex",
@@ -92,7 +107,7 @@ export default function CrewInfo() {
               {crew.name} <MdLockOutline />
             </div>
           ) : (
-            crew.name
+            crew?.name
           )
         }
         rightIcon={<MdMoreVert size={20} />}
@@ -101,12 +116,12 @@ export default function CrewInfo() {
         <ScrollContainer>
           <Container>
             <Title>크루 소개</Title>
-            <Content>{crew.description}</Content>
+            <Content>{crew?.description}</Content>
           </Container>
           <Line></Line>
           <Container>
             <Title>크루 규칙</Title>
-            <Content>{crew.rules}</Content>
+            <Content>{crew?.rule}</Content>
           </Container>
         </ScrollContainer>
         {/* <FixedButtonWrapper>

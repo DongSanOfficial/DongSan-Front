@@ -16,6 +16,7 @@ import {
   RecommendedCrewsResponse,
   RecruitCowalker,
   UploadCrewImageResponse,
+  UserCowalkList,
   WriteComment,
 } from "./crew.type";
 
@@ -232,7 +233,28 @@ export const getCrewRanking = async (
     );
   }
 };
-
+//크루 정보 수정 api
+export const modifyCrew = async (
+  crewId: number,
+  body: {
+    name: string;
+    description: string;
+    rule: string;
+    visibility: "PUBLIC" | "PRIVATE";
+    password?: string;
+    memberLimit?: number;
+    crewImageId?: number;
+  }
+): Promise<void> => {
+  try {
+    await instance.put(`/crews/${crewId}`, body);
+  } catch (error) {
+    const axiosError = error as AxiosError<ApiErrorResponse>;
+    throw new Error(
+      axiosError.response?.data?.message || "크루 정보 수정에 실패했습니다."
+    );
+  }
+};
 //같이 산책 목록 조회 api
 export const getCowalkList = async ({
   crewId,
@@ -356,6 +378,19 @@ export const joinCowalk = async ({
     const axiosError = error as AxiosError<ApiErrorResponse>;
     throw new Error(
       axiosError.response?.data?.message || "같이 산책 참여에 실패했습니다."
+    );
+  }
+};
+
+export const getUserCowalkList = async (): Promise<UserCowalkList> => {
+  try {
+    const { data } = await instance.get<UserCowalkList>(`/users/cowalk`);
+    return data;
+  } catch (error) {
+    const axiosError = error as AxiosError<ApiErrorResponse>;
+    throw new Error(
+      axiosError.response?.data?.message ||
+        "사용자 같이 산책 목록 조회에 실패했습니다."
     );
   }
 };

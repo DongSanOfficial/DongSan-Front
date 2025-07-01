@@ -82,6 +82,16 @@ export interface CrewDetailInfo {
   isJoined: boolean;
 }
 
+export interface ModifyCrewInfo {
+  crewId: number;
+  name: string;
+  description: string;
+  rule: string;
+  visibility: CrewVisibility;
+  password?: string;
+  memberLimit: number;
+  crewImageId: number;
+}
 // 크루 랭킹 아이템 타입
 export interface CrewRankingItem {
   memberId: number;
@@ -135,4 +145,22 @@ export interface CowalkCommentResponse {
 //댓글 작성
 export interface WriteComment {
   content: string;
+}
+
+export interface Time {
+  hour: number;
+  minute: number;
+  second: number;
+  nano: number;
+}
+
+export interface UserCowalk {
+  cowalkId: number;
+  date: string;
+  time: string;
+}
+
+export interface UserCowalkList {
+  data: UserCowalk[];
+  hasNext: boolean;
 }
