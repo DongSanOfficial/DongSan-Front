@@ -95,7 +95,7 @@ export default function CrewSetting() {
           </ItemContainer>
           <ItemContainer>
             <Title>크루장</Title>
-            <Item>dongsan</Item>
+            <Item>{crew?.managerNickname}</Item>
           </ItemContainer>
           <ItemContainer>
             <Title>크루 인원</Title>
