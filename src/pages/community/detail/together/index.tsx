@@ -50,8 +50,7 @@ export default function Together() {
   const handleCardClick = (cowalkId: number) => {
     navigate(`/community/detail/${cowalkId}`, { state: { crewId, cowalkId } });
   };
-  // Together 컴포넌트 내
-  // Together 컴포넌트 내
+
   const handleSubmit = async ({
     crewId,
     startDate,

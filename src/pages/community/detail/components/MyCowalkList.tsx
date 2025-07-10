@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import icon from "src/assets/svg/FootPrint.svg";
+import { theme } from "src/styles/colors/theme";
 
 const Wrapper = styled.div`
   display: flex;
@@ -18,7 +19,7 @@ const Content = styled.div`
 `;
 
 const AlertBtn = styled.button<{ isNow: boolean }>`
-  background-color: ${({ isNow }) => (isNow ? "green" : "#f0f0f0")};
+  background-color: ${({ isNow }) => (isNow ? `${theme.Green500}` : "#f0f0f0")};
   border: none;
   border-radius: 25px;
   width: 4.5rem;
@@ -50,12 +51,7 @@ export default function MyCowalkList({
   // 현재 시간과 비교해서 isNow 계산 (분 단위까지 정확히 일치할 때 true)
   const now = new Date();
 
-  const isNow =
-    now.getFullYear() === startedDate.getFullYear() &&
-    now.getMonth() === startedDate.getMonth() &&
-    now.getDate() === startedDate.getDate() &&
-    now.getHours() === startedDate.getHours() &&
-    now.getMinutes() === startedDate.getMinutes();
+  const isNow = now >= startedDate && now <= new Date(endedAt);
 
   return (
     <Wrapper>
