@@ -123,8 +123,10 @@ export interface Cowalkwithcrew {
 }
 //같이 산책 생성
 export interface RecruitCowalker {
-  date: string;
-  time: string;
+  startDate: string;
+  startTime: string;
+  endDate: string;
+  endTime: string;
   limitEnable: boolean;
   memberLimit?: number;
   memo: string;
@@ -160,8 +162,8 @@ export interface Time {
 
 export interface UserCowalk {
   cowalkId: number;
-  date: string;
-  time: string;
+  startedAt: string;
+  endedAt: string;
 }
 
 export interface UserCowalkList {

@@ -28,18 +28,19 @@ const ScheduleContainer = styled.div`
   display: flex;
   flex-direction: column;
   padding: 0.5rem;
-  width: 80%;
+  width: 95%;
   margin: 0 auto;
+  font-size: 14px;
 `;
-const SelectItem = styled.label`
-  margin: 0.4rem 0;
-  border-bottom: 1px solid ${theme.Gray300};
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  position: relative;
-  height: 2.5rem;
-`;
+// const SelectItem = styled.label`
+//   margin: 0.4rem 0;
+//   border-bottom: 1px solid ${theme.Gray300};
+//   display: flex;
+//   align-items: center;
+//   gap: 0.5rem;
+//   position: relative;
+//   height: 2.5rem;
+// `;
 
 const LittleTitle = styled.div`
   font-size: 14px;
@@ -77,14 +78,23 @@ const StyledInput = styled.input<{ disabled?: boolean }>`
     color: ${theme.Gray400};
   }
 `;
+const TimeRangeWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+`;
 
 interface RecruitFormProps {
-  onSubmit: (params: RecruitCowalker & { crewId: number }) => void;
+  onSubmit: (
+    params: RecruitCowalker & { crewId: number }
+  ) => void | Promise<void>;
 }
 
 export default function RecruitForm({ onSubmit }: RecruitFormProps) {
-  const [date, setDate] = useState<Date | null>(null);
-  const [time, setTime] = useState<Date | null>(null);
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [startTime, setStartTime] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [endTime, setEndTime] = useState<Date | null>(null);
   const [peopleCount, setPeopleCount] = useState<number | "">("");
   const [isLimitEnabled, setIsLimitEnabled] = useState(true);
   const [memo, setMemo] = useState<string>("");
@@ -93,21 +103,35 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
 
   const handleSubmit = async () => {
     try {
-      if (!date || !time || !crewId) return;
+      if (!startDate || !startTime || !endDate || !endTime || !crewId) return;
 
-      const formattedDate = date.toISOString().split("T")[0];
-      const formattedTime = `${time
+      const formattedStartDate = startDate.toISOString().split("T")[0];
+      const formattedStartTime = `${startTime
         .getHours()
         .toString()
-        .padStart(2, "0")}:${time
+        .padStart(2, "0")}:${startTime
         .getMinutes()
         .toString()
-        .padStart(2, "0")}:${time.getSeconds().toString().padStart(2, "0")}`;
+        .padStart(2, "0")}:${startTime
+        .getSeconds()
+        .toString()
+        .padStart(2, "0")}`;
+
+      const formattedEndDate = endDate.toISOString().split("T")[0];
+      const formattedEndTime = `${endTime
+        .getHours()
+        .toString()
+        .padStart(2, "0")}:${endTime
+        .getMinutes()
+        .toString()
+        .padStart(2, "0")}:${endTime.getSeconds().toString().padStart(2, "0")}`;
 
       const requestBody = {
         crewId,
-        date: formattedDate,
-        time: formattedTime,
+        startDate: formattedStartDate,
+        startTime: formattedStartTime,
+        endDate: formattedEndDate,
+        endTime: formattedEndTime,
         limitEnable: isLimitEnabled,
         ...(isLimitEnabled &&
           peopleCount !== "" && {
@@ -121,8 +145,10 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
 
       onSubmit({
         crewId,
-        date: formattedDate,
-        time: formattedTime,
+        startDate: formattedStartDate,
+        startTime: formattedStartTime,
+        endDate: formattedEndDate,
+        endTime: formattedEndTime,
         limitEnable: isLimitEnabled,
         ...(isLimitEnabled &&
           peopleCount !== "" && {
@@ -136,8 +162,10 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
   };
 
   const isFormValid =
-    date !== null &&
-    time !== null &&
+    startDate !== null &&
+    startTime !== null &&
+    endDate !== null &&
+    endTime !== null &&
     (!isLimitEnabled ||
       (typeof peopleCount === "number" &&
         peopleCount >= 2 &&
@@ -151,20 +179,38 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
         같이 산책할 일정을 선택해주세요 <span style={{ color: "red" }}>*</span>
       </SubTitle>
       <ScheduleContainer>
-        <SelectItem>
+        {/* <SelectItem>
           <CustomDatePicker
             selected={date}
             onChange={(date) => setDate(date)}
           />
-        </SelectItem>
-        <SelectItem>
-          <CustomTimePicker
-            selected={time}
-            onChange={(date) => setTime(date)}
+        </SelectItem> */}
+        <TimeRangeWrapper>
+          <CustomDatePicker
+            selected={startDate}
+            onChange={(date) => setStartDate(date)}
           />
-        </SelectItem>
+          <span>~</span>
+          <CustomDatePicker
+            selected={endDate}
+            onChange={(date) => setEndDate(date)}
+          />
+        </TimeRangeWrapper>
       </ScheduleContainer>
 
+      <ScheduleContainer>
+        <TimeRangeWrapper>
+          <CustomTimePicker
+            selected={startTime}
+            onChange={(date) => setStartTime(date)}
+          />
+          <span>~</span>
+          <CustomTimePicker
+            selected={endTime}
+            onChange={(date) => setEndTime(date)}
+          />
+        </TimeRangeWrapper>
+      </ScheduleContainer>
       <SubTitle>
         최대 모집인원 설정하기{" "}
         <ToggleSwitch

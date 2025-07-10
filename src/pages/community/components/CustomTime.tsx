@@ -20,7 +20,8 @@ const StyledButton = styled.button<StyledButtonProps>`
   width: 100%;
   background: transparent;
   border: none;
-  font-size: 16px;
+  font-size: 14px;
+  padding: 0;
   color: ${(props) => (props.hasValue ? "#000" : "#aaa")};
   cursor: pointer;
 `;
@@ -51,7 +52,7 @@ export default function CustomTimePicker({
 }: CustomTimePickerProps) {
   return (
     <PickerWrapper>
-      <BsClock fontSize="25px" />
+      <BsClock fontSize="20px" />
       <DatePicker
         selected={selected}
         onChange={onChange}

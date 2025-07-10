@@ -29,6 +29,7 @@ const Line = styled.div`
   background-color: #e0e0e0;
   margin: 0.5rem 0;
 `;
+
 export default function Together() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [recruitList, setRecruitList] = useState<Cowalkwithcrew[]>([]);
@@ -36,15 +37,21 @@ export default function Together() {
   const location = useLocation();
   const crewId = location.state?.crewId;
   const navigate = useNavigate();
+
   const handleCardClick = (cowalkId: number) => {
     navigate(`/community/detail/${cowalkId}`, { state: { crewId, cowalkId } });
   };
+
   const handleSubmit = async ({
-    date,
-    time,
+    crewId,
+    startDate,
+    startTime,
+    endDate,
+    endTime,
     limitEnable,
     memberLimit,
-  }: RecruitCowalker) => {
+    memo,
+  }: RecruitCowalker & { crewId: number }) => {
     try {
       const { data: listdata } = await getCowalkList({ crewId });
       setRecruitList(listdata);
@@ -52,7 +59,7 @@ export default function Together() {
       console.error("산책 리스트 갱신 실패", e);
     }
 
-    setIsModalOpen(false); // 작성 후 모달 닫기
+    setIsModalOpen(false);
   };
 
   useEffect(() => {
@@ -81,17 +88,22 @@ export default function Together() {
       <Plusicon onClick={() => setIsModalOpen(true)}>
         <BiPlusCircle fontSize="32px" />
       </Plusicon>
-      <Title>내가 신청한 산책 일정 목록</Title>
 
+      <Title>내가 신청한 산책 일정 목록</Title>
       {myCowalkList.length === 0 ? (
         <div style={{ padding: "0.5rem 1rem", color: "#999" }}>
           신청한 산책 일정이 없습니다.
         </div>
       ) : (
-        myCowalkList.map(({ cowalkId, date, time }) => (
-          <MyCowalkList key={cowalkId} date={date} time={time} />
+        myCowalkList.map(({ cowalkId, startedAt, endedAt }) => (
+          <MyCowalkList
+            key={cowalkId}
+            startedAt={startedAt}
+            endedAt={endedAt}
+          />
         ))
       )}
+
       <Line />
       <Title>최근 올라온 같이산책 일정</Title>
       {recruitList.map((item) => (
@@ -101,6 +113,7 @@ export default function Together() {
           onClick={handleCardClick}
         />
       ))}
+
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <RecruitForm onSubmit={handleSubmit} />
       </Modal>
