@@ -80,6 +80,8 @@ export interface CrewDetailInfo {
   createdAt: string;
   weeklyStats: WeeklyStats;
   isJoined: boolean;
+  managerNickname: string;
+  crewImageId: number;
 }
 
 export interface ModifyCrewInfo {
