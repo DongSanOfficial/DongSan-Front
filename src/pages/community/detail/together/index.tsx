@@ -30,15 +30,6 @@ const Line = styled.div`
   margin: 0.5rem 0;
 `;
 
-interface SubmitFormParams {
-  crewId: number;
-  startedAt: string;
-  endedAt: string;
-  limitEnable: boolean;
-  memberLimit?: number;
-  memo: string;
-}
-
 export default function Together() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [recruitList, setRecruitList] = useState<Cowalkwithcrew[]>([]);

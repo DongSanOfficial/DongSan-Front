@@ -17,6 +17,7 @@ import {
 } from "src/apis/crew/crew";
 import { useEffect, useState } from "react";
 import { CowalkComment, Cowalkwithcrew } from "src/apis/crew/crew.type";
+import { useToast } from "src/context/toast/useToast";
 
 const PageWrapper = styled.div`
   display: flex;
@@ -103,10 +104,20 @@ const HalfButton = styled.div`
 
 export default function DetailFeed() {
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const handleBack = () => navigate(-1);
 
   const clickJoin = async () => {
-    await joinCowalk({ crewId, cowalkId });
+    try {
+      await joinCowalk({ crewId, cowalkId });
+      showToast("참여 신청되었습니다.", "success");
+    } catch (error: any) {
+      console.error("참여 실패", error);
+      showToast(
+        error.message ?? "참여에 실패했어요. 다시 시도해주세요.",
+        "error"
+      );
+    }
   };
   const [recruitList, setRecruitList] = useState<Cowalkwithcrew>();
   const [commentList, setCommentList] = useState<CowalkComment[]>([]);
