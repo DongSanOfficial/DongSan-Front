@@ -32,15 +32,15 @@ const ScheduleContainer = styled.div`
   margin: 0 auto;
   font-size: 14px;
 `;
-const SelectItem = styled.label`
-  margin: 0.4rem 0;
-  border-bottom: 1px solid ${theme.Gray300};
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  position: relative;
-  height: 2.5rem;
-`;
+// const SelectItem = styled.label`
+//   margin: 0.4rem 0;
+//   border-bottom: 1px solid ${theme.Gray300};
+//   display: flex;
+//   align-items: center;
+//   gap: 0.5rem;
+//   position: relative;
+//   height: 2.5rem;
+// `;
 
 const LittleTitle = styled.div`
   font-size: 14px;
@@ -83,16 +83,6 @@ const TimeRangeWrapper = styled.div`
   align-items: center;
   gap: 1rem;
 `;
-interface SubmitFormParams {
-  crewId: number;
-  startDate: string;
-  startTime: string;
-  endDate: string;
-  endTime: string;
-  limitEnable: boolean;
-  memberLimit?: number;
-  memo: string;
-}
 
 interface RecruitFormProps {
   onSubmit: (

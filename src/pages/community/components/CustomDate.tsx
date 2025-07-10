@@ -8,18 +8,24 @@ const PickerWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  position: relative;
   width: 100%;
   height: 2.5rem;
   border-bottom: 1px solid #ccc;
 `;
 
-const StyledFakeInput = styled.input`
-  border: none;
-  background: transparent;
+interface StyledButtonProps {
+  hasValue: boolean;
+}
+
+const StyledButton = styled.button<StyledButtonProps>`
   width: 100%;
-  font-size: 16px;
-  color: ${(props) => (props.value ? "#000" : "#aaa")};
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  padding: 0;
+  color: ${(props) => (props.hasValue ? "#000" : "#aaa")};
+  cursor: pointer;
+  text-align: left;
 `;
 
 interface CustomDatePickerProps {
@@ -27,17 +33,20 @@ interface CustomDatePickerProps {
   onChange: (date: Date | null) => void;
 }
 
-const CustomInput = forwardRef<HTMLInputElement, any>(
+interface CustomInputProps {
+  value?: string;
+  onClick?: () => void;
+}
+
+const CustomInput = forwardRef<HTMLButtonElement, CustomInputProps>(
   ({ value, onClick }, ref) => (
-    <StyledFakeInput
-      onClick={onClick}
-      ref={ref}
-      value={value}
-      readOnly
-      placeholder="날짜 선택"
-    />
+    <StyledButton onClick={onClick} ref={ref} hasValue={!!value}>
+      {value || "날짜 선택"}
+    </StyledButton>
   )
 );
+
+CustomInput.displayName = "CustomDateInput";
 
 export default function CustomDatePicker({
   selected,
@@ -45,11 +54,11 @@ export default function CustomDatePicker({
 }: CustomDatePickerProps) {
   return (
     <PickerWrapper>
-      <BiCalendar fontSize="30px" />
+      <BiCalendar fontSize="20px" />
       <DatePicker
         selected={selected}
         onChange={onChange}
-        dateFormat="yyyy-MM-dd"
+        dateFormat="MM/dd"
         customInput={<CustomInput />}
         popperPlacement="bottom-start"
       />
