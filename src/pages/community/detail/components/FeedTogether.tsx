@@ -1,7 +1,8 @@
 import { feedList } from "src/apis/crew/crew.type";
-import { BiMapPin } from "react-icons/bi";
+import { BiMapPin, BiRun } from "react-icons/bi";
 import { BsClock } from "react-icons/bs";
 import styled from "styled-components";
+import { truncateText } from "src/utils/truncateText";
 
 export type FeedTogetherMode = "feed" | "crewCount";
 
@@ -14,7 +15,6 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   width: 5.5rem;
   height: 5rem;
   padding: 0.5rem;
@@ -48,7 +48,10 @@ export default function FeedTogether({
 
   return (
     <Container>
-      <Contains>{nickname}</Contains>
+      <div style={{ marginBottom: "8px" }}>
+        <Contains>{truncateText(nickname, 4)}</Contains>
+        
+      </div>
       {mode === "feed" && (
         <>
           <Contains>
@@ -64,7 +67,7 @@ export default function FeedTogether({
       {mode === "crewCount" && (
         <>
           <Contains>
-            <BsClock />
+            <BiRun />
             {count ?? "-"}명
           </Contains>
         </>

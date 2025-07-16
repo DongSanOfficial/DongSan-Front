@@ -18,8 +18,9 @@ const ListContainer = styled.div`
 `;
 const TogetherContainer = styled.div`
   display: flex;
+  overflow-x: auto;
   flex-direction: row;
-  justify-content: center;
+  height: 100px;
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 1rem;
