@@ -18,7 +18,12 @@ import {
   MdPeople,
   MdImage,
 } from "react-icons/md";
-import { getCrewDetail, modifyCrew, uploadCrewImage } from "src/apis/crew/crew";
+import {
+  checkCrewName,
+  getCrewDetail,
+  modifyCrew,
+  uploadCrewImage,
+} from "src/apis/crew/crew";
 import { CrewDetailInfo } from "src/apis/crew/crew.type";
 
 const PageWrapper = styled.div`
@@ -119,6 +124,10 @@ export default function ModifyCrew() {
 
   const [crewName, setCrewName] = useState("");
   const [isNameChecked, setIsNameChecked] = useState(false);
+  const [originalCrewName, setOriginalCrewName] = useState("");
+  const [nameCheckStatus, setNameCheckStatus] = useState<
+    "unchecked" | "valid" | "invalid"
+  >("unchecked");
   const [description, setDescription] = useState("");
   const [rules, setRules] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
@@ -134,11 +143,12 @@ export default function ModifyCrew() {
       try {
         const data: CrewDetailInfo = await getCrewDetail(crewId);
         setCrewName(data.name);
+        setOriginalCrewName(data.name);
         setDescription(data.description || "");
         setRules(data.rule || "");
         setIsPrivate(data.visibility === "PRIVATE");
         setImageUrl(data.crewImageUrl);
-        //setCrewImageId(data.crewImageId);
+        setCrewImageId(data.crewImageId);
         if (data.memberLimit) {
           setLimitEnabled(true);
           setMaxMember(data.memberLimit.toString());
@@ -171,10 +181,21 @@ export default function ModifyCrew() {
     }
   };
 
-  const handleNameCheck = () => {
-    setIsNameChecked(true);
+  const handleNameCheck = async () => {
+    if (crewName === originalCrewName) {
+      // 원래 이름이면 바로 통과
+      setIsNameChecked(true);
+      setNameCheckStatus("valid");
+      return;
+    }
+    try {
+      const isValid = await checkCrewName(crewName, crewId);
+      setIsNameChecked(isValid);
+      setNameCheckStatus(isValid ? "valid" : "invalid");
+    } catch (err) {
+      console.log("이름 중복 확인에 실패했습니다.");
+    }
   };
-
   const handleSubmit = async () => {
     if (!isFormValid || !crewId) return;
 
@@ -219,12 +240,26 @@ export default function ModifyCrew() {
               </div>
               <div style={{ flex: 1 }}>
                 <CheckButton
-                  active={crewName.length > 0 && !isNameChecked}
+                  active={crewName.length > 0 && nameCheckStatus !== "valid"}
                   label={isNameChecked ? "사용가능" : "중복체크"}
                   onClick={handleNameCheck}
                 />
               </div>
             </div>
+            {isNameChecked && nameCheckStatus === "invalid" && (
+              <ErrorText>이미 사용중인 이름입니다.</ErrorText>
+            )}
+            {isNameChecked && nameCheckStatus === "valid" && (
+              <div
+                style={{
+                  fontSize: "12px",
+                  color: theme.Green500,
+                  marginTop: "4px",
+                }}
+              >
+                사용가능한 이름입니다.
+              </div>
+            )}
           </Section>
 
           <Section>

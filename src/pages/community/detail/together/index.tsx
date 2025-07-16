@@ -36,6 +36,7 @@ export default function Together() {
   const [myCowalkList, setMyCowalkList] = useState<UserCowalk[]>([]);
   const location = useLocation();
   const crewId = location.state?.crewId;
+  const isJoined = location.state?.isJoined ?? false;
   const navigate = useNavigate();
 
   const handleCardClick = (cowalkId: number) => {
@@ -85,26 +86,30 @@ export default function Together() {
 
   return (
     <div>
-      <Plusicon onClick={() => setIsModalOpen(true)}>
-        <BiPlusCircle fontSize="32px" />
-      </Plusicon>
+      {isJoined && (
+        <>
+          <Plusicon onClick={() => setIsModalOpen(true)}>
+            <BiPlusCircle fontSize="32px" />
+          </Plusicon>
 
-      <Title>내가 신청한 산책 일정 목록</Title>
-      {myCowalkList.length === 0 ? (
-        <div style={{ padding: "0.5rem 1rem", color: "#999" }}>
-          신청한 산책 일정이 없습니다.
-        </div>
-      ) : (
-        myCowalkList.map(({ cowalkId, startedAt, endedAt }) => (
-          <MyCowalkList
-            key={cowalkId}
-            startedAt={startedAt}
-            endedAt={endedAt}
-          />
-        ))
+          <Title>내가 신청한 산책 일정 목록</Title>
+          {myCowalkList.length === 0 ? (
+            <div style={{ padding: "0.5rem 1rem", color: "#999" }}>
+              신청한 산책 일정이 없습니다.
+            </div>
+          ) : (
+            myCowalkList.map(({ cowalkId, startedAt, endedAt }) => (
+              <MyCowalkList
+                key={cowalkId}
+                startedAt={startedAt}
+                endedAt={endedAt}
+              />
+            ))
+          )}
+
+          <Line />
+        </>
       )}
-
-      <Line />
       <Title>최근 올라온 같이산책 일정</Title>
       {recruitList.map((item) => (
         <RecruitList

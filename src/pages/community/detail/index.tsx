@@ -54,12 +54,14 @@ export default function CrewDetailPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("요약");
   const crewId = location.state?.crewId;
+  const isManager = location.state?.isManager ?? false;
+  const isJoined = location.state?.isJoined ?? false;
   const crewName = location.state?.name;
   const visibility = location.state?.visibility;
 
   const handleBack = () => navigate(-1);
   const handleRightClick = () => {
-    navigate("/community/detail/crewSetting", { state: { crewId } });
+    navigate("/community/detail/crewSetting", { state: { crewId, isManager } });
   };
 
   const renderHeader = () => (
