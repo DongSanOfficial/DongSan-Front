@@ -1,6 +1,6 @@
 import { useState } from "react";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import AppBar from "src/components/appBar";
 import BottomNavigation from "src/components/bottomNavigation";
 import TextInput from "src/components/input";
@@ -123,6 +123,8 @@ const RequiredMark = styled.span`
 
 export default function CreateCrew() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const crewId = location.state?.crewId;
   const [crewName, setCrewName] = useState("");
   const [isNameChecked, setIsNameChecked] = useState(false);
   const [nameCheckStatus, setNameCheckStatus] = useState<
@@ -145,7 +147,7 @@ export default function CreateCrew() {
       (maxMember && Number(maxMember) >= 2 && Number(maxMember) <= 100));
   const handleNameCheck = async () => {
     try {
-      const isValid = await checkCrewName(crewName);
+      const isValid = await checkCrewName(crewName, crewId);
       setIsNameChecked(true);
       setNameCheckStatus(isValid ? "valid" : "invalid");
     } catch (err) {
