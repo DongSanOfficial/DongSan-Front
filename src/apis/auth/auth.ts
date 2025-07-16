@@ -1,4 +1,4 @@
-import { UserProfileType } from "./auth.type";
+import { MemberIdResponse, UserProfileType } from "./auth.type";
 import instance from "../instance";
 
 //유저 프로필 조회 api
@@ -22,4 +22,9 @@ export const updateUserNickname = async (nickname: string): Promise<void> => {
   } catch (error) {
     throw error;
   }
+};
+
+export const getMyCrewIds = async (): Promise<number[]> => {
+  const response = await instance.get("/users/crews/ids");
+  return response.data.crewIds;
 };
