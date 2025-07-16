@@ -38,7 +38,7 @@ export default function CrewSetting() {
   const location = useLocation();
   const navigate = useNavigate();
   const crewId = location.state?.crewId;
-
+  const isManager = location.state?.isManager ?? false;
   const [crew, setCrew] = useState<CrewDetailInfo | null>(null);
 
   useEffect(() => {
@@ -105,10 +105,13 @@ export default function CrewSetting() {
                 : "제한 없음"}
             </Item>
           </ItemContainer>
-          <ItemContainer>
-            <Title>크루 정보 수정</Title>
-            <MdArrowForwardIos onClick={handlemodify} />
-          </ItemContainer>
+          {/* 크루 정보 수정 ── 크루장에게만 노출 */}
+          {isManager && (
+            <ItemContainer>
+              <Title>크루 정보 수정</Title>
+              <MdArrowForwardIos onClick={handlemodify} />
+            </ItemContainer>
+          )}
         </ScrollContainer>
       </PageWrapper>
       <BottomNavigation />

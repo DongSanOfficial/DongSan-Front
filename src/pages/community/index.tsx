@@ -1,7 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { MdAdd, MdSearch, MdChevronRight, MdLockOutline, MdClose } from "react-icons/md";
+import {
+  MdAdd,
+  MdSearch,
+  MdChevronRight,
+  MdLockOutline,
+  MdClose,
+} from "react-icons/md";
 import { theme } from "src/styles/colors/theme";
 import AppBar from "src/components/appBar";
 import BottomNavigation from "src/components/bottomNavigation";
@@ -166,7 +172,9 @@ export default function Community() {
       const response = await getMyCrews({ size: 10 });
       setMyCrews(response.data);
     } catch (err) {
-      setmyCrewError(err instanceof Error ? err.message : "나의 크루 로드 실패");
+      setmyCrewError(
+        err instanceof Error ? err.message : "나의 크루 로드 실패"
+      );
     } finally {
       setmyCrewLoading(false);
     }
@@ -244,7 +252,9 @@ export default function Community() {
         <SectionHeader>
           <SectionTitle>나의 크루</SectionTitle>
           <IconButton
-            onClick={() => navigate("/community/all", { state: { type: "my" } })}
+            onClick={() =>
+              navigate("/community/all", { state: { type: "my" } })
+            }
           >
             <MdChevronRight size={20} />
           </IconButton>
@@ -268,6 +278,7 @@ export default function Community() {
                       crewId: crew.crewId,
                       name: crew.name,
                       visibility: crew.visibility,
+                      isManager: crew.isManager,
                     },
                   })
                 }
@@ -283,7 +294,9 @@ export default function Community() {
         <SectionHeader>
           <SectionTitle>동산 추천 크루</SectionTitle>
           <IconButton
-            onClick={() => navigate("/community/all", { state: { type: "recommended" } })}
+            onClick={() =>
+              navigate("/community/all", { state: { type: "recommended" } })
+            }
           >
             <MdChevronRight size={20} />
           </IconButton>
@@ -318,14 +331,16 @@ export default function Community() {
         <Modal isOpen onClose={() => setSelectedCrew(null)}>
           <ModalHeader>
             <Title>
-              {selectedCrew.name} {selectedCrew.visibility === "PRIVATE" && <MdLockOutline />}
+              {selectedCrew.name}{" "}
+              {selectedCrew.visibility === "PRIVATE" && <MdLockOutline />}
             </Title>
             <CloseButton onClick={() => setSelectedCrew(null)}>
               <MdClose />
             </CloseButton>
           </ModalHeader>
           <Info>
-            인원 | {selectedCrew.limitEnable
+            인원 |{" "}
+            {selectedCrew.limitEnable
               ? `${selectedCrew.memberCount} / ${selectedCrew.memberLimit}명`
               : "제한 없음"}
           </Info>
@@ -351,10 +366,7 @@ export default function Community() {
           )}
 
           <FooterButtons>
-            <ActionButton
-              variant="secondary"
-              onClick={handleExplore}
-            >
+            <ActionButton variant="secondary" onClick={handleExplore}>
               둘러보기
             </ActionButton>
             <ActionButton
