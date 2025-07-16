@@ -460,7 +460,7 @@ export default function NewWay() {
             distanceMeter: distancesRef.current,
             timeMin: elapsedTimeRef.current,
           });
-        }, 10000);
+        }, 30000);
       });
     } else {
       console.log("crewIds가 비어있습니다.");
