@@ -1,4 +1,4 @@
-import { MemberIdResponse, UserProfileType } from "./auth.type";
+import { UserProfileType } from "./auth.type";
 import instance from "../instance";
 
 //유저 프로필 조회 api
