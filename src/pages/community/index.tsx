@@ -228,6 +228,7 @@ export default function Community() {
         crewId: selectedCrew.crewId,
         name: selectedCrew.name,
         visibility: selectedCrew.visibility,
+        isJoined: selectedCrew.isJoined,
       },
     });
   };
@@ -279,6 +280,7 @@ export default function Community() {
                       name: crew.name,
                       visibility: crew.visibility,
                       isManager: crew.isManager,
+                      isJoined: crew.isJoined,
                     },
                   })
                 }

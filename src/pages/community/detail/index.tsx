@@ -55,6 +55,7 @@ export default function CrewDetailPage() {
   const [activeTab, setActiveTab] = useState("요약");
   const crewId = location.state?.crewId;
   const isManager = location.state?.isManager ?? false;
+  const isJoined = location.state?.isJoined ?? false;
   const crewName = location.state?.name;
   const visibility = location.state?.visibility;
 
