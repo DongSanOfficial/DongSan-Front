@@ -148,7 +148,7 @@ export default function ModifyCrew() {
         setRules(data.rule || "");
         setIsPrivate(data.visibility === "PRIVATE");
         setImageUrl(data.crewImageUrl);
-        //setCrewImageId(data.crewImageId);
+        setCrewImageId(data.crewImageId);
         if (data.memberLimit) {
           setLimitEnabled(true);
           setMaxMember(data.memberLimit.toString());
