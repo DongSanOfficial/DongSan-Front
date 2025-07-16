@@ -74,6 +74,7 @@ export default function Feed() {
         {feeds.slice(0, 4).map((item) => (
           <FeedTogether
             key={item.walkwayHistoryId}
+            mode="feed"
             nickname={item.nickname}
             durationSec={item.durationSec}
             distanceKm={item.distanceKm}

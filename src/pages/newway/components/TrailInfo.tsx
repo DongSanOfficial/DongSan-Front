@@ -9,9 +9,10 @@ const TrailInfoContainer = styled.div`
   align-items: center;
   gap: 20px;
   margin: 0 auto;
-  width: 80vw;
-  max-width: 360px;
+  width: 100%;
   height: 8vh;
+  background-color: White;
+  border-radius: 10px;
 `;
 
 const ClockItems = styled.div`

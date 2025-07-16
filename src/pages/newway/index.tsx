@@ -19,6 +19,8 @@ import { useToast } from "src/context/toast/useToast";
 import WaveTextLoader from "src/components/loading/WaveTextLoader";
 import stompService from "src/stomp/stompService";
 import { getMyCrewIds } from "src/apis/auth/auth";
+import { getMyCrews } from "src/apis/crew/crew";
+import FeedTogether from "../community/detail/components/FeedTogether";
 
 interface Location {
   lat: number;
@@ -50,12 +52,19 @@ const InfoContainer = styled.div`
   top: 20px;
   left: 20px;
   right: 20px;
-  background-color: rgba(255, 255, 255, 0.9);
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 20;
   display: flex;
+  flex-direction: column;
   justify-content: center;
+`;
+
+const FeedTogetherRow = styled.div`
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 10px;
+  position: relative;
+  z-index: 20;
 `;
 
 const ButtonContainer = styled.div`
@@ -107,8 +116,12 @@ export default function NewWay() {
   const lastLocationRef = useRef<Location | null>(null);
   const startTimeRef = useRef<Date | null>(null);
   const toastShownRef = useRef(false);
+  const [isSocketConnected, setIsSocketConnected] = useState(false);
+
   const distancesRef = useRef(0);
   const elapsedTimeRef = useRef(0);
+  const [crewCounts, setCrewCounts] = useState<Record<number, number>>({});
+  const [crewMap, setCrewMap] = useState<Map<number, string>>(new Map());
 
   const geolocationOptions = {
     enableHighAccuracy: true,
@@ -168,6 +181,23 @@ export default function NewWay() {
     };
 
     fetchCrewIds();
+  }, []);
+
+  useEffect(() => {
+    const fetchCrews = async () => {
+      try {
+        const response = await getMyCrews({});
+        const map = new Map<number, string>();
+        response.data.forEach((crew) => {
+          map.set(crew.crewId, crew.name);
+        });
+        setCrewMap(map);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    fetchCrews();
   }, []);
 
   // 경로 추적 및 거리 계산
@@ -243,6 +273,8 @@ export default function NewWay() {
         websocketIntervalRef.current = null;
       }
       stompService.disconnect();
+      setIsSocketConnected(true);
+
       navigate("/main");
     } else if (modalType === "done") {
       setIsWalking(false);
@@ -255,6 +287,7 @@ export default function NewWay() {
         websocketIntervalRef.current = null;
       }
       stompService.disconnect();
+      setIsSocketConnected(true);
 
       if (mode === "create") {
         try {
@@ -361,6 +394,7 @@ export default function NewWay() {
         clearInterval(websocketIntervalRef.current);
       }
       stompService.disconnect();
+      setIsSocketConnected(true);
     };
   }, []);
 
@@ -392,6 +426,8 @@ export default function NewWay() {
     // 가입한 크루가 있는 경우에만 산책하기 소켓 연결
     if (crewIds.length > 0) {
       stompService.connect(() => {
+        setIsSocketConnected(true);
+
         console.log("stomp 연결 완료");
 
         // 최초 send는 interval 등록 직전에 보내기
@@ -405,6 +441,10 @@ export default function NewWay() {
         crewIds.forEach((id) => {
           stompService.subscribeCrewCount(id, (count) => {
             console.log(`crewId ${id} count → ${count}`);
+            setCrewCounts((prev) => ({
+              ...prev,
+              [id]: count,
+            }));
           });
         });
 
@@ -449,11 +489,23 @@ export default function NewWay() {
       />
       <Container>
         <InfoContainer>
-          <TrailInfo
-            duration={elapsedTime}
-            distance={distances}
-          />
+          <div style={{ boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)" }}>
+            <TrailInfo duration={elapsedTime} distance={distances} />
+          </div>
+          {crewIds.length > 0 && isSocketConnected && (
+            <FeedTogetherRow>
+              {crewIds.map((id) => (
+                <FeedTogether
+                  key={id}
+                  mode="crewCount"
+                  nickname={crewMap.get(id) ?? `크루${id}`}
+                  count={crewCounts[id]}
+                />
+              ))}
+            </FeedTogetherRow>
+          )}
         </InfoContainer>
+
         <TrackingMap
           userLocation={userLocation}
           movingPath={movingPath}
