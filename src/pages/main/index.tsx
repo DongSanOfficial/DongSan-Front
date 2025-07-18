@@ -80,7 +80,7 @@ function Main() {
         selectedLocation.longitude,
         sortOption
       );
-    } else {
+    } else if (mapOption === "all") { 
       fetchAllWalkways(sortOption);
     }
   };
@@ -460,7 +460,7 @@ function Main() {
           pathCoords={selectedPath}
           searchKeyword={searching ? searchValue : undefined}
           onSearchResults={handleSearchResults}
-          onInitialLocation={handleInitialLocation}
+          // onInitialLocation={handleInitialLocation}
           onLocationButtonClick={handleLocationButtonClick}
           onSearchCurrentLocation={handleSearchCurrentLocation}
         />

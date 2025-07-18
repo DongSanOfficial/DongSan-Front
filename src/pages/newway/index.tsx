@@ -17,6 +17,10 @@ import {
 } from "src/apis/walkway/walkway";
 import { useToast } from "src/context/toast/useToast";
 import WaveTextLoader from "src/components/loading/WaveTextLoader";
+import stompService from "src/stomp/stompService";
+import { getMyCrewIds } from "src/apis/auth/auth";
+import { getMyCrews } from "src/apis/crew/crew";
+import FeedTogether from "../community/detail/components/FeedTogether";
 
 interface Location {
   lat: number;
@@ -48,12 +52,19 @@ const InfoContainer = styled.div`
   top: 20px;
   left: 20px;
   right: 20px;
-  background-color: rgba(255, 255, 255, 0.9);
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 20;
   display: flex;
+  flex-direction: column;
   justify-content: center;
+`;
+
+const FeedTogetherRow = styled.div`
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 10px;
+  position: relative;
+  z-index: 20;
 `;
 
 const ButtonContainer = styled.div`
@@ -105,12 +116,21 @@ export default function NewWay() {
   const lastLocationRef = useRef<Location | null>(null);
   const startTimeRef = useRef<Date | null>(null);
   const toastShownRef = useRef(false);
+  const [isSocketConnected, setIsSocketConnected] = useState(false);
+
+  const distancesRef = useRef(0);
+  const elapsedTimeRef = useRef(0);
+  const [crewCounts, setCrewCounts] = useState<Record<number, number>>({});
+  const [crewMap, setCrewMap] = useState<Map<number, string>>(new Map());
 
   const geolocationOptions = {
     enableHighAccuracy: true,
     maximumAge: 3000,
     timeout: 3000,
   };
+
+  const [crewIds, setCrewIds] = useState<number[]>([]);
+  const websocketIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const { location: geoLocation, getLocation } =
     useWatchLocation(geolocationOptions);
@@ -149,6 +169,37 @@ export default function NewWay() {
     lastLocationRef.current = newLocation;
   }, [geoLocation]);
 
+  useEffect(() => {
+    const fetchCrewIds = async () => {
+      try {
+        const ids = await getMyCrewIds();
+        console.log("내 crewIds:", ids);
+        setCrewIds(ids);
+      } catch (e) {
+        console.error("크루 ID 조회 실패", e);
+      }
+    };
+
+    fetchCrewIds();
+  }, []);
+
+  useEffect(() => {
+    const fetchCrews = async () => {
+      try {
+        const response = await getMyCrews({});
+        const map = new Map<number, string>();
+        response.data.forEach((crew) => {
+          map.set(crew.crewId, crew.name);
+        });
+        setCrewMap(map);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    fetchCrews();
+  }, []);
+
   // 경로 추적 및 거리 계산
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -160,7 +211,11 @@ export default function NewWay() {
             const newPath = [...prev, lastLocationRef.current!];
             if (prev.length > 0) {
               const newDistance = calculateDistance(newPath);
-              setDistances((prev) => prev + newDistance);
+              setDistances((prev) => {
+                const updated = prev + newDistance;
+                distancesRef.current = updated;
+                return updated;
+              });
             }
             return newPath;
           });
@@ -185,7 +240,6 @@ export default function NewWay() {
     setModalType("done");
   };
 
-  // 산책 조건을 충족하면 등록 가능 토스트 팝업
   useEffect(() => {
     if (
       mode === "create" &&
@@ -214,14 +268,26 @@ export default function NewWay() {
         clearInterval(timerRef.current);
         timerRef.current = null;
       }
+      if (websocketIntervalRef.current) {
+        clearInterval(websocketIntervalRef.current);
+        websocketIntervalRef.current = null;
+      }
+      stompService.disconnect();
+      setIsSocketConnected(true);
+
       navigate("/main");
     } else if (modalType === "done") {
       setIsWalking(false);
-
       if (timerRef.current) {
         clearInterval(timerRef.current);
         timerRef.current = null;
       }
+      if (websocketIntervalRef.current) {
+        clearInterval(websocketIntervalRef.current);
+        websocketIntervalRef.current = null;
+      }
+      stompService.disconnect();
+      setIsSocketConnected(true);
 
       if (mode === "create") {
         try {
@@ -230,14 +296,11 @@ export default function NewWay() {
           const courseImageFile = new File([blob], "course-image.png", {
             type: "image/png",
           });
-
           const courseImageId = await uploadCourseImage(courseImageFile);
-
-          // 미터를 킬로미터로 변환하고 소수점 2자리까지 반올림
           const distanceInKm = Number((distances / 1000).toFixed(2));
           const pathData: PathData = {
             coordinates: movingPath,
-            totalDistance: distanceInKm, // km 단위로 변환하여 저장
+            totalDistance: distanceInKm,
             duration: elapsedTime,
             startTime:
               startTimeRef.current || new Date(Date.now() - elapsedTime * 1000),
@@ -254,14 +317,11 @@ export default function NewWay() {
         }
       } else {
         try {
-          // 미터를 킬로미터로 변환하고 소수점 2자리까지 반올림
           const distanceInKm = Number((distances / 1000).toFixed(2));
-
           const historyResponse = await createWalkwayHistory(walkwayId, {
             time: elapsedTime,
-            distance: distanceInKm, // km 단위로 전송
+            distance: distanceInKm,
           });
-
           showToast("산책로를 이용해주셔서 감사합니다!", "success");
           navigate(`/main/recommend/detail/${walkwayId}`, {
             state: {
@@ -330,6 +390,11 @@ export default function NewWay() {
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
+      if (websocketIntervalRef.current) {
+        clearInterval(websocketIntervalRef.current);
+      }
+      stompService.disconnect();
+      setIsSocketConnected(true);
     };
   }, []);
 
@@ -351,13 +416,54 @@ export default function NewWay() {
       const startPoint = pathToFollow[0];
       const distanceToStart = checkDistanceToStart(userLocation, startPoint);
       if (distanceToStart > 50) {
-        // 50미터 이상 떨어져 있으면
         showToast(
           "산책로의 출발지 근처로 이동해주세요. 현재 위치가 출발지의 반경 50m내 있지 않다면 산책로를 이용할 수 없어요!",
           "error"
         );
         return;
       }
+    }
+    // 가입한 크루가 있는 경우에만 산책하기 소켓 연결
+    if (crewIds.length > 0) {
+      stompService.connect(() => {
+        setIsSocketConnected(true);
+
+        console.log("stomp 연결 완료");
+
+        // 최초 send는 interval 등록 직전에 보내기
+        stompService.sendOngoing({
+          crewIds: crewIds,
+          distanceMeter: distancesRef.current,
+          timeMin: elapsedTimeRef.current,
+        });
+
+        // subscribe
+        crewIds.forEach((id) => {
+          stompService.subscribeCrewCount(id, (count) => {
+            console.log(`crewId ${id} count → ${count}`);
+            setCrewCounts((prev) => ({
+              ...prev,
+              [id]: count,
+            }));
+          });
+        });
+
+        websocketIntervalRef.current = setInterval(() => {
+          console.log(
+            "interval fired → send ongoing:",
+            distancesRef.current,
+            elapsedTimeRef.current
+          );
+
+          stompService.sendOngoing({
+            crewIds: crewIds,
+            distanceMeter: distancesRef.current,
+            timeMin: elapsedTimeRef.current,
+          });
+        }, 30000);
+      });
+    } else {
+      console.log("crewIds가 비어있습니다.");
     }
 
     setIsWalking(true);
@@ -367,7 +473,11 @@ export default function NewWay() {
     startTimeRef.current = new Date();
 
     timerRef.current = setInterval(() => {
-      setElapsedTime((prev) => prev + 1);
+      setElapsedTime((prev) => {
+        const updated = prev + 1;
+        elapsedTimeRef.current = updated;
+        return updated;
+      });
     }, 1000);
   };
 
@@ -379,11 +489,23 @@ export default function NewWay() {
       />
       <Container>
         <InfoContainer>
-          <TrailInfo
-            duration={elapsedTime}
-            distance={distances} // 미터나 키로미터 단위
-          />
+          <div style={{ boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)" }}>
+            <TrailInfo duration={elapsedTime} distance={distances} />
+          </div>
+          {crewIds.length > 0 && isSocketConnected && (
+            <FeedTogetherRow>
+              {crewIds.map((id) => (
+                <FeedTogether
+                  key={id}
+                  mode="crewCount"
+                  nickname={crewMap.get(id) ?? `크루${id}`}
+                  count={crewCounts[id]}
+                />
+              ))}
+            </FeedTogetherRow>
+          )}
         </InfoContainer>
+
         <TrackingMap
           userLocation={userLocation}
           movingPath={movingPath}
