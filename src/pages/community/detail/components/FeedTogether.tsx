@@ -23,6 +23,7 @@ const Container = styled.div`
   box-shadow: 0px 2px rgba(0, 0, 0, 0.25);
   background-color: white;
   flex-shrink: 0;
+  justify-content: center;
 `;
 
 const Contains = styled.div`
@@ -50,7 +51,6 @@ export default function FeedTogether({
     <Container>
       <div style={{ marginBottom: "8px" }}>
         <Contains>{truncateText(nickname, 4)}</Contains>
-        
       </div>
       {mode === "feed" && (
         <>
