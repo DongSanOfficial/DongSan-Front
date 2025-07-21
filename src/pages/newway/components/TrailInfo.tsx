@@ -10,9 +10,8 @@ const TrailInfoContainer = styled.div`
   gap: 20px;
   margin: 0 auto;
   width: 100%;
-  height: 8vh;
   background-color: White;
-  border-radius: 10px;
+  border-radius: 20px;
 `;
 
 const ClockItems = styled.div`

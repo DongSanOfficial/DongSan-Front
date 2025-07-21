@@ -17,10 +17,10 @@ import {
 } from "src/apis/walkway/walkway";
 import { useToast } from "src/context/toast/useToast";
 import WaveTextLoader from "src/components/loading/WaveTextLoader";
-import stompService from "src/stomp/stompService";
 import { getMyCrewIds } from "src/apis/auth/auth";
 import { getMyCrews } from "src/apis/crew/crew";
 import FeedTogether from "../community/detail/components/FeedTogether";
+import { newwayStompService } from "src/stomp/newway/newway";
 
 interface Location {
   lat: number;
@@ -62,9 +62,9 @@ const FeedTogetherRow = styled.div`
   display: flex;
   gap: 8px;
   overflow-x: auto;
-  padding: 10px;
   position: relative;
   z-index: 20;
+  padding: 5px 0;
 `;
 
 const ButtonContainer = styled.div`
@@ -272,7 +272,7 @@ export default function NewWay() {
         clearInterval(websocketIntervalRef.current);
         websocketIntervalRef.current = null;
       }
-      stompService.disconnect();
+      newwayStompService.disconnect();
       setIsSocketConnected(true);
 
       navigate("/main");
@@ -286,7 +286,7 @@ export default function NewWay() {
         clearInterval(websocketIntervalRef.current);
         websocketIntervalRef.current = null;
       }
-      stompService.disconnect();
+      newwayStompService.disconnect();
       setIsSocketConnected(true);
 
       if (mode === "create") {
@@ -393,7 +393,7 @@ export default function NewWay() {
       if (websocketIntervalRef.current) {
         clearInterval(websocketIntervalRef.current);
       }
-      stompService.disconnect();
+      newwayStompService.disconnect();
       setIsSocketConnected(true);
     };
   }, []);
@@ -425,13 +425,13 @@ export default function NewWay() {
     }
     // 가입한 크루가 있는 경우에만 산책하기 소켓 연결
     if (crewIds.length > 0) {
-      stompService.connect(() => {
+      newwayStompService.connect(() => {
         setIsSocketConnected(true);
 
         console.log("stomp 연결 완료");
 
         // 최초 send는 interval 등록 직전에 보내기
-        stompService.sendOngoing({
+        newwayStompService.sendOngoing({
           crewIds: crewIds,
           distanceMeter: distancesRef.current,
           timeMin: elapsedTimeRef.current,
@@ -439,7 +439,7 @@ export default function NewWay() {
 
         // subscribe
         crewIds.forEach((id) => {
-          stompService.subscribeCrewCount(id, (count) => {
+          newwayStompService.subscribeCrewCount(id, (count) => {
             console.log(`crewId ${id} count → ${count}`);
             setCrewCounts((prev) => ({
               ...prev,
@@ -455,7 +455,7 @@ export default function NewWay() {
             elapsedTimeRef.current
           );
 
-          stompService.sendOngoing({
+          newwayStompService.sendOngoing({
             crewIds: crewIds,
             distanceMeter: distancesRef.current,
             timeMin: elapsedTimeRef.current,
@@ -489,7 +489,13 @@ export default function NewWay() {
       />
       <Container>
         <InfoContainer>
-          <div style={{ boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)" }}>
+          <div
+            style={{
+              marginBottom: "5px",
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+              borderRadius: "20px",
+            }}
+          >
             <TrailInfo duration={elapsedTime} distance={distances} />
           </div>
           {crewIds.length > 0 && isSocketConnected && (
