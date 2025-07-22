@@ -44,7 +44,7 @@ const ErrorContainer = styled.div`
   align-items: center;
   height: 100%;
   font-size: 16px;
-  color: ${({ theme }) => theme.Red};
+  color: ${({ theme }) => theme.Red500};
 `;
 
 const TabList = ["요약", "피드", "같이 산책"];
