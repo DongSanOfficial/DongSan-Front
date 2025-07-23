@@ -4,7 +4,7 @@ import { BsClock } from "react-icons/bs";
 import styled from "styled-components";
 import { truncateText } from "src/utils/truncateText";
 
-export type FeedTogetherMode = "feed" | "crewCount";
+export type FeedTogetherMode = "feed" | "crewCount" | "live";
 
 export interface FeedTogetherProps extends Partial<feedList> {
   mode: FeedTogetherMode;
