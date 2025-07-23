@@ -115,7 +115,7 @@ export default function CrewDetailPage() {
         </TabHeader>
         <ScrollContainer>
           {activeTab === "요약" && <Summary crewId={crewId} />}
-          {activeTab === "피드" && <Feed />}
+          {activeTab === "피드" && <Feed crewId={crewId} />}
           {activeTab === "같이 산책" && <Together />}
         </ScrollContainer>
         <BottomNavigation />

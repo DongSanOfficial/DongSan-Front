@@ -5,6 +5,8 @@ import { feedList } from "src/apis/crew/crew.type";
 import { getCrewfeedlist } from "src/apis/crew/crew";
 import { useLocation } from "react-router-dom";
 import FeedTogether from "../components/FeedTogether";
+import { feedStompService } from "src/stomp/feed/feed";
+import stompClient from "src/stomp/stompClient";
 
 const Daysago = styled.div`
   font-weight: 600;
@@ -20,7 +22,7 @@ const TogetherContainer = styled.div`
   display: flex;
   overflow-x: auto;
   flex-direction: row;
-  height: 100px;
+  height: auto;
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 1rem;
@@ -30,12 +32,15 @@ const GroupedFeeds = styled.div`
   flex-direction: column;
   gap: 1rem;
 `;
-export default function Feed() {
+export default function Feed({ crewId }: { crewId: number }) {
   const location = useLocation();
-  const crewId = location.state?.crewId;
+  //const crewId = location.state?.crewId;
   const [feeds, setFeeds] = useState<feedList[]>([]);
+  const [liveUsers, setLiveUsers] = useState<feedList[]>([]);
+  console.log("location:", location);
 
   useEffect(() => {
+    console.log("crewId:", crewId);
     const fetchFeeds = async () => {
       try {
         const { data: responseData } = await getCrewfeedlist({ crewId });
@@ -46,6 +51,46 @@ export default function Feed() {
       }
     };
     if (crewId) fetchFeeds();
+  }, [crewId]);
+
+  useEffect(() => {
+    if (!crewId) return;
+
+    if (!stompClient.connected) {
+      stompClient.activate(); // 연결 시도
+    }
+
+    feedStompService.connect(() => {
+      console.log("stomp 연결 완료");
+
+      const subscription = feedStompService.subscribeFeed(crewId, (payload) => {
+        console.log("수신한 payload:", payload);
+        const newUser: feedList = {
+          nickname: payload.nickname,
+          distanceKm: payload.distanceMeter / 1000,
+          durationSec: payload.timeMin * 60,
+          walkwayHistoryId: Date.now(),
+          date: new Date().toISOString(),
+        };
+
+        setLiveUsers((prev) => {
+          const exists = prev.some(
+            (u) =>
+              u.nickname === newUser.nickname &&
+              u.durationSec === newUser.durationSec &&
+              u.distanceKm === newUser.distanceKm
+          );
+          if (exists) return prev;
+          return [...prev, newUser];
+        });
+      });
+
+      return () => {
+        console.log("stomp 연결 해제");
+        subscription.unsubscribe();
+        feedStompService.disconnect();
+      };
+    });
   }, [crewId]);
 
   const getDaysAgoLabel = (dateStr: string): string => {
@@ -72,19 +117,22 @@ export default function Feed() {
     <>
       <Daysago>같이 산책</Daysago>
       <TogetherContainer>
-        {feeds.slice(0, 4).map((item) => (
-          <FeedTogether
-            key={item.walkwayHistoryId}
-            mode="feed"
-            nickname={item.nickname}
-            durationSec={item.durationSec}
-            distanceKm={item.distanceKm}
-          />
-        ))}
-        {feeds.length > 4 && (
-          <span style={{ fontWeight: 600, fontSize: "14px", color: "#888" }}>
-            외 {feeds.length - 4}명
+        {liveUsers.length === 0 ? (
+          <span style={{ color: "#888", fontSize: "14px" }}>
+            현재 같이 산책중인 사용자가 없습니다.
           </span>
+        ) : (
+          liveUsers
+            .slice(0, 4)
+            .map((item) => (
+              <FeedTogether
+                key={item.walkwayHistoryId}
+                mode="live"
+                nickname={item.nickname}
+                durationSec={item.durationSec}
+                distanceKm={item.distanceKm}
+              />
+            ))
         )}
       </TogetherContainer>
 
