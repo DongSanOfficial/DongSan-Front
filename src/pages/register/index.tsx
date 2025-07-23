@@ -116,7 +116,7 @@ export default function Registration() {
             hashtags: tags.map((tag) =>
               tag.startsWith("#") ? tag.slice(1) : tag
             ),
-            exposeLevel: accessLevel,
+            walkwayExposeLevel: accessLevel,
           };
           await updateWalkway(state.walkwayId, updateData);
           showToast("수정이 완료되었습니다.", "success");
@@ -132,7 +132,7 @@ export default function Registration() {
             hashtags: tags.map((tag) =>
               tag.startsWith("#") ? tag.slice(1) : tag
             ),
-            exposeLevel: accessLevel,
+            walkwayExposeLevel: accessLevel,
             course: pathData.coordinates.map((coord) => ({
               latitude: coord.lat,
               longitude: coord.lng,
