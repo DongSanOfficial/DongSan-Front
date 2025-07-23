@@ -106,7 +106,7 @@ export interface CreateWalkwayType {
   distance: number;
   time: number;
   hashtags: string[];
-  exposeLevel: "PRIVATE" | "PUBLIC";
+  walkwayExposeLevel: "PRIVATE" | "PUBLIC";
   course: Array<{
     latitude: number;
     longitude: number;
@@ -117,7 +117,7 @@ export interface UpdateWalkwayType {
   name: string;
   memo: string;
   hashtags: string[];
-  exposeLevel: "PRIVATE" | "PUBLIC";
+  walkwayExposeLevel: "PRIVATE" | "PUBLIC";
 }
 
 // 이용한 산책로 내역
