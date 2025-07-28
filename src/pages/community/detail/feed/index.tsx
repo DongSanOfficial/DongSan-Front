@@ -40,7 +40,6 @@ export default function Feed({ crewId }: { crewId: number }) {
   console.log("location:", location);
 
   useEffect(() => {
-    console.log("crewId:", crewId);
     const fetchFeeds = async () => {
       try {
         const { data: responseData } = await getCrewfeedlist({ crewId });
@@ -59,11 +58,12 @@ export default function Feed({ crewId }: { crewId: number }) {
     if (!stompClient.connected) {
       stompClient.activate(); // 연결 시도
     }
+    let subscription: any;
 
     feedStompService.connect(() => {
       console.log("stomp 연결 완료");
 
-      const subscription = feedStompService.subscribeFeed(crewId, (payload) => {
+      subscription = feedStompService.subscribeFeed(crewId, (payload) => {
         console.log("수신한 payload:", payload);
         const newUser: feedList = {
           nickname: payload.nickname,
@@ -84,13 +84,12 @@ export default function Feed({ crewId }: { crewId: number }) {
           return [...prev, newUser];
         });
       });
-
-      return () => {
-        console.log("stomp 연결 해제");
-        subscription.unsubscribe();
-        feedStompService.disconnect();
-      };
     });
+    return () => {
+      console.log("stomp 연결 해제");
+      if (subscription) subscription.unsubscribe();
+      feedStompService.disconnect();
+    };
   }, [crewId]);
 
   const getDaysAgoLabel = (dateStr: string): string => {
