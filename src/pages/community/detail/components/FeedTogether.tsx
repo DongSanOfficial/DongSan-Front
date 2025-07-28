@@ -4,7 +4,7 @@ import { BsClock } from "react-icons/bs";
 import styled from "styled-components";
 import { truncateText } from "src/utils/truncateText";
 
-export type FeedTogetherMode = "feed" | "crewCount";
+export type FeedTogetherMode = "feed" | "crewCount" | "live";
 
 export interface FeedTogetherProps extends Partial<feedList> {
   mode: FeedTogetherMode;
@@ -42,7 +42,7 @@ export default function FeedTogether({
   mode,
 }: FeedTogetherProps) {
   const formatDurationToMinutes = (durationSec?: number): string => {
-    if (typeof durationSec !== "number") return "-";
+    if (typeof durationSec !== "number" || isNaN(durationSec)) return "-";
     const minutes = Math.floor(durationSec / 60);
     return `${minutes}분`;
   };
@@ -52,7 +52,7 @@ export default function FeedTogether({
       <div style={{ marginBottom: "8px" }}>
         <Contains>{truncateText(nickname, 4)}</Contains>
       </div>
-      {mode === "feed" && (
+      {mode === "live" && (
         <>
           <Contains>
             <BsClock />

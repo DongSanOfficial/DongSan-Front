@@ -44,7 +44,7 @@ const ErrorContainer = styled.div`
   align-items: center;
   height: 100%;
   font-size: 16px;
-  color: ${({ theme }) => theme.Red};
+  color: ${({ theme }) => theme.Red500};
 `;
 
 const TabList = ["요약", "피드", "같이 산책"];
@@ -115,7 +115,7 @@ export default function CrewDetailPage() {
         </TabHeader>
         <ScrollContainer>
           {activeTab === "요약" && <Summary crewId={crewId} />}
-          {activeTab === "피드" && <Feed />}
+          {activeTab === "피드" && <Feed crewId={crewId} />}
           {activeTab === "같이 산책" && <Together />}
         </ScrollContainer>
         <BottomNavigation />

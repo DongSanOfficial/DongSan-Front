@@ -3,6 +3,7 @@ export interface MyCrewFeedResponse {
   hasNext: boolean;
 }
 export interface feedList {
+  memberId?: number;
   walkwayHistoryId?: number;
   nickname: string;
   date?: string;

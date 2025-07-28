@@ -1,12 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext",
-      "webworker"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext", "webworker"],
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
@@ -24,9 +19,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "typeRoots": ["./node_modules/@types", "./src/type_declaration"],
+    "typeRoots": ["./node_modules/@types", "./src/type_declaration"]
   },
-  "include": [
-    "src", "src/service-worker.ts",
-  ]
+  "include": ["src", "src/service-worker.ts"]
 }
