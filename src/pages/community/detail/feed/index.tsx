@@ -3,7 +3,6 @@ import FeedList from "../components/FeedList";
 import { useEffect, useState } from "react";
 import { feedList } from "src/apis/crew/crew.type";
 import { getCrewfeedlist } from "src/apis/crew/crew";
-import { useLocation } from "react-router-dom";
 import FeedTogether from "../components/FeedTogether";
 import { feedStompService } from "src/stomp/feed/feed";
 import stompClient from "src/stomp/stompClient";
@@ -33,11 +32,8 @@ const GroupedFeeds = styled.div`
   gap: 1rem;
 `;
 export default function Feed({ crewId }: { crewId: number }) {
-  const location = useLocation();
-  //const crewId = location.state?.crewId;
   const [feeds, setFeeds] = useState<feedList[]>([]);
   const [liveUsers, setLiveUsers] = useState<feedList[]>([]);
-  console.log("location:", location);
 
   useEffect(() => {
     const fetchFeeds = async () => {
@@ -59,32 +55,58 @@ export default function Feed({ crewId }: { crewId: number }) {
       stompClient.activate(); // 연결 시도
     }
     let subscription: any;
-
+    const safeNumber = (x: any) => {
+      const n = Number(x);
+      return isNaN(n) ? 0 : n;
+    };
     feedStompService.connect(() => {
       console.log("stomp 연결 완료");
 
       subscription = feedStompService.subscribeFeed(crewId, (payload) => {
         console.log("수신한 payload:", payload);
+        let realPayload;
+        if (Array.isArray(payload)) {
+          if (payload.length === 0) {
+            console.warn("수신한 payload 배열이 비어있음");
+            return;
+          }
+          realPayload = payload[0];
+        } else {
+          realPayload = payload;
+        }
+        if (
+          !realPayload ||
+          typeof realPayload.memberId === "undefined" ||
+          typeof realPayload.distanceMeter === "undefined" ||
+          typeof realPayload.timeMin === "undefined"
+        ) {
+          console.warn("payload 필드 누락 또는 잘못된 데이터:", realPayload);
+          return;
+        }
+
+        // 숫자 변환 및 객체 생성
         const newUser: feedList = {
-          nickname: payload.nickname,
-          distanceKm: payload.distanceMeter / 1000,
-          durationSec: payload.timeMin * 60,
+          memberId: safeNumber(realPayload.memberId),
+          nickname: realPayload.nickname,
+          distanceKm: safeNumber(realPayload.distanceMeter),
+          durationSec: safeNumber(realPayload.timeMin),
           walkwayHistoryId: Date.now(),
           date: new Date().toISOString(),
         };
 
         setLiveUsers((prev) => {
-          const exists = prev.some(
-            (u) =>
-              u.nickname === newUser.nickname &&
-              u.durationSec === newUser.durationSec &&
-              u.distanceKm === newUser.distanceKm
-          );
-          if (exists) return prev;
-          return [...prev, newUser];
+          const exists = prev.findIndex((u) => u.memberId === newUser.memberId);
+          if (exists !== -1) {
+            const updated = [...prev];
+            updated[exists] = newUser;
+            return updated;
+          } else {
+            return [...prev, newUser];
+          }
         });
       });
     });
+
     return () => {
       console.log("stomp 연결 해제");
       if (subscription) subscription.unsubscribe();
@@ -121,17 +143,15 @@ export default function Feed({ crewId }: { crewId: number }) {
             현재 같이 산책중인 사용자가 없습니다.
           </span>
         ) : (
-          liveUsers
-            .slice(0, 4)
-            .map((item) => (
-              <FeedTogether
-                key={item.walkwayHistoryId}
-                mode="live"
-                nickname={item.nickname}
-                durationSec={item.durationSec}
-                distanceKm={item.distanceKm}
-              />
-            ))
+          liveUsers.slice(0, 4).map((item) => (
+            <FeedTogether
+              key={item.memberId}
+              mode="live"
+              nickname={item.nickname}
+              durationSec={Number(item.durationSec)} // ← 여기!
+              distanceKm={Number(item.distanceKm)} // ← 여기!
+            />
+          ))
         )}
       </TogetherContainer>
 

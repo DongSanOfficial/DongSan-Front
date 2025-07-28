@@ -2,10 +2,10 @@ import { Client, IMessage, StompSubscription } from "@stomp/stompjs";
 import stompClient from "../stompClient";
 
 export interface FeedPayload {
-  distanceMeter: number;
-  timeMin: number;
-  nickname: string;
   memberId: string;
+  distanceMeter: string;
+  timeMin: string;
+  nickname: string;
 }
 
 class FeedStompService {
@@ -41,6 +41,7 @@ class FeedStompService {
       try {
         const body: FeedPayload = JSON.parse(message.body);
         callback(body);
+        console.log("피드 메시지 수신:", body);
       } catch (e) {
         console.error("피드 메시지 파싱 실패:", e);
       }

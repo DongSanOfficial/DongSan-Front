@@ -42,7 +42,7 @@ export default function FeedTogether({
   mode,
 }: FeedTogetherProps) {
   const formatDurationToMinutes = (durationSec?: number): string => {
-    if (typeof durationSec !== "number") return "-";
+    if (typeof durationSec !== "number" || isNaN(durationSec)) return "-";
     const minutes = Math.floor(durationSec / 60);
     return `${minutes}분`;
   };
@@ -52,7 +52,7 @@ export default function FeedTogether({
       <div style={{ marginBottom: "8px" }}>
         <Contains>{truncateText(nickname, 4)}</Contains>
       </div>
-      {mode === "feed" && (
+      {mode === "live" && (
         <>
           <Contains>
             <BsClock />
