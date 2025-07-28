@@ -88,7 +88,9 @@ export default function Feed({ crewId }: { crewId: number }) {
         const newUser: feedList = {
           memberId: safeNumber(realPayload.memberId),
           nickname: realPayload.nickname,
-          distanceKm: safeNumber(realPayload.distanceMeter),
+          distanceKm: Number(
+            (safeNumber(realPayload.distanceMeter) / 1000).toFixed(2)
+          ),
           durationSec: safeNumber(realPayload.timeMin),
           walkwayHistoryId: Date.now(),
           date: new Date().toISOString(),
