@@ -105,7 +105,10 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
     try {
       if (!startDate || !startTime || !endDate || !endTime || !crewId) return;
 
-      const formattedStartDate = startDate.toISOString().split("T")[0];
+      const startYear = startDate.getFullYear();
+      const startMonth = (startDate.getMonth() + 1).toString().padStart(2, "0"); // 월은 0부터 시작
+      const startDay = startDate.getDate().toString().padStart(2, "0");
+      const formattedStartDate = `${startYear}-${startMonth}-${startDay}`;
       const formattedStartTime = `${startTime
         .getHours()
         .toString()
@@ -117,7 +120,10 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
         .toString()
         .padStart(2, "0")}`;
 
-      const formattedEndDate = endDate.toISOString().split("T")[0];
+      const endYear = endDate.getFullYear();
+      const endMonth = (endDate.getMonth() + 1).toString().padStart(2, "0");
+      const endDay = endDate.getDate().toString().padStart(2, "0");
+      const formattedEndDate = `${endYear}-${endMonth}-${endDay}`;
       const formattedEndTime = `${endTime
         .getHours()
         .toString()
