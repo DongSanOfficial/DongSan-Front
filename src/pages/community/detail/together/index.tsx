@@ -103,6 +103,7 @@ export default function Together() {
                 key={cowalkId}
                 startedAt={startedAt}
                 endedAt={endedAt}
+                cowalkId={cowalkId}
               />
             ))
           )}

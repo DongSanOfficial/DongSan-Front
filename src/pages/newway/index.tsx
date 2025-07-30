@@ -21,6 +21,7 @@ import { getMyCrewIds } from "src/apis/auth/auth";
 import { getMyCrews } from "src/apis/crew/crew";
 import FeedTogether from "../community/detail/components/FeedTogether";
 import { newwayStompService } from "src/stomp/newway/newway";
+import { cowalkStompService } from "src/stomp/cowalk/cowalk";
 
 interface Location {
   lat: number;
@@ -131,9 +132,18 @@ export default function NewWay() {
 
   const [crewIds, setCrewIds] = useState<number[]>([]);
   const websocketIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const cowalkId = location.state?.cowalkId;
 
   const { location: geoLocation, getLocation } =
     useWatchLocation(geolocationOptions);
+
+  //같이 산책중인 경우
+  useEffect(() => {
+    if (mode === "cowalk" && userLocation && !isWalking) {
+      // userLocation이 로드된 후에 산책 시작 로직 실행
+      handleStartWalking();
+    }
+  }, [mode, userLocation, isWalking]);
 
   // 기존 경로 데이터 가져오기 (따라가기 모드)
   useEffect(() => {
@@ -273,6 +283,9 @@ export default function NewWay() {
         websocketIntervalRef.current = null;
       }
       newwayStompService.disconnect();
+      if (mode === "cowalk") {
+        cowalkStompService.disconnect();
+      }
       setIsSocketConnected(true);
 
       navigate("/main");
@@ -287,6 +300,9 @@ export default function NewWay() {
         websocketIntervalRef.current = null;
       }
       newwayStompService.disconnect();
+      if (mode === "cowalk" && cowalkId) {
+        cowalkStompService.sendEnd(cowalkId);
+      }
       setIsSocketConnected(true);
 
       if (mode === "create") {
@@ -338,6 +354,10 @@ export default function NewWay() {
     } else if (modalType === "back") {
       if (mode === "create") {
         navigate("/main");
+      } else if (mode === "cowalk" && cowalkId) {
+        cowalkStompService.sendEnd(cowalkId);
+        cowalkStompService.disconnect();
+        navigate("/main");
       } else {
         navigate(`/main/recommend/detail/${walkwayId}`);
       }
@@ -359,6 +379,8 @@ export default function NewWay() {
           message:
             mode === "create"
               ? "산책로를 등록하시겠습니까?"
+              : mode === "cowalk"
+              ? "같이 산책을 종료하시겠습니까?"
               : "이용하기를 중단하시겠습니까?",
           cancelText: "취소",
           confirmText: mode === "create" ? "등록" : "중단",
@@ -368,6 +390,8 @@ export default function NewWay() {
           message:
             mode === "create"
               ? `홈으로 돌아가시겠습니까?\n산책정보는 저장되지 않습니다.`
+              : mode === "cowalk"
+              ? `같이 산책을 중단하고 홈으로 돌아가시겠습니까?\n산책 정보는 저장되지 않습니다.`
               : "이용을 중단하시겠습니까?\n산책로 이용내역은 저장되지 않습니다.",
           cancelText: "취소",
           confirmText: "확인",
@@ -465,7 +489,13 @@ export default function NewWay() {
     } else {
       console.log("crewIds가 비어있습니다.");
     }
-
+    if (mode === "cowalk" && cowalkId) {
+      console.log("같이산책 연결중");
+      cowalkStompService.connect(() => {
+        console.log("cowalkStompService connected for cowalkOngoing.");
+        cowalkStompService.sendOngoing(cowalkId);
+      });
+    }
     setIsWalking(true);
     setMovingPath([]);
     setDistances(0);
