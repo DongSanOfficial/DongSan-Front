@@ -119,6 +119,9 @@ export default function NewWay() {
   const toastShownRef = useRef(false);
   const [isSocketConnected, setIsSocketConnected] = useState(false);
 
+  const [cowalkModeCount, setCowalkModeCount] = useState<number | null>(null);
+  const [isCowalkSocketConnected, setIsCowalkSocketConnected] = useState(false);
+
   const distancesRef = useRef(0);
   const elapsedTimeRef = useRef(0);
   const [crewCounts, setCrewCounts] = useState<Record<number, number>>({});
@@ -285,9 +288,10 @@ export default function NewWay() {
       newwayStompService.disconnect();
       if (mode === "cowalk") {
         cowalkStompService.disconnect();
+        setIsCowalkSocketConnected(false);
       }
       setIsSocketConnected(true);
-
+      setIsCowalkSocketConnected(true);
       navigate("/main");
     } else if (modalType === "done") {
       setIsWalking(false);
@@ -302,8 +306,10 @@ export default function NewWay() {
       newwayStompService.disconnect();
       if (mode === "cowalk" && cowalkId) {
         cowalkStompService.sendEnd(cowalkId);
+        setIsCowalkSocketConnected(false);
       }
       setIsSocketConnected(true);
+      setIsCowalkSocketConnected(true);
 
       if (mode === "create") {
         try {
@@ -490,11 +496,24 @@ export default function NewWay() {
       console.log("crewIds가 비어있습니다.");
     }
     if (mode === "cowalk" && cowalkId) {
-      console.log("같이산책 연결중");
       cowalkStompService.connect(() => {
-        console.log("cowalkStompService connected for cowalkOngoing.");
+        console.log("같이 산책 STOMP 연결 성공!");
+        setIsCowalkSocketConnected(true);
+
+        cowalkStompService.subscribeCowalkCount(cowalkId, (payload) => {
+          console.log(
+            `[Cowalk Stomp] Cowalk ID ${cowalkId} 현재 인원수 페이로드:`,
+            payload
+          );
+          setCowalkModeCount(payload.count);
+        });
+
         cowalkStompService.sendOngoing(cowalkId);
       });
+    } else if (mode === "cowalk" && !cowalkId) {
+      console.error("[Cowalk Stomp] Cowalk 모드이지만 cowalkId가 없습니다.");
+      showToast("같이 산책 ID가 없어 산책을 시작할 수 없습니다.", "error");
+      return; // cowalkId 없으면 산책 시작하지 않음
     }
     setIsWalking(true);
     setMovingPath([]);
@@ -528,7 +547,7 @@ export default function NewWay() {
           >
             <TrailInfo duration={elapsedTime} distance={distances} />
           </div>
-          {crewIds.length > 0 && isSocketConnected && (
+          {crewIds.length > 0 && isSocketConnected && mode !== "cowalk" && (
             <FeedTogetherRow>
               {crewIds.map((id) => (
                 <FeedTogether
@@ -538,6 +557,16 @@ export default function NewWay() {
                   count={crewCounts[id]}
                 />
               ))}
+            </FeedTogetherRow>
+          )}
+          {mode === "cowalk" && isCowalkSocketConnected && (
+            <FeedTogetherRow>
+              <FeedTogether
+                key={cowalkId}
+                mode="cowalk"
+                nickname="같이 산책중"
+                count={Number(cowalkModeCount)}
+              />
             </FeedTogetherRow>
           )}
         </InfoContainer>

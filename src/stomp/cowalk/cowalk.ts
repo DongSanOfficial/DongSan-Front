@@ -28,13 +28,13 @@ class CowalkStompService {
   }
 
   sendOngoing(cowalkId: number) {
-    const destination = `/app/cowalk/${cowalkId}/ongoing`;
+    const destination = `/app/walk/cowalk/${cowalkId}/ongoing`;
     this.client.publish({ destination, body: JSON.stringify({}) });
     console.log("같이산책 ongoing 전송 완료");
   }
 
   sendEnd(cowalkId: number) {
-    const destination = `/app/cowalk/${cowalkId}/end`;
+    const destination = `/app/walk/cowalk/${cowalkId}/end`;
     this.client.publish({ destination, body: JSON.stringify({}) });
     console.log("같이산책 end 전송 완료");
   }
