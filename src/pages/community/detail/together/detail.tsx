@@ -1,5 +1,4 @@
 import BottomNavigation from "src/components/bottomNavigation";
-import { MdMoreVert } from "react-icons/md";
 import { useLocation, useNavigate } from "react-router-dom";
 import AppBar from "src/components/appBar";
 import styled from "styled-components";
@@ -25,6 +24,7 @@ const PageWrapper = styled.div`
   height: calc(100dvh - 126px);
   background-color: #fff;
 `;
+
 const ScrollContainer = styled.div`
   flex: 1;
   overflow-y: auto;
@@ -33,18 +33,18 @@ const ScrollContainer = styled.div`
   flex-direction: column;
   justify-content: space-between;
 `;
+
 const BottomScrollContainer = styled.div`
   flex: 1;
   overflow-y: auto;
   padding: 5px 0;
   display: flex;
   flex-direction: column;
-  //justify-content: space-between;
 `;
+
 const Bulletin = styled.div`
   width: 100%;
-  max-height: 55%; // 원하는 최대 높이 지정
-  //overflow-y: auto; // 넘칠 경우 스크롤 가능하게
+  max-height: 55%;
   border-bottom: 1px solid ${theme.Gray500};
   margin-bottom: 1rem;
 `;
@@ -55,6 +55,7 @@ const HeaderContainer = styled.div`
   align-items: center;
   gap: 1rem;
 `;
+
 const ProfileImg = styled.img`
   width: 60px;
   height: 60px;
@@ -64,24 +65,30 @@ const ProfileImg = styled.img`
   object-fit: cover;
   margin-left: 10px;
 `;
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
 `;
+
 const UserName = styled.div`
   font-size: 18px;
   font-weight: 800;
 `;
+
 const Date = styled.div``;
+
 const DetailContainer = styled.div``;
+
 const Content = styled.div`
   max-height: 100px;
   height: auto;
-  overflow-y: auto; // 넘칠 경우 스크롤 가능하게
+  overflow-y: auto;
   padding: 1rem;
   font-size: 18px;
   font-weight: 700;
 `;
+
 const JoinContent = styled.div`
   border: 1px solid ${theme.Green500};
   width: 100%;
@@ -92,20 +99,44 @@ const JoinContent = styled.div`
   align-items: center;
   box-shadow: 2px 4px rgba(0, 0, 0, 0.1);
 `;
+
 const ButtonWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: flex-end;
   margin: 1.5rem 0;
 `;
+
 const HalfButton = styled.div`
   width: 40%;
 `;
 
 export default function DetailFeed() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { showToast } = useToast();
-  const handleBack = () => navigate(-1);
+  const [recruitList, setRecruitList] = useState<Cowalkwithcrew>();
+  const [commentList, setCommentList] = useState<CowalkComment[]>([]);
+  const crewId = location.state?.crewId;
+  const cowalkId = location.state?.cowalkId;
+  const fromTab = location.state?.fromTab; // "같이 산책" 이면 탭 복원하기 위해서
+  const prevState = location.state?.prevState;
+
+  // 뒤로가기 시 CrewDetailPage를 "같이 산책" 탭이 열린 상태로 열기
+  const handleBack = () => {
+    if (fromTab === "같이 산책" && crewId) {
+      navigate("/community/detail", {
+        replace: true,
+        state: {
+          ...prevState,
+          crewId,
+          activeTab: "같이 산책",
+        },
+      });
+      return;
+    }
+    navigate(-1);
+  };
 
   const clickJoin = async () => {
     try {
@@ -119,11 +150,6 @@ export default function DetailFeed() {
       );
     }
   };
-  const [recruitList, setRecruitList] = useState<Cowalkwithcrew>();
-  const [commentList, setCommentList] = useState<CowalkComment[]>([]);
-  const location = useLocation();
-  const crewId = location.state?.crewId;
-  const cowalkId = location.state?.cowalkId;
 
   useEffect(() => {
     const fetchCowalkList = async () => {
@@ -132,15 +158,12 @@ export default function DetailFeed() {
           getCowalkDetailList({ crewId, cowalkId }),
           getCowalkCommentList({ crewId, cowalkId }),
         ]);
-        console.log(recruitRes);
-        console.log(commentRes);
         setRecruitList(recruitRes);
         setCommentList(commentRes.data);
       } catch (e) {
         console.error("같이 산책 상세조회 또는 댓글 조회 실패", e);
       }
     };
-
     if (crewId) fetchCowalkList();
   }, [crewId, cowalkId]);
 
@@ -164,11 +187,7 @@ export default function DetailFeed() {
 
   return (
     <>
-      <AppBar
-        onBack={handleBack}
-        title="게시글"
-        rightIcon={<MdMoreVert size={20} />}
-      />
+      <AppBar onBack={handleBack} title="게시글" />
       <PageWrapper>
         <ScrollContainer>
           <Bulletin>

@@ -54,7 +54,8 @@ export default function CrewDetailPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { showToast } = useToast();
-  const [activeTab, setActiveTab] = useState("요약");
+  const initialActiveTab = location.state?.activeTab ?? "요약";
+  const [activeTab, setActiveTab] = useState(initialActiveTab);
   const [isJoined, setIsJoined] = useState<boolean | null>(null);
   const crewId = location.state?.crewId;
   const isManager = location.state?.isManager;
