@@ -534,7 +534,13 @@ export default function NewWay() {
     <>
       <AppBar
         onBack={handleBackClick}
-        title={mode === "create" ? "산책로 등록" : "산책로 이용하기"}
+        title={
+          mode === "create"
+            ? "산책로 등록"
+            : mode === "cowalk"
+            ? "같이 산책하기"
+            : "산책로 이용하기"
+        }
       />
       <Container>
         <InfoContainer>
@@ -592,7 +598,9 @@ export default function NewWay() {
         <ButtonContainer>
           <SmallButton
             primaryText={mode === "create" ? "산책 시작" : "산책로 이용"}
-            secondaryText={mode === "create" ? "산책 완료" : "이용 완료"}
+            secondaryText={
+              mode === "create" || mode === "cowalk" ? "산책 완료" : "이용 완료"
+            }
             isWalking={isWalking}
             onClick={isWalking ? handleStopRequest : handleStartWalking}
           />
