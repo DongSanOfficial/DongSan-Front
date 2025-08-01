@@ -1,7 +1,7 @@
 import { BiPlusCircle } from "react-icons/bi";
 import RecruitList from "../components/RecruitList";
 import styled from "styled-components";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import RecruitForm from "../../components/RecruitForm";
 import Modal from "src/components/modal";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -34,6 +34,10 @@ export default function Together() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [recruitList, setRecruitList] = useState<Cowalkwithcrew[]>([]);
   const [myCowalkList, setMyCowalkList] = useState<UserCowalk[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const observerRef = useRef<HTMLDivElement | null>(null);
+
   const location = useLocation();
   const crewId = location.state?.crewId;
   const isJoined = location.state?.isJoined ?? false;
@@ -61,34 +65,79 @@ export default function Together() {
     memo,
   }: RecruitCowalker & { crewId: number }) => {
     try {
-      const { data: listdata } = await getCowalkList({ crewId });
+      const { data: listdata } = await getCowalkList({
+        crewId,
+        lastId: undefined,
+        size: 5,
+      });
       setRecruitList(listdata);
+      setHasMore(true);
     } catch (e) {
       console.error("산책 리스트 갱신 실패", e);
     }
 
     setIsModalOpen(false);
   };
+  const loadMore = async () => {
+    if (loading || !hasMore || !crewId) return;
+    setLoading(true);
+
+    try {
+      const lastId = recruitList[recruitList.length - 1]?.cowalkId;
+      const { data: newList } = await getCowalkList({
+        crewId,
+        lastId,
+        size: 5,
+      });
+
+      if (newList.length === 0) {
+        setHasMore(false);
+      } else {
+        setRecruitList((prev) => [...prev, ...newList]);
+      }
+    } catch (e) {
+      console.error("무한스크롤 데이터 로딩 실패", e);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchLists = async () => {
+    const currentRef = observerRef.current;
+    if (!currentRef) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        loadMore();
+      }
+    });
+
+    observer.observe(currentRef);
+
+    return () => {
+      if (currentRef) observer.unobserve(currentRef);
+      observer.disconnect();
+    };
+  }, [recruitList, loading, hasMore]);
+
+  useEffect(() => {
+    const fetchInitial = async () => {
       try {
         if (!crewId) return;
 
         const [recruitRes, userCowalkRes] = await Promise.all([
-          getCowalkList({ crewId }),
+          getCowalkList({ crewId, size: 5 }),
           getUserCowalkList(),
         ]);
 
         setRecruitList(recruitRes.data);
         setMyCowalkList(userCowalkRes.data);
-        console.log("내가 신청한 산책 일정:", userCowalkRes.data);
       } catch (e) {
-        console.error("산책 목록 조회 실패", e);
+        console.error("초기 산책 목록 조회 실패", e);
       }
     };
 
-    fetchLists();
+    fetchInitial();
   }, [crewId]);
 
   return (
@@ -126,6 +175,7 @@ export default function Together() {
           onClick={handleCardClick}
         />
       ))}
+      <div ref={observerRef} style={{ height: "1px" }} />
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <RecruitForm onSubmit={handleSubmit} />

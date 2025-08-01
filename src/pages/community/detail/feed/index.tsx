@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import FeedList from "../components/FeedList";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { feedList } from "src/apis/crew/crew.type";
 import { getCrewfeedlist } from "src/apis/crew/crew";
 import FeedTogether from "../components/FeedTogether";
@@ -34,13 +34,72 @@ const GroupedFeeds = styled.div`
 export default function Feed({ crewId }: { crewId: number }) {
   const [feeds, setFeeds] = useState<feedList[]>([]);
   const [liveUsers, setLiveUsers] = useState<feedList[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const observerRef = useRef<HTMLDivElement | null>(null);
+
+  const loadMore = async () => {
+    if (loading || !hasMore || !crewId) return;
+    setLoading(true);
+
+    try {
+      const lastId = feeds[feeds.length - 1]?.walkwayHistoryId;
+      const { data: newFeeds } = await getCrewfeedlist({
+        crewId,
+        lastId,
+        size: 5,
+      });
+
+      if (newFeeds.length === 0) {
+        setHasMore(false);
+      } else {
+        setFeeds((prev) => {
+          const allFeeds = [...prev, ...newFeeds];
+          const uniqueFeeds = Array.from(
+            new Map(
+              allFeeds.map((feed) => [feed.walkwayHistoryId, feed])
+            ).values()
+          );
+          return uniqueFeeds;
+        });
+      }
+    } catch (e) {
+      console.error("무한 스크롤 피드 로딩 실패", e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const currentRef = observerRef.current;
+    if (!currentRef) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadMore();
+        }
+      },
+      { threshold: 1 }
+    );
+
+    observer.observe(currentRef);
+
+    return () => {
+      if (currentRef) observer.unobserve(currentRef);
+      observer.disconnect();
+    };
+  }, [feeds, hasMore, loading]);
 
   useEffect(() => {
     const fetchFeeds = async () => {
       try {
-        const { data: responseData } = await getCrewfeedlist({ crewId });
+        const { data: responseData } = await getCrewfeedlist({
+          crewId,
+          size: 5,
+        });
         setFeeds(responseData);
-        console.log("피드 조회 성공:", responseData);
+        setHasMore(true); // 초기화 시 무한스크롤 리셋
       } catch (e) {
         console.error("피드 조회 실패:", e);
       }
@@ -145,15 +204,17 @@ export default function Feed({ crewId }: { crewId: number }) {
             현재 같이 산책중인 사용자가 없습니다.
           </span>
         ) : (
-          liveUsers.slice(0, 4).map((item) => (
-            <FeedTogether
-              key={item.memberId}
-              mode="live"
-              nickname={item.nickname}
-              durationSec={Number(item.durationSec)} // ← 여기!
-              distanceKm={Number(item.distanceKm)} // ← 여기!
-            />
-          ))
+          liveUsers
+            .slice(0, 4)
+            .map((item) => (
+              <FeedTogether
+                key={item.memberId}
+                mode="live"
+                nickname={item.nickname}
+                durationSec={Number(item.durationSec)}
+                distanceKm={Number(item.distanceKm)}
+              />
+            ))
         )}
       </TogetherContainer>
 
@@ -171,6 +232,7 @@ export default function Feed({ crewId }: { crewId: number }) {
             ))}
           </GroupedFeeds>
         ))}
+        <div ref={observerRef} style={{ height: "1px" }} />
       </ListContainer>
     </>
   );
