@@ -164,11 +164,7 @@ export default function DetailFeed() {
 
   return (
     <>
-      <AppBar
-        onBack={handleBack}
-        title="게시글"
-        rightIcon={<MdMoreVert size={20} />}
-      />
+      <AppBar onBack={handleBack} title="게시글" />
       <PageWrapper>
         <ScrollContainer>
           <Bulletin>
