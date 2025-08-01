@@ -40,7 +40,14 @@ export default function Together() {
   const navigate = useNavigate();
 
   const handleCardClick = (cowalkId: number) => {
-    navigate(`/community/detail/${cowalkId}`, { state: { crewId, cowalkId } });
+    navigate(`/community/detail/${cowalkId}`, {
+      state: {
+        crewId,
+        cowalkId,
+        fromTab: "같이 산책",
+        prevState: location.state,
+      },
+    });
   };
 
   const handleSubmit = async ({
