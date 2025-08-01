@@ -8,6 +8,7 @@ import CheckButton from "src/components/button/CheckButton";
 import { createCowalk } from "src/apis/crew/crew";
 import { useLocation } from "react-router-dom";
 import { RecruitCowalker } from "src/apis/crew/crew.type";
+import { useToast } from "src/context/toast/useToast";
 
 const Title = styled.h2`
   display: flex;
@@ -32,15 +33,6 @@ const ScheduleContainer = styled.div`
   margin: 0 auto;
   font-size: 14px;
 `;
-// const SelectItem = styled.label`
-//   margin: 0.4rem 0;
-//   border-bottom: 1px solid ${theme.Gray300};
-//   display: flex;
-//   align-items: center;
-//   gap: 0.5rem;
-//   position: relative;
-//   height: 2.5rem;
-// `;
 
 const LittleTitle = styled.div`
   font-size: 14px;
@@ -101,9 +93,40 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
   const location = useLocation();
   const crewId = location.state?.crewId;
 
+  const { showToast } = useToast();
   const handleSubmit = async () => {
     try {
       if (!startDate || !startTime || !endDate || !endTime || !crewId) return;
+
+      const startDateTime = new Date(
+        startDate.getFullYear(),
+        startDate.getMonth(),
+        startDate.getDate(),
+        startTime.getHours(),
+        startTime.getMinutes(),
+        startTime.getSeconds()
+      );
+
+      const endDateTime = new Date(
+        endDate.getFullYear(),
+        endDate.getMonth(),
+        endDate.getDate(),
+        endTime.getHours(),
+        endTime.getMinutes(),
+        endTime.getSeconds()
+      );
+
+      const diffMs = endDateTime.getTime() - startDateTime.getTime();
+      const diffHours = diffMs / (1000 * 60 * 60);
+
+      if (diffHours < 1) {
+        showToast("산책 시간은 최소 1시간 이상이어야 합니다.", "error");
+        return;
+      }
+      if (diffHours > 3) {
+        showToast("산책 시간은 최대 3시간 이내여야 합니다.", "error");
+        return;
+      }
 
       const startYear = startDate.getFullYear();
       const startMonth = (startDate.getMonth() + 1).toString().padStart(2, "0"); // 월은 0부터 시작
@@ -162,6 +185,7 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
           }),
         memo,
       });
+      console.log("추가된 일정:", requestBody);
     } catch (error) {
       console.error("산책 생성 실패:", error);
     }
@@ -185,12 +209,6 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
         같이 산책할 일정을 선택해주세요 <span style={{ color: "red" }}>*</span>
       </SubTitle>
       <ScheduleContainer>
-        {/* <SelectItem>
-          <CustomDatePicker
-            selected={date}
-            onChange={(date) => setDate(date)}
-          />
-        </SelectItem> */}
         <TimeRangeWrapper>
           <CustomDatePicker
             selected={startDate}

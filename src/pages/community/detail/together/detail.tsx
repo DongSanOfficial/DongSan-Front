@@ -1,5 +1,4 @@
 import BottomNavigation from "src/components/bottomNavigation";
-import { MdMoreVert } from "react-icons/md";
 import { useLocation, useNavigate } from "react-router-dom";
 import AppBar from "src/components/appBar";
 import styled from "styled-components";
