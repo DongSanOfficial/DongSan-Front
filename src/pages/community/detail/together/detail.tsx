@@ -17,6 +17,7 @@ import {
 import { useEffect, useState } from "react";
 import { CowalkComment, Cowalkwithcrew } from "src/apis/crew/crew.type";
 import { useToast } from "src/context/toast/useToast";
+import dayjs from "dayjs";
 
 const PageWrapper = styled.div`
   display: flex;
@@ -122,6 +123,10 @@ export default function DetailFeed() {
   const fromTab = location.state?.fromTab; // "같이 산책" 이면 탭 복원하기 위해서
   const prevState = location.state?.prevState;
 
+  const datePart = recruitList?.createdDate?.split(" ")[0]; // ex: "2025-08-05"
+  const endTimePart = recruitList?.endTime; // ex: "12:50:00"
+
+  const fullEndDateTime = dayjs(`${datePart} ${endTimePart}`);
   // 뒤로가기 시 CrewDetailPage를 "같이 산책" 탭이 열린 상태로 열기
   const handleBack = () => {
     if (fromTab === "같이 산책" && crewId) {
@@ -158,6 +163,7 @@ export default function DetailFeed() {
           getCowalkDetailList({ crewId, cowalkId }),
           getCowalkCommentList({ crewId, cowalkId }),
         ]);
+        console.log(recruitRes);
         setRecruitList(recruitRes);
         setCommentList(commentRes.data);
       } catch (e) {
@@ -208,13 +214,15 @@ export default function DetailFeed() {
               </JoinContent>
             </DetailContainer>
             <ButtonWrapper>
-              <HalfButton>
-                <CheckButton
-                  active={true}
-                  label="참여하기"
-                  onClick={clickJoin}
-                />
-              </HalfButton>
+              {fullEndDateTime.isAfter(dayjs()) && (
+                <HalfButton>
+                  <CheckButton
+                    active={true}
+                    label="참여하기"
+                    onClick={clickJoin}
+                  />
+                </HalfButton>
+              )}
             </ButtonWrapper>
           </Bulletin>
           <BottomScrollContainer>

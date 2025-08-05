@@ -115,6 +115,7 @@ export interface Cowalkwithcrew {
   createdDate: string;
   date: string;
   time: string;
+  endTime: string;
   limitEnable: boolean;
   memberCount: number;
   memberLimit: number;
