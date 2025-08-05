@@ -75,6 +75,8 @@ const Container = styled.div`
 const UserName = styled.div`
   font-size: 18px;
   font-weight: 800;
+  word-break: break-word;
+  white-space: normal;
 `;
 
 const Date = styled.div``;
