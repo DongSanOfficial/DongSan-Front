@@ -132,6 +132,7 @@ export default function Together() {
 
         setRecruitList(recruitRes.data);
         setMyCowalkList(userCowalkRes.data);
+        setHasMore(true);
       } catch (e) {
         console.error("초기 산책 목록 조회 실패", e);
       }
