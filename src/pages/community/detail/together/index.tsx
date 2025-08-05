@@ -58,7 +58,6 @@ export default function Together() {
     crewId,
     startDate,
     startTime,
-    endDate,
     endTime,
     limitEnable,
     memberLimit,

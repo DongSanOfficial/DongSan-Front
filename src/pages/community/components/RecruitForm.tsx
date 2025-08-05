@@ -85,7 +85,6 @@ interface RecruitFormProps {
 export default function RecruitForm({ onSubmit }: RecruitFormProps) {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [startTime, setStartTime] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
   const [endTime, setEndTime] = useState<Date | null>(null);
   const [peopleCount, setPeopleCount] = useState<number | "">("");
   const [isLimitEnabled, setIsLimitEnabled] = useState(true);
@@ -94,36 +93,45 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
   const crewId = location.state?.crewId;
 
   const { showToast } = useToast();
+
+  const calculateDuration = () => {
+    if (!startDate || !startTime || !endTime) return null;
+
+    const start = new Date(startDate);
+    start.setHours(
+      startTime.getHours(),
+      startTime.getMinutes(),
+      startTime.getSeconds()
+    );
+
+    const end = new Date(startDate);
+    end.setHours(
+      endTime.getHours(),
+      endTime.getMinutes(),
+      endTime.getSeconds()
+    );
+
+    // endTime이 startTime보다 빠르면 다음날로 간주
+    if (end <= start) {
+      end.setDate(end.getDate() + 1);
+    }
+
+    const diffMs = end.getTime() - start.getTime();
+    const diffHours = diffMs / (1000 * 60 * 60);
+
+    return diffHours;
+  };
+
+  const duration = calculateDuration();
   const handleSubmit = async () => {
     try {
-      if (!startDate || !startTime || !endDate || !endTime || !crewId) return;
+      if (!startDate || !startTime || !endTime || !crewId) return;
 
-      const startDateTime = new Date(
-        startDate.getFullYear(),
-        startDate.getMonth(),
-        startDate.getDate(),
-        startTime.getHours(),
-        startTime.getMinutes(),
-        startTime.getSeconds()
-      );
-
-      const endDateTime = new Date(
-        endDate.getFullYear(),
-        endDate.getMonth(),
-        endDate.getDate(),
-        endTime.getHours(),
-        endTime.getMinutes(),
-        endTime.getSeconds()
-      );
-
-      const diffMs = endDateTime.getTime() - startDateTime.getTime();
-      const diffHours = diffMs / (1000 * 60 * 60);
-
-      if (diffHours < 1) {
+      if (duration === null || duration < 1) {
         showToast("산책 시간은 최소 1시간 이상이어야 합니다.", "error");
         return;
       }
-      if (diffHours > 3) {
+      if (duration === null || duration > 3) {
         showToast("산책 시간은 최대 3시간 이내여야 합니다.", "error");
         return;
       }
@@ -143,10 +151,6 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
         .toString()
         .padStart(2, "0")}`;
 
-      const endYear = endDate.getFullYear();
-      const endMonth = (endDate.getMonth() + 1).toString().padStart(2, "0");
-      const endDay = endDate.getDate().toString().padStart(2, "0");
-      const formattedEndDate = `${endYear}-${endMonth}-${endDay}`;
       const formattedEndTime = `${endTime
         .getHours()
         .toString()
@@ -159,7 +163,6 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
         crewId,
         startDate: formattedStartDate,
         startTime: formattedStartTime,
-        endDate: formattedEndDate,
         endTime: formattedEndTime,
         limitEnable: isLimitEnabled,
         ...(isLimitEnabled &&
@@ -171,12 +174,10 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
 
       const cowalkId = await createCowalk(requestBody);
       console.log("생성된 cowalkId:", cowalkId);
-
       onSubmit({
         crewId,
         startDate: formattedStartDate,
         startTime: formattedStartTime,
-        endDate: formattedEndDate,
         endTime: formattedEndTime,
         limitEnable: isLimitEnabled,
         ...(isLimitEnabled &&
@@ -194,7 +195,6 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
   const isFormValid =
     startDate !== null &&
     startTime !== null &&
-    endDate !== null &&
     endTime !== null &&
     (!isLimitEnabled ||
       (typeof peopleCount === "number" &&
@@ -213,11 +213,6 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
           <CustomDatePicker
             selected={startDate}
             onChange={(date) => setStartDate(date)}
-          />
-          <span>~</span>
-          <CustomDatePicker
-            selected={endDate}
-            onChange={(date) => setEndDate(date)}
           />
         </TimeRangeWrapper>
       </ScheduleContainer>
