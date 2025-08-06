@@ -234,7 +234,7 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
         최대 모집인원 설정하기{" "}
         <ToggleSwitch
           isOn={isLimitEnabled}
-          label={isLimitEnabled ? "전체공개" : "비공개"}
+          label={isLimitEnabled ? "비공개" : "전체공개"}
           readOnly={false}
           onChange={() => setIsLimitEnabled((prev) => !prev)}
         />
