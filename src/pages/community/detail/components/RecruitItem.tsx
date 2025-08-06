@@ -27,6 +27,9 @@ const Bold = styled.span`
   font-weight: 700;
   font-size: 20px;
   color: ${theme.Black};
+  @media (max-width: 375px) {
+    font-size: 16px;
+  }
 `;
 const Count = styled.span`
   font-size: 16px;
@@ -36,6 +39,9 @@ const Count = styled.span`
   align-items: center;
   justify-content: center;
   margin: auto 0;
+  @media (max-width: 375px) {
+    font-size: 14px;
+  }
 `;
 
 interface RecruitListProps {

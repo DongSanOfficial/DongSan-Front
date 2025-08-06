@@ -46,14 +46,13 @@ export default function MyCowalkList({
   const navigate = useNavigate();
 
   useEffect(() => {
-    cowalkStompService.connect(() => {
-      setIsConnected(true);
-    });
-
+    console.log(`[MyCowalkList] ${cowalkId} 컴포넌트 마운트됨`);
     return () => {
+      console.log(`[MyCowalkList] ${cowalkId} 언마운트 및 WebSocket 연결 해제`);
       cowalkStompService.disconnect();
     };
   }, []);
+
   const startedDate = new Date(startedAt);
 
   const year = startedDate.getFullYear();
@@ -67,11 +66,17 @@ export default function MyCowalkList({
   const now = new Date();
   const isNow = now >= startedDate && now <= new Date(endedAt);
   const handleClick = () => {
+    console.log("연결상태: ", isConnected);
     if (!isConnected) {
-      console.warn("WebSocket 연결이 아직 안 되어 있음");
-      return;
-    }
-    if (isNow) {
+      cowalkStompService.connect(() => {
+        console.log(`[MyCowalkList] ${cowalkId} WebSocket 연결 성공`);
+        setIsConnected(true);
+
+        // 연결이 완료된 후에만 sendOngoing과 navigate 실행
+        cowalkStompService.sendOngoing(cowalkId);
+        navigate("/newway", { state: { mode: "cowalk", cowalkId } });
+      });
+    } else {
       cowalkStompService.sendOngoing(cowalkId);
       navigate("/newway", { state: { mode: "cowalk", cowalkId } });
     }

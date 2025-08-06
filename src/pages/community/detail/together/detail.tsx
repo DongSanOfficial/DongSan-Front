@@ -90,6 +90,9 @@ const Content = styled.div`
   padding: 1rem;
   font-size: 18px;
   font-weight: 700;
+  @media (max-width: 375px) {
+    font-size: 16px;
+  }
 `;
 
 const JoinContent = styled.div`
@@ -101,13 +104,18 @@ const JoinContent = styled.div`
   display: flex;
   align-items: center;
   box-shadow: 2px 4px rgba(0, 0, 0, 0.1);
+  @media (max-width: 427px) {
+    height: 5rem;
+    margin: 0.5rem;
+    width: 95%;
+  }
 `;
 
 const ButtonWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: flex-end;
-  margin: 1.5rem 0;
+  margin: 0.5rem 0;
 `;
 
 const HalfButton = styled.div`
