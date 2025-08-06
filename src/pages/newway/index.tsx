@@ -337,7 +337,7 @@ export default function NewWay() {
           console.error("이미지 업로드 실패:", error);
           showToast("이미지 업로드에 실패했습니다.", "error");
         }
-      } else {
+      } else if (mode === "follow") {
         try {
           const distanceInKm = Number((distances / 1000).toFixed(2));
           const historyResponse = await createWalkwayHistory(walkwayId, {
@@ -356,6 +356,8 @@ export default function NewWay() {
           showToast("산책로 이용 기록 저장에 실패했습니다.", "error");
           navigate(-1);
         }
+      } else if (mode === "cowalk") {
+        navigate("/main");
       }
     } else if (modalType === "back") {
       if (mode === "create") {
