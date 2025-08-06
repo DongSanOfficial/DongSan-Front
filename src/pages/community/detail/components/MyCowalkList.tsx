@@ -22,13 +22,18 @@ const Content = styled.div`
 `;
 
 const AlertBtn = styled.button<{ isNow: boolean }>`
-  background-color: ${({ isNow }) => (isNow ? `${theme.Green500}` : "#f0f0f0")};
+  background-color: ${({ isNow }) => (isNow ? theme.Green500 : "#f0f0f0")};
   border: none;
   border-radius: 25px;
   width: 4.5rem;
   height: 2rem;
   font-size: 16px;
   color: ${({ isNow }) => (isNow ? "white" : "#333")};
+  cursor: ${({ isNow }) => (isNow ? "pointer" : "not-allowed")};
+
+  &:disabled {
+    opacity: 0.6;
+  }
 `;
 
 interface MyCowalkListProps {
@@ -54,6 +59,7 @@ export default function MyCowalkList({
   }, []);
 
   const startedDate = new Date(startedAt);
+  const endedDate = new Date(endedAt);
 
   const year = startedDate.getFullYear();
   const month = (startedDate.getMonth() + 1).toString().padStart(2, "0");
@@ -64,15 +70,13 @@ export default function MyCowalkList({
   const formatted = `${year}-${month}-${date} ${hour}시 ${minute}분`;
 
   const now = new Date();
-  const isNow = now >= startedDate && now <= new Date(endedAt);
+  const isNow = now >= startedDate && now <= endedDate;
+
   const handleClick = () => {
-    console.log("연결상태: ", isConnected);
     if (!isConnected) {
       cowalkStompService.connect(() => {
         console.log(`[MyCowalkList] ${cowalkId} WebSocket 연결 성공`);
         setIsConnected(true);
-
-        // 연결이 완료된 후에만 sendOngoing과 navigate 실행
         cowalkStompService.sendOngoing(cowalkId);
         navigate("/newway", { state: { mode: "cowalk", cowalkId } });
       });
@@ -81,11 +85,12 @@ export default function MyCowalkList({
       navigate("/newway", { state: { mode: "cowalk", cowalkId } });
     }
   };
+
   return (
     <Wrapper>
       <img src={icon} alt="산책 아이콘" />
       <Content>{formatted}</Content>
-      <AlertBtn isNow={isNow} onClick={handleClick}>
+      <AlertBtn isNow={isNow} disabled={!isNow} onClick={handleClick}>
         시작
       </AlertBtn>
     </Wrapper>
