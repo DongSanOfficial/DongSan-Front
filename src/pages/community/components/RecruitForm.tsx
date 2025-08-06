@@ -58,7 +58,7 @@ const StyledInput = styled.input<{ disabled?: boolean }>`
   outline: none;
   width: 100%;
   font-size: 16px;
-  text-align: right;
+  text-align: left;
   background: transparent;
   color: ${({ disabled }) => (disabled ? theme.Gray400 : theme.Black)};
 
@@ -234,7 +234,7 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
         최대 모집인원 설정하기{" "}
         <ToggleSwitch
           isOn={isLimitEnabled}
-          label={isLimitEnabled ? "비공개" : "전체공개"}
+          //label={isLimitEnabled ? "비공개" : "전체공개"}
           readOnly={false}
           onChange={() => setIsLimitEnabled((prev) => !prev)}
         />
