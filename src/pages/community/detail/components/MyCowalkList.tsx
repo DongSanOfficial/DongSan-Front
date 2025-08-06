@@ -1,6 +1,9 @@
 import styled from "styled-components";
 import icon from "src/assets/svg/FootPrint.svg";
 import { theme } from "src/styles/colors/theme";
+import { useNavigate } from "react-router-dom";
+import { cowalkStompService } from "src/stomp/cowalk/cowalk";
+import { useEffect, useState } from "react";
 
 const Wrapper = styled.div`
   display: flex;
@@ -19,27 +22,45 @@ const Content = styled.div`
 `;
 
 const AlertBtn = styled.button<{ isNow: boolean }>`
-  background-color: ${({ isNow }) => (isNow ? `${theme.Green500}` : "#f0f0f0")};
+  background-color: ${({ isNow }) => (isNow ? theme.Green500 : "#f0f0f0")};
   border: none;
   border-radius: 25px;
   width: 4.5rem;
   height: 2rem;
   font-size: 16px;
   color: ${({ isNow }) => (isNow ? "white" : "#333")};
+  cursor: ${({ isNow }) => (isNow ? "pointer" : "not-allowed")};
+
+  &:disabled {
+    opacity: 0.6;
+  }
 `;
 
 interface MyCowalkListProps {
   startedAt: string;
   endedAt: string;
+  cowalkId: number;
 }
 
 export default function MyCowalkList({
   startedAt,
   endedAt,
+  cowalkId,
 }: MyCowalkListProps) {
-  const startedDate = new Date(startedAt);
+  const [isConnected, setIsConnected] = useState(false);
+  const navigate = useNavigate();
 
-  // 날짜와 시간을 포맷팅 (예: 2025-07-09 10시 06분)
+  useEffect(() => {
+    console.log(`[MyCowalkList] ${cowalkId} 컴포넌트 마운트됨`);
+    return () => {
+      console.log(`[MyCowalkList] ${cowalkId} 언마운트 및 WebSocket 연결 해제`);
+      cowalkStompService.disconnect();
+    };
+  }, []);
+
+  const startedDate = new Date(startedAt);
+  const endedDate = new Date(endedAt);
+
   const year = startedDate.getFullYear();
   const month = (startedDate.getMonth() + 1).toString().padStart(2, "0");
   const date = startedDate.getDate().toString().padStart(2, "0");
@@ -48,16 +69,30 @@ export default function MyCowalkList({
 
   const formatted = `${year}-${month}-${date} ${hour}시 ${minute}분`;
 
-  // 현재 시간과 비교해서 isNow 계산 (분 단위까지 정확히 일치할 때 true)
   const now = new Date();
+  const isNow = now >= startedDate && now <= endedDate;
 
-  const isNow = now >= startedDate && now <= new Date(endedAt);
+  const handleClick = () => {
+    if (!isConnected) {
+      cowalkStompService.connect(() => {
+        console.log(`[MyCowalkList] ${cowalkId} WebSocket 연결 성공`);
+        setIsConnected(true);
+        cowalkStompService.sendOngoing(cowalkId);
+        navigate("/newway", { state: { mode: "cowalk", cowalkId } });
+      });
+    } else {
+      cowalkStompService.sendOngoing(cowalkId);
+      navigate("/newway", { state: { mode: "cowalk", cowalkId } });
+    }
+  };
 
   return (
     <Wrapper>
       <img src={icon} alt="산책 아이콘" />
       <Content>{formatted}</Content>
-      <AlertBtn isNow={isNow}>시작</AlertBtn>
+      <AlertBtn isNow={isNow} disabled={!isNow} onClick={handleClick}>
+        시작
+      </AlertBtn>
     </Wrapper>
   );
 }

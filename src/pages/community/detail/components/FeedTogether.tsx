@@ -4,7 +4,7 @@ import { BsClock } from "react-icons/bs";
 import styled from "styled-components";
 import { truncateText } from "src/utils/truncateText";
 
-export type FeedTogetherMode = "feed" | "crewCount" | "live";
+export type FeedTogetherMode = "feed" | "crewCount" | "live" | "cowalk";
 
 export interface FeedTogetherProps extends Partial<feedList> {
   mode: FeedTogetherMode;
@@ -50,7 +50,11 @@ export default function FeedTogether({
   return (
     <Container>
       <div style={{ marginBottom: "8px" }}>
-        <Contains>{truncateText(nickname, 4)}</Contains>
+        {mode === "cowalk" ? (
+          <Contains>{nickname}</Contains>
+        ) : (
+          <Contains>{truncateText(nickname, 4)}</Contains>
+        )}{" "}
       </div>
       {mode === "live" && (
         <>
@@ -64,7 +68,7 @@ export default function FeedTogether({
           </Contains>
         </>
       )}
-      {mode === "crewCount" && (
+      {(mode === "crewCount" || mode === "cowalk") && (
         <>
           <Contains>
             <BiRun />

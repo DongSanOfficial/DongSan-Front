@@ -88,33 +88,19 @@ const ErrorText = styled.div`
   color: ${theme.Red300};
 `;
 
-export default function Summary({ crewId }: { crewId: number }) {
+export default function Summary({
+  crewId,
+  onIsJoined,
+}: {
+  crewId: number;
+  onIsJoined?: (v: boolean) => void;
+}) {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [crewDetail, setCrewDetail] = useState<CrewDetailInfo | null>(null);
   const [ranks, setRanks] = useState<CrewRankingItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchDetail = async () => {
-      try {
-        setLoading(true);
-        const response = await getCrewDetail(crewId);
-        setCrewDetail(response);
-      } catch (err) {
-        setError(
-          err instanceof Error
-            ? err.message
-            : "크루 정보를 불러오는 데 실패했습니다."
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDetail();
-  }, [crewId]);
 
   const today = useMemo(() => {
     return new Date().toISOString().split("T")[0];
@@ -134,6 +120,7 @@ export default function Summary({ crewId }: { crewId: number }) {
         ]);
         setCrewDetail(detailRes);
         setRanks(rankRes.data);
+        onIsJoined?.(detailRes.isJoined);
       } catch (err) {
         setError("크루 정보를 불러오는 데 실패했습니다.");
       } finally {
@@ -142,15 +129,12 @@ export default function Summary({ crewId }: { crewId: number }) {
     };
 
     fetchData();
-  }, [crewId, today]);
+  }, [crewId, today, onIsJoined]);
 
   const handleRankDetail = () => {
     if (!crewDetail) return;
-
     navigate("/community/detail/summary/rank", {
-      state: {
-        crewId,
-      },
+      state: { crewId },
     });
   };
 

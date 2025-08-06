@@ -8,6 +8,7 @@ import CheckButton from "src/components/button/CheckButton";
 import { createCowalk } from "src/apis/crew/crew";
 import { useLocation } from "react-router-dom";
 import { RecruitCowalker } from "src/apis/crew/crew.type";
+import { useToast } from "src/context/toast/useToast";
 
 const Title = styled.h2`
   display: flex;
@@ -32,15 +33,6 @@ const ScheduleContainer = styled.div`
   margin: 0 auto;
   font-size: 14px;
 `;
-// const SelectItem = styled.label`
-//   margin: 0.4rem 0;
-//   border-bottom: 1px solid ${theme.Gray300};
-//   display: flex;
-//   align-items: center;
-//   gap: 0.5rem;
-//   position: relative;
-//   height: 2.5rem;
-// `;
 
 const LittleTitle = styled.div`
   font-size: 14px;
@@ -66,7 +58,7 @@ const StyledInput = styled.input<{ disabled?: boolean }>`
   outline: none;
   width: 100%;
   font-size: 16px;
-  text-align: right;
+  text-align: left;
   background: transparent;
   color: ${({ disabled }) => (disabled ? theme.Gray400 : theme.Black)};
 
@@ -93,7 +85,6 @@ interface RecruitFormProps {
 export default function RecruitForm({ onSubmit }: RecruitFormProps) {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [startTime, setStartTime] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
   const [endTime, setEndTime] = useState<Date | null>(null);
   const [peopleCount, setPeopleCount] = useState<number | "">("");
   const [isLimitEnabled, setIsLimitEnabled] = useState(true);
@@ -101,11 +92,54 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
   const location = useLocation();
   const crewId = location.state?.crewId;
 
+  const { showToast } = useToast();
+
+  const calculateDuration = () => {
+    if (!startDate || !startTime || !endTime) return null;
+
+    const start = new Date(startDate);
+    start.setHours(
+      startTime.getHours(),
+      startTime.getMinutes(),
+      startTime.getSeconds()
+    );
+
+    const end = new Date(startDate);
+    end.setHours(
+      endTime.getHours(),
+      endTime.getMinutes(),
+      endTime.getSeconds()
+    );
+
+    // endTime이 startTime보다 빠르면 다음날로 간주
+    if (end <= start) {
+      end.setDate(end.getDate() + 1);
+    }
+
+    const diffMs = end.getTime() - start.getTime();
+    const diffHours = diffMs / (1000 * 60 * 60);
+
+    return diffHours;
+  };
+
+  const duration = calculateDuration();
   const handleSubmit = async () => {
     try {
-      if (!startDate || !startTime || !endDate || !endTime || !crewId) return;
+      if (!startDate || !startTime || !endTime || !crewId) return;
 
-      const formattedStartDate = startDate.toISOString().split("T")[0];
+      if (duration === null || duration < 1) {
+        showToast("산책 시간은 최소 1시간 이상이어야 합니다.", "error");
+        return;
+      }
+      if (duration === null || duration > 3) {
+        showToast("산책 시간은 최대 3시간 이내여야 합니다.", "error");
+        return;
+      }
+
+      const startYear = startDate.getFullYear();
+      const startMonth = (startDate.getMonth() + 1).toString().padStart(2, "0"); // 월은 0부터 시작
+      const startDay = startDate.getDate().toString().padStart(2, "0");
+      const formattedStartDate = `${startYear}-${startMonth}-${startDay}`;
       const formattedStartTime = `${startTime
         .getHours()
         .toString()
@@ -117,7 +151,6 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
         .toString()
         .padStart(2, "0")}`;
 
-      const formattedEndDate = endDate.toISOString().split("T")[0];
       const formattedEndTime = `${endTime
         .getHours()
         .toString()
@@ -130,7 +163,6 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
         crewId,
         startDate: formattedStartDate,
         startTime: formattedStartTime,
-        endDate: formattedEndDate,
         endTime: formattedEndTime,
         limitEnable: isLimitEnabled,
         ...(isLimitEnabled &&
@@ -142,12 +174,10 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
 
       const cowalkId = await createCowalk(requestBody);
       console.log("생성된 cowalkId:", cowalkId);
-
       onSubmit({
         crewId,
         startDate: formattedStartDate,
         startTime: formattedStartTime,
-        endDate: formattedEndDate,
         endTime: formattedEndTime,
         limitEnable: isLimitEnabled,
         ...(isLimitEnabled &&
@@ -156,6 +186,7 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
           }),
         memo,
       });
+      console.log("추가된 일정:", requestBody);
     } catch (error) {
       console.error("산책 생성 실패:", error);
     }
@@ -164,7 +195,6 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
   const isFormValid =
     startDate !== null &&
     startTime !== null &&
-    endDate !== null &&
     endTime !== null &&
     (!isLimitEnabled ||
       (typeof peopleCount === "number" &&
@@ -179,21 +209,10 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
         같이 산책할 일정을 선택해주세요 <span style={{ color: "red" }}>*</span>
       </SubTitle>
       <ScheduleContainer>
-        {/* <SelectItem>
-          <CustomDatePicker
-            selected={date}
-            onChange={(date) => setDate(date)}
-          />
-        </SelectItem> */}
         <TimeRangeWrapper>
           <CustomDatePicker
             selected={startDate}
             onChange={(date) => setStartDate(date)}
-          />
-          <span>~</span>
-          <CustomDatePicker
-            selected={endDate}
-            onChange={(date) => setEndDate(date)}
           />
         </TimeRangeWrapper>
       </ScheduleContainer>
@@ -215,7 +234,7 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
         최대 모집인원 설정하기{" "}
         <ToggleSwitch
           isOn={isLimitEnabled}
-          label={isLimitEnabled ? "전체공개" : "비공개"}
+          //label={isLimitEnabled ? "비공개" : "전체공개"}
           readOnly={false}
           onChange={() => setIsLimitEnabled((prev) => !prev)}
         />

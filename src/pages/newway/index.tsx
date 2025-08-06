@@ -21,6 +21,7 @@ import { getMyCrewIds } from "src/apis/auth/auth";
 import { getMyCrews } from "src/apis/crew/crew";
 import FeedTogether from "../community/detail/components/FeedTogether";
 import { newwayStompService } from "src/stomp/newway/newway";
+import { cowalkStompService } from "src/stomp/cowalk/cowalk";
 
 interface Location {
   lat: number;
@@ -118,6 +119,9 @@ export default function NewWay() {
   const toastShownRef = useRef(false);
   const [isSocketConnected, setIsSocketConnected] = useState(false);
 
+  const [cowalkModeCount, setCowalkModeCount] = useState<number | null>(null);
+  const [isCowalkSocketConnected, setIsCowalkSocketConnected] = useState(false);
+
   const distancesRef = useRef(0);
   const elapsedTimeRef = useRef(0);
   const [crewCounts, setCrewCounts] = useState<Record<number, number>>({});
@@ -131,9 +135,18 @@ export default function NewWay() {
 
   const [crewIds, setCrewIds] = useState<number[]>([]);
   const websocketIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const cowalkId = location.state?.cowalkId;
 
   const { location: geoLocation, getLocation } =
     useWatchLocation(geolocationOptions);
+
+  //같이 산책중인 경우
+  useEffect(() => {
+    if (mode === "cowalk" && userLocation && !isWalking) {
+      // userLocation이 로드된 후에 산책 시작 로직 실행
+      handleStartWalking();
+    }
+  }, [mode, userLocation, isWalking]);
 
   // 기존 경로 데이터 가져오기 (따라가기 모드)
   useEffect(() => {
@@ -273,8 +286,12 @@ export default function NewWay() {
         websocketIntervalRef.current = null;
       }
       newwayStompService.disconnect();
+      if (mode === "cowalk") {
+        cowalkStompService.disconnect();
+        setIsCowalkSocketConnected(false);
+      }
       setIsSocketConnected(true);
-
+      setIsCowalkSocketConnected(true);
       navigate("/main");
     } else if (modalType === "done") {
       setIsWalking(false);
@@ -287,7 +304,12 @@ export default function NewWay() {
         websocketIntervalRef.current = null;
       }
       newwayStompService.disconnect();
+      if (mode === "cowalk" && cowalkId) {
+        cowalkStompService.sendEnd(cowalkId);
+        setIsCowalkSocketConnected(false);
+      }
       setIsSocketConnected(true);
+      setIsCowalkSocketConnected(true);
 
       if (mode === "create") {
         try {
@@ -315,7 +337,7 @@ export default function NewWay() {
           console.error("이미지 업로드 실패:", error);
           showToast("이미지 업로드에 실패했습니다.", "error");
         }
-      } else {
+      } else if (mode === "follow") {
         try {
           const distanceInKm = Number((distances / 1000).toFixed(2));
           const historyResponse = await createWalkwayHistory(walkwayId, {
@@ -334,9 +356,15 @@ export default function NewWay() {
           showToast("산책로 이용 기록 저장에 실패했습니다.", "error");
           navigate(-1);
         }
+      } else if (mode === "cowalk") {
+        navigate("/main");
       }
     } else if (modalType === "back") {
       if (mode === "create") {
+        navigate("/main");
+      } else if (mode === "cowalk" && cowalkId) {
+        cowalkStompService.sendEnd(cowalkId);
+        cowalkStompService.disconnect();
         navigate("/main");
       } else {
         navigate(`/main/recommend/detail/${walkwayId}`);
@@ -359,6 +387,8 @@ export default function NewWay() {
           message:
             mode === "create"
               ? "산책로를 등록하시겠습니까?"
+              : mode === "cowalk"
+              ? "같이 산책을 종료하시겠습니까?"
               : "이용하기를 중단하시겠습니까?",
           cancelText: "취소",
           confirmText: mode === "create" ? "등록" : "중단",
@@ -368,6 +398,8 @@ export default function NewWay() {
           message:
             mode === "create"
               ? `홈으로 돌아가시겠습니까?\n산책정보는 저장되지 않습니다.`
+              : mode === "cowalk"
+              ? `같이 산책을 중단하고 홈으로 돌아가시겠습니까?\n산책 정보는 저장되지 않습니다.`
               : "이용을 중단하시겠습니까?\n산책로 이용내역은 저장되지 않습니다.",
           cancelText: "취소",
           confirmText: "확인",
@@ -465,7 +497,26 @@ export default function NewWay() {
     } else {
       console.log("crewIds가 비어있습니다.");
     }
+    if (mode === "cowalk" && cowalkId) {
+      cowalkStompService.connect(() => {
+        console.log("같이 산책 STOMP 연결 성공!");
+        setIsCowalkSocketConnected(true);
 
+        cowalkStompService.subscribeCowalkCount(cowalkId, (payload) => {
+          console.log(
+            `[Cowalk Stomp] Cowalk ID ${cowalkId} 현재 인원수 페이로드:`,
+            payload
+          );
+          setCowalkModeCount(payload.count);
+        });
+
+        cowalkStompService.sendOngoing(cowalkId);
+      });
+    } else if (mode === "cowalk" && !cowalkId) {
+      console.error("[Cowalk Stomp] Cowalk 모드이지만 cowalkId가 없습니다.");
+      showToast("같이 산책 ID가 없어 산책을 시작할 수 없습니다.", "error");
+      return; // cowalkId 없으면 산책 시작하지 않음
+    }
     setIsWalking(true);
     setMovingPath([]);
     setDistances(0);
@@ -485,7 +536,13 @@ export default function NewWay() {
     <>
       <AppBar
         onBack={handleBackClick}
-        title={mode === "create" ? "산책로 등록" : "산책로 이용하기"}
+        title={
+          mode === "create"
+            ? "산책로 등록"
+            : mode === "cowalk"
+            ? "같이 산책하기"
+            : "산책로 이용하기"
+        }
       />
       <Container>
         <InfoContainer>
@@ -498,7 +555,7 @@ export default function NewWay() {
           >
             <TrailInfo duration={elapsedTime} distance={distances} />
           </div>
-          {crewIds.length > 0 && isSocketConnected && (
+          {crewIds.length > 0 && isSocketConnected && mode !== "cowalk" && (
             <FeedTogetherRow>
               {crewIds.map((id) => (
                 <FeedTogether
@@ -508,6 +565,16 @@ export default function NewWay() {
                   count={crewCounts[id]}
                 />
               ))}
+            </FeedTogetherRow>
+          )}
+          {mode === "cowalk" && isCowalkSocketConnected && (
+            <FeedTogetherRow>
+              <FeedTogether
+                key={cowalkId}
+                mode="cowalk"
+                nickname="같이 산책중"
+                count={Number(cowalkModeCount)}
+              />
             </FeedTogetherRow>
           )}
         </InfoContainer>
@@ -533,7 +600,9 @@ export default function NewWay() {
         <ButtonContainer>
           <SmallButton
             primaryText={mode === "create" ? "산책 시작" : "산책로 이용"}
-            secondaryText={mode === "create" ? "산책 완료" : "이용 완료"}
+            secondaryText={
+              mode === "create" || mode === "cowalk" ? "산책 완료" : "이용 완료"
+            }
             isWalking={isWalking}
             onClick={isWalking ? handleStopRequest : handleStartWalking}
           />

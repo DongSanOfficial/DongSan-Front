@@ -30,6 +30,9 @@ const SendBtn = styled.button`
   font-weight: 600;
   width: auto;
   height: 2.5rem;
+  @media (max-width: 375px) {
+    font-size: 12px;
+  }
 `;
 
 interface CommentBtnProps {
