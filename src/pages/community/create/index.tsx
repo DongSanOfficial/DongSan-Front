@@ -20,6 +20,7 @@ import {
 } from "react-icons/md";
 import { checkCrewName, uploadCrewImage, createCrew } from "src/apis/crew/crew";
 import type { CrewVisibility } from "src/apis/crew/crew.type";
+import { useToast } from "src/context/toast/useToast";
 
 const PageWrapper = styled.div`
   display: flex;
@@ -123,8 +124,7 @@ const RequiredMark = styled.span`
 
 export default function CreateCrew() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const crewId = location.state?.crewId;
+  const { showToast } = useToast();
   const [crewName, setCrewName] = useState("");
   const [isNameChecked, setIsNameChecked] = useState(false);
   const [nameCheckStatus, setNameCheckStatus] = useState<
@@ -147,10 +147,11 @@ export default function CreateCrew() {
       (maxMember && Number(maxMember) >= 2 && Number(maxMember) <= 100));
   const handleNameCheck = async () => {
     try {
-      const isValid = await checkCrewName(crewName, crewId);
+      const isValid = await checkCrewName(crewName);
       setIsNameChecked(true);
       setNameCheckStatus(isValid ? "valid" : "invalid");
     } catch (err) {
+      showToast("잠시 후 다시 시도해주세요.", "error");
       console.log("이름 중복 확인에 실패했습니다.");
     }
   };

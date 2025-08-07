@@ -49,10 +49,9 @@ export const getCrewfeedlist = async ({
 // 이름 중복 체크 api
 export const checkCrewName = async (
   name: string,
-  crewId: number
 ): Promise<boolean> => {
   const { data } = await instance.get<CheckCrewNameResponse>("/crews/exists", {
-    params: { name, crewId },
+    params: { name },
   });
   return data.isValid;
 };
