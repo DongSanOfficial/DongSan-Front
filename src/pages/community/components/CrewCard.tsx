@@ -3,6 +3,7 @@ import { theme } from "src/styles/colors/theme";
 import { ReactComponent as Member } from "src/assets/svg/Member.svg";
 import { ReactComponent as Crown } from "src/assets/svg/Crown.svg";
 import DefaultImage from "src/assets/images/profile.png";
+import { forwardRef } from "react";
 
 const Container = styled.div`
   width: 100%;
@@ -75,34 +76,41 @@ interface CrewCardProps {
   onClick?: () => void;
 }
 
-export default function CrewCard({
-  crewName,
-  variant,
-  crewImageUrl,
-  isManager = false,
-  memberCount,
-  onClick,
-}: CrewCardProps) {
-  return (
-    <Container onClick={onClick}>
-      <ImageContainer>
-        <CrewInfo>
-          <CrewImage src={crewImageUrl ?? DefaultImage} alt="crew" />{" "}
-          <VerticalDivider />
-          <CrewName>{crewName}</CrewName>
-        </CrewInfo>
-        {variant === "myCrew" && isManager && (
-          <CrownIcon>
-            <Crown />
-          </CrownIcon>
+const CrewCard = forwardRef<HTMLDivElement, CrewCardProps>(
+  (
+    {
+      crewName,
+      variant,
+      crewImageUrl,
+      isManager = false,
+      memberCount,
+      onClick,
+    },
+    ref
+  ) => {
+    return (
+      <Container ref={ref} onClick={onClick}>
+        <ImageContainer>
+          <CrewInfo>
+            <CrewImage src={crewImageUrl ?? DefaultImage} alt="crew" />
+            <VerticalDivider />
+            <CrewName>{crewName}</CrewName>
+          </CrewInfo>
+          {variant === "myCrew" && isManager && (
+            <CrownIcon>
+              <Crown />
+            </CrownIcon>
+          )}
+        </ImageContainer>
+        {variant === "recommended" && memberCount !== undefined && (
+          <MemberContainer>
+            <Member />
+            <MemberCount>{memberCount}명</MemberCount>
+          </MemberContainer>
         )}
-      </ImageContainer>
-      {variant === "recommended" && memberCount !== undefined && (
-        <MemberContainer>
-          <Member />
-          <MemberCount>{memberCount}명</MemberCount>
-        </MemberContainer>
-      )}
-    </Container>
-  );
-}
+      </Container>
+    );
+  }
+);
+
+export default CrewCard;

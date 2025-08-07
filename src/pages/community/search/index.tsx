@@ -129,6 +129,7 @@ export default function SearchCrew() {
         crewId: selectedCrew.crewId,
         name: selectedCrew.name,
         visibility: selectedCrew.visibility,
+        isJoined: selectedCrew.isJoined
       },
     });
   };

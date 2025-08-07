@@ -4,7 +4,6 @@ import styled from "styled-components";
 import {
   MdAdd,
   MdSearch,
-  MdChevronRight,
   MdLockOutline,
   MdClose,
 } from "react-icons/md";
@@ -19,6 +18,7 @@ import { useToast } from "src/context/toast/useToast";
 import Modal from "src/components/modal";
 import TextInput from "src/components/input";
 import { truncateText } from "src/utils/truncateText";
+import { useInfiniteScroll } from "src/hooks/useInfiniteScroll";
 
 const PageWrapper = styled.div`
   display: flex;
@@ -151,8 +151,10 @@ export default function Community() {
   const { showToast } = useToast();
 
   const [myCrews, setMyCrews] = useState<CrewData[]>([]);
-  const [myCrewLoading, setmyCrewLoading] = useState(true);
-  const [myCrewError, setmyCrewError] = useState<string | null>(null);
+  const [myCrewLoading, setMyCrewLoading] = useState(false);
+  const [myCrewError, setMyCrewError] = useState<string | null>(null);
+  const [myCrewHasNext, setMyCrewHasNext] = useState(true);
+  const [myCrewLastId, setMyCrewLastId] = useState<number | null>(null);
 
   const [recommendedCrews, setRecommendedCrews] = useState<CrewData[]>([]);
   const [recommendedLoading, setRecommendedLoading] = useState(true);
@@ -166,17 +168,20 @@ export default function Community() {
   const handleSearch = () => navigate("/community/search");
 
   const fetchMyCrews = async () => {
+    if (myCrewLoading || !myCrewHasNext) return;
     try {
-      setmyCrewLoading(true);
-      setmyCrewError(null);
-      const response = await getMyCrews({ size: 10 });
-      setMyCrews(response.data);
+      setMyCrewLoading(true);
+      const response = await getMyCrews({ size: 10, lastId: myCrewLastId || undefined });
+      setMyCrews((prev) => [...prev, ...response.data]);
+      setMyCrewHasNext(response.hasNext);
+      const newLastId = response.data[response.data.length - 1]?.crewId;
+      if (newLastId) setMyCrewLastId(newLastId);
     } catch (err) {
-      setmyCrewError(
+      setMyCrewError(
         err instanceof Error ? err.message : "나의 크루 로드 실패"
       );
     } finally {
-      setmyCrewLoading(false);
+      setMyCrewLoading(false);
     }
   };
 
@@ -206,6 +211,9 @@ export default function Community() {
       setSelectedCrew(null);
       setPassword("");
       fetchRecommendedCrews();
+      setMyCrews([]);
+      setMyCrewLastId(null);
+      setMyCrewHasNext(true);
       fetchMyCrews();
     } catch (error: any) {
       showToast(error.message ?? "크루 가입에 실패했습니다.", "error");
@@ -216,6 +224,12 @@ export default function Community() {
     fetchMyCrews();
     fetchRecommendedCrews();
   }, []);
+
+  const { lastElementRef } = useInfiniteScroll({
+    hasNext: myCrewHasNext,
+    loading: myCrewLoading,
+    onLoadMore: fetchMyCrews,
+  });
 
   const handleExplore = () => {
     if (!selectedCrew) return;
@@ -252,56 +266,40 @@ export default function Community() {
       <PageWrapper>
         <SectionHeader>
           <SectionTitle>나의 크루</SectionTitle>
-          <IconButton
-            onClick={() =>
-              navigate("/community/all", { state: { type: "my" } })
-            }
-          >
-            <MdChevronRight size={20} />
-          </IconButton>
         </SectionHeader>
-        <CrewCardList>
-          {myCrewLoading ? (
-            <LoadingText>나의 크루 불러오는 중...</LoadingText>
-          ) : myCrewError ? (
-            <ErrorText>{myCrewError}</ErrorText>
-          ) : myCrews.length > 0 ? (
-            myCrews.slice(0, 5).map((crew) => (
-              <CrewCard
-                key={crew.crewId}
-                crewName={crew.name}
-                crewImageUrl={crew.crewImageUrl}
-                variant="myCrew"
-                isManager={crew.isManager}
-                onClick={() =>
-                  navigate("/community/detail", {
-                    state: {
-                      crewId: crew.crewId,
-                      name: crew.name,
-                      visibility: crew.visibility,
-                      isManager: crew.isManager,
-                      isJoined: crew.isJoined,
-                    },
-                  })
-                }
-              />
-            ))
-          ) : (
-            <LoadingText>가입된 크루가 없습니다.</LoadingText>
-          )}
-        </CrewCardList>
+              <CrewCardList>
+        {myCrews.map((crew, idx) => {
+          const isLast = idx === myCrews.length - 1;
+          return (
+            <CrewCard
+              key={crew.crewId}
+              crewName={crew.name}
+              crewImageUrl={crew.crewImageUrl}
+              variant="myCrew"
+              isManager={crew.isManager}
+              onClick={() =>
+                navigate("/community/detail", {
+                  state: {
+                    crewId: crew.crewId,
+                    name: crew.name,
+                    visibility: crew.visibility,
+                    isManager: crew.isManager,
+                    isJoined: crew.isJoined,
+                  },
+                })
+              }
+              ref={isLast ? lastElementRef : undefined}
+            />
+          );
+        })}
+        {myCrewLoading && <LoadingText>불러오는 중...</LoadingText>}
+        {myCrewError && <ErrorText>{myCrewError}</ErrorText>}
+      </CrewCardList>
 
         <Divider />
 
         <SectionHeader>
           <SectionTitle>동산 추천 크루</SectionTitle>
-          <IconButton
-            onClick={() =>
-              navigate("/community/all", { state: { type: "recommended" } })
-            }
-          >
-            <MdChevronRight size={20} />
-          </IconButton>
         </SectionHeader>
         <CrewCardList>
           {recommendedLoading ? (
