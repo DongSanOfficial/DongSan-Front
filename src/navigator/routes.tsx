@@ -12,6 +12,15 @@ import ReviewableHistory from "../pages/mypage/components/review/ReviewableHisto
 import Guide from "../pages/guide";
 import TrailReviewPage from "src/pages/mypage/components/review/TrailReviewPage";
 import ReviewCheck from "src/pages/review/components/ReviewCheck";
+import Community from "src/pages/community";
+import CreateCrew from "src/pages/community/create";
+import SearchCrew from "src/pages/community/search";
+import CrewDetail from "src/pages/community/detail";
+import RankDetail from "src/pages/community/detail/summary/rank";
+import DetailFeed from "src/pages/community/detail/together/detail";
+import CrewInfo from "src/pages/community/info";
+import CrewSetting from "src/pages/community/info/setting";
+import ModifyCrew from "src/pages/community/modify";
 
 interface RouteConfig {
   path: string;
@@ -80,6 +89,43 @@ const routes: RouteConfig[] = [
   {
     path: "/guide",
     component: Guide,
+  },
+  // 커뮤니티
+  {
+    path: "/community",
+    component: Community,
+  },
+  {
+    path: "/community/create",
+    component: CreateCrew,
+  },
+  {
+    path: "/community/modify",
+    component: ModifyCrew,
+  },
+  {
+    path: "/community/search",
+    component: SearchCrew,
+  },
+  {
+    path: "/community/detail",
+    component: CrewDetail,
+  },
+  {
+    path: "/community/detail/information",
+    component: CrewInfo,
+  },
+  {
+    path: "/community/detail/crewSetting",
+    component: CrewSetting,
+  },
+  {
+    path: "/community/detail/:cowalkId",
+    component: DetailFeed,
+  },
+  {
+    path: "/community/detail/summary/rank",
+    component: RankDetail,
   },
 ];
 

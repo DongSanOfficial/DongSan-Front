@@ -8,7 +8,11 @@ import PathCard from "../../components/card/PathCard";
 import SearchResults, { SearchResult } from "./components/SearchResult";
 import BottomNavigation from "src/components/bottomNavigation";
 import { theme } from "src/styles/colors/theme";
-import { Walkway, SortOption, MapOption } from "../../apis/walkway/walkway.type";
+import {
+  Walkway,
+  SortOption,
+  MapOption,
+} from "../../apis/walkway/walkway.type";
 import {
   searchWalkways,
   getWalkwayDetail,
@@ -21,6 +25,7 @@ import { useNavigate } from "react-router-dom";
 import { useLocationStore } from "../../store/useLocationStore";
 import { MdOutlineInbox } from "react-icons/md";
 import SearchBar from "./components/SearchInput";
+import { useInfiniteScroll } from "../../hooks/useInfiniteScroll";
 
 interface Location {
   lat: number;
@@ -30,6 +35,7 @@ interface Location {
 function Main() {
   const navigate = useNavigate();
   const { currentLocation, getCurrentLocation } = useLocationStore();
+
   // 바텀시트 상태
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const toggleBottomSheet = () => setIsOpen((prev) => !prev);
@@ -66,6 +72,24 @@ function Main() {
   const [selectedWalkwayId, setSelectedWalkwayId] = useState<number | null>(
     null
   );
+
+  const loadMoreWalkways = () => {
+    if (mapOption === "current" && selectedLocation) {
+      fetchWalkways(
+        selectedLocation.latitude,
+        selectedLocation.longitude,
+        sortOption
+      );
+    } else if (mapOption === "all") { 
+      fetchAllWalkways(sortOption);
+    }
+  };
+
+  const { lastElementRef } = useInfiniteScroll({
+    hasNext: hasMore,
+    loading,
+    onLoadMore: loadMoreWalkways,
+  });
 
   /**
    * 컴포넌트 마운트 시 현재 위치 가져오기
@@ -324,21 +348,6 @@ function Main() {
     }
   };
 
-  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
-    const { scrollTop, clientHeight, scrollHeight } = event.currentTarget;
-    if (scrollHeight - scrollTop <= clientHeight * 1.5 && hasMore && !loading) {
-      if (mapOption === "current" && selectedLocation) {
-        fetchWalkways(
-          selectedLocation.latitude,
-          selectedLocation.longitude,
-          sortOption
-        );
-      } else {
-        fetchAllWalkways(sortOption);
-      }
-    }
-  };
-
   /**
    * 좋아요 클릭 처리
    */
@@ -423,6 +432,12 @@ function Main() {
             value={searchValue}
             onChange={handleSearchChange}
             onSearch={handleSearch}
+            leftIcon={true}
+            inputStyle={{
+              border: "2px solid #188163",
+              borderRadius: "2rem",
+              boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.1)",
+            }}
           />
           <SearchResults
             results={searchResults}
@@ -430,7 +445,7 @@ function Main() {
             onOutsideClick={() => setSearchResults([])}
           />
         </S.SearchBarContainer>
-  
+
         <MainMap
           center={
             selectedLocation
@@ -445,11 +460,11 @@ function Main() {
           pathCoords={selectedPath}
           searchKeyword={searching ? searchValue : undefined}
           onSearchResults={handleSearchResults}
-          onInitialLocation={handleInitialLocation}
+          // onInitialLocation={handleInitialLocation}
           onLocationButtonClick={handleLocationButtonClick}
           onSearchCurrentLocation={handleSearchCurrentLocation}
         />
-  
+
         <BottomSheet
           isOpen={isOpen}
           onClose={toggleBottomSheet}
@@ -467,30 +482,40 @@ function Main() {
                 onMapChange={handleMapChange}
               />
             </S.FixedHeader>
-            <S.PathCardList onScroll={handleScroll}>
+            <S.PathCardList>
               {error ? (
                 <S.ErrorMessage>{error}</S.ErrorMessage>
               ) : walkways.length > 0 ? (
-                walkways.map((walkway) => (
-                  <PathCard
-                    key={walkway.walkwayId}
-                    walkwayId={walkway.walkwayId}
-                    pathimage={walkway.courseImageUrl}
-                    pathname={walkway.name}
-                    hashtag={walkway.hashtags.join(" ")}
-                    distance={`${walkway.distance} km`}
-                    starCount={walkway.rating}
-                    reviewCount={walkway.reviewCount}
-                    isLiked={likedPaths[walkway.walkwayId] || false}
-                    onLikeClick={() => handleLikeClick(walkway.walkwayId)}
-                    onClick={() =>
-                      handlePathClick(
-                        walkway.walkwayId,
-                        walkway.location,
-                        walkway.name
-                      )
-                    }
-                  />
+                walkways.map((walkway, index) => (
+                  <div
+                    ref={index === walkways.length - 1 ? lastElementRef : null}
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      width: "100%",
+                    }}
+                  >
+                    <PathCard
+                      key={walkway.walkwayId}
+                      walkwayId={walkway.walkwayId}
+                      pathimage={walkway.courseImageUrl}
+                      pathname={walkway.name}
+                      hashtag={walkway.hashtags.join(" ")}
+                      distance={`${walkway.distance} km`}
+                      starCount={walkway.rating}
+                      reviewCount={walkway.reviewCount}
+                      isLiked={likedPaths[walkway.walkwayId] || false}
+                      onLikeClick={() => handleLikeClick(walkway.walkwayId)}
+                      onClick={() =>
+                        handlePathClick(
+                          walkway.walkwayId,
+                          walkway.location,
+                          walkway.name
+                        )
+                      }
+                    />
+                  </div>
                 ))
               ) : (
                 !loading && (
@@ -504,7 +529,7 @@ function Main() {
                           ? "전방 500m 부근에 등록된 산책로가 없습니다."
                           : "등록된 산책로가 없습니다."}
                       </S.NoWalkwaysMessage>
-  
+
                       {/* 현재 위치 모드에서만 버튼 표시 */}
                       {mapOption === "current" && (
                         <S.ViewAllButton

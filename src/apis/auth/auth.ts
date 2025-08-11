@@ -23,3 +23,8 @@ export const updateUserNickname = async (nickname: string): Promise<void> => {
     throw error;
   }
 };
+
+export const getMyCrewIds = async (): Promise<number[]> => {
+  const response = await instance.get("/users/crews/ids");
+  return response.data.crewIds;
+};

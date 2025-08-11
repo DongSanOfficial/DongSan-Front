@@ -1,4 +1,3 @@
-import React from "react";
 import styled from "styled-components";
 import { ReactComponent as DongSanTextLogo } from "../../../assets/svg/DongSanTextLogo.svg";
 import DropDownButton from "../../../components/button/DropDownButton";
@@ -8,24 +7,22 @@ const Container = styled.div`
   width: 100%;
 `;
 
-const DropdownContainer = styled.div`
+const Wrapper = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  margin-bottom: 15px;
 `;
 
-const DropdownWrapper = styled.div`
+const DropdownContainer = styled.div`
   display: flex;
-  gap: 1rem;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 15px;
+  gap: 5px;
 `;
 
 interface BottomSheetHeaderProps {
-  /** 현재 선택된 정렬 옵션 */
   sortValue: SortOption;
   mapValue: MapOption;
-  /** 정렬 옵션 변경 핸들러 */
   onSortChange: (value: string) => void;
   onMapChange: (value: string) => void;
 }
@@ -44,27 +41,26 @@ const BottomSheetHeader = ({
   sortValue,
   mapValue,
   onSortChange,
-  onMapChange
+  onMapChange,
 }: BottomSheetHeaderProps) => {
   return (
     <Container>
-      <DropdownContainer>
+      <Wrapper>
         <DongSanTextLogo />
-        <DropdownWrapper>
+        <DropdownContainer>
           <DropDownButton
             options={mapOptions}
             value={mapValue}
             onChange={onMapChange}
           />
-        </DropdownWrapper>
-        <DropdownWrapper>
+
           <DropDownButton
             options={sortOptions}
             value={sortValue}
             onChange={onSortChange}
           />
-        </DropdownWrapper>
-      </DropdownContainer>
+        </DropdownContainer>
+      </Wrapper>
     </Container>
   );
 };

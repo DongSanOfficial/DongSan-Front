@@ -3,10 +3,11 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { ReactComponent as NewWay } from "../../assets/svg/NewWay.svg";
 import { ReactComponent as Home } from "../../assets/svg/Home.svg";
+import { ReactComponent as Community } from "../../assets/svg/Community.svg";
 import { ReactComponent as MyPage } from "../../assets/svg/MyPage.svg";
 import { theme } from "src/styles/colors/theme";
 import { useLocationStore } from "../../store/useLocationStore";
-import Modal from "../modal/Modal";
+import ConfirmationModal from "../modal/ConfirmationModal";
 
 const NavigationBar = styled.nav`
   position: fixed;
@@ -18,18 +19,7 @@ const NavigationBar = styled.nav`
   z-index: 1003;
   width: 100%;
   margin: 0 auto;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    max-width: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-  /* 큰 태블릿 및 노트북 */
-  @media screen and (min-width: 1024px) {
-    max-width: 1024px;
-  }
+  max-width: 430px;
 `;
 
 const NavContent = styled.div`
@@ -40,12 +30,6 @@ const NavContent = styled.div`
   padding: 0 50px;
   width: 100%;
   margin: 0 auto;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    height: 80px;
-    padding: 0 100px;
-  }
 `;
 
 const NavLink = styled(Link)`
@@ -66,14 +50,6 @@ const StyledSVG = styled.div<{ isActive: boolean }>`
     height: 24px;
     path {
       fill: ${(props) => (props.isActive ? theme.Green500 : "currentColor")};
-    }
-  }
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    svg {
-      width: 28px;
-      height: 28px;
     }
   }
 `;
@@ -102,17 +78,25 @@ const BottomNavigation = () => {
     <>
       <NavigationBar>
         <NavContent>
-          <div onClick={handleNewWayClick} style={{ cursor: "pointer" }}>
-            <StyledSVG isActive={isPathActive("/newway")}>
-              <NewWay />
-            </StyledSVG>
-          </div>
+          {/* 메인 홈 */}
           <NavLink to="/main">
             <StyledSVG isActive={isPathActive("/main")}>
               <Home />
             </StyledSVG>
           </NavLink>
-
+          {/* 산책로 생성 */}
+          <div onClick={handleNewWayClick} style={{ cursor: "pointer" }}>
+            <StyledSVG isActive={isPathActive("/newway")}>
+              <NewWay />
+            </StyledSVG>
+          </div>
+          {/* 커뮤니티 */}
+          <NavLink to="/community">
+            <StyledSVG isActive={isPathActive("/community")}>
+              <Community />
+            </StyledSVG>
+          </NavLink>
+          {/* 마이페이지 */}
           <NavLink to="/mypage">
             <StyledSVG isActive={isPathActive("/mypage")}>
               <MyPage />
@@ -121,7 +105,7 @@ const BottomNavigation = () => {
         </NavContent>
       </NavigationBar>
 
-      <Modal
+      <ConfirmationModal
         isOpen={isLocationAccessModalOpen}
         onClose={() => setIsLocationAccessModalOpen(false)}
         onConfirm={() => setIsLocationAccessModalOpen(false)}

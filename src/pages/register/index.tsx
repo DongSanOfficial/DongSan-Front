@@ -3,15 +3,19 @@ import { ChangeEvent, KeyboardEvent, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import DateDisplay from "src/pages/register/components/DateDisplay";
 import TrailInfo from "src/pages/newway/components/TrailInfo";
-import ToggleSwitch from "src/pages/register/components/ToggleSwitch";
-import InputField from "src/pages/register/components/InputField";
+import ToggleSwitch from "src/components/toggle/ToggleSwitch";
 import PathMap from "../../components/map/PathMap";
 import BottomNavigation from "src/components/bottomNavigation";
 import AppBar from "src/components/appBar";
 import { createWalkway, updateWalkway } from "src/apis/walkway/walkway";
-import Modal from "src/components/modal/Modal";
+import ConfirmationModal from "src/components/modal/ConfirmationModal";
 import { useToast } from "src/context/toast/useToast";
-import { CreateWalkwayType, UpdateWalkwayType } from "src/apis/walkway/walkway.type";
+import {
+  CreateWalkwayType,
+  UpdateWalkwayType,
+} from "src/apis/walkway/walkway.type";
+import TextInput from "src/components/input";
+import TextareaField from "src/components/textarea";
 
 interface PathData {
   coordinates: Array<{ lat: number; lng: number }>;
@@ -33,13 +37,11 @@ interface LocationState extends PathData {
   accessLevel?: "PRIVATE" | "PUBLIC";
 }
 
-
 export default function Registration() {
   const location = useLocation();
   const navigate = useNavigate();
   const { showToast } = useToast();
   const { state } = location as { state: LocationState };
-  // state.isEditMode를 직접 확인
   const [isEditMode, setIsEditMode] = useState(state?.isEditMode || false);
   const [name, setName] = useState(state?.name || "");
   const [description, setDescription] = useState(state?.description || "");
@@ -186,7 +188,8 @@ export default function Registration() {
               date={isEditMode && state.date ? state.date : undefined}
             />
             <ToggleSwitch
-              isPublic={accessLevel === "PUBLIC"}
+              label="전체공개"
+              isOn={accessLevel === "PUBLIC"}
               readOnly={false}
               onChange={(isPublic) =>
                 setAccessLevel(isPublic ? "PUBLIC" : "PRIVATE")
@@ -202,11 +205,22 @@ export default function Registration() {
         <S.PathMapContainer>
           <PathMap pathCoords={pathData.coordinates} />
         </S.PathMapContainer>
-        <InputField
-          name={name}
-          setName={setName}
-          description={description}
-          setDescription={setDescription}
+        <div style={{ position: "relative", marginBottom: "10px" }}>
+          <TextInput
+            value={name}
+            onChange={setName}
+            maxLength={20}
+            placeholder="산책로를 잘 나타내는 이름을 지어주세요."
+          />
+          <S.RequiredMark style={{ position: "absolute", top: 4, right: 1 }}>
+            *
+          </S.RequiredMark>
+        </div>
+        <TextareaField
+          value={description}
+          onChange={setDescription}
+          maxLength={150}
+          placeholder="산책로를 설명해주세요."
         />
         <S.TagInputWrapper>
           <S.TagInput
@@ -224,12 +238,16 @@ export default function Registration() {
             ))}
           </S.TagList>
         </S.TagInputWrapper>
-        <S.Button isActive={isActive} onClick={handleSubmit} disabled={isLoading}>
+        <S.Button
+          isActive={isActive}
+          onClick={handleSubmit}
+          disabled={isLoading}
+        >
           {isLoading ? "처리 중..." : isEditMode ? "수정완료" : "작성완료"}
         </S.Button>
       </S.Wrapper>
       <BottomNavigation />
-      <Modal
+      <ConfirmationModal
         isOpen={isModalOpen}
         onClose={handleModalClose}
         onConfirm={handleModalConfirm}

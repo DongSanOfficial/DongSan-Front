@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { calculateDistance } from "src/utils/calculateDistance";
 import TrackingMap from "../../components/map/TrackingMap";
 import SmallButton from "src/components/button/SmallButton";
-import Modal from "src/components/modal/Modal";
+import ConfirmationModal from "src/components/modal/ConfirmationModal";
 import useWatchLocation from "src/hooks/useWatchLocation";
 import TrailInfo from "src/pages/newway/components/TrailInfo";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -17,6 +17,11 @@ import {
 } from "src/apis/walkway/walkway";
 import { useToast } from "src/context/toast/useToast";
 import WaveTextLoader from "src/components/loading/WaveTextLoader";
+import { getMyCrewIds } from "src/apis/auth/auth";
+import { getMyCrews } from "src/apis/crew/crew";
+import FeedTogether from "../community/detail/components/FeedTogether";
+import { newwayStompService } from "src/stomp/newway/newway";
+import { cowalkStompService } from "src/stomp/cowalk/cowalk";
 
 interface Location {
   lat: number;
@@ -41,21 +46,6 @@ const Container = styled.div`
   width: 100%;
   height: 100dvh;
   margin: 0 auto;
-
-  /* 모바일 환경 (기본) */
-  @media screen and (max-width: 767px) {
-    max-width: 430px;
-  }
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    max-width: 100%;
-  }
-
-  /* 큰 태블릿 및 노트북 */
-  @media screen and (min-width: 1024px) {
-    max-width: 1024px;
-  }
 `;
 
 const InfoContainer = styled.div`
@@ -63,30 +53,19 @@ const InfoContainer = styled.div`
   top: 20px;
   left: 20px;
   right: 20px;
-  background-color: rgba(255, 255, 255, 0.9);
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 20;
   display: flex;
+  flex-direction: column;
   justify-content: center;
+`;
 
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    top: 25px;
-    left: 30px;
-    right: 30px;
-    border-radius: 12px;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
-    padding: 5px 0;
-  }
-
-  /* 큰 태블릿 및 노트북 */
-  @media screen and (min-width: 1024px) {
-    top: 30px;
-    left: 40px;
-    right: 40px;
-    border-radius: 15px;
-  }
+const FeedTogetherRow = styled.div`
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  position: relative;
+  z-index: 20;
+  padding: 5px 0;
 `;
 
 const ButtonContainer = styled.div`
@@ -94,18 +73,6 @@ const ButtonContainer = styled.div`
   bottom: 100px;
   right: 30px;
   z-index: 1;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    bottom: 120px;
-    right: 40px;
-  }
-
-  /* 큰 태블릿 및 노트북 */
-  @media screen and (min-width: 1024px) {
-    bottom: 140px;
-    right: 50px;
-  }
 `;
 
 const LocationButton = styled.button`
@@ -126,35 +93,6 @@ const LocationButton = styled.button`
 
   &:active {
     background-color: #f0f0f0;
-  }
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    bottom: 200px;
-    right: 40px;
-    width: 48px;
-    height: 48px;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
-
-    /* 아이콘 크기 증가 */
-    svg {
-      width: 28px;
-      height: 28px;
-    }
-  }
-
-  /* 큰 태블릿 및 노트북 */
-  @media screen and (min-width: 1024px) {
-    bottom: 220px;
-    right: 50px;
-    width: 56px;
-    height: 56px;
-
-    /* 아이콘 크기 증가 */
-    svg {
-      width: 32px;
-      height: 32px;
-    }
   }
 `;
 
@@ -179,6 +117,15 @@ export default function NewWay() {
   const lastLocationRef = useRef<Location | null>(null);
   const startTimeRef = useRef<Date | null>(null);
   const toastShownRef = useRef(false);
+  const [isSocketConnected, setIsSocketConnected] = useState(false);
+
+  const [cowalkModeCount, setCowalkModeCount] = useState<number | null>(null);
+  const [isCowalkSocketConnected, setIsCowalkSocketConnected] = useState(false);
+
+  const distancesRef = useRef(0);
+  const elapsedTimeRef = useRef(0);
+  const [crewCounts, setCrewCounts] = useState<Record<number, number>>({});
+  const [crewMap, setCrewMap] = useState<Map<number, string>>(new Map());
 
   const geolocationOptions = {
     enableHighAccuracy: true,
@@ -186,8 +133,20 @@ export default function NewWay() {
     timeout: 3000,
   };
 
+  const [crewIds, setCrewIds] = useState<number[]>([]);
+  const websocketIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const cowalkId = location.state?.cowalkId;
+
   const { location: geoLocation, getLocation } =
     useWatchLocation(geolocationOptions);
+
+  //같이 산책중인 경우
+  useEffect(() => {
+    if (mode === "cowalk" && userLocation && !isWalking) {
+      // userLocation이 로드된 후에 산책 시작 로직 실행
+      handleStartWalking();
+    }
+  }, [mode, userLocation, isWalking]);
 
   // 기존 경로 데이터 가져오기 (따라가기 모드)
   useEffect(() => {
@@ -223,6 +182,37 @@ export default function NewWay() {
     lastLocationRef.current = newLocation;
   }, [geoLocation]);
 
+  useEffect(() => {
+    const fetchCrewIds = async () => {
+      try {
+        const ids = await getMyCrewIds();
+        console.log("내 crewIds:", ids);
+        setCrewIds(ids);
+      } catch (e) {
+        console.error("크루 ID 조회 실패", e);
+      }
+    };
+
+    fetchCrewIds();
+  }, []);
+
+  useEffect(() => {
+    const fetchCrews = async () => {
+      try {
+        const response = await getMyCrews({});
+        const map = new Map<number, string>();
+        response.data.forEach((crew) => {
+          map.set(crew.crewId, crew.name);
+        });
+        setCrewMap(map);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    fetchCrews();
+  }, []);
+
   // 경로 추적 및 거리 계산
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -234,7 +224,11 @@ export default function NewWay() {
             const newPath = [...prev, lastLocationRef.current!];
             if (prev.length > 0) {
               const newDistance = calculateDistance(newPath);
-              setDistances((prev) => prev + newDistance);
+              setDistances((prev) => {
+                const updated = prev + newDistance;
+                distancesRef.current = updated;
+                return updated;
+              });
             }
             return newPath;
           });
@@ -251,7 +245,7 @@ export default function NewWay() {
 
   const handleStopRequest = () => {
     if (mode === "create") {
-      if (elapsedTime < 600 || distances <= 200) {
+      if (elapsedTime < 300 || distances <= 200) {
         setModalType("stop");
         return;
       }
@@ -259,12 +253,11 @@ export default function NewWay() {
     setModalType("done");
   };
 
-  // 산책 조건을 충족하면 등록 가능 토스트 팝업
   useEffect(() => {
     if (
       mode === "create" &&
       isWalking &&
-      elapsedTime >= 600 &&
+      elapsedTime >= 300 &&
       distances > 200 &&
       !toastShownRef.current
     ) {
@@ -288,14 +281,35 @@ export default function NewWay() {
         clearInterval(timerRef.current);
         timerRef.current = null;
       }
+      if (websocketIntervalRef.current) {
+        clearInterval(websocketIntervalRef.current);
+        websocketIntervalRef.current = null;
+      }
+      newwayStompService.disconnect();
+      if (mode === "cowalk") {
+        cowalkStompService.disconnect();
+        setIsCowalkSocketConnected(false);
+      }
+      setIsSocketConnected(true);
+      setIsCowalkSocketConnected(true);
       navigate("/main");
     } else if (modalType === "done") {
       setIsWalking(false);
-
       if (timerRef.current) {
         clearInterval(timerRef.current);
         timerRef.current = null;
       }
+      if (websocketIntervalRef.current) {
+        clearInterval(websocketIntervalRef.current);
+        websocketIntervalRef.current = null;
+      }
+      newwayStompService.disconnect();
+      if (mode === "cowalk" && cowalkId) {
+        cowalkStompService.sendEnd(cowalkId);
+        setIsCowalkSocketConnected(false);
+      }
+      setIsSocketConnected(true);
+      setIsCowalkSocketConnected(true);
 
       if (mode === "create") {
         try {
@@ -304,14 +318,11 @@ export default function NewWay() {
           const courseImageFile = new File([blob], "course-image.png", {
             type: "image/png",
           });
-
           const courseImageId = await uploadCourseImage(courseImageFile);
-
-          // 미터를 킬로미터로 변환하고 소수점 2자리까지 반올림
           const distanceInKm = Number((distances / 1000).toFixed(2));
           const pathData: PathData = {
             coordinates: movingPath,
-            totalDistance: distanceInKm, // km 단위로 변환하여 저장
+            totalDistance: distanceInKm,
             duration: elapsedTime,
             startTime:
               startTimeRef.current || new Date(Date.now() - elapsedTime * 1000),
@@ -326,16 +337,13 @@ export default function NewWay() {
           console.error("이미지 업로드 실패:", error);
           showToast("이미지 업로드에 실패했습니다.", "error");
         }
-      } else {
+      } else if (mode === "follow") {
         try {
-          // 미터를 킬로미터로 변환하고 소수점 2자리까지 반올림
           const distanceInKm = Number((distances / 1000).toFixed(2));
-
           const historyResponse = await createWalkwayHistory(walkwayId, {
             time: elapsedTime,
-            distance: distanceInKm, // km 단위로 전송
+            distance: distanceInKm,
           });
-
           showToast("산책로를 이용해주셔서 감사합니다!", "success");
           navigate(`/main/recommend/detail/${walkwayId}`, {
             state: {
@@ -348,9 +356,15 @@ export default function NewWay() {
           showToast("산책로 이용 기록 저장에 실패했습니다.", "error");
           navigate(-1);
         }
+      } else if (mode === "cowalk") {
+        navigate("/main");
       }
     } else if (modalType === "back") {
       if (mode === "create") {
+        navigate("/main");
+      } else if (mode === "cowalk" && cowalkId) {
+        cowalkStompService.sendEnd(cowalkId);
+        cowalkStompService.disconnect();
         navigate("/main");
       } else {
         navigate(`/main/recommend/detail/${walkwayId}`);
@@ -364,7 +378,7 @@ export default function NewWay() {
       case "stop":
         return {
           message:
-            "10분 이상, 200m 이상 산책하지 않은 경우, 산책 정보가 저장되지 않습니다. \n산책을 중단하시겠습니까?",
+            "5분 이상, 200m 이상 산책하지 않은 경우, 산책 정보가 저장되지 않습니다. \n산책을 중단하시겠습니까?",
           cancelText: "취소",
           confirmText: "홈으로",
         };
@@ -373,6 +387,8 @@ export default function NewWay() {
           message:
             mode === "create"
               ? "산책로를 등록하시겠습니까?"
+              : mode === "cowalk"
+              ? "같이 산책을 종료하시겠습니까?"
               : "이용하기를 중단하시겠습니까?",
           cancelText: "취소",
           confirmText: mode === "create" ? "등록" : "중단",
@@ -382,6 +398,8 @@ export default function NewWay() {
           message:
             mode === "create"
               ? `홈으로 돌아가시겠습니까?\n산책정보는 저장되지 않습니다.`
+              : mode === "cowalk"
+              ? `같이 산책을 중단하고 홈으로 돌아가시겠습니까?\n산책 정보는 저장되지 않습니다.`
               : "이용을 중단하시겠습니까?\n산책로 이용내역은 저장되지 않습니다.",
           cancelText: "취소",
           confirmText: "확인",
@@ -404,6 +422,11 @@ export default function NewWay() {
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
+      if (websocketIntervalRef.current) {
+        clearInterval(websocketIntervalRef.current);
+      }
+      newwayStompService.disconnect();
+      setIsSocketConnected(true);
     };
   }, []);
 
@@ -425,7 +448,6 @@ export default function NewWay() {
       const startPoint = pathToFollow[0];
       const distanceToStart = checkDistanceToStart(userLocation, startPoint);
       if (distanceToStart > 50) {
-        // 50미터 이상 떨어져 있으면
         showToast(
           "산책로의 출발지 근처로 이동해주세요. 현재 위치가 출발지의 반경 50m내 있지 않다면 산책로를 이용할 수 없어요!",
           "error"
@@ -433,7 +455,68 @@ export default function NewWay() {
         return;
       }
     }
+    // 가입한 크루가 있는 경우에만 산책하기 소켓 연결
+    if (crewIds.length > 0) {
+      newwayStompService.connect(() => {
+        setIsSocketConnected(true);
 
+        console.log("stomp 연결 완료");
+
+        // 최초 send는 interval 등록 직전에 보내기
+        newwayStompService.sendOngoing({
+          crewIds: crewIds,
+          distanceMeter: distancesRef.current,
+          timeMin: elapsedTimeRef.current,
+        });
+
+        // subscribe
+        crewIds.forEach((id) => {
+          newwayStompService.subscribeCrewCount(id, (count) => {
+            console.log(`crewId ${id} count → ${count}`);
+            setCrewCounts((prev) => ({
+              ...prev,
+              [id]: count,
+            }));
+          });
+        });
+
+        websocketIntervalRef.current = setInterval(() => {
+          console.log(
+            "interval fired → send ongoing:",
+            distancesRef.current,
+            elapsedTimeRef.current
+          );
+
+          newwayStompService.sendOngoing({
+            crewIds: crewIds,
+            distanceMeter: distancesRef.current,
+            timeMin: elapsedTimeRef.current,
+          });
+        }, 30000);
+      });
+    } else {
+      console.log("crewIds가 비어있습니다.");
+    }
+    if (mode === "cowalk" && cowalkId) {
+      cowalkStompService.connect(() => {
+        console.log("같이 산책 STOMP 연결 성공!");
+        setIsCowalkSocketConnected(true);
+
+        cowalkStompService.subscribeCowalkCount(cowalkId, (payload) => {
+          console.log(
+            `[Cowalk Stomp] Cowalk ID ${cowalkId} 현재 인원수 페이로드:`,
+            payload
+          );
+          setCowalkModeCount(payload.count);
+        });
+
+        cowalkStompService.sendOngoing(cowalkId);
+      });
+    } else if (mode === "cowalk" && !cowalkId) {
+      console.error("[Cowalk Stomp] Cowalk 모드이지만 cowalkId가 없습니다.");
+      showToast("같이 산책 ID가 없어 산책을 시작할 수 없습니다.", "error");
+      return; // cowalkId 없으면 산책 시작하지 않음
+    }
     setIsWalking(true);
     setMovingPath([]);
     setDistances(0);
@@ -441,7 +524,11 @@ export default function NewWay() {
     startTimeRef.current = new Date();
 
     timerRef.current = setInterval(() => {
-      setElapsedTime((prev) => prev + 1);
+      setElapsedTime((prev) => {
+        const updated = prev + 1;
+        elapsedTimeRef.current = updated;
+        return updated;
+      });
     }, 1000);
   };
 
@@ -449,15 +536,49 @@ export default function NewWay() {
     <>
       <AppBar
         onBack={handleBackClick}
-        title={mode === "create" ? "산책로 등록" : "산책로 이용하기"}
+        title={
+          mode === "create"
+            ? "산책로 등록"
+            : mode === "cowalk"
+            ? "같이 산책하기"
+            : "산책로 이용하기"
+        }
       />
       <Container>
         <InfoContainer>
-          <TrailInfo
-            duration={elapsedTime}
-            distance={distances} // 미터나 키로미터 단위
-          />
+          <div
+            style={{
+              marginBottom: "5px",
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+              borderRadius: "20px",
+            }}
+          >
+            <TrailInfo duration={elapsedTime} distance={distances} />
+          </div>
+          {crewIds.length > 0 && isSocketConnected && mode !== "cowalk" && (
+            <FeedTogetherRow>
+              {crewIds.map((id) => (
+                <FeedTogether
+                  key={id}
+                  mode="crewCount"
+                  nickname={crewMap.get(id) ?? `크루${id}`}
+                  count={crewCounts[id]}
+                />
+              ))}
+            </FeedTogetherRow>
+          )}
+          {mode === "cowalk" && isCowalkSocketConnected && (
+            <FeedTogetherRow>
+              <FeedTogether
+                key={cowalkId}
+                mode="cowalk"
+                nickname="같이 산책중"
+                count={Number(cowalkModeCount)}
+              />
+            </FeedTogetherRow>
+          )}
         </InfoContainer>
+
         <TrackingMap
           userLocation={userLocation}
           movingPath={movingPath}
@@ -479,13 +600,15 @@ export default function NewWay() {
         <ButtonContainer>
           <SmallButton
             primaryText={mode === "create" ? "산책 시작" : "산책로 이용"}
-            secondaryText={mode === "create" ? "산책 완료" : "이용 완료"}
+            secondaryText={
+              mode === "create" || mode === "cowalk" ? "산책 완료" : "이용 완료"
+            }
             isWalking={isWalking}
             onClick={isWalking ? handleStopRequest : handleStartWalking}
           />
         </ButtonContainer>
 
-        <Modal
+        <ConfirmationModal
           isOpen={modalType !== null}
           onClose={handleModalClose}
           onConfirm={handleModalConfirm}

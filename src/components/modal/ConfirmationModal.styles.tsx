@@ -32,19 +32,6 @@ const ModalContainer = styled.div<{ width?: string; height?: string }>`
   }
   -ms-overflow-style: none;
   scrollbar-width: none;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    padding: 35px;
-    border-radius: 16px;
-    max-width: ${({ width }) => width || "500px"};
-  }
-
-  /* 큰 태블릿 및 노트북 */
-  @media screen and (min-width: 1024px) {
-    max-width: ${({ width }) => width || "600px"};
-    padding: 40px;
-  }
 `;
 
 const ModalContent = styled.div`
@@ -52,23 +39,12 @@ const ModalContent = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 24px;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    gap: 28px;
-  }
 `;
 
 const IconContainer = styled.div`
   display: flex;
   justify-content: center;
   margin-bottom: 6px;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    margin-bottom: 10px;
-    transform: scale(1.1);
-  }
 `;
 
 const TitleText = styled.h3`
@@ -77,11 +53,6 @@ const TitleText = styled.h3`
   font-weight: 600;
   margin: 0;
   color: ${theme.Gray900};
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    font-size: 1.4rem;
-  }
 `;
 
 const ModalText = styled.p`
@@ -92,18 +63,6 @@ const ModalText = styled.p`
   margin: 0;
   color: ${theme.Gray700};
   max-width: 280px;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    font-size: 1.1rem;
-    max-width: 320px;
-    line-height: 1.6;
-  }
-
-  /* 큰 태블릿 및 노트북 */
-  @media screen and (min-width: 1024px) {
-    max-width: 380px;
-  }
 `;
 
 const TextContainer = styled.div`
@@ -111,12 +70,6 @@ const TextContainer = styled.div`
   flex-direction: column;
   gap: 12px;
   margin-bottom: 8px;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    gap: 16px;
-    margin-bottom: 12px;
-  }
 `;
 
 const ButtonContainer = styled.div`
@@ -125,12 +78,6 @@ const ButtonContainer = styled.div`
   gap: 16px;
   width: 100%;
   margin-top: 8px;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    gap: 20px;
-    margin-top: 12px;
-  }
 `;
 
 const Button = styled.button<{ isConfirm?: boolean }>`
@@ -154,14 +101,6 @@ const Button = styled.button<{ isConfirm?: boolean }>`
 
   &:active {
     transform: scale(0.98);
-  }
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    padding: 14px 28px;
-    border-radius: 14px;
-    font-size: 1rem;
-    max-width: 150px;
   }
 `;
 

@@ -7,28 +7,11 @@ const TrailInfoContainer = styled.div`
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  max-width: 430px;
   gap: 20px;
   margin: 0 auto;
-
-  @media (max-width: 375px) {
-    width: 80vw;
-    max-width: 360px;
-    height: 8vh;
-  }
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px){
-    max-width: 100vw;
-    align-items: center;
-    justify-content: center;
-    gap: 150px;
-  }
-
-  /* 큰 태블릿 및 노트북 */
-  @media screen and (min-width: 1024px) {
-    max-width: 1024px;
-  }
+  width: 100%;
+  background-color: White;
+  border-radius: 20px;
 `;
 
 const ClockItems = styled.div`
@@ -38,16 +21,6 @@ const ClockItems = styled.div`
   gap: 5px;
   font-size: 48px;
   font-family: "Lalezar";
-
-  @media (max-width: 375px) {
-    font-size: 40px;
-  }
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    font-size: 56px;
-    gap: 8px;
-  }
 `;
 
 const DistanceItems = styled.div`
@@ -57,37 +30,6 @@ const DistanceItems = styled.div`
   gap: 5px;
   font-size: 50px;
   font-family: "Lalezar";
-
-  @media (max-width: 375px) {
-    font-size: 40px;
-  }
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    font-size: 58px;
-    gap: 8px;
-  }
-`;
-
-const IconWrapper = styled.div`
-  width: 24px;
-  height: 24px;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    width: 28px;
-    height: 28px;
-  }
-`;
-
-const UnitSpan = styled.span`
-  font-size: 18px;
-  font-family: "Pretendard";
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    font-size: 22px;
-  }
 `;
 
 interface TrailInfoProps {

@@ -1,5 +1,5 @@
 import React from "react";
-import S from "./modal.styles";
+import S from "./ConfirmationModal.styles";
 import { theme } from "src/styles/colors/theme";
 import { ReactNode } from "react";
 import {
@@ -23,11 +23,12 @@ interface ConfirmationModalProps {
     | "delete"
     | "default"
     | "location"
-    | "secession";
+    | "secession"
+    | "crewSecession";
   mode?: "create" | "follow";
 }
 
-const Modal = ({
+const ConfirmationModal = ({
   isOpen,
   onClose,
   onConfirm,
@@ -75,6 +76,11 @@ const Modal = ({
           icon: <MdWarning size={52} color={theme.Red300} />,
           title: "서비스 탈퇴",
         };
+        case "crewSecession":
+          return {
+            icon: <MdWarning size={52} color={theme.Red300} />,
+            title: "크루 탈퇴",
+          };
       default:
         return {
           icon: <MdInfoOutline size={52} color={theme.Following} />,
@@ -114,4 +120,4 @@ const Modal = ({
   );
 };
 
-export default Modal;
+export default ConfirmationModal;

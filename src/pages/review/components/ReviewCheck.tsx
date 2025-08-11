@@ -8,7 +8,7 @@ import AppBar from "src/components/appBar";
 import BottomNavigation from "src/components/bottomNavigation";
 import StarCount from "src/pages/review/components/starCount";
 import LoadingSpinner from "src/components/loading/LoadingSpinner";
-import Divider from "src/components/Divider";
+import Divider from "src/components/divider/Divider";
 import TrailReviewCard from "src/components/card/TrailReviewCard";
 
 const Wrapper = styled.div`
@@ -22,20 +22,6 @@ const Wrapper = styled.div`
   &::-webkit-scrollbar {
     display: none;
   }
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    max-width: 100%;
-    margin: 0 auto;
-    padding: 0 50px;
-  }
-
-  /* 큰 태블릿 및 노트북 */
-  @media screen and (min-width: 1024px) {
-    padding: 25px 40px;
-    max-width: 900px;
-    padding: 0 50px;
-  }
 `;
 
 const RatingsContainer = styled.div`
@@ -46,22 +32,6 @@ const RatingsContainer = styled.div`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: row;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    width: 100%;
-    border-radius: 15px;
-    padding: 25px;
-    margin-top: 20px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-  }
-
-  /* 큰 태블릿 및 노트북 */
-  @media screen and (min-width: 1024px) {
-    width: 100%;
-    border-radius: 20px;
-    padding: 30px;
-  }
 `;
 
 const SortContainer = styled.div`
@@ -70,17 +40,6 @@ const SortContainer = styled.div`
   justify-content: flex-end;
   width: 100%;
   margin-top: 15px;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    margin: 1rem;
-    max-width: 100%;
-  }
-
-  /* 큰 태블릿 및 노트북 */
-  @media screen and (min-width: 1024px) {
-    max-width: 600px;
-  }
 `;
 
 const SortType = styled.div`
@@ -95,13 +54,6 @@ const SortType = styled.div`
   background: #fff;
   cursor: pointer;
   font-size: 15px;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    width: 9rem;
-    height: 3rem;
-    font-size: 25px;
-  }
 `;
 
 const DropdownMenu = styled.div`
@@ -115,13 +67,6 @@ const DropdownMenu = styled.div`
   z-index: 10;
   margin-top: 0.5rem;
   width: 6.5rem;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    width: 7.5rem;
-    border-radius: 6px;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
-  }
 `;
 
 const DropdownItem = styled.div`
@@ -130,12 +75,6 @@ const DropdownItem = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    padding: 0.75rem;
-    font-size: 1.1rem;
-  }
 `;
 
 const RatingLeft = styled.div`
@@ -143,41 +82,16 @@ const RatingLeft = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    padding: 0 10px;
-  }
 `;
 
 const StarLength = styled.h2`
   font-size: 35px;
   font-family: "Lalezar";
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    font-size: 45px;
-  }
-
-  /* 큰 태블릿 및 노트북 */
-  @media screen and (min-width: 1024px) {
-    font-size: 50px;
-  }
 `;
 
 const ReviewCount = styled.span`
   font-size: 15px;
   margin-top: 13px;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    font-size: 25px;
-  }
-
-  /* 큰 태블릿 및 노트북 */
-  @media screen and (min-width: 1024px) {
-    font-size: 30px;
-  }
 `;
 
 const RatingRight = styled.div`
@@ -185,11 +99,6 @@ const RatingRight = styled.div`
   flex-direction: column;
   justify-content: center;
   margin-left: 20px;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    margin-left: 50px;
-  }
 `;
 
 const BarContainer = styled.div`
@@ -198,33 +107,11 @@ const BarContainer = styled.div`
   overflow: hidden;
   margin: 5px;
   width: 120px;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    width: 300px;
-    border-radius: 6px;
-    margin: 6px;
-  }
-
-  /* 큰 태블릿 및 노트북 */
-  @media screen and (min-width: 1024px) {
-    width: 220px;
-  }
 `;
 
 const Bar = styled.div`
   height: 10px;
   background: #ffc107;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    height: 20px;
-  }
-
-  /* 큰 태블릿 및 노트북 */
-  @media screen and (min-width: 1024px) {
-    height: 25px;
-  }
 `;
 
 const RatingBreakdown = styled.div`
@@ -233,23 +120,12 @@ const RatingBreakdown = styled.div`
   align-items: center;
   width: 100%;
   margin: 0 auto;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    margin: 3px auto;
-  }
 `;
 
 const Label = styled.span`
   font-size: 12px;
   color: #666;
   width: 10px;
-
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    font-size: 20px;
-    width: 15px;
-  }
 `;
 
 interface ProgressBarProps {

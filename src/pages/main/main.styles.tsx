@@ -18,18 +18,6 @@ const SearchBarContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    max-width: 100%;
-    top: 25px;
-    gap: 12px;
-  }
-
-  /* 큰 태블릿 및 노트북 */
-  @media screen and (min-width: 1024px) {
-    max-width: 600px;
-    top: 30px;
-  }
 `;
 
 const BottomSheetContainer = styled.div`
@@ -77,15 +65,6 @@ const EmptyStateContainer = styled.div`
   justify-content: center;
   margin: 20px 0;
   width: 100%;
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    margin: 30px 0;
-  }
-
-  /* 큰 태블릿 및 노트북 */
-  @media screen and (min-width: 1024px) {
-    margin: 40px 0;
-  }
 `;
 
 const IconWrapper = styled.div`

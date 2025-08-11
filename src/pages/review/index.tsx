@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { theme } from "src/styles/colors/theme";
 import { ReactComponent as StarIcon } from "../../assets/svg/ReviewStar.svg";
-import Divider from "../../components/Divider";
+import Divider from "../../components/divider/Divider";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import BottomNavigation from "src/components/bottomNavigation";
@@ -20,10 +20,6 @@ const CenterWrapper = styled.div`
   padding-top: 80px;
   &::-webkit-scrollbar {
     display: none;
-  }
-  /* 태블릿 환경 */
-  @media screen and (min-width: 700px) {
-    max-width: 100%;
   }
 `;
 
@@ -183,11 +179,11 @@ const ReviewPage = () => {
           <TextAreaWrapper>
             <TextArea
               value={review}
-              onChange={(e) => setReview(e.target.value.slice(0, 100))}
+              onChange={(e) => setReview(e.target.value.slice(0, 250))}
               placeholder="리뷰를 입력해주세요"
             />
             <CharCount>
-              <span>{review.length}</span> / 100
+              <span>{review.length}</span> / 250
             </CharCount>
           </TextAreaWrapper>
         </ContentWrapper>

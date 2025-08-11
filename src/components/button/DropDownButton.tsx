@@ -1,36 +1,39 @@
 import React, { useState, useRef, useEffect } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { MdKeyboardArrowDown } from "react-icons/md";
-import { theme } from "../../styles/colors/theme";
+import { theme } from "src/styles/colors/theme";
 
-/** 드롭다운 옵션 인터페이스 */
 export interface Option<T extends string> {
-  /** 옵션 값 */
   value: T;
-  /** 화면에 표시될 텍스트 */
   label: string;
 }
 
 interface DropDownButtonProps<T extends string> {
-  /** 드롭다운 옵션 배열 */
   options: readonly Option<T>[];
-  /** 현재 선택된 값 */
   value: T;
-  /** 값 변경 핸들러 */
   onChange: (value: T) => void;
+  size?: "small" | "medium";
 }
+
+const sizeStyles = {
+  small: css`
+    font-size: 12px;
+    border-radius: 6px;
+  `,
+  medium: css`
+    font-size: 14px;
+    border-radius: 8px;
+  `,
+};
 
 const DropdownContainer = styled.div`
   position: relative;
   display: inline-block;
 `;
 
-const CustomSelect = styled.div`
-  padding: 0.5rem 2rem 0.5rem 0.3rem;
-  border-radius: 0.5rem;
-  font-size: 0.9rem;
-  background-color: white;
-  min-width: 80px;
+const CustomSelect = styled.div<{ $size: "small" | "medium" }>`
+  display: flex;
+  ${({ $size }) => sizeStyles[$size]};
 `;
 
 const SelectWrapper = styled.div`
@@ -57,57 +60,43 @@ const OptionsList = styled.div<{ isOpen: boolean }>`
 const OptionItem = styled.div`
   padding: 0.75rem;
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 0.5rem;
+  text-align: center;
   cursor: pointer;
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   transition: background-color 0.2s ease;
+  white-space: nowrap;
 
   &:active {
     background-color: ${theme.Gray100};
   }
-
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      background-color: ${theme.Gray100};
-    }
-  }
 `;
 
 const IconWrapper = styled.div`
-  position: absolute;
-  right: 0.25rem;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
   display: flex;
   align-items: center;
+  margin-left: 2px;
 `;
 
 const SelectedContent = styled.div`
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  white-space: nowrap;
 `;
 
 function DropDownButton<T extends string>({
   options,
   value,
   onChange,
+  size = "medium",
 }: DropDownButtonProps<T>) {
-  /** 드롭다운 열림/닫힘 상태 */
   const [isOpen, setIsOpen] = useState(false);
-  /** 드롭다운 요소 참조 */
   const dropdownRef = useRef<HTMLDivElement>(null);
-  /** 현재 선택된 옵션 */
   const currentOption =
     options.find((option) => option.value === value) || options[0];
 
   useEffect(() => {
-    /**
-     * 외부 클릭 감지 핸들러
-     * @param event - 마우스/터치 이벤트
-     */
     const handleClickOutside = (event: MouseEvent | TouchEvent) => {
       if (
         dropdownRef.current &&
@@ -117,7 +106,6 @@ function DropDownButton<T extends string>({
       }
     };
 
-    /** 외부 클릭 시 드롭다운 닫기 */
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside);
       document.addEventListener("touchstart", handleClickOutside);
@@ -132,18 +120,18 @@ function DropDownButton<T extends string>({
   return (
     <DropdownContainer ref={dropdownRef}>
       <SelectWrapper onClick={() => setIsOpen(!isOpen)}>
-        <CustomSelect>
+        <CustomSelect $size={size}>
           <SelectedContent>{currentOption.label}</SelectedContent>
+          <IconWrapper>
+            <MdKeyboardArrowDown
+              size={20}
+              style={{
+                transform: `rotate(${isOpen ? 180 : 0}deg)`,
+                transition: "transform 0.2s ease",
+              }}
+            />
+          </IconWrapper>
         </CustomSelect>
-        <IconWrapper>
-          <MdKeyboardArrowDown
-            size={28}
-            style={{
-              transform: `rotate(${isOpen ? 180 : 0}deg)`,
-              transition: "transform 0.2s ease",
-            }}
-          />
-        </IconWrapper>
       </SelectWrapper>
 
       <OptionsList isOpen={isOpen}>
