@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
+import { theme } from "src/styles/colors/theme";
 import { calculateDistance } from "src/utils/calculateDistance";
 import TrackingMap from "../../components/map/TrackingMap";
 import SmallButton from "src/components/button/SmallButton";
@@ -59,6 +60,13 @@ const InfoContainer = styled.div`
   justify-content: center;
 `;
 
+const FeedTogetherContainer = styled.div<{ isVisible: boolean }>`
+  overflow: hidden;
+  transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+  max-height: ${(props) => (props.isVisible ? "100px" : "0")};
+  opacity: ${(props) => (props.isVisible ? "1" : "0")};
+`;
+
 const FeedTogetherRow = styled.div`
   display: flex;
   gap: 8px;
@@ -66,6 +74,26 @@ const FeedTogetherRow = styled.div`
   position: relative;
   z-index: 20;
   padding: 5px 0;
+`;
+
+const ToggleButton = styled.button`
+  background: none;
+  border: none;
+  font-size: 13px;
+  color: ${theme.Green500};
+  cursor: pointer;
+  padding: 4px 0;
+  text-decoration: underline;
+  font-weight: 500;
+  align-self: flex-end;
+
+  &:hover {
+    color: ${theme.Green300};
+  }
+
+  &:active {
+    color: ${theme.Green300};
+  }
 `;
 
 const ButtonContainer = styled.div`
@@ -112,7 +140,8 @@ export default function NewWay() {
   const [pathToFollow, setPathToFollow] = useState<Location[]>([]);
   const [distances, setDistances] = useState(0);
   const [elapsedTime, setElapsedTime] = useState(0);
-
+  const [isFeedTogetherVisible, setIsFeedTogetherVisible] = useState(false);
+  
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const lastLocationRef = useRef<Location | null>(null);
   const startTimeRef = useRef<Date | null>(null);
@@ -417,6 +446,17 @@ export default function NewWay() {
     getLocation();
   };
 
+  const toggleFeedTogether = () => {
+    setIsFeedTogetherVisible(!isFeedTogetherVisible);
+  };
+
+  const shouldShowFeedTogether = () => {
+    const hasCrewData =
+      crewIds.length > 0 && isSocketConnected && mode !== "cowalk";
+    const hasCowalkData = mode === "cowalk" && isCowalkSocketConnected;
+    return hasCrewData || hasCowalkData;
+  };
+
   useEffect(() => {
     return () => {
       if (timerRef.current) {
@@ -555,27 +595,39 @@ export default function NewWay() {
           >
             <TrailInfo duration={elapsedTime} distance={distances} />
           </div>
-          {crewIds.length > 0 && isSocketConnected && mode !== "cowalk" && (
-            <FeedTogetherRow>
-              {crewIds.map((id) => (
-                <FeedTogether
-                  key={id}
-                  mode="crewCount"
-                  nickname={crewMap.get(id) ?? `크루${id}`}
-                  count={crewCounts[id]}
-                />
-              ))}
-            </FeedTogetherRow>
-          )}
-          {mode === "cowalk" && isCowalkSocketConnected && (
-            <FeedTogetherRow>
-              <FeedTogether
-                key={cowalkId}
-                mode="cowalk"
-                nickname="같이 산책중"
-                count={Number(cowalkModeCount)}
-              />
-            </FeedTogetherRow>
+
+          {shouldShowFeedTogether() && (
+            <>
+              <ToggleButton onClick={toggleFeedTogether}>
+                {isFeedTogetherVisible
+                  ? "숨기기"
+                  : "🏃 함께 산책하는 크루원 보기"}
+              </ToggleButton>
+
+              <FeedTogetherContainer isVisible={isFeedTogetherVisible}>
+                <FeedTogetherRow>
+                  {crewIds.length > 0 &&
+                    isSocketConnected &&
+                    mode !== "cowalk" &&
+                    crewIds.map((id) => (
+                      <FeedTogether
+                        key={id}
+                        mode="crewCount"
+                        nickname={crewMap.get(id) ?? `크루${id}`}
+                        count={crewCounts[id]}
+                      />
+                    ))}
+                  {mode === "cowalk" && isCowalkSocketConnected && (
+                    <FeedTogether
+                      key={cowalkId}
+                      mode="cowalk"
+                      nickname="같이 산책중"
+                      count={Number(cowalkModeCount)}
+                    />
+                  )}
+                </FeedTogetherRow>
+              </FeedTogetherContainer>
+            </>
           )}
         </InfoContainer>
 
