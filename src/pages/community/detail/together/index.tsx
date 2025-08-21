@@ -12,7 +12,7 @@ import {
 } from "src/apis/crew/crew.type";
 import { getCowalkList, getUserCowalkList } from "src/apis/crew/crew";
 import MyCowalkList from "../components/MyCowalkList";
-import LoadingSpinner from "@/components/loading/LoadingSpinner";
+import LoadingSpinner from "src/components/loading/LoadingSpinner";
 
 const Plusicon = styled.div`
   display: flex;

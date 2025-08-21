@@ -25,7 +25,7 @@ const RegisterSection = forwardRef<HTMLDivElement>((props, ref) => (
         <StepItem>
           <StepNumber>1</StepNumber>
           <StepContent>
-            하단 네비게이션의 첫 번째 아이콘을 눌러 산책 페이지로 이동합니다.
+            하단 네비게이션의 두 번째 아이콘을 눌러 산책 페이지로 이동합니다.
             <NavImg src={newway} />
           </StepContent>
         </StepItem>
