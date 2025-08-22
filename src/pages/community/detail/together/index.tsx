@@ -1,7 +1,7 @@
 import { BiPlusCircle } from "react-icons/bi";
 import RecruitList from "../components/RecruitList";
 import styled from "styled-components";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import RecruitForm from "../../components/RecruitForm";
 import Modal from "src/components/modal";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -13,6 +13,7 @@ import {
 import { getCowalkList, getUserCowalkList } from "src/apis/crew/crew";
 import MyCowalkList from "../components/MyCowalkList";
 import LoadingSpinner from "src/components/loading/LoadingSpinner";
+import { useInfiniteScroll } from "src/hooks/useInfiniteScroll";
 
 const Plusicon = styled.div`
   display: flex;
@@ -31,13 +32,16 @@ const Line = styled.div`
   margin: 0.5rem 0;
 `;
 
+const CardContainer = styled.div`
+  width: 100%;
+`;
+
 export default function Together() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [recruitList, setRecruitList] = useState<Cowalkwithcrew[]>([]);
   const [myCowalkList, setMyCowalkList] = useState<UserCowalk[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
-  const observerRef = useRef<HTMLDivElement | null>(null);
 
   const location = useLocation();
   const crewId = location.state?.crewId;
@@ -64,24 +68,26 @@ export default function Together() {
         recruitList.length > 0
           ? recruitList[recruitList.length - 1]?.cowalkId
           : undefined;
-      const { data: newList } = await getCowalkList({
+      const response = await getCowalkList({
         crewId,
         lastId,
         size: 5,
       });
 
-      if (newList.length === 0) {
-        setHasMore(false);
-      } else {
-        setRecruitList((prev) => [...prev, ...newList]);
-        setHasMore(newList.length === 5);
-      }
+      setRecruitList((prev) => [...prev, ...response.data]);
+      setHasMore(response.hasNext);
     } catch (e) {
       console.error("무한스크롤 데이터 로딩 실패", e);
     } finally {
       setLoading(false);
     }
   }, [loading, hasMore, crewId, recruitList]);
+
+  const { lastElementRef } = useInfiniteScroll({
+    hasNext: hasMore,
+    loading,
+    onLoadMore: loadMore,
+  });
 
   const handleSubmit = async ({
     crewId,
@@ -94,13 +100,13 @@ export default function Together() {
   }: RecruitCowalker & { crewId: number }) => {
     try {
       // 새 글 등록 후 첫 페이지부터 다시 로드
-      const { data: listdata } = await getCowalkList({
+      const { data: listdata, hasNext } = await getCowalkList({
         crewId,
         lastId: undefined,
         size: 5,
       });
       setRecruitList(listdata);
-      setHasMore(listdata.length === 5);
+      setHasMore(hasNext);
 
       const { data: userCowalkData } = await getUserCowalkList();
       setMyCowalkList(userCowalkData);
@@ -110,29 +116,6 @@ export default function Together() {
 
     setIsModalOpen(false);
   };
-
-  useEffect(() => {
-    const currentRef = observerRef.current;
-    if (!currentRef) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !loading && hasMore) {
-          loadMore();
-        }
-      },
-      {
-        rootMargin: "100px",
-      }
-    );
-
-    observer.observe(currentRef);
-
-    return () => {
-      if (currentRef) observer.unobserve(currentRef);
-      observer.disconnect();
-    };
-  }, [loadMore, loading, hasMore]);
 
   useEffect(() => {
     const fetchInitial = async () => {
@@ -147,7 +130,7 @@ export default function Together() {
 
         setRecruitList(recruitRes.data);
         setMyCowalkList(userCowalkRes.data);
-        setHasMore(recruitRes.data.length === 5);
+        setHasMore(recruitRes.hasNext);
       } catch (e) {
         console.error("초기 산책 목록 조회 실패", e);
       } finally {
@@ -187,17 +170,16 @@ export default function Together() {
       )}
 
       <Title>최근 올라온 같이산책 일정</Title>
-      {recruitList.map((item) => (
-        <RecruitList
+      {recruitList.map((item, index) => (
+        <CardContainer
           key={item.cowalkId}
-          item={item}
-          onClick={handleCardClick}
-        />
+          ref={index === recruitList.length - 1 ? lastElementRef : null}
+        >
+          <RecruitList item={item} onClick={handleCardClick} />
+        </CardContainer>
       ))}
 
       {loading && <LoadingSpinner />}
-
-      <div ref={observerRef} style={{ height: "1px" }} />
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <RecruitForm onSubmit={handleSubmit} />
