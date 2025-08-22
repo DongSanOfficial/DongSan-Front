@@ -8,6 +8,7 @@ import {
   BiUser,
   BiMapAlt,
   BiInfoCircle,
+  BiMessage,
 } from "react-icons/bi";
 
 import WalkingMethodSection from "./sections/WalkingMethodSection";
@@ -16,6 +17,7 @@ import SearchSection from "./sections/SearchSection";
 import MyPageSection from "./sections/MyPageSection";
 import AppBar from "src/components/appBar";
 import FollowGuideSection from "./sections/FollowGuideSection";
+import CommunitySection from "./sections/CommunitySection";
 
 interface NavButtonProps {
   $active: boolean;
@@ -132,6 +134,10 @@ export default function Guide() {
     threshold: 0.3,
   });
 
+  const { ref: useCommunityRef, inView: communityInView } = useInView({
+    threshold: 0.3,
+  });
+
   const { ref: mypageRef, inView: mypageInView } = useInView({
     threshold: 0.3,
   });
@@ -140,8 +146,15 @@ export default function Guide() {
     if (registerInView) setActiveSection("register");
     else if (searchInView) setActiveSection("search");
     else if (useGuideInView) setActiveSection("useGuide");
+    else if (communityInView) setActiveSection("community");
     else if (mypageInView) setActiveSection("mypage");
-  }, [registerInView, searchInView, useGuideInView, mypageInView]);
+  }, [
+    registerInView,
+    searchInView,
+    useGuideInView,
+    communityInView,
+    mypageInView,
+  ]);
 
   const scrollToSection = (sectionId: string) => {
     const element = document.querySelector(`[data-ref="${sectionId}"]`);
@@ -211,6 +224,14 @@ export default function Guide() {
               산책로 이용
             </NavButton>
             <NavButton
+              $active={activeSection === "community"}
+              onClick={() => scrollToSection("community")}
+              data-section="community"
+            >
+              <BiMessage />
+              커뮤니티
+            </NavButton>
+            <NavButton
               $active={activeSection === "mypage"}
               onClick={() => scrollToSection("mypage")}
               data-section="mypage"
@@ -233,6 +254,9 @@ export default function Guide() {
           </div>
           <div ref={useGuideRef} data-ref="useGuide">
             <FollowGuideSection />
+          </div>
+          <div ref={useCommunityRef} data-ref="community">
+            <CommunitySection />
           </div>
           <div ref={mypageRef} data-ref="mypage">
             <MyPageSection />

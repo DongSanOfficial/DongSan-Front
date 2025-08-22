@@ -1,7 +1,7 @@
 import { BiPlusCircle } from "react-icons/bi";
 import RecruitList from "../components/RecruitList";
 import styled from "styled-components";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import RecruitForm from "../../components/RecruitForm";
 import Modal from "src/components/modal";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -12,6 +12,7 @@ import {
 } from "src/apis/crew/crew.type";
 import { getCowalkList, getUserCowalkList } from "src/apis/crew/crew";
 import MyCowalkList from "../components/MyCowalkList";
+import LoadingSpinner from "src/components/loading/LoadingSpinner";
 
 const Plusicon = styled.div`
   display: flex;
@@ -54,35 +55,15 @@ export default function Together() {
     });
   };
 
-  const handleSubmit = async ({
-    crewId,
-    startDate,
-    startTime,
-    endTime,
-    limitEnable,
-    memberLimit,
-    memo,
-  }: RecruitCowalker & { crewId: number }) => {
-    try {
-      const { data: listdata } = await getCowalkList({
-        crewId,
-        lastId: undefined,
-        size: 5,
-      });
-      setRecruitList(listdata);
-      setHasMore(true);
-    } catch (e) {
-      console.error("산책 리스트 갱신 실패", e);
-    }
-
-    setIsModalOpen(false);
-  };
-  const loadMore = async () => {
+  const loadMore = useCallback(async () => {
     if (loading || !hasMore || !crewId) return;
-    setLoading(true);
 
+    setLoading(true);
     try {
-      const lastId = recruitList[recruitList.length - 1]?.cowalkId;
+      const lastId =
+        recruitList.length > 0
+          ? recruitList[recruitList.length - 1]?.cowalkId
+          : undefined;
       const { data: newList } = await getCowalkList({
         crewId,
         lastId,
@@ -93,23 +74,57 @@ export default function Together() {
         setHasMore(false);
       } else {
         setRecruitList((prev) => [...prev, ...newList]);
+        setHasMore(newList.length === 5);
       }
     } catch (e) {
       console.error("무한스크롤 데이터 로딩 실패", e);
     } finally {
       setLoading(false);
     }
+  }, [loading, hasMore, crewId, recruitList]);
+
+  const handleSubmit = async ({
+    crewId,
+    startDate,
+    startTime,
+    endTime,
+    limitEnable,
+    memberLimit,
+    memo,
+  }: RecruitCowalker & { crewId: number }) => {
+    try {
+      // 새 글 등록 후 첫 페이지부터 다시 로드
+      const { data: listdata } = await getCowalkList({
+        crewId,
+        lastId: undefined,
+        size: 5,
+      });
+      setRecruitList(listdata);
+      setHasMore(listdata.length === 5);
+
+      const { data: userCowalkData } = await getUserCowalkList();
+      setMyCowalkList(userCowalkData);
+    } catch (e) {
+      console.error("산책 리스트 갱신 실패", e);
+    }
+
+    setIsModalOpen(false);
   };
 
   useEffect(() => {
     const currentRef = observerRef.current;
     if (!currentRef) return;
 
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        loadMore();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !loading && hasMore) {
+          loadMore();
+        }
+      },
+      {
+        rootMargin: "100px",
       }
-    });
+    );
 
     observer.observe(currentRef);
 
@@ -117,13 +132,14 @@ export default function Together() {
       if (currentRef) observer.unobserve(currentRef);
       observer.disconnect();
     };
-  }, [recruitList, loading, hasMore]);
+  }, [loadMore, loading, hasMore]);
 
   useEffect(() => {
     const fetchInitial = async () => {
-      try {
-        if (!crewId) return;
+      if (!crewId) return;
 
+      setLoading(true);
+      try {
         const [recruitRes, userCowalkRes] = await Promise.all([
           getCowalkList({ crewId, size: 5 }),
           getUserCowalkList(),
@@ -131,9 +147,11 @@ export default function Together() {
 
         setRecruitList(recruitRes.data);
         setMyCowalkList(userCowalkRes.data);
-        setHasMore(true);
+        setHasMore(recruitRes.data.length === 5);
       } catch (e) {
         console.error("초기 산책 목록 조회 실패", e);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -167,6 +185,7 @@ export default function Together() {
           <Line />
         </>
       )}
+
       <Title>최근 올라온 같이산책 일정</Title>
       {recruitList.map((item) => (
         <RecruitList
@@ -175,6 +194,9 @@ export default function Together() {
           onClick={handleCardClick}
         />
       ))}
+
+      {loading && <LoadingSpinner />}
+
       <div ref={observerRef} style={{ height: "1px" }} />
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
