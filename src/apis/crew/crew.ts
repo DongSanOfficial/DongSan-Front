@@ -261,7 +261,7 @@ export const modifyCrew = async (
 export const getCowalkList = async ({
   crewId,
   lastId,
-  size = 10,
+  size,
 }: {
   crewId: number;
   lastId?: number;
