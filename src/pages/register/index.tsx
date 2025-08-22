@@ -209,7 +209,7 @@ export default function Registration() {
           <TextInput
             value={name}
             onChange={setName}
-            maxLength={20}
+            maxLength={15}
             placeholder="산책로를 잘 나타내는 이름을 지어주세요."
           />
           <S.RequiredMark style={{ position: "absolute", top: 4, right: 1 }}>
@@ -219,7 +219,7 @@ export default function Registration() {
         <TextareaField
           value={description}
           onChange={setDescription}
-          maxLength={150}
+          maxLength={100}
           placeholder="산책로를 설명해주세요."
         />
         <S.TagInputWrapper>

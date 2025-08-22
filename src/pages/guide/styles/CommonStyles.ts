@@ -70,6 +70,33 @@ export const StepContent = styled.div`
   gap: 16px;
 `;
 
+export const SubDescription = styled.div`
+  background-color: ${(props) => props.theme.Gray50};
+  color: ${(props) => props.theme.Gray600};
+  padding: 16px 20px;
+  border-radius: 10px;
+  border-left: 4px solid ${(props) => props.theme.Green200};
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 12px 0;
+  position: relative;
+
+  &:before {
+    content: "💡";
+    position: absolute;
+    left: 8px;
+    top: 16px;
+    font-size: 16px;
+  }
+
+  padding-left: 40px;
+
+  &:hover {
+    background-color: ${(props) => props.theme.Green50};
+    border-left-color: ${(props) => props.theme.Green300};
+  }
+`;
+
 export const List = styled.ul`
   display: flex;
   flex-direction: column;
@@ -181,5 +208,4 @@ export const NavImg = styled.img`
   width: 100%;
   border-radius: 12px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin: 16px 0;
 `;
