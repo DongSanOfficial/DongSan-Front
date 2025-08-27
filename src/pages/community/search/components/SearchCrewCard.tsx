@@ -106,7 +106,7 @@ export default function SearchCrewCard({
         <Title>{name}</Title>
         <DetailRow>
           <MdGroups />
-          {limitEnable ? `${memberCount} / ${memberLimit}명` : "제한 없음"}
+          {limitEnable ? `${memberCount} / ${memberLimit}명` : `${memberCount}명`}
         </DetailRow>
         <DetailRow>
           <MdDateRange />
