@@ -146,6 +146,7 @@ export default function NewWay() {
   const lastLocationRef = useRef<Location | null>(null);
   const startTimeRef = useRef<Date | null>(null);
   const toastShownRef = useRef(false);
+  const screenKeepAwakeToastShown = useRef(false);
   const [isSocketConnected, setIsSocketConnected] = useState(false);
 
   const [cowalkModeCount, setCowalkModeCount] = useState<number | null>(null);
@@ -209,7 +210,12 @@ export default function NewWay() {
 
     setUserLocation(newLocation);
     lastLocationRef.current = newLocation;
-  }, [geoLocation]);
+
+    if (!screenKeepAwakeToastShown.current) {
+      screenKeepAwakeToastShown.current = true;
+      showToast("정확한 위치 기록을 위해 화면이 계속 켜져있도록 해주세요!", "success");
+    }
+  }, [geoLocation, showToast]);
 
   useEffect(() => {
     const fetchCrewIds = async () => {
