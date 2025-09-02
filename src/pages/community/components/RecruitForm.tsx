@@ -126,7 +126,13 @@ export default function RecruitForm({ onSubmit }: RecruitFormProps) {
   const handleSubmit = async () => {
     try {
       if (!startDate || !startTime || !endTime || !crewId) return;
-
+      if (endTime < startTime) {
+        showToast(
+          "종료시간보다 시작시간이 더 이릅니다. 시간을 다시 설정해주세요.",
+          "error"
+        );
+        return;
+      }
       if (duration === null || duration < 1) {
         showToast("산책 시간은 최소 1시간 이상이어야 합니다.", "error");
         return;
