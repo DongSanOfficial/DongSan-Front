@@ -196,8 +196,9 @@ export default function DetailFeed() {
         cowalkId,
       });
       setCommentList(updatedComments);
-    } catch (e) {
-      console.error("댓글 작성 실패", e);
+    } catch (error: any) {
+      console.error("댓글 작성 실패", error);
+      showToast("같이 산책을 먼저 신청해주세요.", "error");
     }
   };
 
