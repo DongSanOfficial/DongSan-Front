@@ -42,6 +42,8 @@ const Title = styled.div`
 `;
 const Content = styled.div`
   font-size: 16px;
+  line-height: 1.5;
+  white-space: pre-wrap;
 `;
 const Line = styled.div`
   width: 100%;
@@ -115,12 +117,12 @@ export default function CrewInfo() {
       <PageWrapper>
         <ScrollContainer>
           <Container>
-            <Title>크루 소개</Title>
+            <Title>👥 크루 소개</Title>
             <Content>{crew?.description}</Content>
           </Container>
           <Line></Line>
           <Container>
-            <Title>크루 규칙</Title>
+            <Title>📋 크루 규칙</Title>
             <Content>{crew?.rule}</Content>
           </Container>
         </ScrollContainer>
