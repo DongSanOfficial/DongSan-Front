@@ -84,7 +84,7 @@ const Date = styled.div``;
 const DetailContainer = styled.div``;
 
 const Content = styled.div`
-  max-height: 100px;
+  max-height: 6rem;
   height: auto;
   overflow-y: auto;
   padding: 1rem;
@@ -98,14 +98,13 @@ const Content = styled.div`
 const JoinContent = styled.div`
   border: 1px solid ${theme.Green500};
   width: 100%;
-  height: 6rem;
+  height: auto;
   margin: 1rem 0;
   border-radius: 16px;
   display: flex;
   align-items: center;
   box-shadow: 2px 4px rgba(0, 0, 0, 0.1);
   @media (max-width: 427px) {
-    height: 5rem;
     margin: 0.5rem;
     width: 95%;
   }
@@ -196,8 +195,9 @@ export default function DetailFeed() {
         cowalkId,
       });
       setCommentList(updatedComments);
-    } catch (e) {
-      console.error("댓글 작성 실패", e);
+    } catch (error: any) {
+      console.error("댓글 작성 실패", error);
+      showToast("댓글 작성에 실패했습니다.", "error");
     }
   };
 
