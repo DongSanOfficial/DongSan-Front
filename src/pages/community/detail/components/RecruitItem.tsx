@@ -5,7 +5,7 @@ import styled from "styled-components";
 const RecruitContent = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 0 1.5rem;
+  padding: 0.5rem 1.5rem;
 `;
 const ItemContainer = styled.div`
   display: flex;
@@ -21,7 +21,7 @@ const Items = styled.div`
 `;
 const BoldWrapper = styled.div`
   display: flex;
-  align-items: flex-start;
+  align-items: center;
 `;
 const Bold = styled.span`
   font-weight: 700;
