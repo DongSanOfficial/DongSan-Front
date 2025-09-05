@@ -197,7 +197,7 @@ export default function DetailFeed() {
       setCommentList(updatedComments);
     } catch (error: any) {
       console.error("댓글 작성 실패", error);
-      showToast("댓글 작성에 실패했습니다.", "error");
+      showToast("산책에 참여하지 않으면 댓글을 작성할 수 없어요!", "error");
     }
   };
 
